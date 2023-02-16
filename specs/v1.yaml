@@ -1,0 +1,887 @@
+openapi: 3.0.0
+info:
+  title: Chariot API
+  version: 'v1'
+  description: The Chariot REST API. Please see https://givechariot.readme.io/reference/overview for more details.
+  contact:
+    name: Chariot Development Team
+    url: https://www.givechariot.com/contact
+  termsOfService: https://www.givechariot.com/legal-nonprofit
+servers:
+  - url: https://sandboxapi.givechariot.com
+    description: Sandbox
+  - url: https://api.givechariot.com
+    description: Production
+paths:
+  /v1/nonprofit/{ein}:
+    get:
+      summary: Get nonprofit by EIN
+      description: |-
+        Get a nonprofit organization by EIN.
+        If the nonprofit does not exist, this returns 404 Not Found. 
+        In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint. 
+        The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
+      operationId: get-nonprofit-by-ein
+      security:
+        - auth0:
+          - "read:nonprofits"
+      parameters:
+        - name: ein
+          in: path
+          description: The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nonprofit"
+              example: |-
+                {
+                  "id": "021cf6aa-cb91-4b92-ae03-82a211cc8328",
+                  "name": "American Red Cross",
+                  "ein": "530196605",
+                  "createdAt": "2021-07-10 15:00:00.000",
+                  "updatedAt": "2021-07-11 15:34:00.000",
+                  "hasPaymentMethod": true,
+                  "billingUser": "str_billing_user_789"
+                }
+        '400':
+          description: Invalid request
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: "Not Found. If the nonprofit is not found please make sure you are passing the EIN number correctly (don’t include dashes or spaces). If it is still not found, that means the nonprofit is not in our record system and you need to create one by calling the Create nonprofit (POST /v1/nonprofit) route."
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: "Internal server error"
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/nonprofits:
+    post:
+      summary: Create nonprofit
+      description: |-
+        Create a nonprofit organization account.
+        If a nonprofit does not already exist for the EIN, this will return
+        a 201 Created status.
+        If a nonprofit already exists for the given EIN on the system, 
+        this will return a 409 Conflict error.
+        When integrating this API, it's useful to either handle the 409 error or
+        make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it.
+      operationId: create-nonprofit
+      security:
+        - auth0:
+          - "create:nonprofits"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNonprofitRequest"
+      responses:
+        '201':
+          description: "Created"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nonprofit"
+        '400':
+          description: Invalid request
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '409':
+          description: "Conflict. If the nonprofit already exists you should retrieve it using the Get nonprofit by EIN (GET /v1/nonprofit/{ein}) route."
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: "Internal server error"
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/connects:
+    post:
+      summary: Create Connect
+      description: |-
+        Get or create a Connect object. Only one Connect object can be created per Nonprofit-Subscription pair. If one already exists, this will return a 200 status code with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
+      operationId: create-connect
+      security:
+        - auth0:
+          - "create:connects"
+      parameters:
+        - name: nonprofit
+          in: query
+          description: |-
+            The unique identifier (ID) for the nonprofit.
+            This can be found by calling the /v1/nonprofit/{ein} API endpoint.
+          schema:
+            type: string
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/CreateConnectRequest"
+      responses:
+        '200':
+          description: the existing Connect object
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              description: The URI reference of the existing connect object.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connect"
+              example: |-
+                {
+                  "id": "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55",
+                  "name": "website",
+                  "apiKey": "test_98235982835",
+                  "subscriptionId": "default",
+                  "active": true,
+                  "createdAt": "2021-07-10 15:00:00.000",
+                  "updatedAt": "2021-07-11 15:34:00.000",
+                  "createdBy": "user123",
+                  "metadata": {
+                    "tag1": "value1"
+                  }
+                }
+        '201':
+          description: the created connect object
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              description: The URI reference of the created connect object.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connect"
+              example: |-
+                {
+                  "id": "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55",
+                  "name": "website",
+                  "apiKey": "test_98235982835",
+                  "subscriptionId": "default",
+                  "active": true,
+                  "createdAt": "2021-07-10 15:00:00.000",
+                  "updatedAt": "2021-07-11 15:34:00.000",
+                  "createdBy": "user123",
+                  "metadata": {
+                    "tag1": "value1"
+                  }
+                }
+        '400':
+          description: Invalid request
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: Subscription not found
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/connects/{id}:
+    get:
+      summary: Get Connect
+      description: |-
+        Get a Connect object with the unique identifier (CID)
+      operationId: get-connect
+      security:
+        - auth0:
+          - "read:connects"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the connect
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connect"
+        '400':
+          description: Invalid parameters
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: connect not found on the system
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/grants:
+    get:
+      summary: List Grants
+      description: |-
+        List all grants for the provided API Key. This API allows for paginating over many results.
+      operationId: list-grants
+      security:
+        - auth0:
+          - "read:grants"
+          api_key: []
+      parameters:
+        - name: pageLimit
+          in: query
+          description: the number of results to return; defaults to 10, max is 100
+          schema:
+            type: integer
+            default: 10
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Grant list
+          $ref: "#/components/responses/ListGrantsResponse"
+        '400':
+          description: Invalid parameters
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: connect not found on the system
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+    post:
+      summary: Create Grant
+      description: |-
+        Create a grant from a workflowSession. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request. The grant must be captured within 5 minutes of authorization. A grant can only be captured once so any duplicate requests will fail.
+      operationId: create-grant
+      security:
+        - auth0:
+            - "create:grants"
+          api_key: []
+      requestBody:
+        $ref: "#/components/requestBodies/GrantCaptureRequest"
+      responses:
+        '201':
+          description: Created grant
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              description: The URI reference of the created grant object.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+              example:
+                $ref: "#/components/examples/GrantOutput"
+        '400':
+          description: Invalid parameters
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: workflow session not found on the system
+          $ref: "#/components/responses/ErrorResponse"
+        '409':
+          description: request conflicts with an already existing and captured grant
+          $ref: "#/components/responses/ErrorResponse"
+        '410':
+          description: expired workflow session
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/grants/{id}:
+    get:
+      summary: Get Grant
+      description: Get a grant object generated by Chariot Connect
+      operationId: get-grant
+      security:
+      - auth0:
+        - "read:grants"
+        api_key: []
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the grant
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+              example:
+                $ref: "#/components/examples/GrantOutput"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: Grant not found
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+components:
+  securitySchemes:
+    auth0:
+      type: oauth2
+      description: This API uses OAuth2 with the client credentials flow.
+      flows:
+        clientCredentials:
+          tokenUrl: https://dev-w2rfcsc8.us.auth0.com/oauth/token
+          scopes:
+            "create:nonprofits": create a nonprofit and user
+            "read:nonprofits": read all nonprofits
+            "create:connects": create any connect, principle does not need to be associated with nonprofit
+            "read:connects": read all connects for a nonprofit
+            "create:grants": create a grant from a workflow session
+            "read:grants": "read grants"
+    api_key:
+      type: apiKey
+      in: header
+      name: x-chariot-api-key
+  schemas:
+    Nonprofit:
+      type: object
+      description: |-
+        A Nonprofit represents a registered 501(c)(3) charitable organization is good standing with the IRS.
+      required:
+        - id
+        - name
+        - ein
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+        name:
+          type: string
+          description: The IRS registered name of the nonprofit organization
+          example: Leading for Children
+        preferredName:
+          type: string
+          description: |-
+            The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
+          example: LfC
+        ein:
+          type: string
+          description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          example: "043567500"
+        address:
+          $ref: "#/components/schemas/Address"
+        billingUser:
+          type: string
+          description: ID of the user who manages the billing for the nonprofit. 
+          example: str_billing_user_789
+        hasPaymentMethod:
+          type: boolean
+          description: Flag to indicate if the nonprofit has a payment method on file
+          example: true
+        picture:
+          type: string
+          description: The URI of the nonprofit's logo
+        website:
+          type: string
+          description: The URL of the nonprofit's website
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    Connect:
+      type: object
+      description: |-
+        A Connect represents an instance of Chariot Connect for a particular Nonprofit. A nonprofit organization will create Connect objects in order to integrate Chariot Connect into their websites or fundraising platforms to start accepting donations directly from Donor Advised Funds. Each Nonprofit can have multiple Connect objects where each one represents a logical separation for how the organization wants to organize their sources of donations. For example, they might have 2 Connect instances, one that they use to integrate Chariot Connect directly on their website and the other that they provide to a 3rd party fundraising platform. On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`. A connect object also contains an `apiKey`. This is useful for nonprofits to provide to fundraising platforms on their behalf to programatically integrate Chariot Connect and access resources and information created from the Connect instance through various Chariot API endpoints. More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
+      required:
+        - id
+        - name
+        - apiKey
+        - subscriptionId
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: |-
+            The unique identifier for this object. This is also the 'publishable' cid to use for initializing Connect for client-side integration.
+          example: test_connect123
+        name:
+          type: string
+          description: A human readable name for the connect, optional.
+          example: website
+        apiKey:
+          type: string
+          readOnly: true
+          description: A secure token that can be used to make M2M API calls to read data generated by this object.
+          example: test_apiTokenABC
+        subscriptionId:
+          type: string
+          description: |-
+            The ID of the Chariot subscription associated with this connect. A Subscription defines two things for a Connect:
+              1. WorkflowPlan - defines the Chariot Connect modal workflow
+              2. PricingPlan - defines the fees and transaction pricing model for the Chariot Connect 
+          example: default
+        active:
+          type: boolean
+          description: |-
+            A flag to indicate if this connect is active. If true, then this Connect can process donations and grants, otherwise this Connect cannot process grants.
+          example: true
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+        createdBy:
+          type: string
+          readOnly: true
+          description: ID of the user who created this object.
+          example: auth0-user-id-123
+        archived:
+          type: boolean
+          readOnly: true
+          description: A flag to indicate if this object is marked for deletion.
+          example: false
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object.
+          additionalProperties:
+            type: string
+    Grant:
+      type: object
+      description: |-
+        A Grant represents a successfully initiated grant request with a Donor Advised Fund.Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
+      required:
+        - id
+        - userFriendlyId
+        - sessionId
+        - fundId
+        - amount
+        - feeAmount
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object
+          format: uuid
+          example: cfe09e64-6a74-4dab-a565-361185a6f248
+        userFriendlyId:
+          type: string
+          readOnly: true
+          description: The user friendly identifier for the Grant
+          example: chariot-1234455
+        workflowSessionId:
+          type: string
+          readOnly: true
+          description: ID of the Connect Workflow Session associated with this grant
+          format: uuid
+          example: 2d4b2a43-a5b4-4be1-ad1f-f932016ca4a6
+        fundId:
+          type: string
+          readOnly: true
+          description: ID of the donor advised fund
+          example: daf-id
+        externalGrantId:
+          type: string
+          description: ID of the grant associated with the donor advised fund
+          example: 897823sdjf8sfjs
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created; expressed in ISO 8601 format
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated; expressed in ISO 8601 format
+          example: "2021-07-11 15:34:00.000"
+        amount:
+          type: number
+          format: double
+          description: The grant amount expressed in units of cents; includes the feeAmount if coveredFees is true
+          example: 150.0
+        status:
+          type: string
+          description: The status of the grant
+          example: Pending
+        coveredFees:
+          type: boolean
+          description: Flag to indicate if the user opted to cover fees of the donation
+          example: true
+        feeAmount:
+          type: integer
+          format: int32
+          description: The fee amount expressed in units of cents.
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object
+          additionalProperties:
+            type: string
+        firstName:
+          type: string
+          description: The donor's first name
+          example: "Warren"
+        lastName:
+          type: string
+          description: The donor's last name
+          example: "Buffet"
+        phone:
+          type: string
+          description: The donor's phone number
+          example: "1237861020"
+        email:
+          type: string
+          description: The donor's email
+          example: "warrenBuffet@example.com"
+        note:
+          type: string
+          description: An note inputted by the user at submisson 
+          example: "Please dedicate in memory of grandma"
+        statuses: 
+          type: array
+          items: 
+            $ref: '#/components/schemas/GrantStatus'
+          description: The list of grant statuses for this grant
+    GrantStatus: 
+      type: object 
+      required: 
+        - id
+        - createdAt
+        - status
+      properties:
+        id: 
+          type: string
+          readOnly: true
+          description: The unique identifier for the object
+          format: uuid
+          example: cfe09e64-6a74-4dab-a565-361185a6f248
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created; expressed in ISO 8601 format
+          example: "2020-07-10 15:00:00.000"
+        status:
+          type: string
+          description: The status of the grant
+          example: Received
+        comment:
+          type: string
+          description: The user comment for the update
+          example: The grant has been received by the nonprofit
+    Address:
+      type: object
+      required:
+        - city
+        - country
+        - line1
+        - postalCode
+        - state
+      properties:
+        city:
+          type: string
+          description: City, district, suburb, town, or village.
+        country:
+          type: string
+          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+        line1:
+          type: string
+          description: Address line 1 (e.g. street, PO Box, or company name)
+        line2:
+          type: string
+          description: Address line 2 (e.g. apartment, suite, unit, or building)
+        postalCode:
+          type: string
+          description: ZIP or postal code
+        state:
+          type: string
+          description: State, county, province, or region
+  headers:
+    X-Request-Id:
+      description: The unique identifier for the request
+      schema:
+        type: string
+  requestBodies:
+    GrantCaptureRequest:
+      description: |-
+        The request to create and submit a grant. This is useful to capture a grant intent associated with Connect workflow session.
+      required: true
+      content:
+        application/json:
+          schema:
+            type:
+              object
+            required:
+              - connectId
+            properties:
+              workflowSessionId:
+                type: string
+                description: The identifier of the Workflow Session
+              coverFees:
+                type: boolean
+                description: |-
+                  A flag to indicate if the user opted to cover the fees. Defaults to false if not specified.
+              donor:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                    description: The first name of the donor
+                  lastName:
+                    type: string
+                    description: The last name of the donor
+                  email:
+                    type: string
+                    description: The email address of the donor
+                  phone:
+                    type: string
+                    description: The phone number of the donor
+    CreateConnectRequest:
+      description: |-
+        The request to create a new Connect object for a Nonprofit.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: |-
+                  A human readable name of the Connect, optional.
+              metadata:
+                type: object
+                description: A map of arbitrary string keys and values to store information about the object.
+                additionalProperties:
+                  type: string
+    CreateNonprofitRequest:
+      description: |-
+        The request to create and register a nonprofit organization account. This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - ein
+              - user
+            properties:
+              user:
+                type: object
+                required:
+                  - email
+                properties:
+                  email:
+                    type: string
+                    description: The email address for the nonprofit account contact
+                    example: ben.give@co.com
+                  phone:
+                    type: string
+                    description: The phone number for the nonprofit account contact
+                    example: "9127772424"
+                  firstName:
+                    type: string
+                    description: The first name of the nonprofit account contact
+                    example: Ben
+                  lastName:
+                    type: string
+                    description: The last name of the nonprofit account contact
+                    example: Give
+              ein:
+                type: string
+                description: The US federal employer identification number (Tax ID); unique on the system
+                example: "043567500"
+              preferredName:
+                type: string
+                description: |-
+                  The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
+              picture:
+                type: string
+                description: The URI of the nonprofit's logo
+              website:
+                type: string
+                description: The URL of the nonprofit's website
+  responses:
+    GetConnectByApiKeyResponse:
+      description: The connect information
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - subscription
+            properties:
+              id:
+                type: string
+                description: The ID of the Connect
+                example: test_connect123
+              subscription:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID of the subscription
+                  workflowPlan:
+                    type: object
+                    description: |-
+                      The workflow plan describes the Connect flow. This is useful to verify an expected Connect flow associated with a given Connect and API Key.
+                    properties:
+                      id:
+                        type: string
+                        description: The ID of the workflow plan
+                        format: uuid
+                      name:
+                        type: string
+                        description: |-
+                          The name of the workflow plan.
+                          This is an enum with the following possible values: AUTHORIZE, CAPTURE
+                      description:
+                        type: string
+                        description: A human readable description of the workflow plan.
+          example: |-
+            {
+              "id": "test_a92a4e42-d368-41e6-8b92-e0d035c3e7a0",
+              "subscription": {
+                "id": "587e6d86-305c-4b8c-b517-b04cc7262ee2",
+                "workflowPlan": {
+                  "id": "1c429096-f15e-49d2-913a-84fd6cc08433",
+                  "name": "AUTHORIZE",
+                  "description": "This is the authorize flow"
+                }
+              }
+            }
+    ListGrantsResponse:
+      description: The response for Grants.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Grant"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+          example: |-
+            {
+              "results": [
+                {
+                  "id": "1e60800e-849b-43d1-870e-57afc8d75473",
+                  "userFriendlyId": "chariot-12345",
+                  "workflowSessionId": "cfe09e64-6a74-4dab-a565-361185a6f248",
+                  "fundId": "daf-id",
+                  "createdAt": "2021-08-10 15:00:00.000",
+                  "updatedAt": "2021-08-11 15:34:00.000",
+                  "amount": 15000,
+                  "status": "Initiated",
+                  "feeAmount": 465,
+                  "coveredFees": false
+                }
+              ],
+              "nextPageToken": "1e60800e-849b-43d1-870e-57afc8d75473"
+            }
+    ErrorResponse:
+      description: The error response
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                description: time when the error was reported. Expressed in ISO 8601 format.
+                example: "2020-07-10 15:00:00.000"
+              code:
+                type: number
+                description: HTTP status code of the error
+                example: 400
+              error:
+                type: string
+                description: A short name of the error; usually the HTTP status.
+                example: Bad Request
+              message:
+                type: string
+                description: The description of the error
+                example: Expected an API key to be provided in the header `x-chariot-api-key`
+          example: |-
+            {
+              "timestamp": "2020-07-10 15:00:00.000",
+              "code": 400,
+              "error": "Bad Request",
+              "message": "Expected an API key to be provided in the header `x-chariot-api-key`"
+            }
+  examples:
+    GrantOutput:
+      summary: Simple grant output
+      value: |-
+        {
+          "id": "1e60800e-849b-43d1-870e-57afc8d75473",
+          "userFriendlyId": "chariot-12345",
+          "workflowSessionId": "cfe09e64-6a74-4dab-a565-361185a6f248",
+          "fundId": "daf-id",
+          "createdAt": "2021-08-10 15:00:00.000",
+          "updatedAt": "2021-08-11 15:34:00.000",
+          "amount": 15000,
+          "status": "Initiated",
+          "feeAmount": 465,
+          "coveredFees": false
+        }
