@@ -5,7 +5,7 @@ id = 1755d44f-2fff-45d8-a422-0ce6211efaf9
 
 [relations.collections]
 rootDirectory = postman/collections
-files[] = {"id":"23306205-69ddfd55-f978-4c07-a6b2-676657e6e448","path":"Chariot API.json","metaData":{}}
+files[] = {"id":"23306205-afd16126-bb2f-4f65-b9bb-720a82e5a7a2","path":"Chariot API.json","metaData":{}}
 
 [relations.collections.metaData]
 

@@ -352,6 +352,72 @@ paths:
         '500':
           description: Internal server error
           $ref: "#/components/responses/ErrorResponse"
+  /v1/dafs:
+    get:
+      summary: List DAFs
+      description: List all DAFs
+      operationId: list-dafs
+      parameters:
+        - name: pageLimit
+          in: query
+          description: the number of results to return; defaults to 10, max is 100
+          schema:
+            type: integer
+            default: 10
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls.
+          schema: 
+            type: string
+      responses:
+        '200':
+          $ref: "#/components/responses/ListDafsResponse"
+        '400':
+          description: Bad Request
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
+  /v1/dafs/{id}:
+    get:
+      summary: Get DAF
+      description: Get a DAF by id
+      operationId: get-daf
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the DAF
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Daf"
+              example:
+                $ref: "#/components/examples/DafOutput"
+        '400':
+          description: Bad Request
+          $ref: "#/components/responses/ErrorResponse"
+        '403':
+          description: Access denied
+          $ref: "#/components/responses/ErrorResponse"
+        '404':
+          description: DAF not found
+          $ref: "#/components/responses/ErrorResponse"
+        '500':
+          description: Internal server error
+          $ref: "#/components/responses/ErrorResponse"
 components:
   securitySchemes:
     auth0:
@@ -491,6 +557,72 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
+    Daf:
+      type: object
+      description: |-
+        A DAF represents Donor-Advised Funds which are connected with Chariot. These may be integrated (able to authenticate through Chariot) or unintegrated.
+      required:
+        - id  
+        - orgName
+        - address
+        - address2
+        - city
+        - state
+        - zip
+        - supported
+        - minimumGrantAmount
+        - institutionDown
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this object. 
+          example: 0bf40881-8ee2-47fb-98ca-f58c7999aa34
+        orgName:
+          type: string
+          readOnly: true
+          description: A human readable name for the DAF.
+          example: website
+        address:
+          type: string
+          readOnly: true
+          description: The first address line.
+          example: 123 Main St.
+        address2:
+          type: string
+          readOnly: true
+          description: The second address line.
+          example: Apt 100
+        city:
+          type: string
+          readOnly: true
+          description: The city name for the address.
+          example: New York City
+        state:
+          type: string
+          readOnly: true
+          description: The state name for the address.
+          example: New York
+        zip:
+          type: string
+          readOnly: true
+          description: The zipcode for the address.
+          example: 12345
+        supported:
+          type: boolean
+          readOnly: true
+          description: A flag to indicate if this DAF is supported by Chariot.
+          example: false
+        minimumGrantAmount:
+          type: number
+          readOnly: true
+          description: The minimum grant amount allowed for this DAF.
+          example: 123
+        institutionDown:
+          type: boolean
+          readOnly: true
+          description: A flag to indicate if the institution is down.
+          example: false
     Grant:
       type: object
       description: |-
@@ -817,6 +949,42 @@ components:
                 }
               }
             }
+    ListDafsResponse:
+      description: The response for Dafs.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Daf"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+          example: |-
+            {
+              "results": [
+                {
+                  "id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+                  "orgName": "National Philanthropic Trust",
+                  "address": "123 Main St.",
+                  "address2": "Apt 100",
+                  "city": "New York City",
+                  "state": "New York",
+                  "zip": "12345",
+                  "supported": true,
+                  "minimumGrantAmount": 500,
+                  "institutionDown": false,
+                }
+              ],
+              "nextPageToken": "c3f685f2-2dda-4956-815b-39867a5e5638",
+            }
     ListGrantsResponse:
       description: The response for Grants.list
       headers:
@@ -901,4 +1069,19 @@ components:
           "status": "Initiated",
           "feeAmount": 465,
           "coveredFees": false
+        }
+    DafOutput:
+      summary: Simple DAF output
+      value: |-
+        {
+          "id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+          "orgName": "National Philanthropic Trust",
+          "address": "123 Main St.",
+          "address2": "Apt 100",
+          "city": "New York City",
+          "state": "New York",
+          "zip": "12345",
+          "supported": true,
+          "minimumGrantAmount": 500,
+          "institutionDown": false,
         }
