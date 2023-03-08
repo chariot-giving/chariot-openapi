@@ -18,7 +18,7 @@ paths:
       summary: Get nonprofit by EIN
       description: |-
         Get a nonprofit organization by EIN.
-        If the nonprofit does not exist, this returns 404 Not Found. 
+        If the nonprofit does not exist, this returns 404 Not Found status. 
         In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint. 
         The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
       operationId: get-nonprofit-by-ein
@@ -28,7 +28,9 @@ paths:
       parameters:
         - name: ein
           in: path
-          description: The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          description: |-
+            The unique federal employer identification number (EIN) of the nonprofit. 
+            This value should be exactly 9 digits and should not contain any special characters such as dashes.
           schema:
             type: string
           required: true
@@ -42,39 +44,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Nonprofit"
-              example: |-
-                {
-                  "id": "021cf6aa-cb91-4b92-ae03-82a211cc8328",
-                  "name": "American Red Cross",
-                  "ein": "530196605",
-                  "createdAt": "2021-07-10 15:00:00.000",
-                  "updatedAt": "2021-07-11 15:34:00.000",
-                  "hasPaymentMethod": true,
-                  "billingUser": "str_billing_user_789"
-                }
+              examples:
+                RedCross:
+                  $ref: "#/components/examples/NonprofitRedCross"
         '400':
-          description: Invalid request
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '404':
-          description: "Not Found. If the nonprofit is not found please make sure you are passing the EIN number correctly (don’t include dashes or spaces). If it is still not found, that means the nonprofit is not in our record system and you need to create one by calling the Create nonprofit (POST /v1/nonprofit) route."
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '500':
-          description: "Internal server error"
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/nonprofits:
     post:
       summary: Create nonprofit
       description: |-
         Create a nonprofit organization account.
-        If a nonprofit does not already exist for the EIN, this will return
-        a 201 Created status.
-        If a nonprofit already exists for the given EIN on the system, 
-        this will return a 409 Conflict error.
-        When integrating this API, it's useful to either handle the 409 error or
-        make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it.
+        This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
+        If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
+        If a nonprofit already exists for the given EIN on the system, this will return a 409 Conflict status.
+        When integrating this API, it's useful to either handle the 409 error or make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it.
       operationId: create-nonprofit
       security:
         - auth0:
@@ -92,22 +81,18 @@ paths:
               schema:
                 $ref: "#/components/schemas/Nonprofit"
         '400':
-          description: Invalid request
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '409':
-          description: "Conflict. If the nonprofit already exists you should retrieve it using the Get nonprofit by EIN (GET /v1/nonprofit/{ein}) route."
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ConflictError"
         '500':
-          description: "Internal server error"
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects:
     post:
       summary: Create Connect
       description: |-
-        Get or create a Connect object. Only one Connect object can be created per Nonprofit-Subscription pair. If one already exists, this will return a 200 status code with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
+        Get or create a Connect object. Only one Connect object can be created per Nonprofit-Subscription pair. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
       operationId: create-connect
       security:
         - auth0:
@@ -117,9 +102,11 @@ paths:
           in: query
           description: |-
             The unique identifier (ID) for the nonprofit.
+            The format should be a v4 UUID according to RFC 4122.
             This can be found by calling the /v1/nonprofit/{ein} API endpoint.
           schema:
             type: string
+            format: uuid
           required: true
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
@@ -138,20 +125,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connect"
-              example: |-
-                {
-                  "id": "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55",
-                  "name": "website",
-                  "apiKey": "test_98235982835",
-                  "subscriptionId": "default",
-                  "active": true,
-                  "createdAt": "2021-07-10 15:00:00.000",
-                  "updatedAt": "2021-07-11 15:34:00.000",
-                  "createdBy": "user123",
-                  "metadata": {
-                    "tag1": "value1"
-                  }
-                }
+              examples:
+                Simple:
+                  $ref: "#/components/examples/ConnectOutput"
         '201':
           description: the created connect object
           headers:
@@ -166,32 +142,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connect"
-              example: |-
-                {
-                  "id": "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55",
-                  "name": "website",
-                  "apiKey": "test_98235982835",
-                  "subscriptionId": "default",
-                  "active": true,
-                  "createdAt": "2021-07-10 15:00:00.000",
-                  "updatedAt": "2021-07-11 15:34:00.000",
-                  "createdBy": "user123",
-                  "metadata": {
-                    "tag1": "value1"
-                  }
-                }
+              examples:
+                Simple:
+                  $ref: "#/components/examples/ConnectOutput"
         '400':
-          description: Invalid request
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '404':
-          description: Subscription not found
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects/{id}:
     get:
       summary: Get Connect
@@ -219,17 +180,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/Connect"
         '400':
-          description: Invalid parameters
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '404':
-          description: connect not found on the system
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/grants:
     get:
       summary: List Grants
@@ -255,24 +212,19 @@ paths:
             type: string
       responses:
         '200':
-          description: Grant list
           $ref: "#/components/responses/ListGrantsResponse"
         '400':
-          description: Invalid parameters
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
-        '404':
-          description: connect not found on the system
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create Grant
       description: |-
-        Create a grant from a workflowSession. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request. The grant must be captured within 5 minutes of authorization. A grant can only be captured once so any duplicate requests will fail.
+        Create a grant from a workflow session. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request.
+        The grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
+        A grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
       operationId: create-grant
       security:
         - auth0:
@@ -295,30 +247,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Grant"
-              example:
-                $ref: "#/components/examples/GrantOutput"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/GrantOutput"
         '400':
-          description: Invalid parameters
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '404':
-          description: workflow session not found on the system
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '409':
-          description: request conflicts with an already existing and captured grant
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ConflictError"
         '410':
-          description: expired workflow session
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/GoneError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/grants/{id}:
     get:
       summary: Get Grant
-      description: Get a grant object generated by Chariot Connect
+      description: |-
+        Get a grant object generated by Chariot Connect. 
+        If the grant does not exist, returns a 404 status.
+        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-grant
       security:
       - auth0:
@@ -330,6 +280,7 @@ paths:
           description: the unique id of the grant
           schema:
             type: string
+            format: uuid
           required: true
       responses:
         '200':
@@ -341,21 +292,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Grant"
-              example:
-                $ref: "#/components/examples/GrantOutput"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/GrantOutput"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
         '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/ForbiddenError"
         '404':
-          description: Grant not found
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/dafs:
     get:
       summary: List DAFs
-      description: List all DAFs
+      description: List all DAF objects. This API allows for paginating over many results.
       operationId: list-dafs
       parameters:
         - name: pageLimit
@@ -374,18 +325,16 @@ paths:
         '200':
           $ref: "#/components/responses/ListDafsResponse"
         '400':
-          description: Bad Request
-          $ref: "#/components/responses/ErrorResponse"
-        '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
     get:
-      summary: Get DAF
-      description: Get a DAF by id
+      summary: Get DAF object
+      description: |-
+        Get a DAF object by id. 
+        If the DAF does not exist, returns a 404 status.
+        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-daf
       parameters:
         - name: id
@@ -393,6 +342,7 @@ paths:
           description: the unique id of the DAF
           schema:
             type: string
+            format: uuid
           required: true
       responses:
         '200':
@@ -404,20 +354,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Daf"
-              example:
-                $ref: "#/components/examples/DafOutput"
+              examples:
+                Npt:
+                  $ref: "#/components/examples/DafOutput"
         '400':
-          description: Bad Request
-          $ref: "#/components/responses/ErrorResponse"
-        '403':
-          description: Access denied
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/BadRequestError"
         '404':
-          description: DAF not found
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/NotFoundError"
         '500':
-          description: Internal server error
-          $ref: "#/components/responses/ErrorResponse"
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     auth0:
@@ -607,7 +552,7 @@ components:
           type: string
           readOnly: true
           description: The zipcode for the address.
-          example: 12345
+          example: "12345"
         supported:
           type: boolean
           readOnly: true
@@ -630,10 +575,9 @@ components:
       required:
         - id
         - userFriendlyId
-        - sessionId
+        - workflowSessionId
         - fundId
         - amount
-        - feeAmount
       properties:
         id:
           type: string
@@ -774,6 +718,30 @@ components:
         state:
           type: string
           description: State, county, province, or region
+    Error:
+      type: object
+      required:
+        - timestamp
+        - code
+        - error
+        - message
+      properties:
+        timestamp:
+          type: string
+          description: time when the error was reported. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        code:
+          type: number
+          description: HTTP status code of the error
+          example: 400
+        error:
+          type: string
+          description: A short name of the error; usually the HTTP status.
+          example: Bad Request
+        message:
+          type: string
+          description: The description of the error
+          example: Expected an API key to be provided in the header `x-chariot-api-key`
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -851,7 +819,9 @@ components:
                   type: string
     CreateNonprofitRequest:
       description: |-
-        The request to create and register a nonprofit organization account. This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
+        The request to create and register a nonprofit organization account.
+        The ein and user.email properties are required.
+        The user.email should be a valid contact email address for the nonprofit organization.
       required: true
       content:
         application/json:
@@ -897,58 +867,6 @@ components:
                 type: string
                 description: The URL of the nonprofit's website
   responses:
-    GetConnectByApiKeyResponse:
-      description: The connect information
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - id
-              - subscription
-            properties:
-              id:
-                type: string
-                description: The ID of the Connect
-                example: test_connect123
-              subscription:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: The ID of the subscription
-                  workflowPlan:
-                    type: object
-                    description: |-
-                      The workflow plan describes the Connect flow. This is useful to verify an expected Connect flow associated with a given Connect and API Key.
-                    properties:
-                      id:
-                        type: string
-                        description: The ID of the workflow plan
-                        format: uuid
-                      name:
-                        type: string
-                        description: |-
-                          The name of the workflow plan.
-                          This is an enum with the following possible values: AUTHORIZE, CAPTURE
-                      description:
-                        type: string
-                        description: A human readable description of the workflow plan.
-          example: |-
-            {
-              "id": "test_a92a4e42-d368-41e6-8b92-e0d035c3e7a0",
-              "subscription": {
-                "id": "587e6d86-305c-4b8c-b517-b04cc7262ee2",
-                "workflowPlan": {
-                  "id": "1c429096-f15e-49d2-913a-84fd6cc08433",
-                  "name": "AUTHORIZE",
-                  "description": "This is the authorize flow"
-                }
-              }
-            }
     ListDafsResponse:
       description: The response for Dafs.list
       headers:
@@ -967,24 +885,34 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          example: |-
-            {
-              "results": [
-                {
-                  "id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
-                  "orgName": "National Philanthropic Trust",
-                  "address": "123 Main St.",
-                  "address2": "Apt 100",
-                  "city": "New York City",
-                  "state": "New York",
-                  "zip": "12345",
-                  "supported": true,
-                  "minimumGrantAmount": 500,
-                  "institutionDown": false,
-                }
-              ],
-              "nextPageToken": "c3f685f2-2dda-4956-815b-39867a5e5638",
-            }
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    orgName: "National Philanthropic Trust"
+                    address: "123 Main St."
+                    address2: "Apt 100"
+                    city: "New York"
+                    state: "NY"
+                    zip: "12345"
+                    supported: true
+                    minimumGrantAmount: 5000
+                    institutionDown: false
+                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    orgName: "National Philanthropic Trust"
+                    address: "123 Main St."
+                    address2: "Apt 100"
+                    city: "New York"
+                    state: "NY"
+                    zip: "12345"
+                    supported: true
+                    minimumGrantAmount: 5000
+                    institutionDown: false
     ListGrantsResponse:
       description: The response for Grants.list
       headers:
@@ -1003,85 +931,165 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          example: |-
-            {
-              "results": [
-                {
-                  "id": "1e60800e-849b-43d1-870e-57afc8d75473",
-                  "userFriendlyId": "chariot-12345",
-                  "workflowSessionId": "cfe09e64-6a74-4dab-a565-361185a6f248",
-                  "fundId": "daf-id",
-                  "createdAt": "2021-08-10 15:00:00.000",
-                  "updatedAt": "2021-08-11 15:34:00.000",
-                  "amount": 15000,
-                  "status": "Initiated",
-                  "feeAmount": 465,
-                  "coveredFees": false
-                }
-              ],
-              "nextPageToken": "1e60800e-849b-43d1-870e-57afc8d75473"
-            }
-    ErrorResponse:
-      description: The error response
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    userFriendlyId: "chariot-12345"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 15000
+                    status: "Initialized"
+                    feeBasis: 290
+                    coveredFees: false
+                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    userFriendlyId: "chariot-12345"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 15000
+                    status: "Initialized"
+                    feeBasis: 290
+                    coveredFees: false
+    BadRequestError:
+      description: The request is invalid or contains invalid parameters
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              timestamp:
-                type: string
-                description: time when the error was reported. Expressed in ISO 8601 format.
-                example: "2020-07-10 15:00:00.000"
-              code:
-                type: number
-                description: HTTP status code of the error
-                example: 400
-              error:
-                type: string
-                description: A short name of the error; usually the HTTP status.
-                example: Bad Request
-              message:
-                type: string
-                description: The description of the error
-                example: Expected an API key to be provided in the header `x-chariot-api-key`
-          example: |-
-            {
-              "timestamp": "2020-07-10 15:00:00.000",
-              "code": 400,
-              "error": "Bad Request",
-              "message": "Expected an API key to be provided in the header `x-chariot-api-key`"
-            }
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 400
+            error: "Bad Request"
+            message: "Expected an API key to be provided in the header `x-chariot-api-key`"
+    ForbiddenError:
+      description: Access denied
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 403
+            error: "Forbidden"
+            message: "User is not allowed to access this resource"
+    NotFoundError:
+      description: Resource Not Found
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 404
+            error: "Not Found"
+            message: "Resource is not found"
+    ConflictError:
+      description: Resource Conflicts
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 409
+            error: "Conflict"
+            message: "Request conflicts with an already existing resource"
+    GoneError:
+      description: Resource Gone or Expired
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 410
+            error: "Gone"
+            message: "The resource has expired"
+    InternalServerError:
+      description: Internal Server Error
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 500
+            error: "Internal server error"
+            message: "The server encountered an error processing your request"
   examples:
+    NonprofitRedCross:
+      summary: American Red Cross
+      value:
+        id: "021cf6aa-cb91-4b92-ae03-82a211cc8328"
+        name: "American Red Cross"
+        ein: "530196605"
+        createdAt: "2021-07-10 15:00:00.000"
+        updatedAt: "2021-07-11 15:34:00.000"
+        hasPaymentMethod: true
+        billingUser: "cus_billing_user_789"
+    ConnectOutput:
+      summary: Simple connect output
+      value:
+        id: "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55"
+        name: "website"
+        apiKey: "test_98235982835"
+        subscriptionId: "default"
+        active: true
+        createdAt: "2021-07-10 15:00:00.000"
+        updatedAt: "2021-07-11 15:34:00.000"
+        createdBy: "user123"
+        metadata:
+          tag1: "value1"
     GrantOutput:
       summary: Simple grant output
-      value: |-
-        {
-          "id": "1e60800e-849b-43d1-870e-57afc8d75473",
-          "userFriendlyId": "chariot-12345",
-          "workflowSessionId": "cfe09e64-6a74-4dab-a565-361185a6f248",
-          "fundId": "daf-id",
-          "createdAt": "2021-08-10 15:00:00.000",
-          "updatedAt": "2021-08-11 15:34:00.000",
-          "amount": 15000,
-          "status": "Initiated",
-          "feeAmount": 465,
-          "coveredFees": false
-        }
+      value:
+        id: "1e60800e-849b-43d1-870e-57afc8d75473"
+        userFriendlyId: "chariot-12345"
+        workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+        fundId: "daf-id"
+        createdAt: "2021-08-10 15:00:00.000"
+        updatedAt: "2021-08-11 15:34:00.000"
+        amount: 15000
+        status: "Initiated"
+        feeAmount: 465
+        coveredFees: false
     DafOutput:
-      summary: Simple DAF output
-      value: |-
-        {
-          "id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
-          "orgName": "National Philanthropic Trust",
-          "address": "123 Main St.",
-          "address2": "Apt 100",
-          "city": "New York City",
-          "state": "New York",
-          "zip": "12345",
-          "supported": true,
-          "minimumGrantAmount": 500,
-          "institutionDown": false,
-        }
+      summary: NPT DAF
+      value:
+        id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        orgName: "National Philanthropic Trust"
+        address: "123 Main St."
+        address2: "Apt 100"
+        city: "New York City"
+        state: "New York"
+        zip: "12345"
+        supported: true
+        minimumGrantAmount: 25000
+        institutionDown: false

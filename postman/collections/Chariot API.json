@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "afd16126-bb2f-4f65-b9bb-720a82e5a7a2",
+		"_postman_id": "1e5dfa61-1c5c-4be9-9c61-8aff5dd160f2",
 		"name": "Chariot API",
 		"description": "The Chariot REST API. Please see https://givechariot.readme.io/reference/overview for more details.\n\nContact Support:\n Name: Chariot Development Team",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "23306205-afd16126-bb2f-4f65-b9bb-720a82e5a7a2"
+		"_uid": "23306205-1e5dfa61-1c5c-4be9-9c61-8aff5dd160f2"
 	},
 	"item": [
 		{
@@ -15,11 +15,31 @@
 					"item": [
 						{
 							"name": "Create Connect",
-							"id": "0d5636de-606f-4489-859b-b09a77a936c7",
+							"id": "133b60ac-00e9-4dac-8ba0-a111c468bb6d",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "scope",
+											"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+											"type": "string"
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "string"
+										}
+									]
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -33,7 +53,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"commodo dolore quis\",\n  \"metadata\": {\n    \"fugiat_7\": \"incididunt\"\n  }\n}",
+									"raw": "{\n  \"name\": \"in\",\n  \"metadata\": {\n    \"occaecat24\": \"officia\"\n  }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -41,7 +61,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/v1/connects?nonprofit=dolore adipisicing in aute",
+									"raw": "{{baseUrl}}/v1/connects?nonprofit=urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -52,16 +72,16 @@
 									"query": [
 										{
 											"key": "nonprofit",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique identifier (ID) for the nonprofit.\nThis can be found by calling the /v1/nonprofit/{ein} API endpoint."
+											"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
+											"description": "(Required) The unique identifier (ID) for the nonprofit.\nThe format should be a v4 UUID according to RFC 4122.\nThis can be found by calling the /v1/nonprofit/{ein} API endpoint."
 										}
 									]
 								},
-								"description": "Get or create a Connect object. Only one Connect object can be created per Nonprofit-Subscription pair. If one already exists, this will return a 200 status code with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property."
+								"description": "Get or create a Connect object. Only one Connect object can be created per Nonprofit-Subscription pair. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property."
 							},
 							"response": [
 								{
-									"id": "7e442870-6dc5-4b77-a2e8-81f8f6dbf004",
+									"id": "333f021c-78d8-4fef-8c45-eafdd2fd8a22",
 									"name": "the existing Connect object",
 									"originalRequest": {
 										"method": "POST",
@@ -73,7 +93,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -84,7 +104,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -111,10 +131,10 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"sint119\": \"<string>\",\n    \"ipsumd\": \"<string>\",\n    \"veniam_4\": \"<string>\"\n  }\n}"
+									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"anim_9e\": \"<string>\",\n    \"mollita9a\": \"<string>\",\n    \"dolore_905\": \"<string>\"\n  }\n}"
 								},
 								{
-									"id": "bc314f9c-a2cc-4301-9e76-d330b31b8e34",
+									"id": "e9b26c5b-670a-4e3e-8bd1-141a39e4c4b0",
 									"name": "the created connect object",
 									"originalRequest": {
 										"method": "POST",
@@ -126,7 +146,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -137,7 +157,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -164,11 +184,11 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"sint119\": \"<string>\",\n    \"ipsumd\": \"<string>\",\n    \"veniam_4\": \"<string>\"\n  }\n}"
+									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"anim_9e\": \"<string>\",\n    \"mollita9a\": \"<string>\",\n    \"dolore_905\": \"<string>\"\n  }\n}"
 								},
 								{
-									"id": "820a53b1-0a2a-49ad-a594-f883c1cc4887",
-									"name": "The error response",
+									"id": "3685759d-a19c-44f3-8b3c-894b420691ef",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -179,7 +199,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -190,7 +210,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -214,8 +234,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "2409d751-a3ab-40cc-8a99-c96aa167929b",
-									"name": "The error response",
+									"id": "e014ec5e-df99-4482-9d58-86faef75be51",
+									"name": "Access denied",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -226,7 +246,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -237,7 +257,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -261,8 +281,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "921782a6-3b7f-47a5-a4b9-b18e9bb0f83f",
-									"name": "The error response",
+									"id": "5eca0006-2747-4b33-af16-3897e8047121",
+									"name": "Resource Not Found",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -273,7 +293,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -284,7 +304,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -308,8 +328,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "f6f37df8-f6d3-436e-8e6e-acc0814c548e",
-									"name": "The error response",
+									"id": "42347eea-33ed-4b17-804c-292b3f2d4ac0",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -320,7 +340,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/v1/connects?nonprofit=<string>",
+											"raw": "{{baseUrl}}/v1/connects?nonprofit=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -331,7 +351,7 @@
 											"query": [
 												{
 													"key": "nonprofit",
-													"value": "<string>"
+													"value": "<uuid>"
 												}
 											]
 										}
@@ -358,11 +378,31 @@
 						},
 						{
 							"name": "Get Connect",
-							"id": "1e855b54-1338-4f83-9eb7-0e700e8f32ed",
+							"id": "0e4dac12-360a-438a-972f-f3f559ee4ae1",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "scope",
+											"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+											"type": "string"
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [
 									{
@@ -383,7 +423,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "dolore adipisicing in aute",
+											"value": "commodo sit",
 											"description": "(Required) the unique id of the connect"
 										}
 									]
@@ -392,7 +432,7 @@
 							},
 							"response": [
 								{
-									"id": "7bbe0435-0b80-44fa-8e00-a9c38a789374",
+									"id": "52708289-99c3-4b43-8589-8b4f6150bb46",
 									"name": "OK",
 									"originalRequest": {
 										"method": "GET",
@@ -416,7 +456,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "commodo sit",
 													"description": "(Required) the unique id of the connect"
 												}
 											]
@@ -438,11 +478,11 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"sint119\": \"<string>\",\n    \"ipsumd\": \"<string>\",\n    \"veniam_4\": \"<string>\"\n  }\n}"
+									"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"apiKey\": \"<string>\",\n  \"subscriptionId\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"createdBy\": \"<string>\",\n  \"archived\": \"<boolean>\",\n  \"metadata\": {\n    \"anim_9e\": \"<string>\",\n    \"mollita9a\": \"<string>\",\n    \"dolore_905\": \"<string>\"\n  }\n}"
 								},
 								{
-									"id": "458ae92f-89a4-4b8f-91ad-ee7e167be7ab",
-									"name": "The error response",
+									"id": "7b0cc82f-b9bb-4d01-90ff-6497eb7c5bd7",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -465,7 +505,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "commodo sit",
 													"description": "(Required) the unique id of the connect"
 												}
 											]
@@ -490,8 +530,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "318b6c3b-cfa6-4511-a678-72a7a44ecdd7",
-									"name": "The error response",
+									"id": "8e3d853b-3bd7-410b-ad64-1c0ff9befba2",
+									"name": "Access denied",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -514,7 +554,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "commodo sit",
 													"description": "(Required) the unique id of the connect"
 												}
 											]
@@ -539,8 +579,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "4e0daf1a-f3ee-421b-9559-899239fcabb5",
-									"name": "The error response",
+									"id": "570336ce-b7bf-410d-a1cd-7a2bc3c9e9ad",
+									"name": "Resource Not Found",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -563,7 +603,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "commodo sit",
 													"description": "(Required) the unique id of the connect"
 												}
 											]
@@ -588,8 +628,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "418c141e-2a46-4e83-90ce-756a0373645a",
-									"name": "The error response",
+									"id": "33026584-d103-4ec7-a405-5113dc700141",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -612,7 +652,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "commodo sit",
 													"description": "(Required) the unique id of the connect"
 												}
 											]
@@ -639,18 +679,38 @@
 							]
 						}
 					],
-					"id": "278f67a8-0463-4cc8-8f11-53e2bbe8816d"
+					"id": "10d7cccc-c850-4a2d-ab28-4bff0d856234"
 				},
 				{
 					"name": "grants",
 					"item": [
 						{
 							"name": "List Grants",
-							"id": "53f58027-a86c-456b-b274-d08a589754f7",
+							"id": "57a813fa-8312-4d53-90d6-c01563ac7992",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "scope",
+											"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+											"type": "string"
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [
 									{
@@ -659,7 +719,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/grants?pageLimit=10&pageToken=dolore adipisicing in aute",
+									"raw": "{{baseUrl}}/v1/grants?pageLimit=10&pageToken=commodo sit",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -675,7 +735,7 @@
 										},
 										{
 											"key": "pageToken",
-											"value": "dolore adipisicing in aute",
+											"value": "commodo sit",
 											"description": "A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response."
 										}
 									]
@@ -684,7 +744,7 @@
 							},
 							"response": [
 								{
-									"id": "dda67596-575d-4ac1-8367-79d68968cbb7",
+									"id": "25c73a2c-4c14-406c-a5b8-11c297692753",
 									"name": "The response for Grants.list",
 									"originalRequest": {
 										"method": "GET",
@@ -732,11 +792,11 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"results\": [\n    {\n      \"id\": \"<uuid>\",\n      \"userFriendlyId\": \"<string>\",\n      \"fundId\": \"<string>\",\n      \"amount\": \"<double>\",\n      \"feeAmount\": \"<integer>\",\n      \"workflowSessionId\": \"<uuid>\",\n      \"externalGrantId\": \"<string>\",\n      \"createdAt\": \"<dateTime>\",\n      \"updatedAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"coveredFees\": \"<boolean>\",\n      \"metadata\": {\n        \"consequatb3\": \"<string>\"\n      },\n      \"firstName\": \"<string>\",\n      \"lastName\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"email\": \"<string>\",\n      \"note\": \"<string>\",\n      \"statuses\": [\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        },\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        }\n      ]\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"userFriendlyId\": \"<string>\",\n      \"fundId\": \"<string>\",\n      \"amount\": \"<double>\",\n      \"feeAmount\": \"<integer>\",\n      \"workflowSessionId\": \"<uuid>\",\n      \"externalGrantId\": \"<string>\",\n      \"createdAt\": \"<dateTime>\",\n      \"updatedAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"coveredFees\": \"<boolean>\",\n      \"metadata\": {\n        \"voluptate_7a2\": \"<string>\",\n        \"ex_a\": \"<string>\"\n      },\n      \"firstName\": \"<string>\",\n      \"lastName\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"email\": \"<string>\",\n      \"note\": \"<string>\",\n      \"statuses\": [\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        },\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        }\n      ]\n    }\n  ],\n  \"nextPageToken\": \"<string>\"\n}"
+									"body": "{\n  \"results\": [\n    {\n      \"id\": \"<uuid>\",\n      \"userFriendlyId\": \"<string>\",\n      \"fundId\": \"<string>\",\n      \"amount\": \"<double>\",\n      \"workflowSessionId\": \"<uuid>\",\n      \"externalGrantId\": \"<string>\",\n      \"createdAt\": \"<dateTime>\",\n      \"updatedAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"coveredFees\": \"<boolean>\",\n      \"feeAmount\": \"<integer>\",\n      \"metadata\": {\n        \"anim5\": \"<string>\"\n      },\n      \"firstName\": \"<string>\",\n      \"lastName\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"email\": \"<string>\",\n      \"note\": \"<string>\",\n      \"statuses\": [\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        },\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        }\n      ]\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"userFriendlyId\": \"<string>\",\n      \"fundId\": \"<string>\",\n      \"amount\": \"<double>\",\n      \"workflowSessionId\": \"<uuid>\",\n      \"externalGrantId\": \"<string>\",\n      \"createdAt\": \"<dateTime>\",\n      \"updatedAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"coveredFees\": \"<boolean>\",\n      \"feeAmount\": \"<integer>\",\n      \"metadata\": {\n        \"velit_b\": \"<string>\"\n      },\n      \"firstName\": \"<string>\",\n      \"lastName\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"email\": \"<string>\",\n      \"note\": \"<string>\",\n      \"statuses\": [\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        },\n        {\n          \"id\": \"<uuid>\",\n          \"createdAt\": \"<dateTime>\",\n          \"status\": \"<string>\",\n          \"comment\": \"<string>\"\n        }\n      ]\n    }\n  ],\n  \"nextPageToken\": \"<string>\"\n}"
 								},
 								{
-									"id": "638b1515-3b6f-4d19-8fb7-78481b95e7c0",
-									"name": "The error response",
+									"id": "719744aa-6356-4209-965b-f54f46736dfc",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -786,8 +846,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "9e87f05d-654b-4a7b-abc9-8dd6ad9d5f86",
-									"name": "The error response",
+									"id": "cd03f062-ed3a-4d28-b521-72426dabdce5",
+									"name": "Access denied",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -837,59 +897,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "b104e50a-0f11-4f0a-8d6b-3b8e598991f7",
-									"name": "The error response",
-									"originalRequest": {
-										"method": "GET",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: oauth2",
-												"key": "Authorization",
-												"value": "<token>"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/v1/grants?pageLimit=10&pageToken=<string>",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"v1",
-												"grants"
-											],
-											"query": [
-												{
-													"key": "pageLimit",
-													"value": "10"
-												},
-												{
-													"key": "pageToken",
-													"value": "<string>"
-												}
-											]
-										}
-									},
-									"status": "Not Found",
-									"code": 404,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"disabled": false,
-											"description": "The unique identifier for the request",
-											"key": "X-Request-Id",
-											"value": "<string>"
-										},
-										{
-											"key": "Content-Type",
-											"value": "application/json"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
-								},
-								{
-									"id": "4cc93c4d-fdf6-4094-9c7d-b625500cc3f4",
-									"name": "The error response",
+									"id": "9bc7023b-7bb0-4870-8bef-b21655bd4caa",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -942,11 +951,31 @@
 						},
 						{
 							"name": "Create Grant",
-							"id": "c2656e81-6eea-43ea-b8ac-a930bf4fdbc2",
+							"id": "b97d6fc9-efef-4246-80eb-bf4ab860d0bc",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "scope",
+											"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+											"type": "string"
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "string"
+										}
+									]
+								},
 								"method": "POST",
 								"header": [
 									{
@@ -960,7 +989,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"workflowSessionId\": \"nisi dolor ipsum\",\n  \"amount\": 80032789.62541375,\n  \"coverFees\": false,\n  \"donor\": {\n    \"firstName\": \"enim id non velit\",\n    \"lastName\": \"consequat reprehenderit\",\n    \"email\": \"laborum ali\",\n    \"phone\": \"eu amet\"\n  }\n}",
+									"raw": "{\n  \"workflowSessionId\": \"esse cillum fugiat voluptate\",\n  \"amount\": -77410343.67052162,\n  \"coverFees\": false,\n  \"donor\": {\n    \"firstName\": \"esse ad\",\n    \"lastName\": \"dolore consectetur\",\n    \"email\": \"officia sit adipisicing ea\",\n    \"phone\": \"pariatur in\"\n  }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -977,11 +1006,11 @@
 										"grants"
 									]
 								},
-								"description": "Create a grant from a workflowSession. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request. The grant must be captured within 5 minutes of authorization. A grant can only be captured once so any duplicate requests will fail."
+								"description": "Create a grant from a workflow session. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request.\nThe grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.\nA grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict."
 							},
 							"response": [
 								{
-									"id": "2313c697-ef01-410f-8679-7f6f4bbc1dad",
+									"id": "7dc3b910-f378-4248-a61b-b9d09fe35303",
 									"name": "Created grant",
 									"originalRequest": {
 										"method": "POST",
@@ -1025,11 +1054,11 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": \"<uuid>\",\n  \"userFriendlyId\": \"<string>\",\n  \"fundId\": \"<string>\",\n  \"amount\": \"<double>\",\n  \"feeAmount\": \"<integer>\",\n  \"workflowSessionId\": \"<uuid>\",\n  \"externalGrantId\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"status\": \"<string>\",\n  \"coveredFees\": \"<boolean>\",\n  \"metadata\": {\n    \"minim0\": \"<string>\",\n    \"incididunt8\": \"<string>\",\n    \"sede\": \"<string>\",\n    \"mollit_7_\": \"<string>\"\n  },\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"email\": \"<string>\",\n  \"note\": \"<string>\",\n  \"statuses\": [\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}"
+									"body": "{\n  \"id\": \"<uuid>\",\n  \"userFriendlyId\": \"<string>\",\n  \"fundId\": \"<string>\",\n  \"amount\": \"<double>\",\n  \"workflowSessionId\": \"<uuid>\",\n  \"externalGrantId\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"status\": \"<string>\",\n  \"coveredFees\": \"<boolean>\",\n  \"feeAmount\": \"<integer>\",\n  \"metadata\": {\n    \"deserunt4\": \"<string>\",\n    \"ex82\": \"<string>\"\n  },\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"email\": \"<string>\",\n  \"note\": \"<string>\",\n  \"statuses\": [\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}"
 								},
 								{
-									"id": "afb6d98c-5678-4fd9-b52b-7a8730cb1bcc",
-									"name": "The error response",
+									"id": "a7996c55-ec99-4c5b-9ea0-7ac3cfaf4046",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1069,8 +1098,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "8ca68b97-d07f-46d0-b560-8fc16532f2ed",
-									"name": "The error response",
+									"id": "8eaa252e-d97f-44ae-b536-c282349a2811",
+									"name": "Access denied",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1110,8 +1139,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "40585c66-299c-41d4-8585-baa7e3f830f4",
-									"name": "The error response",
+									"id": "eb79ac1d-c892-4473-8c6d-817bbd604199",
+									"name": "Resource Not Found",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1151,8 +1180,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "03f140f0-441a-4241-b695-34c278083ab1",
-									"name": "The error response",
+									"id": "dba48c5a-293f-42a0-95dc-42c5f844cd13",
+									"name": "Resource Conflicts",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1192,8 +1221,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "d4a96f9c-a184-47b2-9882-ce25a3656125",
-									"name": "The error response",
+									"id": "c342320d-903b-42fa-a90b-3cdc964ab1d8",
+									"name": "Resource Gone or Expired",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1233,8 +1262,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "18b2d532-e87e-4737-b9a1-91637d49e802",
-									"name": "The error response",
+									"id": "20167b6a-09a6-43d3-8c9f-bad3be2f59c7",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "POST",
 										"header": [
@@ -1277,11 +1306,31 @@
 						},
 						{
 							"name": "Get Grant",
-							"id": "d84b0e3c-208a-4593-967b-8053d762ca8f",
+							"id": "c9d2e341-3c38-47ee-8bb2-2da05cdef9b7",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "scope",
+											"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+											"type": "string"
+										},
+										{
+											"key": "accessTokenUrl",
+											"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+											"type": "string"
+										},
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [
 									{
@@ -1302,16 +1351,16 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "dolore adipisicing in aute",
+											"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 											"description": "(Required) the unique id of the grant"
 										}
 									]
 								},
-								"description": "Get a grant object generated by Chariot Connect"
+								"description": "Get a grant object generated by Chariot Connect. \nIf the grant does not exist, returns a 404 status.\nIf the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status."
 							},
 							"response": [
 								{
-									"id": "004a5b22-86a4-4343-b5de-1a68fb76a7f0",
+									"id": "bf4d77ca-4800-4718-9745-5f4acc458fe5",
 									"name": "OK",
 									"originalRequest": {
 										"method": "GET",
@@ -1335,7 +1384,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the grant"
 												}
 											]
@@ -1357,11 +1406,11 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n  \"id\": \"<uuid>\",\n  \"userFriendlyId\": \"<string>\",\n  \"fundId\": \"<string>\",\n  \"amount\": \"<double>\",\n  \"feeAmount\": \"<integer>\",\n  \"workflowSessionId\": \"<uuid>\",\n  \"externalGrantId\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"status\": \"<string>\",\n  \"coveredFees\": \"<boolean>\",\n  \"metadata\": {\n    \"minim0\": \"<string>\",\n    \"incididunt8\": \"<string>\",\n    \"sede\": \"<string>\",\n    \"mollit_7_\": \"<string>\"\n  },\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"email\": \"<string>\",\n  \"note\": \"<string>\",\n  \"statuses\": [\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}"
+									"body": "{\n  \"id\": \"<uuid>\",\n  \"userFriendlyId\": \"<string>\",\n  \"fundId\": \"<string>\",\n  \"amount\": \"<double>\",\n  \"workflowSessionId\": \"<uuid>\",\n  \"externalGrantId\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\",\n  \"status\": \"<string>\",\n  \"coveredFees\": \"<boolean>\",\n  \"feeAmount\": \"<integer>\",\n  \"metadata\": {\n    \"deserunt4\": \"<string>\",\n    \"ex82\": \"<string>\"\n  },\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"phone\": \"<string>\",\n  \"email\": \"<string>\",\n  \"note\": \"<string>\",\n  \"statuses\": [\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"id\": \"<uuid>\",\n      \"createdAt\": \"<dateTime>\",\n      \"status\": \"<string>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}"
 								},
 								{
-									"id": "7fce49ff-1e2d-4ca1-ba1a-1f600282fe42",
-									"name": "The error response",
+									"id": "48c7a6db-1ec9-46a2-9c01-dbd9869e76fd",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -1384,7 +1433,56 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
+													"description": "(Required) the unique id of the grant"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"disabled": false,
+											"description": "The unique identifier for the request",
+											"key": "X-Request-Id",
+											"value": "<string>"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
+								},
+								{
+									"id": "790bdd8f-7e58-4769-b77d-b843d1a8b18a",
+									"name": "Access denied",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": "Added as a part of security scheme: oauth2",
+												"key": "Authorization",
+												"value": "<token>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/v1/grants/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v1",
+												"grants",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the grant"
 												}
 											]
@@ -1409,8 +1507,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "7378dcad-3448-437a-a1e1-97cef41f7f52",
-									"name": "The error response",
+									"id": "e792b4f8-06c1-4503-866b-aab1793f2870",
+									"name": "Resource Not Found",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -1433,7 +1531,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the grant"
 												}
 											]
@@ -1458,8 +1556,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "bfeaed72-6c13-4b42-8d51-488cc5ea2ca6",
-									"name": "The error response",
+									"id": "a787fd2a-da6a-41cd-9ea3-8d652b7141e7",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "GET",
 										"header": [
@@ -1482,7 +1580,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the grant"
 												}
 											]
@@ -1509,14 +1607,14 @@
 							]
 						}
 					],
-					"id": "73b2d6df-840f-403a-82a3-89a03f20034b"
+					"id": "87d21216-4e5a-479b-a593-87b461c80431"
 				},
 				{
 					"name": "dafs",
 					"item": [
 						{
 							"name": "List DAFs",
-							"id": "ddd81324-225d-4273-b620-53a353ac373d",
+							"id": "3828e9ba-5217-4238-80e6-db53e425fc5e",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1529,7 +1627,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/dafs?pageLimit=10&pageToken=dolore adipisicing in aute",
+									"raw": "{{baseUrl}}/v1/dafs?pageLimit=10&pageToken=commodo sit",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1545,16 +1643,16 @@
 										},
 										{
 											"key": "pageToken",
-											"value": "dolore adipisicing in aute",
+											"value": "commodo sit",
 											"description": "A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls."
 										}
 									]
 								},
-								"description": "List all DAFs"
+								"description": "List all DAF objects. This API allows for paginating over many results."
 							},
 							"response": [
 								{
-									"id": "c7cb2771-ec3f-443a-b8f5-4566349031e3",
+									"id": "e913b490-8eae-4e9c-ae1c-cf70564c536c",
 									"name": "The response for Dafs.list",
 									"originalRequest": {
 										"method": "GET",
@@ -1599,8 +1697,8 @@
 									"body": "{\n  \"results\": [\n    {\n      \"id\": \"<string>\",\n      \"orgName\": \"<string>\",\n      \"address\": \"<string>\",\n      \"address2\": \"<string>\",\n      \"city\": \"<string>\",\n      \"state\": \"<string>\",\n      \"zip\": \"<string>\",\n      \"supported\": \"<boolean>\",\n      \"minimumGrantAmount\": \"<number>\",\n      \"institutionDown\": \"<boolean>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"orgName\": \"<string>\",\n      \"address\": \"<string>\",\n      \"address2\": \"<string>\",\n      \"city\": \"<string>\",\n      \"state\": \"<string>\",\n      \"zip\": \"<string>\",\n      \"supported\": \"<boolean>\",\n      \"minimumGrantAmount\": \"<number>\",\n      \"institutionDown\": \"<boolean>\"\n    }\n  ],\n  \"nextPageToken\": \"<string>\"\n}"
 								},
 								{
-									"id": "6ec48f29-7f32-418c-b404-08b09c537186",
-									"name": "The error response",
+									"id": "9fa184e9-571e-4183-b362-4e1b50b307f8",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
@@ -1644,53 +1742,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "369a8746-8260-4c94-adfb-7f1c4540155e",
-									"name": "The error response",
-									"originalRequest": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/v1/dafs?pageLimit=10&pageToken=<string>",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"v1",
-												"dafs"
-											],
-											"query": [
-												{
-													"key": "pageLimit",
-													"value": "10"
-												},
-												{
-													"key": "pageToken",
-													"value": "<string>"
-												}
-											]
-										}
-									},
-									"status": "Forbidden",
-									"code": 403,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"disabled": false,
-											"description": "The unique identifier for the request",
-											"key": "X-Request-Id",
-											"value": "<string>"
-										},
-										{
-											"key": "Content-Type",
-											"value": "application/json"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
-								},
-								{
-									"id": "33551e6e-65f6-492e-bc56-713259b02738",
-									"name": "The error response",
+									"id": "00465198-948e-4227-9af4-5cbcc2af505d",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
@@ -1736,8 +1789,8 @@
 							]
 						},
 						{
-							"name": "Get DAF",
-							"id": "16089c70-8060-4e04-86d0-d3bb4f8cfd04",
+							"name": "Get DAF object",
+							"id": "78b20ca8-d1b9-41a0-9a0c-55918e5e8860",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1762,16 +1815,16 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "dolore adipisicing in aute",
+											"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 											"description": "(Required) the unique id of the DAF"
 										}
 									]
 								},
-								"description": "Get a DAF by id"
+								"description": "Get a DAF object by id. \nIf the DAF does not exist, returns a 404 status.\nIf the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status."
 							},
 							"response": [
 								{
-									"id": "3f870545-bd58-4a78-89ce-db0cfea02a42",
+									"id": "07ea1622-a56a-494c-a795-dc19caa4afd1",
 									"name": "OK",
 									"originalRequest": {
 										"method": "GET",
@@ -1789,7 +1842,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the DAF"
 												}
 											]
@@ -1814,8 +1867,8 @@
 									"body": "{\n  \"id\": \"<string>\",\n  \"orgName\": \"<string>\",\n  \"address\": \"<string>\",\n  \"address2\": \"<string>\",\n  \"city\": \"<string>\",\n  \"state\": \"<string>\",\n  \"zip\": \"<string>\",\n  \"supported\": \"<boolean>\",\n  \"minimumGrantAmount\": \"<number>\",\n  \"institutionDown\": \"<boolean>\"\n}"
 								},
 								{
-									"id": "f05ff0d4-7fb1-401f-954a-9abdd13117df",
-									"name": "The error response",
+									"id": "6420320c-e07b-41d0-8358-8786013240a7",
+									"name": "The request is invalid or contains invalid parameters",
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
@@ -1832,7 +1885,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the DAF"
 												}
 											]
@@ -1857,8 +1910,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "3cc41a0b-1b06-4a99-a4f7-8716447824ea",
-									"name": "The error response",
+									"id": "9d39f99a-3a3a-436c-8d91-ef90f9368bba",
+									"name": "Resource Not Found",
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
@@ -1875,50 +1928,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
-													"description": "(Required) the unique id of the DAF"
-												}
-											]
-										}
-									},
-									"status": "Forbidden",
-									"code": 403,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"disabled": false,
-											"description": "The unique identifier for the request",
-											"key": "X-Request-Id",
-											"value": "<string>"
-										},
-										{
-											"key": "Content-Type",
-											"value": "application/json"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
-								},
-								{
-									"id": "6f19c564-432b-4555-a9d7-d10229abe905",
-									"name": "The error response",
-									"originalRequest": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/v1/dafs/:id",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"v1",
-												"dafs",
-												":id"
-											],
-											"variable": [
-												{
-													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the DAF"
 												}
 											]
@@ -1943,8 +1953,8 @@
 									"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 								},
 								{
-									"id": "8fe2e964-e0ff-4d3a-838b-07eaf5f510af",
-									"name": "The error response",
+									"id": "36bad4be-3fff-41e6-9e6a-e08c34cf0ba3",
+									"name": "Internal Server Error",
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
@@ -1961,7 +1971,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "dolore adipisicing in aute",
+													"value": "urn:uuid:1b448909-3236-35df-5eed-868c3bc5ce11",
 													"description": "(Required) the unique id of the DAF"
 												}
 											]
@@ -1988,15 +1998,35 @@
 							]
 						}
 					],
-					"id": "52be52aa-4c11-40d8-ba2f-f96679344855"
+					"id": "16dd9301-e523-4b37-acfe-8d15701308bd"
 				},
 				{
 					"name": "Get nonprofit by EIN",
-					"id": "879250e5-9d47-47e5-80be-89936d640eae",
+					"id": "9b1116f7-7911-47eb-a1e5-ea9c3abcc6fb",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "scope",
+									"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -2017,16 +2047,16 @@
 							"variable": [
 								{
 									"key": "ein",
-									"value": "dolore adipisicing in aute",
-									"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+									"value": "commodo sit",
+									"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 								}
 							]
 						},
-						"description": "Get a nonprofit organization by EIN.\nIf the nonprofit does not exist, this returns 404 Not Found. \nIn the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint. \nThe EIN should be exactly 9 digits and should not contain any special characters such as dashes."
+						"description": "Get a nonprofit organization by EIN.\nIf the nonprofit does not exist, this returns 404 Not Found status. \nIn the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint. \nThe EIN should be exactly 9 digits and should not contain any special characters such as dashes."
 					},
 					"response": [
 						{
-							"id": "e8cae464-ee21-4696-80c0-df3c93204824",
+							"id": "e0c76913-6711-47de-819f-6fafe3e6167b",
 							"name": "OK",
 							"originalRequest": {
 								"method": "GET",
@@ -2050,8 +2080,8 @@
 									"variable": [
 										{
 											"key": "ein",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+											"value": "commodo sit",
+											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 										}
 									]
 								}
@@ -2075,8 +2105,8 @@
 							"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"ein\": \"<string>\",\n  \"preferredName\": \"<string>\",\n  \"address\": {\n    \"city\": \"<string>\",\n    \"country\": \"<string>\",\n    \"line1\": \"<string>\",\n    \"postalCode\": \"<string>\",\n    \"state\": \"<string>\",\n    \"line2\": \"<string>\"\n  },\n  \"billingUser\": \"<string>\",\n  \"hasPaymentMethod\": \"<boolean>\",\n  \"picture\": \"<string>\",\n  \"website\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n}"
 						},
 						{
-							"id": "d07d3d31-4d07-4133-87e2-ded6e1458a8f",
-							"name": "The error response",
+							"id": "300e8073-6a68-4bca-9742-0beb7cdc4f2c",
+							"name": "The request is invalid or contains invalid parameters",
 							"originalRequest": {
 								"method": "GET",
 								"header": [
@@ -2099,8 +2129,8 @@
 									"variable": [
 										{
 											"key": "ein",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+											"value": "commodo sit",
+											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 										}
 									]
 								}
@@ -2124,8 +2154,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "6562eebc-1c6b-4b89-9bd5-d0b0613f7358",
-							"name": "The error response",
+							"id": "26a1bb7e-df23-4449-afbc-df6cc88e817e",
+							"name": "Access denied",
 							"originalRequest": {
 								"method": "GET",
 								"header": [
@@ -2148,8 +2178,8 @@
 									"variable": [
 										{
 											"key": "ein",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+											"value": "commodo sit",
+											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 										}
 									]
 								}
@@ -2173,8 +2203,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "0e037613-01f0-4d97-805e-442efa7a3377",
-							"name": "The error response",
+							"id": "135a1e89-ecf7-4d71-84d9-4eeea53f6cc3",
+							"name": "Resource Not Found",
 							"originalRequest": {
 								"method": "GET",
 								"header": [
@@ -2197,8 +2227,8 @@
 									"variable": [
 										{
 											"key": "ein",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+											"value": "commodo sit",
+											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 										}
 									]
 								}
@@ -2222,8 +2252,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "84b52c8e-1ff7-4bfe-bbee-e751948d6538",
-							"name": "The error response",
+							"id": "26b99f10-071e-48d6-b0a5-3b4f1b740e04",
+							"name": "Internal Server Error",
 							"originalRequest": {
 								"method": "GET",
 								"header": [
@@ -2246,8 +2276,8 @@
 									"variable": [
 										{
 											"key": "ein",
-											"value": "dolore adipisicing in aute",
-											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. This value should be exactly 9 digits and should not contain any special characters such as dashes."
+											"value": "commodo sit",
+											"description": "(Required) The unique federal employer identification number (EIN) of the nonprofit. \nThis value should be exactly 9 digits and should not contain any special characters such as dashes."
 										}
 									]
 								}
@@ -2274,11 +2304,31 @@
 				},
 				{
 					"name": "Create nonprofit",
-					"id": "4f4af83d-d89c-422e-9c67-07270793e7d4",
+					"id": "19fb957a-f74f-4cc9-ada0-ab406260e07f",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "scope",
+									"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "https://dev-w2rfcsc8.us.auth0.com/oauth/token",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -2292,7 +2342,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"ein\": \"043567500\",\n  \"user\": {\n    \"email\": \"ben.give@co.com\",\n    \"phone\": \"9127772424\",\n    \"firstName\": \"Ben\",\n    \"lastName\": \"Give\"\n  },\n  \"preferredName\": \"nulla exercitation Duis Ut\",\n  \"picture\": \"aute elit\",\n  \"website\": \"anim\"\n}",
+							"raw": "{\n  \"ein\": \"043567500\",\n  \"user\": {\n    \"email\": \"ben.give@co.com\",\n    \"phone\": \"9127772424\",\n    \"firstName\": \"Ben\",\n    \"lastName\": \"Give\"\n  },\n  \"preferredName\": \"veniam Ut quis ut\",\n  \"picture\": \"sunt deserunt tempor\",\n  \"website\": \"in\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2309,11 +2359,11 @@
 								"nonprofits"
 							]
 						},
-						"description": "Create a nonprofit organization account.\nIf a nonprofit does not already exist for the EIN, this will return\na 201 Created status.\nIf a nonprofit already exists for the given EIN on the system, \nthis will return a 409 Conflict error.\nWhen integrating this API, it's useful to either handle the 409 error or\nmake a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it."
+						"description": "Create a nonprofit organization account.\nThis is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.\nIf a nonprofit does not already exist for the EIN, this will return a 201 Created status.\nIf a nonprofit already exists for the given EIN on the system, this will return a 409 Conflict status.\nWhen integrating this API, it's useful to either handle the 409 error or make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it."
 					},
 					"response": [
 						{
-							"id": "21d408c9-ab2a-4386-90fc-6abddb1ca99c",
+							"id": "8e45f986-137c-42c6-91fb-257c0179c8a0",
 							"name": "Created",
 							"originalRequest": {
 								"method": "POST",
@@ -2354,8 +2404,8 @@
 							"body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"ein\": \"<string>\",\n  \"preferredName\": \"<string>\",\n  \"address\": {\n    \"city\": \"<string>\",\n    \"country\": \"<string>\",\n    \"line1\": \"<string>\",\n    \"postalCode\": \"<string>\",\n    \"state\": \"<string>\",\n    \"line2\": \"<string>\"\n  },\n  \"billingUser\": \"<string>\",\n  \"hasPaymentMethod\": \"<boolean>\",\n  \"picture\": \"<string>\",\n  \"website\": \"<string>\",\n  \"createdAt\": \"<dateTime>\",\n  \"updatedAt\": \"<dateTime>\"\n}"
 						},
 						{
-							"id": "3747bd1d-6d3f-4f18-8134-bb2eb78f234d",
-							"name": "The error response",
+							"id": "5cdc8c1e-f43a-4990-b211-4fdc4fc7e646",
+							"name": "The request is invalid or contains invalid parameters",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -2395,8 +2445,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "1e7d7c3c-7d38-44c0-b543-427e2dd97cc8",
-							"name": "The error response",
+							"id": "735f3c00-c35c-4784-9de6-d61ae115c036",
+							"name": "Access denied",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -2436,8 +2486,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "e98110e2-82c9-401b-8f94-90642d40d81a",
-							"name": "The error response",
+							"id": "2e916489-4f99-4526-904b-e76bd9c2f820",
+							"name": "Resource Conflicts",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -2477,8 +2527,8 @@
 							"body": "{\n  \"timestamp\": \"<string>\",\n  \"code\": \"<number>\",\n  \"error\": \"<string>\",\n  \"message\": \"<string>\"\n}"
 						},
 						{
-							"id": "8e5a7ee2-17bf-421e-a3d2-54bf783ec1ce",
-							"name": "The error response",
+							"id": "7dc431a8-55ce-4bd1-9281-1d25f11491c1",
+							"name": "Internal Server Error",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -2520,86 +2570,12 @@
 					]
 				}
 			],
-			"id": "9db70976-e465-4472-92b9-97a467c8376c"
-		}
-	],
-	"auth": {
-		"type": "oauth2",
-		"oauth2": [
-			{
-				"key": "audience",
-				"value": {
-					"eb177f0d-206f-45e5-8309-dd74bd947889": "https://api.givechariot.com"
-				},
-				"type": "any"
-			},
-			{
-				"key": "clientSecret",
-				"value": "{{oauthClientSecret}}",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
-				"value": "{{oauthClientId}}",
-				"type": "string"
-			},
-			{
-				"key": "accessTokenUrl",
-				"value": "{{oauthTokenUrl}}",
-				"type": "string"
-			},
-			{
-				"key": "challengeAlgorithm",
-				"value": "S256",
-				"type": "string"
-			},
-			{
-				"key": "scope",
-				"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
-				"type": "string"
-			},
-			{
-				"key": "grant_type",
-				"value": "client_credentials",
-				"type": "string"
-			},
-			{
-				"key": "addTokenTo",
-				"value": "header",
-				"type": "string"
-			},
-			{
-				"key": "client_authentication",
-				"value": "header",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "0488008a-0fc3-4b3f-92cc-dde8ddaa3fd3",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "fff34b69-6b66-45bb-aae6-ffe65c6f6d20",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"id": "ef229ff7-ef09-4174-a636-6030c0f3d21b"
 		}
 	],
 	"variable": [
 		{
-			"id": "e4350c3b-933c-4e8c-9643-ceef4bdb1540",
+			"id": "32d74dc9-75f1-47b6-9f59-460f6bf3d387",
 			"key": "baseUrl",
 			"value": "https://sandboxapi.givechariot.com",
 			"type": "string"
