@@ -354,7 +354,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Daf"
-              example:
+              examples:
                 Npt:
                   $ref: "#/components/examples/DafOutput"
         '400':
@@ -937,7 +937,7 @@ components:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
                     userFriendlyId: "chariot-12345"
-                    sessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
@@ -951,7 +951,7 @@ components:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
                     userFriendlyId: "chariot-12345"
-                    sessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
