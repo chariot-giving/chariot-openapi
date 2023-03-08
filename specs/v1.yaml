@@ -212,7 +212,6 @@ paths:
             type: string
       responses:
         '200':
-          description: Grant list
           $ref: "#/components/responses/ListGrantsResponse"
         '400':
           $ref: "#/components/responses/BadRequestError"
@@ -553,7 +552,7 @@ components:
           type: string
           readOnly: true
           description: The zipcode for the address.
-          example: 12345
+          example: "12345"
         supported:
           type: boolean
           readOnly: true
@@ -576,7 +575,7 @@ components:
       required:
         - id
         - userFriendlyId
-        - sessionId
+        - workflowSessionId
         - fundId
         - amount
       properties:
@@ -1084,13 +1083,13 @@ components:
     DafOutput:
       summary: NPT DAF
       value:
-        "id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-        "orgName": "National Philanthropic Trust"
-        "address": "123 Main St."
-        "address2": "Apt 100"
-        "city": "New York City"
-        "state": "New York"
-        "zip": "12345"
-        "supported": true
-        "minimumGrantAmount": 500
-        "institutionDown": false
+        id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        orgName: "National Philanthropic Trust"
+        address: "123 Main St."
+        address2: "Apt 100"
+        city: "New York City"
+        state: "New York"
+        zip: "12345"
+        supported: true
+        minimumGrantAmount: 25000
+        institutionDown: false
