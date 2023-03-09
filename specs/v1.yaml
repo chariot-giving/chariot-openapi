@@ -6,6 +6,7 @@ info:
   contact:
     name: Chariot Development Team
     url: https://www.givechariot.com/contact
+    email: partners@givechariot.com
   termsOfService: https://www.givechariot.com/legal-nonprofit
 servers:
   - url: https://sandboxapi.givechariot.com
@@ -34,6 +35,7 @@ paths:
           schema:
             type: string
           required: true
+          example: "530196605"
       responses:
         '200':
           description: "OK"
@@ -49,6 +51,8 @@ paths:
                   $ref: "#/components/examples/NonprofitRedCross"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '404':
@@ -76,12 +80,16 @@ paths:
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
+            Location:
+              $ref: "#/components/headers/Location"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Nonprofit"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '409':
@@ -108,6 +116,7 @@ paths:
             type: string
             format: uuid
           required: true
+          example: 6af3f58e-7a80-4997-8259-770c033d7d3a
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -117,10 +126,7 @@ paths:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
             Location:
-              description: The URI reference of the existing connect object.
-              schema:
-                type: string
-                format: uri
+              $ref: "#/components/headers/Location"
           content:
             application/json:
               schema:
@@ -134,10 +140,7 @@ paths:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
             Location:
-              description: The URI reference of the created connect object.
-              schema:
-                type: string
-                format: uri
+              $ref: "#/components/headers/Location"
           content:
             application/json:
               schema:
@@ -147,6 +150,8 @@ paths:
                   $ref: "#/components/examples/ConnectOutput"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '404':
@@ -169,6 +174,7 @@ paths:
           schema:
             type: string
           required: true
+          example: live_xJd0lUrvpDkzeGBWZbuI2wbvEdM
       responses:
         '200':
           description: "OK"
@@ -181,6 +187,8 @@ paths:
                 $ref: "#/components/schemas/Connect"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '404':
@@ -215,6 +223,8 @@ paths:
           $ref: "#/components/responses/ListGrantsResponse"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '500':
@@ -252,6 +262,8 @@ paths:
                   $ref: "#/components/examples/GrantOutput"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '404':
@@ -282,6 +294,7 @@ paths:
             type: string
             format: uuid
           required: true
+          example: 10229488-08d2-4629-b70c-a2f4f4d25344
       responses:
         '200':
           description: OK
@@ -297,6 +310,8 @@ paths:
                   $ref: "#/components/examples/GrantOutput"
         '400':
           $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
         '404':
@@ -344,6 +359,7 @@ paths:
             type: string
             format: uuid
           required: true
+          example: f9e28217-e0f7-4a54-9764-d664ffb10722
       responses:
         '200':
           description: "OK"
@@ -370,7 +386,7 @@ components:
       description: This API uses OAuth2 with the client credentials flow.
       flows:
         clientCredentials:
-          tokenUrl: https://dev-w2rfcsc8.us.auth0.com/oauth/token
+          tokenUrl: https://login.givechariot.com/oauth/token
           scopes:
             "create:nonprofits": create a nonprofit and user
             "read:nonprofits": read all nonprofits
@@ -747,6 +763,10 @@ components:
       description: The unique identifier for the request
       schema:
         type: string
+    Location:
+      description: The URI of the created object
+      schema:
+        type: string
   requestBodies:
     GrantCaptureRequest:
       description: |-
@@ -973,6 +993,20 @@ components:
             code: 400
             error: "Bad Request"
             message: "Expected an API key to be provided in the header `x-chariot-api-key`"
+    AuthenticationError:
+      description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 401
+            error: "Unauthorized"
+            message: "Unauthorized"
     ForbiddenError:
       description: Access denied
       headers:
