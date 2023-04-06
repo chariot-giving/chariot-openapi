@@ -318,6 +318,49 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         '500':
           $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update Grant
+      description: |-
+        Update a grant object.
+        Currently, this API only support updating the status of a grant.
+        If the grant does not exist, returns a 404 status.
+        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+      operationId: update-grant
+      security:
+        - auth0:
+          - "update:grants"
+          api_key: []
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the grant
+          schema:
+            type: string
+            format: uuid
+          required: true
+          example: 759a0eb7-632e-4943-8033-b21ea897561e
+      requestBody:
+        $ref: "#/components/requestBodies/GrantUpdateRequest"
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
   /v1/dafs:
     get:
       summary: List DAFs
@@ -819,6 +862,26 @@ components:
                   phone:
                     type: string
                     description: The phone number of the donor
+    GrantUpdateRequest:
+      description: |-
+        The request to update a grant.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - workflowSessionId
+              - status
+            properties:
+              workflowSessionId:
+                type: string
+                description: |-
+                  The identifier of the Workflow Session for this Grant
+              status:
+                type: string
+                description: |-
+                  The status of the grant. Must be either 'Initiated' or 'Received'.
     CreateConnectRequest:
       description: |-
         The request to create a new Connect object for a Nonprofit.
