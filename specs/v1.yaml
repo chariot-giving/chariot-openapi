@@ -688,11 +688,14 @@ components:
         coveredFees:
           type: boolean
           description: Flag to indicate if the user opted to cover fees of the donation
+          deprecated: true
           example: true
         feeAmount:
           type: integer
           format: int32
-          description: The fee amount expressed in units of cents.
+          description: |-
+            The Chariot processing fee amount expressed in cents.
+            This is the amount that Chariot charges for the grant.
         metadata:
           type: object
           description: A map of arbitrary string keys and values to store information about the object
