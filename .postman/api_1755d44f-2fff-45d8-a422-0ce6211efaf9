@@ -9,7 +9,7 @@ id = 1755d44f-2fff-45d8-a422-0ce6211efaf9
 
 [config.relations.collections]
 rootDirectory = postman/collections
-files[] = {"id":"23306205-8e8d65ab-6ac4-48c4-83d9-a0a01f4ff9ee","path":"Chariot API.json","metaData":{}}
+files[] = {"id":"23306205-8e8d65ab-6ac4-48c4-83d9-a0a01f4ff9ee","path":"Chariot API.json","metaData":{"generateCollectionPreferences":"{\"updateCollectionSync\":true}"}}
 
 [config.relations.collections.metaData]
 
