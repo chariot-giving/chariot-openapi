@@ -2914,6 +2914,484 @@
 				}
 			],
 			"id": "983b9bf0-d705-4687-94c3-7d1d5f5ba9bd"
+		},
+		{
+			"name": "Update Grant",
+			"id": "cc0906dc-fc1b-4fd0-b05e-ea8a8cf65f29",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "scope",
+							"value": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
+							"type": "string"
+						},
+						{
+							"key": "accessTokenUrl",
+							"value": "https://login.givechariot.com/oauth/token",
+							"type": "string"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/v1/grants/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"grants",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "<uuid>"
+						}
+					]
+				},
+				"description": "Update a grant object.\nCurrently, this API only support updating the status of a grant.\nIf the grant does not exist, returns a 404 status.\nIf the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status."
+			},
+			"response": [
+				{
+					"id": "234de1cc-0a3d-44e4-9a77-aa082ed38484",
+					"name": "OK",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": ""
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"id\": \"7018f674-bf96-f51c-deb5-824515fbfcd0\",\n  \"userFriendlyId\": \"ullamco\",\n  \"workflowSessionId\": \"urn:uuid:e77268c1-1bc2-58ce-6652-8ade024bfa94\",\n  \"fundId\": \"anim do tempor magna ea\",\n  \"amount\": -83305196.51107284,\n  \"externalGrantId\": \"commodo veniam\",\n  \"createdAt\": \"1976-10-15T17:19:13.457Z\",\n  \"updatedAt\": \"2000-11-17T14:24:52.983Z\",\n  \"status\": \"cupidatat qui\",\n  \"coveredFees\": true,\n  \"feeAmount\": -73015342,\n  \"metadata\": {\n    \"pariatura\": \"enim velit\",\n    \"ipsum_4fb\": \"qui eu est c\"\n  },\n  \"firstName\": \"in tempor cupidatat sit commodo\",\n  \"lastName\": \"sit Duis\",\n  \"phone\": \"incididunt culpa id\",\n  \"email\": \"ad consectetur oc\",\n  \"note\": \"anim ad dolor\",\n  \"statuses\": [\n    {\n      \"id\": \"5234a6bf-4ffb-944d-940d-df21b871523b\",\n      \"createdAt\": \"2007-05-18T07:53:22.633Z\",\n      \"status\": \"non consequat esse sed\",\n      \"comment\": \"amet\"\n    },\n    {\n      \"id\": \"733f9329-5e75-d6ec-eb7f-262550759475\",\n      \"createdAt\": \"1970-11-17T20:30:54.623Z\",\n      \"status\": \"dolor ipsum ex quis nulla\",\n      \"comment\": \"nisi laboris tempor\"\n    },\n    {\n      \"id\": \"urn:uuid:008cb22b-014b-34f1-2558-a0cb73237e95\",\n      \"createdAt\": \"2002-08-13T04:59:56.566Z\",\n      \"status\": \"dolore tempor\",\n      \"comment\": \"et laboris sit id\"\n    },\n    {\n      \"id\": \"urn:uuid:9e7b08a0-4fe8-0f0a-8d79-76c9939e7359\",\n      \"createdAt\": \"1951-10-31T23:22:35.641Z\",\n      \"status\": \"anim voluptate\",\n      \"comment\": \"in voluptate occ\"\n    },\n    {\n      \"id\": \"urn:uuid:c03a1ffd-095d-04f1-0e35-9d293ec659d5\",\n      \"createdAt\": \"1978-07-19T14:14:03.306Z\",\n      \"status\": \"cupidatat esse\",\n      \"comment\": \"mollit dolore\"\n    }\n  ]\n}"
+				},
+				{
+					"id": "9c9f5deb-eec8-49e1-ac22-4510184d5c6b",
+					"name": "The request is invalid or contains invalid parameters",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "The unique identifier for the request",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": "<string>"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"timestamp\": \"quis nulla incididunt fugiat\",\n  \"code\": -50649292.649629585,\n  \"error\": \"nostrud \",\n  \"message\": \"sint\"\n}"
+				},
+				{
+					"id": "1dd05949-5c5a-4a2c-82b3-7d44468800fe",
+					"name": "Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "The unique identifier for the request",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": "<string>"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"timestamp\": \"quis nulla incididunt fugiat\",\n  \"code\": -50649292.649629585,\n  \"error\": \"nostrud \",\n  \"message\": \"sint\"\n}"
+				},
+				{
+					"id": "a6b93b5f-87ea-4294-88d3-c3aae67132d7",
+					"name": "Access denied",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "The unique identifier for the request",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": "<string>"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"timestamp\": \"quis nulla incididunt fugiat\",\n  \"code\": -50649292.649629585,\n  \"error\": \"nostrud \",\n  \"message\": \"sint\"\n}"
+				},
+				{
+					"id": "30168f40-9925-4c3a-9e89-ad393ba8d896",
+					"name": "Resource Not Found",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "The unique identifier for the request",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": "<string>"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"timestamp\": \"quis nulla incididunt fugiat\",\n  \"code\": -50649292.649629585,\n  \"error\": \"nostrud \",\n  \"message\": \"sint\"\n}"
+				},
+				{
+					"id": "0a5909ed-869b-4c0c-b7de-97ddf83641cd",
+					"name": "Internal Server Error",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "Added as a part of security scheme: oauth2",
+								"key": "Authorization",
+								"value": "<token>"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/grants/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"grants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "Text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"disabled": false,
+							"description": {
+								"content": "The unique identifier for the request",
+								"type": "text/plain"
+							},
+							"key": "X-Request-Id",
+							"value": "<string>"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"timestamp\": \"quis nulla incididunt fugiat\",\n  \"code\": -50649292.649629585,\n  \"error\": \"nostrud \",\n  \"message\": \"sint\"\n}"
+				}
+			]
 		}
 	],
 	"variable": [
