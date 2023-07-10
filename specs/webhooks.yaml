@@ -1,0 +1,915 @@
+openapi: 3.0.0
+info:
+  title: Chariot Webhooks API
+  version: 'v1'
+  description: The Chariot Webhooks REST API. Please see https://givechariot.readme.io/reference/webhooks for more details.
+  contact:
+    name: Chariot Development Team
+    url: https://www.givechariot.com/contact
+    email: partners@givechariot.com
+  termsOfService: https://www.givechariot.com/legal-nonprofit
+servers:
+  - url: https://sandboxapi.givechariot.com
+    description: Sandbox
+  - url: https://api.givechariot.com
+    description: Production
+paths:
+  /v1/webhooks:
+    get:
+      summary: List Webhooks
+      description: List all Webhooks
+      operationId: list-webhooks
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: pageLimit
+          in: query
+          description: the number of results to return; defaults to 10, max is 100
+          schema:
+            type: integer
+            default: 10
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls.
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: "#/components/responses/ListWebhooksResponse"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create Webhook
+      description: |-
+        Creates a Webhook and registers the provided URL endpoint to receive
+        HTTP POST webhook messages. The endpoint for the Webhook should be able
+        to accept HTTP POST requests. Please see our Webhooks documentation
+        for more details.
+      operationId: create-webhook
+      security:
+        - auth0:
+          - "create:webhooks"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateWebhookRequest"
+      responses:
+        '201':
+          description: the created webhook object
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+              example:
+                id: "test_de5a2e7d-c960-4eaa-8bd2-e8d2cc5b1a55"
+                url: "https://api.acme.com/webhooks/chariot"
+                description: "Webhook for grant success"
+                eventTypes:
+                  - "grant.succeeded"
+                disabled: false
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                metadata:
+                  tag1: "value1"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}:
+    get:
+      summary: Get Webhook
+      description: Get a webhook
+      operationId: get-webhook
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update Webhook
+      description: Update a Webhook
+      operationId: update-webhook
+      security:
+        - auth0:
+          - "update:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Webhook"
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete Webhook
+      description: Delete a Webhook
+      operationId: delete-webhook
+      security:
+        - auth0:
+          - "delete:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/test:
+    post:
+      summary: Test Webhook
+      description: Execute a test on a webhook. This will send a test payload to the webhook's endpoint
+      operationId: test-webhook
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventType:
+                  type: string
+                  description: |-
+                    The event type to trigger
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/messages:
+    get:
+      summary: List Webhook Messages
+      description: |-
+        Lists the Webhook messages for a specific webhook. A message refers to the
+        payload sent to your webhook endpoint whenever a specific event occurs.
+        Each message represents a discrete event-triggered notification that
+        contains relevant data related to the event.
+      operationId: list-webhook-messages
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+        - name: pageLimit
+          in: query
+          description: the number of results to return; defaults to 10, max is 100
+          schema:
+            type: integer
+            default: 10
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls.
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: "#/components/responses/ListWebhookMessagesResponse"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/messages/{messageId}:
+    get:
+      summary: Get Webhook Message
+      description: |-
+        Gets a specific Webhook Message for a specific webhook. A message refers to the
+        payload sent to your webhook endpoint whenever a specific event occurs.
+        Each message represents a discrete event-triggered notification that
+        contains relevant data related to the event.
+      operationId: get-webhook-message
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+        - name: messageId
+          in: path
+          description: the unique id of the webhook message
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookMessage"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/messages/{messageId}/resend:
+    post:
+      summary: Resend Webhook Message
+      description: |-
+        Resend webhook request for a specific webhook. This does not resend the
+        request to all of the original webhooks.
+      operationId: resend-message
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+        - name: messageId
+          in: path
+          description: the unique id of the webhook message
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/messages/{messageId}/attempts:
+    get:
+      summary: List Webhook Message Attempts
+      description: Lists the attempts to send a request for a specific message for a specific webhook
+      operationId: list-message-attempts
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+        - name: messageId
+          in: path
+          description: the unique id of the webhook message
+          schema:
+            type: string
+          required: true
+        - name: pageLimit
+          in: query
+          description: the number of results to return; defaults to 10, max is 100
+          schema:
+            type: integer
+            default: 10
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls.
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: "#/components/responses/ListWebhookMessageAttemptsResponse"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /v1/webhooks/{id}/messages/{messageId}/attempts/{attemptId}:
+    get:
+      summary: Get Webhook Message Attempt
+      description: Gets a Webhook Message Attempt for a specific message and webhook.
+      operationId: get-webhook-message-attempt
+      security:
+        - auth0:
+          - "read:webhooks"
+      parameters:
+        - name: id
+          in: path
+          description: the unique id of the webhook
+          schema:
+            type: string
+          required: true
+        - name: messageId
+          in: path
+          description: the unique id of the webhook message
+          schema:
+            type: string
+          required: true
+        - name: attemptId
+          in: path
+          description: the unique id of the webhook message attempt
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookMessageAttempt"
+        '400':
+          $ref: "#/components/responses/BadRequestError"
+        '401':
+          $ref: "#/components/responses/AuthenticationError"
+        '403':
+          $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+components:
+  securitySchemes:
+    auth0:
+      type: oauth2
+      description: This API uses OAuth2 with the client credentials flow.
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.givechariot.com/oauth/token
+          scopes:
+            "read:webhooks": read all webhooks associated with a subscription
+            "create:webhooks": create webhooks for a subscritpion
+            "update:webhooks": update all webhooks associated with a subscription
+            "delete:webhooks": delete webhooks associated with a subscription
+    api_key:
+      type: apiKey
+      in: header
+      name: x-chariot-api-key
+  schemas:
+    Webhook:
+      type: object
+      description: |-
+        A Webhook represents an HTTP endpoint that will receive webhook messages
+        (HTTP requests) on certain events. Webhooks are a way for web applications
+        to communicate with each other in real-time. They enable one application
+        to send automatic notifications or data updates to another application
+        when a specific event occurs.
+      required:
+        - id
+        - url
+        - eventTypes
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this object.
+          example: my-subscription-id
+        url:
+          type: string
+          readOnly: true
+          description: The URL to send requests to.
+          example: https://api.acme.com/webhooks/chariot
+        description:
+          type: string
+          readOnly: true
+          description: The description of the webhook.
+          example: Webhook for grant success
+        eventTypes:
+          type: array
+          readOnly: true
+          description: The events that this webhook will receive.
+          items:
+            type: string
+          example:
+            - "grant.succeeded"
+        disabled:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the webhook is disabled
+          example: false
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object.
+          additionalProperties:
+            type: string
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    WebhookMessage:
+      type: object
+      description: |-
+        A WebhookMessage represents a single message that is triggered by a specific event.
+        Note that a message is specific to a single endpoint.
+      required:
+        - id
+        - eventType
+        - timestamp
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this object.
+          example: my-subcription-id
+        eventType:
+          type: string
+          readOnly: true
+          description: The event type of the message.
+          example: grant.succeeded
+        payload:
+          type: object
+          readOnly: true
+          description: The payload of the webhook message. This is only returned when getting a single message, but not when getting a list of messages.
+          example:
+            id: "grantId"
+        timestamp:
+          type: string
+          readOnly: true
+          description: The timestamp that the webhook message was sent.
+          example: "2019-08-24T14:15:22Z"
+        status:
+          type: string
+          readOnly: true
+          description: The status of this message. Indicates if it has succeeded, failed, is pending or is currently sending.
+          example: "success"
+        nextAttempt:
+          type: string
+          readOnly: true
+          description: The timestamp of the next attempt for this message.
+          example: "2019-08-24T14:15:22Z"
+    WebhookMessageAttempt:
+      type: object
+      description: |-
+        A WebhookMessageAttempt object represents an single attempt to send a webhook
+        message to a specific endpoint
+      required:
+        - id
+        - response
+        - responseStatusCode
+        - status
+        - timestamp
+        - url
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this object.
+          example: atmpt_2RqbUykGEn9kyjeo9x2lpyMgX1H
+        responseBody:
+          type: string
+          readOnly: true
+          description: The response body of the endpoint request.
+          example: "{ result: 'success' }"
+        responseStatusCode:
+          type: number
+          readOnly: true
+          description: The response status code of the endpoint request
+          example: 200
+        status:
+          type: string
+          readOnly: true
+          description: The status of this message attempt.
+          example: "success"
+        timestamp:
+          type: string
+          readOnly: true
+          description: The timestamp that the webhook message attempt was sent.
+          example: "2019-08-24T14:15:22Z"
+        url:
+          type: string
+          readOnly: true
+          description: The URL that the request was sent to.
+          example: https://api.acme.com/webhooks/chariot
+    Error:
+      type: object
+      required:
+        - timestamp
+        - code
+        - error
+        - message
+      properties:
+        timestamp:
+          type: string
+          description: time when the error was reported. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        code:
+          type: number
+          description: HTTP status code of the error
+          example: 400
+        error:
+          type: string
+          description: A short name of the error; usually the HTTP status.
+          example: Bad Request
+        message:
+          type: string
+          description: The description of the error
+          example: Expected an API key to be provided in the header `x-chariot-api-key`
+  headers:
+    X-Request-Id:
+      description: The unique identifier for the request
+      schema:
+        type: string
+    Location:
+      description: The URI of the created object
+      schema:
+        type: string
+  requestBodies:
+    CreateWebhookRequest:
+      description: |-
+        The request to create a webhook.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - url
+              - eventTypes
+            properties:
+              url:
+                type: string
+                description: The URL to send requests to.
+                example: https://api.acme.com/webhooks/chariot
+              description:
+                type: string
+                description: The description of the webhook.
+                example: Webhook for grant success
+              eventTypes:
+                type: array
+                description: The events that this webhook will receive.
+                items:
+                  type: string
+                example:
+                  - "grant.succeeded"
+              disabled:
+                type: boolean
+                description: |-
+                  A flag to indicate if the webhook is disabled
+                example: false
+              metadata:
+                type: object
+                description: A map of arbitrary string keys and values to store information about the object.
+                additionalProperties:
+                  type: string
+  responses:
+    ListWebhooksResponse:
+      description: The response for Webhooks.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Webhook"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "ep_2RnZDRO3HKwjATNe2J7n1Kf0Aox"
+                    url: "https://api.acme.com/chariot/webhooks"
+                    description: "Chariot webhook for my api"
+                    eventTypes:
+                      - "grant.succeeded"
+                    metadata:
+                      tag1: "value1"
+                    disabled: false
+                    createdAt: "2020-07-10 15:00:00.000"
+                    updatedAt: "2020-07-10 15:00:00.000"
+                nextPageToken: "ep_2RnZEJaiKHHTMoat2Hlm8JZuZpl"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "ep_2RnZDRO3HKwjATNe2J7n1Kf0Aox"
+                    url: "https://api.acme.com/chariot/webhooks"
+                    description: "Chariot webhook for my api"
+                    eventTypes:
+                      - "grant.succeeded"
+                    metadata:
+                      tag1: "value1"
+                    disabled: false
+                    createdAt: "2020-07-10 15:00:00.000"
+                    updatedAt: "2020-07-10 15:00:00.000"
+    ListWebhookMessagesResponse:
+      description: The response for Webhook Message list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebhookMessage"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "msg_2RnwjT4INrOwiDpvBrECM7pfyB4"
+                    eventType: "grant.succeeded"
+                    timestamp: "2019-08-24T14:15:22Z"
+                    status: "success"
+                    nextAttempt: "2019-08-24T14:15:22Z"
+                nextPageToken: "msg_2RnvvAJ6K5HdsI4cri0hLlSVepq"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "msg_2RnwjT4INrOwiDpvBrECM7pfyB4"
+                    eventType: "grant.succeeded"
+                    timestamp: "2019-08-24T14:15:22Z"
+                    status: "success"
+                    nextAttempt: "2019-08-24T14:15:22Z"
+    ListWebhookMessageAttemptsResponse:
+      description: The response for Webhook Message Attempts list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebhookMessageAttempt"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "atmpt_2RqQAJF9VyLpAeK4VeRamIIr6Nh"
+                    response: ""
+                    responseStatusCode: 200
+                    status: "success"
+                    timestamp: "2019-08-24T14:15:22Z"
+                    url: "https://api.acme.com/chariot/webhooks"
+                nextPageToken: "atmpt_2RqQ5LMeDvTpBiCtJjOlvAMBldu"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "atmpt_2RqQAJF9VyLpAeK4VeRamIIr6Nh"
+                    response: ""
+                    responseStatusCode: 200
+                    status: "success"
+                    timestamp: "2019-08-24T14:15:22Z"
+                    url: "https://api.acme.com/chariot/webhooks"
+    BadRequestError:
+      description: The request is invalid or contains invalid parameters
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 400
+            error: "Bad Request"
+            message: "Expected an API key to be provided in the header `x-chariot-api-key`"
+    AuthenticationError:
+      description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 401
+            error: "Unauthorized"
+            message: "Unauthorized"
+    ForbiddenError:
+      description: Access denied
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 403
+            error: "Forbidden"
+            message: "User is not allowed to access this resource"
+    NotFoundError:
+      description: Resource Not Found
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 404
+            error: "Not Found"
+            message: "Resource is not found"
+    ConflictError:
+      description: Resource Conflicts
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 409
+            error: "Conflict"
+            message: "Request conflicts with an already existing resource"
+    GoneError:
+      description: Resource Gone or Expired
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 410
+            error: "Gone"
+            message: "The resource has expired"
+    InternalServerError:
+      description: Internal Server Error
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 500
+            error: "Internal server error"
+            message: "The server encountered an error processing your request"
