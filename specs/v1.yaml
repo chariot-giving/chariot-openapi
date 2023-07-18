@@ -425,7 +425,7 @@ paths:
   /v1/webhooks:
     get:
       summary: List Webhooks
-      description: List Webhooks for a subscription
+      description: List all Webhooks
       operationId: list-webhooks
       security:
         - auth0:
@@ -457,7 +457,10 @@ paths:
     post:
       summary: Create Webhook
       description: |-
-        Create a Webhook object.
+        Creates a Webhook and registers the provided URL endpoint to receive
+        HTTP POST webhook messages. The endpoint for the Webhook should be able
+        to accept HTTP POST requests. Please see our Webhooks documentation
+        for more details.
       operationId: create-webhook
       security:
         - auth0:
@@ -540,7 +543,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: the unique id of the nonprofit
+          description: the unique id of the webhook
           schema:
             type: string
           required: true
@@ -580,7 +583,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: the unique id of the nonprofit
+          description: the unique id of the webhook
           schema:
             type: string
           required: true
@@ -603,7 +606,7 @@ paths:
   /v1/webhooks/{id}/test:
     post:
       summary: Test Webhook
-      description: Execute a test on a webhook. This will send a test payload to the webhook endpoint
+      description: Execute a test on a webhook. This will send a test payload to the webhook's endpoint
       operationId: test-webhook
       security:
         - auth0:
@@ -649,7 +652,11 @@ paths:
   /v1/webhooks/{id}/messages:
     get:
       summary: List Webhook Messages
-      description: Lists the Webhook messages for a specific endpoint.
+      description: |-
+        Lists the Webhook messages for a specific webhook. A message refers to the
+        payload sent to your webhook endpoint whenever a specific event occurs.
+        Each message represents a discrete event-triggered notification that
+        contains relevant data related to the event.
       operationId: list-webhook-messages
       security:
         - auth0:
@@ -689,7 +696,11 @@ paths:
   /v1/webhooks/{id}/messages/{messageId}:
     get:
       summary: Get Webhook Message
-      description: Gets a Webhook Message for a specific endpoint.
+      description: |-
+        Gets a specific Webhook Message for a specific webhook. A message refers to the
+        payload sent to your webhook endpoint whenever a specific event occurs.
+        Each message represents a discrete event-triggered notification that
+        contains relevant data related to the event.
       operationId: get-webhook-message
       security:
         - auth0:
@@ -730,7 +741,9 @@ paths:
   /v1/webhooks/{id}/messages/{messageId}/resend:
     post:
       summary: Resend Webhook Message
-      description: Resend webhook request for a specific endpoint. This does not resend the request to all of the original endpoints.
+      description: |-
+        Resend webhook request for a specific webhook. This does not resend the
+        request to all of the original webhooks.
       operationId: resend-message
       security:
         - auth0:
@@ -813,7 +826,7 @@ paths:
   /v1/webhooks/{id}/messages/{messageId}/attempts/{attemptId}:
     get:
       summary: Get Webhook Message Attempt
-      description: Gets a Webhook Message Attempt for a specific message and endpoint.
+      description: Gets a Webhook Message Attempt for a specific message and webhook.
       operationId: get-webhook-message-attempt
       security:
         - auth0:
@@ -1168,8 +1181,11 @@ components:
     Webhook:
       type: object
       description: |-
-        A Webhook object represents an endpoint that will receive requests on certain events
-        depending on the configuration of this object.
+        A Webhook represents an HTTP endpoint that will receive webhook messages
+        (HTTP requests) on certain events. Webhooks are a way for web applications
+        to communicate with each other in real-time. They enable one application
+        to send automatic notifications or data updates to another application
+        when a specific event occurs.
       required:
         - id
         - url
@@ -1279,7 +1295,7 @@ components:
           type: string
           readOnly: true
           description: The unique identifier for this object.
-          example: my-subscription-id
+          example: atmpt_2RqbUykGEn9kyjeo9x2lpyMgX1H
         responseBody:
           type: string
           readOnly: true
