@@ -1,0 +1,16 @@
+imports:
+  root: __package__.yml
+name: api
+display-name: Chariot API
+error-discrimination:
+  strategy: status-code
+auth: bearer
+auth-schemes:
+  api_key:
+    header: x-chariot-api-key
+    name: apiKey
+    type: string
+default-environment: Sandbox
+environments:
+  Sandbox: https://sandboxapi.givechariot.com
+  Production: https://api.givechariot.com
