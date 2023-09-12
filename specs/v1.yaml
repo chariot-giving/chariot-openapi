@@ -820,16 +820,7 @@ components:
     GrantCaptureRequest:
       description: |-
         The request to create and submit a grant. This is useful to capture a grant intent associated with Connect workflow session.
-        The request should specify either the grant amount or coverFees property.
-        Note that the coverFees property is deprecated and will be removed in a future version.
-        If the amount is specified, this will be the grant amount submitted for processing by the DAF.
-        In this case, any fees collected by Chariot will be calculated based on this provided amount.
-        If amount is specified, the coverFees property will have no effect.
-        If amount is not specified, the grant amount that will be submitted for processing will depend
-        on if the coverFees property is set to true. When coverFees is true, the grant amount that
-        will be submitted for processing will be the grant amount + fee amount from the workflow session.
-        Otherwise, if coverFees is false or not specified, the grant amount that was previously
-        authorized through the Chariot workflow session will be submitted for processing.
+        The request should specify the grant amount. This is the amount submitted for processing by the DAF.
       required: true
       content:
         application/json:
@@ -837,7 +828,8 @@ components:
             type:
               object
             required:
-              - connectId
+              - workflowSessionId
+              - amount
             properties:
               workflowSessionId:
                 type: string
@@ -848,11 +840,6 @@ components:
                   The final grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
-              coverFees:
-                type: boolean
-                deprecated: true
-                description: |-
-                  A flag to indicate if the user opted to cover the fees. Defaults to false if not specified.
               donor:
                 type: object
                 properties:
