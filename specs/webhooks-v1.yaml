@@ -230,7 +230,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Webhook"
+                $ref: "#/components/schemas/WebhookMessage"
         '400':
           $ref: "#/components/responses/BadRequestError"
         '401':
