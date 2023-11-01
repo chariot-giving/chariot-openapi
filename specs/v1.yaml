@@ -474,14 +474,6 @@ components:
           example: "043567500"
         address:
           $ref: "#/components/schemas/Address"
-        billingUser:
-          type: string
-          description: ID of the user who manages the billing for the nonprofit.
-          example: str_billing_user_789
-        hasPaymentMethod:
-          type: boolean
-          description: Flag to indicate if the nonprofit has a payment method on file
-          example: true
         picture:
           type: string
           description: The URI of the nonprofit's logo
