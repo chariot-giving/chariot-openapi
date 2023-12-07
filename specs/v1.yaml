@@ -99,6 +99,8 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         '409':
           $ref: "#/components/responses/ConflictError"
+        '412':
+          $ref: "#/components/responses/PreconditionFailedError"
         '500':
           $ref: "#/components/responses/InternalServerError"
   /v1/connects:
@@ -1101,6 +1103,20 @@ components:
             code: 410
             error: "Gone"
             message: "The resource has expired"
+    PreconditionFailedError:
+      description: Precondition Failed
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 412
+            error: "Precondition Failed"
+            message: "The requested action has a failed precondition"
     InternalServerError:
       description: Internal Server Error
       headers:
