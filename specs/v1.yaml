@@ -671,7 +671,7 @@ components:
         userFriendlyId:
           type: string
           readOnly: true
-          description: The user friendly identifier for the Grant
+          description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
           example: chariot-1234455
         workflowSessionId:
           type: string
@@ -795,7 +795,7 @@ components:
         userFriendlyId:
           type: string
           readOnly: true
-          description: The user friendly identifier for the Grant
+          description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
           example: chariot-1234455
         workflowSessionId:
           type: string
@@ -1108,7 +1108,7 @@ components:
               value:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    userFriendlyId: "chariot-12345"
+                    userFriendlyId: "12345"
                     workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
@@ -1141,7 +1141,7 @@ components:
               value:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    userFriendlyId: "chariot-12345"
+                    userFriendlyId: "12345"
                     workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
@@ -1152,7 +1152,7 @@ components:
               value:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    userFriendlyId: "chariot-12345"
+                    userFriendlyId: "12345"
                     workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
@@ -1298,7 +1298,7 @@ components:
       summary: Simple grant output
       value:
         id: "1e60800e-849b-43d1-870e-57afc8d75473"
-        userFriendlyId: "chariot-12345"
+        userFriendlyId: "12345"
         workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
         fundId: "daf-id"
         createdAt: "2021-08-10 15:00:00.000"
@@ -1309,7 +1309,7 @@ components:
       summary: Simple unintegrated grant output
       value:
         id: "1e60800e-849b-43d1-870e-57afc8d75473"
-        userFriendlyId: "chariot-12345"
+        userFriendlyId: "12345"
         workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
         fundId: "daf-id"
         createdAt: "2021-08-10 15:00:00.000"
