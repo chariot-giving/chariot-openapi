@@ -446,13 +446,57 @@ components:
           type: string
           description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
           example: "043567500"
-        organizations:
+        suborganizations:
           type: array
           items:
-            $ref: '#/components/schemas/Nonprofit'
+            $ref: '#/components/schemas/Suborganizations'
           description: |-
             The list of suborganizations associated with this nonprofit.
             Suborganizations are useful for nonprofits that have multiple chapters or locations.
+        address:
+          $ref: "#/components/schemas/Address"
+        picture:
+          type: string
+          description: The URI of the nonprofit's logo
+        website:
+          type: string
+          description: The URL of the nonprofit's website
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    Suborganizations:
+      type: object
+      description: |-
+        A suborganization represents an organization that is under the umbrella of a parent EIN.
+        This is common for nonprofits that have multiple chapters or locations or operate as a fiscal sponsor.
+      required:
+        - id
+        - name
+        - ein
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+        name:
+          type: string
+          description: The registered name of the suborganization
+          example: Leading for Children
+        preferredName:
+          type: string
+          description: |-
+            The preferred name of the suborganization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
+          example: LfC
         address:
           $ref: "#/components/schemas/Address"
         picture:
@@ -725,14 +769,7 @@ components:
             - Rejected
             - Canceled
           description: |
-              The status of the examples:
-              - `Initiated`: The payment has been successfully received by the DAF provider.
-              - `Processing`: The payment is in transit from the DAF provider to the DAFpay Network.
-              - `Received`: The payment has been successfully received by the DAFpay Network and is available for payout to the end nonprofit.
-              - `Paid`: The payment has been successfully paid out to the end nonprofit.
-              - `Voided`: The payment was voided because the nonprofit did not deposit DAFPay Network's payment.
-              - `Rejected`: The payment was declined because it failed compliance checks, such as no longer being in good standing with the IRS.
-              - `Canceled`: The payment was never received by DAFpay Network from the DAF Provider.
+              The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
           example: Initiated
         comment:
           type: string
