@@ -20,6 +20,7 @@ paths:
       description: |-
         Get a nonprofit organization by EIN.
         If the nonprofit does not exist, this returns 404 Not Found status.
+        If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
         In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint.
         The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
       operationId: get-nonprofit-by-ein
@@ -65,7 +66,6 @@ paths:
       description: |-
         Create a nonprofit organization account.
         This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
-        If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
         If a nonprofit does not exist in GuideStar.org, this will return a 404 Not Found status.
         If a nonprofit already exists for the given EIN on the system, this will return a 409 Conflict status.
         If a nonprofit exists in GuideStar.org but they are not pub78 verified, this will return a 412 Precondition Failed status.
@@ -123,6 +123,17 @@ paths:
             format: uuid
           required: true
           example: 6af3f58e-7a80-4997-8259-770c033d7d3a
+        - name: suborganization
+          in: query
+          description: |-
+            The unique identifier (ID) for the suborganization within the nonprofit.
+            The format should be a v4 UUID according to RFC 4122.
+            This can be found by calling the /v1/nonprofit/{ein} API endpoint.
+          schema:
+            type: string
+            format: uuid
+          required: false
+          example: c00d1aa2-09ab-4e76-8461-7ac34578a70c
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -435,6 +446,13 @@ components:
           type: string
           description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
           example: "043567500"
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nonprofit'
+          description: |-
+            The list of suborganizations associated with this nonprofit.
+            Suborganizations are useful for nonprofits that have multiple chapters or locations.
         address:
           $ref: "#/components/schemas/Address"
         picture:
@@ -519,6 +537,10 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
+        isDafpayNetwork:
+          type: boolean
+          description: A flag to indicate if grants made via this Connect will be processed through the DAFpay Network.
+          example: true
     Daf:
       type: object
       description: |-
@@ -694,12 +716,106 @@ components:
           example: "2020-07-10 15:00:00.000"
         status:
           type: string
-          description: The status of the grant
-          example: Received
+          enum:
+            - Initiated
+            - Processing
+            - Received
+            - Paid
+            - Voided
+            - Rejected
+            - Canceled
+          description: |
+              The status of the examples:
+              - `Initiated`: The payment has been successfully received by the DAF provider.
+              - `Processing`: The payment is in transit from the DAF provider to the DAFpay Network.
+              - `Received`: The payment has been successfully received by the DAFpay Network and is available for payout to the end nonprofit.
+              - `Paid`: The payment has been successfully paid out to the end nonprofit.
+              - `Voided`: The payment was voided because the nonprofit did not deposit DAFPay Network's payment.
+              - `Rejected`: The payment was declined because it failed compliance checks, such as no longer being in good standing with the IRS.
+              - `Canceled`: The payment was never received by DAFpay Network from the DAF Provider.
+          example: Initiated
         comment:
           type: string
           description: The user comment for the update
           example: The grant has been received by the nonprofit
+    UnintegratedGrant:
+      type: object
+      description: |-
+        A Unintegrated Grant represents grant requested through an unintegrated provider. These are sometimes refered to as "Manual Grants".
+      required:
+        - id
+        - userFriendlyId
+        - workflowSessionId
+        - fundId
+        - amount
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object
+          format: uuid
+          example: cfe09e64-6a74-4dab-a565-361185a6f248
+        userFriendlyId:
+          type: string
+          readOnly: true
+          description: The user friendly identifier for the Grant
+          example: chariot-1234455
+        workflowSessionId:
+          type: string
+          readOnly: true
+          description: ID of the Connect Workflow Session associated with this grant
+          format: uuid
+          example: 2d4b2a43-a5b4-4be1-ad1f-f932016ca4a6
+        fundId:
+          type: string
+          readOnly: true
+          description: ID of the donor advised fund
+          example: daf-id
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created; expressed in ISO 8601 format
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated; expressed in ISO 8601 format
+          example: "2021-07-11 15:34:00.000"
+        amount:
+          type: number
+          format: integer
+          description: The grant amount expressed in units of whole cents
+          example: 15000
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object
+          additionalProperties:
+            type: string
+        firstName:
+          type: string
+          description: The donor's first name
+          example: "Warren"
+        lastName:
+          type: string
+          description: The donor's last name
+          example: "Buffet"
+        phone:
+          type: string
+          description: The donor's phone number
+          example: "1237861020"
+        email:
+          type: string
+          description: The donor's email
+          example: "warrenBuffet@example.com"
+        address:
+          $ref: "#/components/schemas/Address"
+          description: The donor's address
+        note:
+          type: string
+          description: An note inputted by the user at submisson
+          example: "Please dedicate in memory of grandma"
     Address:
       type: object
       required:
@@ -784,6 +900,13 @@ components:
                   The final grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
+              applicationFeeAmount:
+                type: number
+                description: |-
+                  This parameter specifies the fee your platform plans to take from the grant in cents. This
+                  parameter only applies for grants made through the DAFpay Network. Before
+                  the payment is made available to the nonprofit, Chariot's fee and the applicationFeeAmount
+                  is deducted. The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
               donor:
                 type: object
                 properties:
@@ -955,6 +1078,49 @@ components:
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 20000
                     status: "Received"
+    ListUnintegratedGrantsResponse:
+      description: The response for UnintegratedGrants.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UnintegratedGrant"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    userFriendlyId: "chariot-12345"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 15000
+                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    userFriendlyId: "chariot-12345"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 20000
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
@@ -1102,6 +1268,16 @@ components:
         updatedAt: "2021-08-11 15:34:00.000"
         amount: 15000
         status: "Initiated"
+    UnintegratedGrantOutput:
+      summary: Simple unintegrated grant output
+      value:
+        id: "1e60800e-849b-43d1-870e-57afc8d75473"
+        userFriendlyId: "chariot-12345"
+        workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+        fundId: "daf-id"
+        createdAt: "2021-08-10 15:00:00.000"
+        updatedAt: "2021-08-11 15:34:00.000"
+        amount: 15000
     DafOutput:
       summary: NPT DAF
       value:
