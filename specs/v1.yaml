@@ -449,7 +449,7 @@ components:
         suborganizations:
           type: array
           items:
-            $ref: '#/components/schemas/Suborganizations'
+            $ref: '#/components/schemas/Suborganization'
           description: |-
             The list of suborganizations associated with this nonprofit.
             Suborganizations are useful for nonprofits that have multiple chapters or locations.
@@ -473,7 +473,7 @@ components:
           format: date-time
           description: Time when this object was last updated. Expressed in ISO 8601 format.
           example: "2021-07-11 15:34:00.000"
-    Suborganizations:
+    Suborganization:
       type: object
       description: |-
         A suborganization represents an organization that is under the umbrella of a parent EIN.
@@ -581,10 +581,6 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
-        isDafpayNetwork:
-          type: boolean
-          description: A flag to indicate if grants made via this Connect will be processed through the DAFpay Network.
-          example: true
     Daf:
       type: object
       description: |-
@@ -764,9 +760,6 @@ components:
             - Initiated
             - Processing
             - Received
-            - Paid
-            - Voided
-            - Rejected
             - Canceled
           description: |
               The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
@@ -944,6 +937,7 @@ components:
                   parameter only applies for grants made through the DAFpay Network. Before
                   the payment is made available to the nonprofit, Chariot's fee and the applicationFeeAmount
                   is deducted. The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
+                  If the 5% limit is exceeded, a 400 error will be returned.
               donor:
                 type: object
                 properties:
