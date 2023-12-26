@@ -66,7 +66,9 @@ paths:
         Create a nonprofit organization account.
         This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
         If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
+        If a nonprofit does not exist in GuideStar.org, this will return a 404 Not Found status.
         If a nonprofit already exists for the given EIN on the system, this will return a 409 Conflict status.
+        If a nonprofit exists in GuideStar.org but they are not pub78 verified, this will return a 412 Precondition Failed status.
         When integrating this API, it's useful to either handle the 409 error or make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it.
       operationId: create-nonprofit
       security:
@@ -92,8 +94,12 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         '403':
           $ref: "#/components/responses/ForbiddenError"
+        '404':
+          $ref: "#/components/responses/NotFoundError"
         '409':
           $ref: "#/components/responses/ConflictError"
+        '412':
+          $ref: "#/components/responses/PreconditionFailedError"
         '500':
           $ref: "#/components/responses/InternalServerError"
   /v1/connects:
@@ -1096,6 +1102,20 @@ components:
             code: 410
             error: "Gone"
             message: "The resource has expired"
+    PreconditionFailedError:
+      description: Precondition Failed
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            timestamp: "2020-07-10 15:00:00.000"
+            code: 412
+            error: "Precondition Failed"
+            message: "The requested action has a failed precondition"
     InternalServerError:
       description: Internal Server Error
       headers:
