@@ -61,11 +61,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/nonprofits:
     post:
-      deprecated: true
       summary: Create nonprofit
       description: |-
         Create a nonprofit organization account.
-        This route is deprecated, please use the GET /v1/nonprofits/{ein} route instead.
         This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
         If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
         If a nonprofit does not exist in GuideStar.org, this will return a 404 Not Found status.
