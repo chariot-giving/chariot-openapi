@@ -705,6 +705,20 @@ components:
           type: string
           description: The status of the grant
           example: Initiated
+        feeDetail:
+          type: object
+          description: The fee detail of the grant
+          properties:
+            total:
+              type: number
+              format: integer
+              description: The total fee amount expressed in units of cents
+              example: 1500
+            contributions:
+              type: array
+              items:
+              $ref: '#/components/schemas/ContributionFeeDetail'
+              description: The list of fee contributions for this grant
         metadata:
           type: object
           description: A map of arbitrary string keys and values to store information about the object
@@ -735,6 +749,21 @@ components:
           items:
             $ref: '#/components/schemas/GrantStatus'
           description: The list of grant statuses for this grant
+    ContributionFeeDetail:
+      type: object
+      required:
+        - name
+        - amount
+      properties:
+        name:
+          type: string
+          description: The name of the party charging the fee
+          example: "Chariot Fee"
+        amount:
+          type: number
+          format: integer
+          description: The fee contribution amount expressed in units of cents
+          example: 1500
     GrantStatus:
       type: object
       required:
