@@ -821,7 +821,7 @@ components:
           type: string
           readOnly: true
           description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
-          example: 1234455
+          example: '1234455'
           deprecated: true
         workflowSessionId:
           type: string
@@ -873,9 +873,7 @@ components:
           description: The donor's email
           example: "warrenBuffet@example.com"
         address:
-          type: object
           $ref: "#/components/schemas/Address"
-          description: The donor's address
         note:
           type: string
           description: An note inputted by the user at submisson
