@@ -652,7 +652,6 @@ components:
         A Grant represents a successfully initiated grant request with a Donor Advised Fund.Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
       required:
         - id
-        - userFriendlyId
         - workflowSessionId
         - fundId
         - amount
@@ -722,7 +721,7 @@ components:
             contributions:
               type: array
               items:
-              $ref: '#/components/schemas/ContributionFeeDetail'
+                $ref: '#/components/schemas/ContributionFeeDetail'
               description: The list of fee contributions for this grant
         metadata:
           type: object
@@ -808,7 +807,6 @@ components:
         A Unintegrated Grant represents grant requested through an unintegrated provider. These are sometimes refered to as "Manual Grants".
       required:
         - id
-        - userFriendlyId
         - workflowSessionId
         - fundId
         - amount
@@ -875,6 +873,7 @@ components:
           description: The donor's email
           example: "warrenBuffet@example.com"
         address:
+          type: object
           $ref: "#/components/schemas/Address"
           description: The donor's address
         note:
