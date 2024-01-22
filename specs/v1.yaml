@@ -793,6 +793,8 @@ components:
             - Initiated
             - Processing
             - Received
+            - Payment Pending
+            - Completed
             - Canceled
           description: |
               The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
