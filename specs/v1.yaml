@@ -20,6 +20,7 @@ paths:
       description: |-
         Get a nonprofit organization by EIN.
         If the nonprofit does not exist, this returns 404 Not Found status.
+        If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
         In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint.
         The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
       operationId: get-nonprofit-by-ein
@@ -66,10 +67,8 @@ paths:
         Create a nonprofit organization account.
         This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
         If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
-        If a nonprofit does not exist in GuideStar.org, this will return a 404 Not Found status.
-        If a nonprofit already exists for the given EIN on the system, this will return a 409 Conflict status.
-        If a nonprofit exists in GuideStar.org but they are not pub78 verified, this will return a 412 Precondition Failed status.
-        When integrating this API, it's useful to either handle the 409 error or make a call to the GET v1/nonprofit/{ein} API first to check if it exists prior to creating it.
+        If a nonprofit already exists for the given EIN on the system, this will return a 200 Created status.
+        If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
       operationId: create-nonprofit
       security:
         - auth0:
@@ -123,6 +122,17 @@ paths:
             format: uuid
           required: true
           example: 6af3f58e-7a80-4997-8259-770c033d7d3a
+        - name: suborganization
+          in: query
+          description: |-
+            The unique identifier (ID) for the suborganization within the nonprofit.
+            The format should be a v4 UUID according to RFC 4122.
+            This can be found by calling the /v1/nonprofit/{ein} API endpoint.
+          schema:
+            type: string
+            format: uuid
+          required: false
+          example: c00d1aa2-09ab-4e76-8461-7ac34578a70c
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -435,6 +445,57 @@ components:
           type: string
           description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
           example: "043567500"
+        suborganizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Suborganization'
+          description: |-
+            The list of suborganizations associated with this nonprofit.
+            Suborganizations are useful for nonprofits that have multiple chapters or locations.
+        address:
+          $ref: "#/components/schemas/Address"
+        picture:
+          type: string
+          description: The URI of the nonprofit's logo
+        website:
+          type: string
+          description: The URL of the nonprofit's website
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    Suborganization:
+      type: object
+      description: |-
+        A suborganization represents an organization that is under the umbrella of a parent EIN.
+        This is common for nonprofits that have multiple chapters or locations or operate as a fiscal sponsor.
+      required:
+        - id
+        - name
+        - ein
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+        name:
+          type: string
+          description: The registered name of the suborganization
+          example: Leading for Children
+        preferredName:
+          type: string
+          description: |-
+            The preferred name of the suborganization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
+          example: LfC
         address:
           $ref: "#/components/schemas/Address"
         picture:
@@ -591,7 +652,6 @@ components:
         A Grant represents a successfully initiated grant request with a Donor Advised Fund.Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
       required:
         - id
-        - userFriendlyId
         - workflowSessionId
         - fundId
         - amount
@@ -605,8 +665,14 @@ components:
         userFriendlyId:
           type: string
           readOnly: true
-          description: The user friendly identifier for the Grant
+          description: Often referred to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
           example: chariot-1234455
+          deprecated: true
+        trackingId:
+          type: string
+          readOnly: true
+          description: The tracking ID for the grant
+          example: L9E182VBGP
         workflowSessionId:
           type: string
           readOnly: true
@@ -643,6 +709,20 @@ components:
           type: string
           description: The status of the grant
           example: Initiated
+        feeDetail:
+          type: object
+          description: The fee detail of the grant
+          properties:
+            total:
+              type: number
+              format: integer
+              description: The total fee amount expressed in units of cents
+              example: 1500
+            contributions:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContributionFeeDetail'
+              description: The list of fee contributions for this grant
         metadata:
           type: object
           description: A map of arbitrary string keys and values to store information about the object
@@ -673,6 +753,21 @@ components:
           items:
             $ref: '#/components/schemas/GrantStatus'
           description: The list of grant statuses for this grant
+    ContributionFeeDetail:
+      type: object
+      required:
+        - name
+        - amount
+      properties:
+        name:
+          type: string
+          description: The name of the party charging the fee
+          example: "Chariot"
+        amount:
+          type: number
+          format: integer
+          description: The fee contribution amount expressed in units of cents
+          example: 1500
     GrantStatus:
       type: object
       required:
@@ -694,12 +789,95 @@ components:
           example: "2020-07-10 15:00:00.000"
         status:
           type: string
-          description: The status of the grant
-          example: Received
+          enum:
+            - Initiated
+            - Processing
+            - Received
+            - Canceled
+          description: |
+              The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
+          example: Initiated
         comment:
           type: string
           description: The user comment for the update
           example: The grant has been received by the nonprofit
+    UnintegratedGrant:
+      type: object
+      description: |-
+        A Unintegrated Grant represents grant requested through an unintegrated provider. These are sometimes refered to as "Manual Grants".
+      required:
+        - id
+        - workflowSessionId
+        - fundId
+        - amount
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object
+          format: uuid
+          example: cfe09e64-6a74-4dab-a565-361185a6f248
+        userFriendlyId:
+          type: string
+          readOnly: true
+          description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
+          example: '1234455'
+          deprecated: true
+        workflowSessionId:
+          type: string
+          readOnly: true
+          description: ID of the Connect Workflow Session associated with this grant
+          format: uuid
+          example: 2d4b2a43-a5b4-4be1-ad1f-f932016ca4a6
+        fundId:
+          type: string
+          readOnly: true
+          description: ID of the donor advised fund
+          example: daf-id
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created; expressed in ISO 8601 format
+          example: "2020-07-10 15:00:00.000"
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated; expressed in ISO 8601 format
+          example: "2021-07-11 15:34:00.000"
+        amount:
+          type: number
+          format: integer
+          description: The grant amount expressed in units of whole cents
+          example: 15000
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object
+          additionalProperties:
+            type: string
+        firstName:
+          type: string
+          description: The donor's first name
+          example: "Warren"
+        lastName:
+          type: string
+          description: The donor's last name
+          example: "Buffet"
+        phone:
+          type: string
+          description: The donor's phone number
+          example: "1237861020"
+        email:
+          type: string
+          description: The donor's email
+          example: "warrenBuffet@example.com"
+        address:
+          $ref: "#/components/schemas/Address"
+        note:
+          type: string
+          description: An note inputted by the user at submisson
+          example: "Please dedicate in memory of grandma"
     Address:
       type: object
       required:
@@ -784,6 +962,14 @@ components:
                   The final grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
+              applicationFeeAmount:
+                type: number
+                description: |-
+                  This parameter specifies the fee your platform plans to take from the grant in cents. This
+                  parameter only applies for grants made through the DAFpay Network. Before
+                  the payment is made available to the nonprofit, Chariot's fee and the applicationFeeAmount
+                  is deducted. The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
+                  If the 5% limit is exceeded, a 400 error will be returned.
               donor:
                 type: object
                 properties:
@@ -936,7 +1122,6 @@ components:
               value:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    userFriendlyId: "chariot-12345"
                     workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
@@ -948,13 +1133,53 @@ components:
               value:
                 results:
                   - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    userFriendlyId: "chariot-12345"
                     workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 20000
                     status: "Received"
+    ListUnintegratedGrantsResponse:
+      description: The response for UnintegratedGrants.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UnintegratedGrant"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+          examples:
+            MoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 15000
+                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+            NoMoreResults:
+              value:
+                results:
+                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                    fundId: "daf-id"
+                    createdAt: "2021-08-10 15:00:00.000"
+                    updatedAt: "2021-08-11 15:34:00.000"
+                    amount: 20000
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
@@ -1095,13 +1320,21 @@ components:
       summary: Simple grant output
       value:
         id: "1e60800e-849b-43d1-870e-57afc8d75473"
-        userFriendlyId: "chariot-12345"
         workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
         fundId: "daf-id"
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
         amount: 15000
         status: "Initiated"
+    UnintegratedGrantOutput:
+      summary: Simple unintegrated grant output
+      value:
+        id: "1e60800e-849b-43d1-870e-57afc8d75473"
+        workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+        fundId: "daf-id"
+        createdAt: "2021-08-10 15:00:00.000"
+        updatedAt: "2021-08-11 15:34:00.000"
+        amount: 15000
     DafOutput:
       summary: NPT DAF
       value:
