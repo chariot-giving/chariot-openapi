@@ -1130,7 +1130,9 @@ components:
         The category of the event. This is useful for filtering events.
       enum:
         - "grant.created"
+        - "grant.updated"
         - "unintegrated_grant.created"
+        - "unintegrated_grant.updated"
     Event:
       type: object
       description: |
