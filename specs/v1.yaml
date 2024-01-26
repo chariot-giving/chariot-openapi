@@ -1370,6 +1370,9 @@ components:
                 description: |-
                   The key that will be used to sign webhooks.
                   If no value is passed, a random string will be used as default.
+                  This is necessary to verify that the webhook is coming from Chariot.
+                  While this parameter is optional, it is highly recommended to pass a value
+                  for the secret and implement webhook signature verification.
     UpdateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
