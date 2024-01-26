@@ -25,7 +25,7 @@ paths:
         The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
       operationId: get-nonprofit-by-ein
       tags:
-        - nonprofits
+        - Nonprofits
       security:
         - auth0:
             - "read:nonprofits"
@@ -73,7 +73,7 @@ paths:
         If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
       operationId: create-nonprofit
       tags:
-        - nonprofits
+        - Nonprofits
       security:
         - auth0:
             - "create:nonprofits"
@@ -112,7 +112,7 @@ paths:
         Get or create a Connect object. Only one Connect object can be created per Nonprofit for a given Fundraising Application. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
       operationId: create-connect
       tags:
-        - connects
+        - Connects
       security:
         - auth0:
             - "create:connects"
@@ -187,7 +187,7 @@ paths:
         Get a Connect object with the unique identifier (CID)
       operationId: get-connect
       tags:
-        - connects
+        - Connects
       security:
         - auth0:
             - "read:connects"
@@ -226,7 +226,7 @@ paths:
         List all grants for the provided API Key. This API allows for paginating over many results.
       operationId: list-grants
       tags:
-        - grants
+        - Grants
       security:
         - auth0:
             - "read:grants"
@@ -266,7 +266,7 @@ paths:
         The grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
       operationId: create-grant
       tags:
-        - grants
+        - Grants
       security:
         - auth0:
             - "create:grants"
@@ -314,7 +314,7 @@ paths:
         If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-grant
       tags:
-        - grants
+        - Grants
       security:
         - auth0:
             - "read:grants"
@@ -357,7 +357,7 @@ paths:
       description: List all DAF objects. This API allows for paginating over many results.
       operationId: list-dafs
       tags:
-        - dafs
+        - DAFs
       parameters:
         - name: pageLimit
           in: query
@@ -387,7 +387,7 @@ paths:
         If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-daf
       tags:
-        - dafs
+        - DAFs
       parameters:
         - name: id
           in: path
@@ -423,7 +423,10 @@ paths:
         List all events corresponding to your Chariot account.
       operationId: listEvents
       tags:
-        - events
+        - Events
+      security:
+        - auth0:
+            - "read:events"
       parameters:
         - name: limit
           in: query
@@ -463,7 +466,10 @@ paths:
         Retrieve an event corresponding to your Chariot account.
       operationId: getEvent
       tags:
-        - events
+        - Events
+      security:
+        - auth0:
+            - "read:events"
       parameters:
         - name: id
           in: path
@@ -495,7 +501,10 @@ paths:
         Create an event subscription corresponding to your Chariot account.
       operationId: createEventSubscription
       tags:
-        - event_subscriptions
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "create:event_subscriptions"
       requestBody:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
       responses:
@@ -524,7 +533,10 @@ paths:
         List all event subscriptions corresponding to your Chariot account.
       operationId: listEventSubscriptions
       tags:
-        - event_subscriptions
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "read:event_subscriptions"
       parameters:
         - name: limit
           in: query
@@ -557,7 +569,10 @@ paths:
         Retrieve an event subscription corresponding to your Chariot account.
       operationId: getEventSubscription
       tags:
-        - event_subscriptions
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "read:event_subscriptions"
       parameters:
         - name: id
           in: path
@@ -588,7 +603,10 @@ paths:
         Update an event subscription corresponding to your Chariot account.
       operationId: updateEventSubscription
       tags:
-        - event_subscriptions
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "update:event_subscriptions"
       parameters:
         - name: id
           in: path
@@ -630,6 +648,10 @@ components:
             "read:connects": read all connects for a nonprofit
             "create:grants": create a grant from a workflow session
             "read:grants": "read grants"
+            "read:events": "read events"
+            "create:event_subscriptions": "create event subscriptions"
+            "read:event_subscriptions": "read event subscriptions"
+            "update:event_subscriptions": "update event subscriptions"
     api_key:
       type: apiKey
       in: header
@@ -638,7 +660,7 @@ components:
     Nonprofit:
       type: object
       description: |-
-        A Nonprofit represents a registered 501(c)(3) charitable organization is good standing with the IRS.
+        A Nonprofit represents a registered 501(c)(3) charitable organization in good standing with the IRS.
       required:
         - id
         - name
