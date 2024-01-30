@@ -1298,7 +1298,14 @@ components:
           example: 15000
         status:
           type: string
-          description: The status of the grant
+          description: |-
+            The status of the unintegrated grant.
+            To see a description of each status, see the "Unintegrated Grant Statuses" section of the Chariot documentation.
+          enum:
+            - Unknown
+            - Initiated
+            - Completed
+            - Canceled
           example: Initiated
         metadata:
           type: object
