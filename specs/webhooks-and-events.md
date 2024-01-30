@@ -1,6 +1,6 @@
 When something interesting happens on your Chariot account, such as a Grant being created or its status being updated, Chariot can send a message to your application so that you can take action automatically.
 
-The first step is to create an Event Subscription via the [API](ref:createeventsubscription). As part of this, you specify the a URL for a server endpoint that will receive real-time events. Chariot will then send HTTPS requests to that URL to notify you of activity for certain events.
+The first step is to create an Event Subscription via the [API](ref:createeventsubscription). As part of this, you specify a URL for a server endpoint that will receive real-time events. Chariot will then send HTTPS requests to that URL to notify you of activity for certain events.
 
 When a noteworthy event happens, Chariot first generates an [Event](ref:getevent). Next, we'll send a POST request to your endpoint. The body of the POST request will be the same as the API representation of the Event, such as:
 
