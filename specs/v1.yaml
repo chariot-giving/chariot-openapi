@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Chariot API
-  version: 'v1'
+  version: "v1"
   description: The Chariot REST API. Please see https://givechariot.readme.io/reference/overview for more details.
   contact:
     name: Chariot Development Team
@@ -24,9 +24,11 @@ paths:
         In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint.
         The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
       operationId: get-nonprofit-by-ein
+      tags:
+        - Nonprofits
       security:
         - auth0:
-          - "read:nonprofits"
+            - "read:nonprofits"
       parameters:
         - name: ein
           in: path
@@ -38,7 +40,7 @@ paths:
           required: true
           example: "530196605"
       responses:
-        '200':
+        "200":
           description: "OK"
           headers:
             X-Request-Id:
@@ -50,15 +52,15 @@ paths:
               examples:
                 RedCross:
                   $ref: "#/components/examples/NonprofitRedCross"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/nonprofits:
     post:
@@ -70,13 +72,15 @@ paths:
         If a nonprofit already exists for the given EIN on the system, this will return a 200 Created status.
         If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
       operationId: create-nonprofit
+      tags:
+        - Nonprofits
       security:
         - auth0:
-          - "create:nonprofits"
+            - "create:nonprofits"
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitRequest"
       responses:
-        '201':
+        "201":
           description: "Created"
           headers:
             X-Request-Id:
@@ -87,19 +91,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Nonprofit"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '409':
+        "409":
           $ref: "#/components/responses/ConflictError"
-        '412':
+        "412":
           $ref: "#/components/responses/PreconditionFailedError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/connects:
     post:
@@ -107,9 +111,11 @@ paths:
       description: |-
         Get or create a Connect object. Only one Connect object can be created per Nonprofit for a given Fundraising Application. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
       operationId: create-connect
+      tags:
+        - Connects
       security:
         - auth0:
-          - "create:connects"
+            - "create:connects"
       parameters:
         - name: nonprofit
           in: query
@@ -136,7 +142,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
-        '200':
+        "200":
           description: the existing Connect object
           headers:
             X-Request-Id:
@@ -150,7 +156,7 @@ paths:
               examples:
                 Simple:
                   $ref: "#/components/examples/ConnectOutput"
-        '201':
+        "201":
           description: the created connect object
           headers:
             X-Request-Id:
@@ -164,15 +170,15 @@ paths:
               examples:
                 Simple:
                   $ref: "#/components/examples/ConnectOutput"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/connects/{id}:
     get:
@@ -180,9 +186,11 @@ paths:
       description: |-
         Get a Connect object with the unique identifier (CID)
       operationId: get-connect
+      tags:
+        - Connects
       security:
         - auth0:
-          - "read:connects"
+            - "read:connects"
       parameters:
         - name: id
           in: path
@@ -192,7 +200,7 @@ paths:
           required: true
           example: live_xJd0lUrvpDkzeGBWZbuI2wbvEdM
       responses:
-        '200':
+        "200":
           description: "OK"
           headers:
             X-Request-Id:
@@ -201,15 +209,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connect"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/grants:
     get:
@@ -217,9 +225,11 @@ paths:
       description: |-
         List all grants for the provided API Key. This API allows for paginating over many results.
       operationId: list-grants
+      tags:
+        - Grants
       security:
         - auth0:
-          - "read:grants"
+            - "read:grants"
           api_key: []
       parameters:
         - name: pageLimit
@@ -235,15 +245,15 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/ListGrantsResponse"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create Grant
@@ -255,6 +265,8 @@ paths:
         The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.
         The grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
       operationId: create-grant
+      tags:
+        - Grants
       security:
         - auth0:
             - "create:grants"
@@ -262,7 +274,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
-        '201':
+        "201":
           description: Created grant
           headers:
             X-Request-Id:
@@ -279,19 +291,19 @@ paths:
               examples:
                 Simple:
                   $ref: "#/components/examples/GrantOutput"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '409':
+        "409":
           $ref: "#/components/responses/ConflictError"
-        '410':
+        "410":
           $ref: "#/components/responses/GoneError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/grants/{id}:
     get:
@@ -301,10 +313,12 @@ paths:
         If the grant does not exist, returns a 404 status.
         If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-grant
+      tags:
+        - Grants
       security:
-      - auth0:
-        - "read:grants"
-        api_key: []
+        - auth0:
+            - "read:grants"
+          api_key: []
       parameters:
         - name: id
           in: path
@@ -315,7 +329,7 @@ paths:
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
       responses:
-        '200':
+        "200":
           description: OK
           headers:
             X-Request-Id:
@@ -327,21 +341,23 @@ paths:
               examples:
                 Simple:
                   $ref: "#/components/examples/GrantOutput"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '401':
+        "401":
           $ref: "#/components/responses/AuthenticationError"
-        '403':
+        "403":
           $ref: "#/components/responses/ForbiddenError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs:
     get:
       summary: List DAFs
       description: List all DAF objects. This API allows for paginating over many results.
       operationId: list-dafs
+      tags:
+        - DAFs
       parameters:
         - name: pageLimit
           in: query
@@ -356,11 +372,11 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/ListDafsResponse"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
     get:
@@ -370,6 +386,8 @@ paths:
         If the DAF does not exist, returns a 404 status.
         If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-daf
+      tags:
+        - DAFs
       parameters:
         - name: id
           in: path
@@ -380,7 +398,7 @@ paths:
           required: true
           example: f9e28217-e0f7-4a54-9764-d664ffb10722
       responses:
-        '200':
+        "200":
           description: "OK"
           headers:
             X-Request-Id:
@@ -392,11 +410,228 @@ paths:
               examples:
                 Npt:
                   $ref: "#/components/examples/DafOutput"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequestError"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFoundError"
-        '500':
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/events:
+    get:
+      summary: List Events
+      description: |-
+        List all events corresponding to your Chariot account.
+      operationId: listEvents
+      tags:
+        - Events
+      security:
+        - auth0:
+            - "read:events"
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: |
+            Filter Events for those with the specified category.
+          required: false
+          schema:
+            $ref: "#/components/schemas/EventCategory"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListEventsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/events/{id}:
+    get:
+      summary: Retrieve an Event
+      description: |-
+        Retrieve an event corresponding to your Chariot account.
+      operationId: getEvent
+      tags:
+        - Events
+      security:
+        - auth0:
+            - "read:events"
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the event
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The event was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/event_subscriptions:
+    post:
+      summary: Create an Event Subscription
+      description: |-
+        Create an event subscription corresponding to your Chariot account.
+      operationId: createEventSubscription
+      tags:
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "create:event_subscriptions"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
+      responses:
+        "201":
+          description: The event subscription was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSubscription"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List Event Subscriptions
+      description: |-
+        List all event subscriptions corresponding to your Chariot account.
+      operationId: listEventSubscriptions
+      tags:
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "read:event_subscriptions"
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListEventSubscriptionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/event_subscriptions/{id}:
+    get:
+      summary: Retrieve an Event Subscription
+      description: |-
+        Retrieve an event subscription corresponding to your Chariot account.
+      operationId: getEventSubscription
+      tags:
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "read:event_subscriptions"
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the event subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The event subscription was received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSubscription"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update an Event Subscription
+      description: |-
+        Update an event subscription corresponding to your Chariot account.
+      operationId: updateEventSubscription
+      tags:
+        - Event Subscriptions
+      security:
+        - auth0:
+            - "update:event_subscriptions"
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the event subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateEventSubscriptionRequest"
+      responses:
+        "200":
+          description: The event subscription was updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSubscription"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
           $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
@@ -413,6 +648,10 @@ components:
             "read:connects": read all connects for a nonprofit
             "create:grants": create a grant from a workflow session
             "read:grants": "read grants"
+            "read:events": "read events"
+            "create:event_subscriptions": "create event subscriptions"
+            "read:event_subscriptions": "read event subscriptions"
+            "update:event_subscriptions": "update event subscriptions"
     api_key:
       type: apiKey
       in: header
@@ -421,7 +660,7 @@ components:
     Nonprofit:
       type: object
       description: |-
-        A Nonprofit represents a registered 501(c)(3) charitable organization is good standing with the IRS.
+        A Nonprofit represents a registered 501(c)(3) charitable organization in good standing with the IRS.
       required:
         - id
         - name
@@ -448,7 +687,7 @@ components:
         suborganizations:
           type: array
           items:
-            $ref: '#/components/schemas/Suborganization'
+            $ref: "#/components/schemas/Suborganization"
           description: |-
             The list of suborganizations associated with this nonprofit.
             Suborganizations are useful for nonprofits that have multiple chapters or locations.
@@ -721,7 +960,7 @@ components:
             contributions:
               type: array
               items:
-                $ref: '#/components/schemas/ContributionFeeDetail'
+                $ref: "#/components/schemas/ContributionFeeDetail"
               description: The list of fee contributions for this grant
         metadata:
           type: object
@@ -751,7 +990,7 @@ components:
         statuses:
           type: array
           items:
-            $ref: '#/components/schemas/GrantStatus'
+            $ref: "#/components/schemas/GrantStatus"
           description: The list of grant statuses for this grant
     ContributionFeeDetail:
       type: object
@@ -797,7 +1036,7 @@ components:
             - Completed
             - Canceled
           description: |
-              The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
+            The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
           example: Initiated
         comment:
           type: string
@@ -823,7 +1062,7 @@ components:
           type: string
           readOnly: true
           description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
-          example: '1234455'
+          example: "1234455"
           deprecated: true
         workflowSessionId:
           type: string
@@ -907,6 +1146,84 @@ components:
         state:
           type: string
           description: State, county, province, or region
+    EventCategory:
+      type: string
+      description: |
+        The category of the event. This is useful for filtering events.
+      enum:
+        - "grant.created"
+        - "grant.updated"
+        - "unintegrated_grant.created"
+        - "unintegrated_grant.updated"
+    Event:
+      type: object
+      description: |
+        Events are records of things that happened to objects at Chariot.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the event
+          example: "203c4e56-5c39-4a66-abcd-2ec8af99a1b9"
+          readOnly: true
+        category:
+          $ref: "#/components/schemas/EventCategory"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the event was created
+          example: "2024-01-19T18:48:56.37Z"
+          readOnly: true
+        associated_object_id:
+          type: string
+          description: The unique identifier for the associated object
+          example: "4d06d393-1f14-46cf-b02d-8db17d7ed06a"
+          readOnly: true
+        associated_object_type:
+          type: string
+          description: The type of the associated object
+          example: "grant"
+          readOnly: true
+    EventSubscriptionStatus:
+      type: string
+      description: |-
+        The status of the event subscription.
+        This indicates if we'll send notifications to this subscription
+          * active: subscription is active and events will be delivered normally
+          * disabled: subscription is temporarily disabled and events will not be delivered
+          * deleted: subscription has been deleted and events will not be delivered
+          * requires_attention: subscription has been disabled due to delivery failures and events will not be delivered
+      enum:
+        - "active"
+        - "disabled"
+        - "deleted"
+        - "requires_attention"
+    EventSubscription:
+      type: object
+      description: |
+        Webhooks are event notifications we send to you by HTTPS POST requests.
+        Event Subscriptions are how you configure your application to listen for them.
+      required:
+        - url
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the event subscription
+          example: "4d06d393-1f14-46cf-b02d-8db17d7ed06a"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the event subscription was created
+          example: "2024-01-14T12:48:56.37Z"
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/EventSubscriptionStatus"
+        url:
+          type: string
+          description: The webhook url where we'll send notifications.
+          example: "https://example.com/webhook"
+        category:
+          $ref: "#/components/schemas/EventCategory"
     Error:
       type: object
       required:
@@ -949,8 +1266,7 @@ components:
       content:
         application/json:
           schema:
-            type:
-              object
+            type: object
             required:
               - workflowSessionId
               - amount
@@ -1054,6 +1370,50 @@ components:
               website:
                 type: string
                 description: The URL of the nonprofit's website
+    CreateEventSubscriptionRequest:
+      description: The request body for creating an event subscription
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - url
+              - category
+            properties:
+              url:
+                type: string
+                description: The webhook url where we'll send notifications.
+                example: "https://example.com/webhook"
+              category:
+                $ref: "#/components/schemas/EventCategory"
+              signingSecret:
+                type: string
+                description: |-
+                  The key that will be used to sign webhooks.
+                  If no value is passed, a random string will be used as default.
+                  This is necessary to verify that the webhook is coming from Chariot.
+                  While this parameter is optional, it is highly recommended to pass a value
+                  for the secret and implement webhook signature verification.
+    UpdateEventSubscriptionRequest:
+      description: The request body for creating an event subscription
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: |-
+                  The status of the event subscription:
+                    * active: The event subscription is active and events will be delivered
+                    * disabled: The event subscription is temporarily disabled and events will not be delivered
+                    * deleted: The event subscription is permanently deleted and events will not be delivered
+                enum:
+                  - "active"
+                  - "disabled"
+                  - "deleted"
   responses:
     ListDafsResponse:
       description: The response for Dafs.list
@@ -1182,6 +1542,48 @@ components:
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 20000
+    ListEventsResponse:
+      description: The response for Events.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListEventSubscriptionsResponse:
+      description: The response for Events.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventSubscription"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
