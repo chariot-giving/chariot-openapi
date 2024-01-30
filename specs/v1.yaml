@@ -793,6 +793,15 @@ components:
           format: date-time
           description: Time when this object was last updated. Expressed in ISO 8601 format.
           example: "2021-07-11 15:34:00.000"
+        isDafPayNetwork:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the nonprofit will receive grants through the DAFPay Network.
+            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175).
+            The DAFPay Network will then review and process the grant and send the funds to the nonprofit.
+            Grants processed outside the DAFPay Network will be sent directly to the nonprofit.
+          example: false
     Suborganization:
       type: object
       description: |-
@@ -970,7 +979,7 @@ components:
     Grant:
       type: object
       description: |-
-        A Grant represents a successfully initiated grant request with a Donor Advised Fund.Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
+        A Grant represents a successfully initiated grant request with a Donor Advised Fund. Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
       required:
         - id
         - workflowSessionId
@@ -1032,6 +1041,7 @@ components:
           example: Initiated
         feeDetail:
           type: object
+          readOnly: true
           description: The fee detail of the grant
           properties:
             total:
@@ -1074,6 +1084,15 @@ components:
           items:
             $ref: "#/components/schemas/GrantStatus"
           description: The list of grant statuses for this grant
+        isDafPayNetwork:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the grant was processed through the DAFPay Network.
+            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175).
+            The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
+            Grants processed outside the DAFPay Network will be sent directly to the intended recipient.
+          example: false
     ContributionFeeDetail:
       type: object
       required:
