@@ -1181,15 +1181,18 @@ components:
           items:
             $ref: "#/components/schemas/GrantStatus"
           description: The list of grant statuses for this grant
-        isDafPayNetwork:
-          type: boolean
+        paymentChannel:
+          type: string
           readOnly: true
           description: |-
-            A flag to indicate if the grant was processed through the DAFPay Network.
-            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175).
-            The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
-            Grants processed outside the DAFPay Network will be sent directly to the intended recipient.
-          example: false
+            The payment channel for the grant. This is useful to know how the grant will be sent.
+            The payment channel will be one of the following:
+            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
+            - direct: Grant will be sent directly to the intended recipient.
+          enum:
+            - dafpay_network
+            - direct
+          example: direct
     ContributionFeeDetail:
       type: object
       required:
@@ -1324,6 +1327,16 @@ components:
           type: string
           description: An note inputted by the user at submisson
           example: "Please dedicate in memory of grandma"
+        paymentChannel:
+          type: string
+          readOnly: true
+          description: |-
+            The payment channel for the unintegrated grant. This is useful to know how the grant will be sent.
+            The payment channel for unintegrated grants will always be:
+            - offline: Grant was initiated outside of Chariot so we're unable to confirm how the grant will be sent.
+          enum:
+            - offline
+          example: offline
     Address:
       type: object
       required:
