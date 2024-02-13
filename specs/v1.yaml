@@ -899,6 +899,17 @@ components:
             The DAFPay Network will then review and process the grant and send the funds to the nonprofit.
             Grants processed outside the DAFPay Network will be sent directly to the nonprofit.
           example: false
+        inGoodStanding:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the nonprofit is in good standing with the IRS.
+            If the nonprofit is a tax-exempt 501(c)(3) Public Charity in good standing with the IRS, this field should be true.
+            This status can change over time and is kept up-to-date by Chariot.
+            Regardless of the value of this field, Connects can still be created for the nonprofit,
+            however the nonprofit will not be able to receive grants through Chariot if this field is false.
+            If you believe the value of this field is incorrect for a Nonprofit, please contact the Chariot team.
+          example: true
     Suborganization:
       type: object
       description: |-
@@ -1957,8 +1968,8 @@ components:
         ein: "530196605"
         createdAt: "2021-07-10 15:00:00.000"
         updatedAt: "2021-07-11 15:34:00.000"
-        hasPaymentMethod: true
-        billingUser: "cus_billing_user_789"
+        isDafPayNetwork: false
+        inGoodStanding: true
     ConnectOutput:
       summary: Simple connect output
       value:
