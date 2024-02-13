@@ -9,7 +9,7 @@ id = 1755d44f-2fff-45d8-a422-0ce6211efaf9
 
 [config.relations.collections]
 rootDirectory = postman/collections
-files[] = {"id":"23306205-8e8d65ab-6ac4-48c4-83d9-a0a01f4ff9ee","path":"Chariot API.json","metaData":{"generateCollectionPreferences":"{\"updateCollectionSync\":true}"}}
+files[] = {"id":"23306205-171b6f89-d8d7-48cd-998e-a672adf99a1f","path":"Chariot API.json","metaData":{"generateCollectionPreferences":"{\"requestNameSource\":\"Fallback\",\"indentCharacter\":\"Space\",\"parametersResolution\":\"Schema\",\"folderStrategy\":\"Tags\",\"includeAuthInfoInExample\":true,\"enableOptionalParameters\":true,\"keepImplicitHeaders\":false,\"includeDeprecated\":true,\"alwaysInheritAuthentication\":false,\"collapseFolders\":true,\"optimizeConversion\":true,\"requestParametersResolution\":\"Schema\",\"exampleParametersResolution\":\"Schema\",\"disableOptionalParameters\":false,\"updateCollectionSync\":true}"}}
 
 [config.relations.collections.metaData]
 
