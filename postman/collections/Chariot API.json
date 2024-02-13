@@ -1993,6 +1993,11 @@
 						"method": "GET",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Accept",
 								"value": "application/json"
 							}
@@ -2354,6 +2359,11 @@
 						"method": "POST",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object that was used to authorize the grant intent",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							},
@@ -2362,16 +2372,6 @@
 								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"workflowSessionId\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"applicationFeeAmount\": \"<number>\",\n  \"donor\": {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"email\": \"<string>\",\n    \"phone\": \"<string>\"\n  }\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/grants",
 							"host": [
@@ -2922,6 +2922,11 @@
 						"method": "GET",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object that was used to create this grant",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Accept",
 								"value": "application/json"
 							}
@@ -3303,6 +3308,11 @@
 						"method": "PATCH",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object that was used to create this grant",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							},
@@ -3311,16 +3321,6 @@
 								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"Completed\",\n  \"acknowledgedAt\": \"<dateTime>\"\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/grants/:id",
 							"host": [
@@ -3782,6 +3782,11 @@
 						"method": "GET",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Accept",
 								"value": "application/json"
 							}
@@ -4142,6 +4147,11 @@
 						},
 						"method": "GET",
 						"header": [
+							{
+								"description": "(Required) the apiKey of the Connect object that was used to create the unintegrated grant",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
 							{
 								"key": "Accept",
 								"value": "application/json"
@@ -4524,6 +4534,11 @@
 						"method": "PATCH",
 						"header": [
 							{
+								"description": "(Required) the apiKey of the Connect object that was used to create this grant",
+								"key": "x-chariot-api-key",
+								"value": "<string>"
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/json"
 							},
@@ -4532,16 +4547,6 @@
 								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"Completed\",\n  \"acknowledgedAt\": \"<dateTime>\"\n}",
-							"options": {
-								"raw": {
-									"headerFamily": "json",
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/unintegrated_grants/:id",
 							"host": [
@@ -7839,7 +7844,8 @@
 		{
 			"id": "3f1cb4c5-d3b6-4ea0-a843-7521ef423d6b",
 			"key": "baseUrl",
-			"value": "https://sandboxapi.givechariot.com"
+			"value": "https://sandboxapi.givechariot.com",
+			"type": "any"
 		}
 	]
 }

@@ -230,8 +230,14 @@ paths:
       security:
         - auth0:
             - "read:grants"
-          api_key: []
       parameters:
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -270,7 +276,14 @@ paths:
       security:
         - auth0:
             - "create:grants"
-          api_key: []
+      parameters:
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object that was used to authorize the grant intent
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
@@ -318,7 +331,6 @@ paths:
       security:
         - auth0:
             - "read:grants"
-          api_key: []
       parameters:
         - name: id
           in: path
@@ -328,6 +340,13 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object that was used to create this grant
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       responses:
         "200":
           description: OK
@@ -364,7 +383,6 @@ paths:
       security:
         - auth0:
             - "update:grants"
-          api_key: []
       parameters:
         - name: id
           in: path
@@ -374,6 +392,13 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object that was used to create this grant
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/UpdateGrantRequest"
       responses:
@@ -410,8 +435,14 @@ paths:
       security:
         - auth0:
             - "read:grants"
-          api_key: []
       parameters:
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -448,7 +479,6 @@ paths:
       security:
         - auth0:
             - "read:grants"
-          api_key: []
       parameters:
         - name: id
           in: path
@@ -458,6 +488,13 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object that was used to create the unintegrated grant
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       responses:
         "200":
           description: OK
@@ -494,7 +531,6 @@ paths:
       security:
         - auth0:
             - "update:grants"
-          api_key: []
       parameters:
         - name: id
           in: path
@@ -504,6 +540,13 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
+        - name: x-chariot-api-key
+          in: header
+          description: the apiKey of the Connect object that was used to create this grant
+          schema:
+            type: string
+          required: true
+          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/UpdateGrantRequest"
       responses:
@@ -831,10 +874,6 @@ components:
             "create:event_subscriptions": "create event subscriptions"
             "read:event_subscriptions": "read event subscriptions"
             "update:event_subscriptions": "update event subscriptions"
-    api_key:
-      type: apiKey
-      in: header
-      name: x-chariot-api-key
   schemas:
     Nonprofit:
       type: object
