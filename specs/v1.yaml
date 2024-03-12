@@ -1250,13 +1250,27 @@ components:
       properties:
         name:
           type: string
-          description: The name of the party charging the fee
+          description: |
+            The name of the party charging the fee. This is an informational field.
+            If you need to differentiate between fees charged by different parties, you should use the `feeType` field.
           example: "Chariot"
         amount:
           type: number
           format: integer
           description: The fee contribution amount expressed in units of cents
           example: 1500
+        feeType:
+          type: string
+          description: |
+            This indicates the source of a fee contribution.
+              * chariot: Chariot's processing fee
+              * daf: The DAF's processing fee
+              * fundraising_application: The fundraising application's processing fee
+          example: "chariot"
+          enum:
+            - chariot
+            - daf
+            - fundraising_application
     GrantStatus:
       type: object
       required:
