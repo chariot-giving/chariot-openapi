@@ -80,6 +80,15 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitRequest"
       responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nonprofit"
         "201":
           description: "Created"
           headers:
@@ -99,10 +108,51 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "412":
           $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofits/{id}:
+    get:
+      summary: Get nonprofit by ID
+      description: |-
+        Get a nonprofit organization by ID.
+        If the nonprofit does not exist, this returns 404 Not Found status.
+      operationId: get-nonprofit-by-id
+      tags:
+        - Nonprofits
+      security:
+        - auth0:
+            - "read:nonprofits"
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the nonprofit
+          schema:
+            type: string
+          required: true
+          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nonprofit"
+              examples:
+                RedCross:
+                  $ref: "#/components/examples/NonprofitRedCross"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/connects:
