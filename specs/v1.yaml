@@ -999,6 +999,13 @@ components:
             however the nonprofit will not be able to receive grants through Chariot if this field is false.
             If you believe the value of this field is incorrect for a Nonprofit, please contact the Chariot team.
           example: true
+        claimed:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the nonprofit has been claimed by a user.
+            A nonprofit is claimed if a user signs up for a Chariot account with
+            this nonprofit and is verified by the Chariot team.
     Suborganization:
       type: object
       description: |-
