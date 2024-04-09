@@ -1309,9 +1309,6 @@ components:
           type: string
           enum:
             - Initiated
-            - Processing
-            - Received
-            - Payment Pending
             - Completed
             - Canceled
           description: |
