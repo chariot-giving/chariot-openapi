@@ -326,14 +326,6 @@ paths:
       security:
         - auth0:
             - "create:grants"
-      parameters:
-        - name: x-chariot-api-key
-          in: header
-          description: the apiKey of the Connect object that was used to authorize the grant intent
-          schema:
-            type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
@@ -390,13 +382,6 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
-        - name: x-chariot-api-key
-          in: header
-          description: the apiKey of the Connect object that was used to create this grant
-          schema:
-            type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       responses:
         "200":
           description: OK
@@ -442,13 +427,6 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
-        - name: x-chariot-api-key
-          in: header
-          description: the apiKey of the Connect object that was used to create this grant
-          schema:
-            type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/UpdateGrantRequest"
       responses:
@@ -538,13 +516,6 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
-        - name: x-chariot-api-key
-          in: header
-          description: the apiKey of the Connect object that was used to create the unintegrated grant
-          schema:
-            type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       responses:
         "200":
           description: OK
@@ -590,13 +561,6 @@ paths:
             format: uuid
           required: true
           example: 10229488-08d2-4629-b70c-a2f4f4d25344
-        - name: x-chariot-api-key
-          in: header
-          description: the apiKey of the Connect object that was used to create this grant
-          schema:
-            type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
       requestBody:
         $ref: "#/components/requestBodies/UpdateGrantRequest"
       responses:
