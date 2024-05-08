@@ -1255,6 +1255,8 @@ components:
             - dafpay_network
             - direct
           example: direct
+        address:
+          $ref: "#/components/schemas/GrantAddress"
     ContributionFeeDetail:
       type: object
       required:
@@ -1405,7 +1407,7 @@ components:
           description: The donor's email
           example: "warrenBuffet@example.com"
         address:
-          $ref: "#/components/schemas/Address"
+          $ref: "#/components/schemas/GrantAddress"
         note:
           type: string
           description: An note inputted by the user at submisson
@@ -1447,6 +1449,24 @@ components:
         state:
           type: string
           description: State, county, province, or region
+    GrantAddress:
+      type: object
+      properties:
+        line1:
+          type: string
+          description: Address line 1 (e.g. street, PO Box, or company name)
+        line2:
+          type: string
+          description: Address line 2 (e.g. apartment, suite, unit, or building)
+        city:
+          type: string
+          description: City, district, suburb, town, or village.
+        state:
+          type: string
+          description: State, county, province, or region
+        postalCode:
+          type: string
+          description: ZIP or postal code
     EventCategory:
       type: string
       description: |
@@ -1604,6 +1624,8 @@ components:
                   phone:
                     type: string
                     description: The phone number of the donor
+              address:
+                $ref: "#/components/schemas/GrantAddress"
     UpdateGrantRequest:
       description: |-
         The request to update a grant. This is useful to update the status of a grant.
