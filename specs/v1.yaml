@@ -2002,7 +2002,7 @@ components:
                   The date in which the recurring grant will begin. The monthly grants will re-occur on this day of the month until the specified end date. 
                   If the end-date is not specified, the recurring grants will continue indefinitely. 
                   Recurring grants with unspecified end-dates continue until the donor cancels the recurring grant with the DAF provider or until the donor runs out of funds. 
-                  Days of the month that don't occur in every month (29th, 30th, 31st), recurring grant dates will be at the discretion of the DAF provider.
+                  For days of the month that don't occur every month (29th, 30th, 31st), recurring grant dates will be at the discretion of the DAF provider.
               endDate:
                 type: string
                 format: date-time
@@ -2534,7 +2534,7 @@ components:
         amount: 15000
         status: "Initiated"
     RecurringGrantOutput:
-      summary: Simple recurring grant output, the "grant_id" field is the associated grants with this grant.
+      summary: Simple recurring grant output, the "grant_ids" field is the associated grants with this grant.
       value:
         id: "1e60800e-849b-43d1-870e-57afc8d75473"
         workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
