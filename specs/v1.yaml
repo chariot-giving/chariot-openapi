@@ -1601,10 +1601,11 @@ components:
               applicationFeeAmount:
                 type: number
                 description: |-
-                  This parameter specifies the fee your platform plans to take from the grant in cents. This
-                  parameter only applies for grants made through the DAFpay Network. Before
-                  the payment is made available to the nonprofit, Chariot's fee and the applicationFeeAmount
-                  is deducted. The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
+                  This parameter specifies the fee your platform plans to take from the grant in cents.
+                  This is a fee in addition to Chariot's processing fee. With application fees, 
+                  Chariot collects the fee you determine from the nonprofit and passes it to your platform.
+                  Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
+                  The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
                   If the 5% limit is exceeded, a 400 error will be returned.
               donor:
                 type: object
