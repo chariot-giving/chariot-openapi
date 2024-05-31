@@ -2300,6 +2300,8 @@ components:
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
+                    startDate: "2021-08-11 15:34:00.000"
+                    endDate: ""
                     amount: 20000
                     status: ""
     ListUnintegratedGrantsResponse:
