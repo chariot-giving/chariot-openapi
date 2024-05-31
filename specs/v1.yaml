@@ -2287,6 +2287,8 @@ components:
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
+                    startDate: "2021-08-11 15:34:00.000"
+                    endDate: "2024-08-11 15:34:00.000"
                     amount: 15000
                     status: "Initiated"
                 nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
@@ -2536,6 +2538,8 @@ components:
         fundId: "daf-id"
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
+        startDate: "2021-08-10 15:00:00.000"
+        endDate: "2024-08-10 15:00:00.000"
         amount: 15000
         status: "Initiated"
         grant_ids: ["b8b90579-0dd7-4ef9-b637-2877ea1debfc", "41bcaa9b-b33a-450e-aded-fc9611d0dc82", "603d88c1-4b1f-4441-8a2d-58bb74324bba"]
