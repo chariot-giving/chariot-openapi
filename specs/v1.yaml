@@ -1424,12 +1424,6 @@ components:
           description: ID of the Connect Workflow Session associated with this grant
           format: uuid
           example: 2d4b2a43-a5b4-4be1-ad1f-f932016ca4a6
-        startDate:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this recuring grant's first grant is sent; expressed in ISO 8601 format. 
-          example: "2020-07-10 15:00:00.000"
         fundId:
           type: string
           readOnly: true
@@ -1886,7 +1880,7 @@ components:
         The request to create and submit a monthly recurring grant. This is useful to capture a recurring grant intent associated with Connect workflow session.
         The request should specify the grant amount. The grant will re-occur on the same day of the month that the grant was submitted.
         The recurring grant will continue indefinitely until the donor runs out of funds or until the donor cancels the recurring grant with their DAF provider.
-        These are the amount submitted for processing by the DAF.
+        This is the amount submitted for processing by the DAF.
       required: true
       content:
         application/json:
