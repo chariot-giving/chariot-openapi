@@ -1428,14 +1428,8 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this recuring grant's first grant is sent; expressed in ISO 8601 format. If this value is not set, the current date will be the start_date
+          description: Time when this recuring grant's first grant is sent; expressed in ISO 8601 format. 
           example: "2020-07-10 15:00:00.000"
-        endDate:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this recuring grant's last grant is sent; expressed in ISO 8601 format
-          example: "2020-09-10 15:00:00.000"
         fundId:
           type: string
           readOnly: true
@@ -1890,8 +1884,9 @@ components:
     RecurringGrantCaptureRequest:
       description: |-
         The request to create and submit a monthly recurring grant. This is useful to capture a recurring grant intent associated with Connect workflow session.
-        The request should specify the grant amount, start date and an (optional) end date. If end date is not specified, the recurring grant will continue indefinitely. 
-        These are the amount and dates submitted for processing by the DAF.
+        The request should specify the grant amount. The grant will re-occur on the same day of the month that the grant was submitted.
+        The recurring grant will continue indefinitely until the donor runs out of funds or until the donor cancels the recurring grant with their DAF provider.
+        These are the amount submitted for processing by the DAF.
       required: true
       content:
         application/json:
@@ -1911,23 +1906,6 @@ components:
                   The final grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
-              startDate: 
-                type: string
-                format: date-time
-                description: |-
-                  The date in which the recurring grant will begin. The monthly grants will re-occur on this day of the month until the specified end date. 
-                  If the startDate is not provided, the startDate will be the date that the grant is submitted.
-                  If the end-date is not specified, the recurring grants will continue indefinitely. 
-                  Recurring grants with unspecified end-dates continue until the donor cancels the recurring grant with the DAF provider or until the donor runs out of funds. 
-                  For days of the month that don't occur every month (29th, 30th, 31st), recurring grant dates will be at the discretion of the DAF provider.
-              endDate:
-                type: string
-                format: date-time
-                description: |-
-                  The date at which the recurring grant will end. 
-                  If a DAF provider requires an end-date and one is not provided here, an end-date of 10 years into the future will be used.
-                  If a DAF provider does not require an end-date and one is not provided here, the recurring grant will continue indefinitely. 
-                  The user can choose to cancel a recurring grant by signing into their DAF provider.
               applicationFeeAmount:
                 type: number
                 description: |-
@@ -2179,8 +2157,7 @@ components:
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
-                    startDate: "2021-08-11 15:34:00.000"
-                    endDate: "2024-08-11 15:34:00.000"
+                    startDate: "2021-08-10 15:00:00.000"
                     amount: 15000
                 nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
             NoMoreResults:
@@ -2189,9 +2166,9 @@ components:
                   - id: "579e2864-d65a-4a21-a056-1c91d0a95b5c"
                     workflowSessionId: "ee27b65b-22f5-42fa-b966-0f83cac8fd2c"
                     fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    startDate: "2021-08-10 15:00:00.000"
+                    createdAt: "2021-08-10 16:00:00.000"
+                    updatedAt: "2021-08-11 15:65:00.000"
+                    startDate: "2021-08-10 16:00:00.000"
                     amount: 20000
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
@@ -2430,7 +2407,6 @@ components:
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
         startDate: "2021-08-10 15:00:00.000"
-        endDate: "2024-08-10 15:00:00.000"
         amount: 15000
         status: "Initiated"
         grant_ids: ["b8b90579-0dd7-4ef9-b637-2877ea1debfc", "41bcaa9b-b33a-450e-aded-fc9611d0dc82", "603d88c1-4b1f-4441-8a2d-58bb74324bba"]
