@@ -1400,7 +1400,7 @@ components:
         A RecurringGrant represents a successfully initiated recurring grant request with a Donor Advised Fund. 
         RecurringGrants are created when a person interacts with an instance of Chariot Connect and successfully submits a recurring grant and completes the workflow. 
         On creation, each RecurringGrant object will also have a Grant object created to represent the first grant of the recurring grant.
-        There can be many recurring grants associated with a Connect object and therefore a Nonprofit.
+        There can be many grants associated with the same recurring grant.
       required:
         - id
         - workflowSessionId
@@ -1450,15 +1450,6 @@ components:
           format: integer
           description: The grant amount expressed in units of whole cents
           example: 15000
-        status:
-          type: string
-          description: The status of the grant
-          example: Initiated
-        metadata:
-          type: object
-          description: A map of arbitrary string keys and values to store information about the object
-          additionalProperties:
-            type: string
         firstName:
           type: string
           description: The donor's first name
@@ -1878,7 +1869,7 @@ components:
     RecurringGrantCaptureRequest:
       description: |-
         The request to create and submit a monthly recurring grant. This is useful to capture a recurring grant intent associated with Connect workflow session.
-        The request should specify the grant amount. The grant will re-occur on the same day of the month that the grant was submitted.
+        The request should specify the grant amount. The grant will re-occur according to the scheduled frequency or recurrence of the request.
         The recurring grant will continue indefinitely until the donor runs out of funds or until the donor cancels the recurring grant with their DAF provider.
         This is the amount submitted for processing by the DAF.
       required: true
@@ -1889,15 +1880,22 @@ components:
             required:
               - workflowSessionId
               - amount
-
+              - frequency
             properties:
               workflowSessionId:
                 type: string
                 description: The identifier of the Workflow Session
+              frequency:
+                type: string
+                description: |-
+                  How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
+                enum:
+                  - monthly
+                example: monthly
               amount:
                 type: number
                 description: |-
-                  The final grant amount in cents that will be processed by Chariot and submitted to the DAF.
+                  The final grant amount in cents that will be processed by Chariot and submitted to the DAF for monthly recurring gifts.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
               applicationFeeAmount:
@@ -2151,7 +2149,6 @@ components:
                     fundId: "daf-id"
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
-                    startDate: "2021-08-10 15:00:00.000"
                     amount: 15000
                 nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
             NoMoreResults:
@@ -2162,7 +2159,6 @@ components:
                     fundId: "daf-id"
                     createdAt: "2021-08-10 16:00:00.000"
                     updatedAt: "2021-08-11 15:25:00.000"
-                    startDate: "2021-08-10 16:00:00.000"
                     amount: 20000
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
@@ -2393,17 +2389,14 @@ components:
         amount: 15000
         status: "Initiated"
     RecurringGrantOutput:
-      summary: Simple recurring grant output, the "grant_ids" field is the associated grants with this grant.
+      summary: Simple recurring grant output.
       value:
         id: "1e60800e-849b-43d1-870e-57afc8d75473"
         workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
         fundId: "daf-id"
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
-        startDate: "2021-08-10 15:00:00.000"
         amount: 15000
-        status: "Initiated"
-        grant_ids: ["b8b90579-0dd7-4ef9-b637-2877ea1debfc", "41bcaa9b-b33a-450e-aded-fc9611d0dc82", "603d88c1-4b1f-4441-8a2d-58bb74324bba"]
     UnintegratedGrantOutput:
       summary: Simple unintegrated grant output
       value:
