@@ -1406,6 +1406,7 @@ components:
         - workflowSessionId
         - fundId
         - amount
+        - frequency
       properties:
         id:
           type: string
@@ -1429,6 +1430,13 @@ components:
           readOnly: true
           description: ID of the donor advised fund
           example: daf-id
+        frequency:
+          type: string
+          description: |-
+            How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
+          enum:
+            - monthly
+          example: monthly
         externalGrantId:
           type: string
           description: ID of the grant associated with the donor advised fund
