@@ -497,7 +497,7 @@ paths:
     post:
       summary: Create Recurring Grant
       description: |-
-        Create a recurring grant from a workflow session. This is useful to capture a recurring grant intent from an authorized connect workflow session and submit the recurring grant request.
+        Create a recurring grant from a workflow session. This is useful to capture a recurring grant intent from an authorized connect workflow session and submit the recurring grant request. 
         The recurring grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
         A recurring grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
         The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants.
