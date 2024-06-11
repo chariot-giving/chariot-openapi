@@ -1879,6 +1879,10 @@ components:
         The request to create and submit a monthly recurring grant. This is useful to capture a recurring grant intent associated with Connect workflow session.
         The request should specify the grant amount. The grant will re-occur according to the scheduled frequency or recurrence of the request.
         The recurring grant will continue indefinitely until the donor runs out of funds or until the donor cancels the recurring grant with their DAF provider.
+        Some DAF providers require an end-date or number of payments in order to create a recurring grant.
+        In most cases, the recurring grant will continue indefinitely until the donor's account runs out of funds or until the donor cancels the recurring grant with their DAF provider. 
+        Some DAF providers require an explicit bound to the time period or the number of payments in which case currently we opt for the longest recurring donation timeline possible.
+        For example, if the DAF provider allows recurring donations to continue for up to 10 years we will submit the request as such.        
         This is the amount submitted for processing by the DAF.
       required: true
       content:
