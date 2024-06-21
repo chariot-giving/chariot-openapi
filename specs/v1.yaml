@@ -1435,8 +1435,8 @@ components:
           description: |-
             How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
           enum:
-            - monthly
-          example: monthly
+            - MONTHLY
+          example: MONTHLY
         externalGrantId:
           type: string
           description: ID of the grant associated with the donor advised fund
@@ -1902,8 +1902,8 @@ components:
                 description: |-
                   How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
                 enum:
-                  - monthly
-                example: monthly
+                  - MONTHLY
+                example: MONTHLY
               amount:
                 type: number
                 description: |-
@@ -2162,7 +2162,7 @@ components:
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 15000
-                    frequency: monthly
+                    frequency: MONTHLY
                 nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
             NoMoreResults:
               value:
@@ -2173,7 +2173,7 @@ components:
                     createdAt: "2021-08-10 16:00:00.000"
                     updatedAt: "2021-08-11 15:25:00.000"
                     amount: 20000
-                    frequency: monthly
+                    frequency: MONTHLY
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
       headers:
@@ -2411,7 +2411,7 @@ components:
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
         amount: 15000
-        frequency: monthly
+        frequency: MONTHLY
     UnintegratedGrantOutput:
       summary: Simple unintegrated grant output
       value:
