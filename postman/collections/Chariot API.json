@@ -5009,7 +5009,7 @@
 							],
 							"query": [
 								{
-									"description": "whether to return only supported DAFs",
+									"description": "Whether to return only supported DAFs; defaults to false",
 									"key": "supportedOnly",
 									"value": "false"
 								},
