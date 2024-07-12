@@ -734,8 +734,7 @@ paths:
         - name: supportedOnly
           in: query
           description: |-
-            Filter DAFs for those that are supported by Chariot.
-            If set to true, only DAFs that are supported by Chariot will be returned.
+            If set to true, filters DAFs to only those that have a direct integration with Chariot.
           schema:
             type: boolean
             default: false
