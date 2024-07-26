@@ -1,0 +1,143 @@
+---
+title: "Integrating Connect"
+slug: "connect-for-web"
+subtitle: "Reference for initializing Chariot Connect using Chariot JavaScript SDK"
+hidden: false
+metadata: 
+  image: []
+  robots: "index"
+createdAt: "Tue May 31 2022 18:52:52 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Jun 02 2022 19:03:29 GMT+0000 (Coordinated Universal Time)"
+---
+Include the Chariot Connect initialize script on each page of your site. It must always be loaded directly from [https://cdn.givechariot.com](https://cdn.givechariot.com), rather than included in a bundle or hosted yourself
+
+```javascript index.html
+<script src="https://cdn.givechariot.com/connect/v1/stable/connect-initialize.js"></script>
+```
+
+## Create
+
+Chariot.create accepts one argument, a configuration Object, and returns an Object with three functions, open, exit, and destroy. Calling open will display the Consent Pane view, calling exit will close Connect, and calling destroy will clean up the iframe.
+
+```javascript Create Example
+const handler = Chariot.create({
+  connect_token: 'GENERATED_CONNECT_TOKEN',
+  onSuccess: (metadata) => {},
+  onExit: (err, metadata) => {}
+});
+```
+
+| Parameter         | Description                                                                                                                                                                                                                                                                                                         | Type     |
+| :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------- |
+| **connect_token** | Specify a connect_token which allows Connect to know which nonprofit the funds are being sent to and add the nonprofit's customized wording to the Connect flow. This token does not expire but the nonprofit can revoke it. Receive this token by calling the [Get Connect Token](ref:get-connect_token) endpoint. | string   |
+| **onSuccess**     | A function that is called when a user successfully completes a grant request through Connect. The function should expect one argument, a metadata object.                                                                                                                                                           | callback |
+| **onExit**        | A function that is called when a user exits Connect without successfully initiating a grant request, or when an error occurs during Connect initialization. The function should expect two arguments, a nullable error object and a metadata object.                                                                | callback |
+
+## onSuccess
+
+The onSuccess callback is called when a user successfully initiates a grant request. It takes one argument: a metadata object.
+
+```javascript onSuccess example
+const handler = Chariot.create({
+  ...,
+  onSuccess: (metadata) => {
+    fetch('//yourserver.com/metadata', {
+      method: 'POST',
+      body: {
+        //Save whatever info you may want from the metadata
+      },
+    });
+  }
+});
+```
+
+```json Metadata schema
+{
+   institution:{
+      name:"Fidelity Charitable",
+      institution_id:"ins_4"
+   },
+   grant: {
+      id:"ygPnJweommTWNr9doD6ZfGR6GGVQy7fyREmWy",
+      amount:{
+         amount:2000,
+         amountString:"$20"
+      },
+      status : "RECEIVED",
+      organizationId:"064ccc97-fc4d-489a-8487-5b4731786d39",
+      contactInformationFields:{
+         name: "John Smith",
+         email: "johnsmith@gmail.com",
+         phone: "000-000-0000"
+      },
+      designation:"where_needed_most",
+      frequency:"once",
+      personalNote:"This is my first donation through CharityVest!"
+   },
+   connect_session_id:"79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+}
+```
+
+| Parameter                          | Description                                                                                                                                                            | Type              |
+| :--------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------- |
+| **institution.name**               | A readable format of the Donor Advised Fund institution that received this donation request                                                                            | string            |
+| **institution.institution_id**     | A unique identifier for the Donor Advised Fund institution                                                                                                             | string            |
+| **grant.id**                       | A unique identifier for this grant                                                                                                                                     | string            |
+| **grant.amount**                   | The amount requested to be donated                                                                                                                                     | object            |
+| **grant.status**                   | The status of the grant. Learn more in [Webhooks](ref:webhooks)                                                                                                        | string (enum)     |
+| **grant.organizationId**           | a unique identifier for the nonprofit organization receiving the donation                                                                                              | string            |
+| **grant.contactInformationFields** | contact information the donor has approved to share                                                                                                                    | object            |
+| **grant.designation**              | the specific fund the donor wants to send the money to                                                                                                                 | string (optional) |
+| **grant.frequency**                | the frequency for the donation. The options for this field are set by the nonprofit                                                                                    | string            |
+| **grant.personalNote**             | a free form note the donor included in the donation                                                                                                                    | string (optional) |
+| **connect_session_id**             | a unique identifier associated with a user's actions and events through the Connect flow. Include this identifier when opening a support ticket for faster turnaround. | string            |
+
+## OnExit 
+
+The onExit callback is called when a user exits Connect without successfully initiating a grant request, or when an error occurs during Connect initialization. It takes two arguments, a nullable error object and a metadata object. The metadata parameter is always present, though some values may be null.
+
+```javascript onExit example
+const handler = Chariot.create({
+  ...,
+  onExit: (error, metadata) => {
+    // Save data from the onExit handler
+    supportHandler.report({
+      error: error,
+      institution: metadata.institution,
+      connect_session_id: metadata.connect_session_id,
+      chariot_request_id: metadata.request_id,
+      status: metadata.status,
+    });
+  },
+});
+```
+
+```javascript Errror schema
+{
+  error_type: 'ITEM_ERROR',
+  error_code: 'INVALID_CREDENTIALS',
+  error_message: 'the credentials were not correct',
+  display_message: 'The credentials were not correct.',
+}
+```
+
+```json Metadata schema
+{
+  institution: {
+    name: 'Fidelity Charitable',
+    institution_id: 'ins_4'
+  },
+  status: 'requires_credentials',
+  chariot_session_id: '36e201e0-2280-46f0-a6ee-6d417b450438',
+  request_id: '8C7jNbDScC24THu'
+}
+```
+
+| Parameter               | Description                                                                                                                                                            | Type   |
+| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| **institution.name**    | The full institution name, such as "Fidelity Charitable"                                                                                                               | string |
+| **institution.id**      | The Chariot Donor Advised Fund identifier                                                                                                                              | string |
+| **status**              | The point at which the user exited the Connect flow. One of the following values                                                                                       | string |
+| **chariot_session_id**  | A unique identifier associated with a user's actions and events through the Connect flow. Include this identifier when opening a support ticket for faster turnaround. | string |
+| **request_id**          | The request ID for the last request made by Connect. This can be shared with Chariot Support to expedite investigation.                                                | string |
+

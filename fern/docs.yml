@@ -1,18 +1,14 @@
 instances:
   - url: https://chariot.docs.buildwithfern.com
 title: Chariot Documentation
-  
-navigation: 
-  - section: Documentation
-    contents:  
-      - section: Get Started
-        contents: 
-          - page: Overview
-            slug: overview
-            path: ./pages/overview.mdx
-  - api: API Reference
-    snippets: 
-      typescript: chariot
+
+versions:
+  - display-name: v2.0
+    path: versions/v2.0/docs.yml
+  - display-name: v1.8
+    path: versions/v1.8/docs.yml
+  - display-name: v1.7
+    path: versions/v1.7/docs.yml
        
 colors:
   accentPrimary: 
