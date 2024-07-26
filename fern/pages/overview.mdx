@@ -1,0 +1,24 @@
+---
+title: Overview
+subtitle: A comprehensive reference for integrating with Chariot API endpoints
+---
+The Chariot API is organized around REST. Our API has predictable resource-oriented URLs, accepts JSON-encoded request bodies, returns JSON-encoded responses, and uses standard HTTP response codes, authentication, and verbs.
+
+<Info title="Issues, Ideas or Feedback">
+If you feel like something is missing from our API docs, feel free to create an Issue on our [OpenAPI GitHub repo](https://github.com/chariot-giving/chariot-openapi).
+</Info>
+
+## API protocols and headers
+
+The Chariot API uses standard HTTP response codes to indicate status and errors. All responses come in standard JSON. The Chariot API is served over HTTPS TLS v1.2+ to ensure data privacy; HTTP and HTTPS with TLS versions below 1.2 are not supported. All requests with a payload must include a Content-Type of application/JSON and the body must be valid JSON.
+
+Every Chariot API response includes a request_id as the `X-Request-Id` header. The request_id is included whether the API request succeeded or failed. For faster support, include the request_id when contacting support regarding a specific API call.
+
+## API host 
+
+```js Server.js
+https://sandboxapi.givechariot.com (Sandbox)
+https://api.givechariot.com (Production)
+```
+
+Chariot has two environments: Sandbox and Production. The Sandbox environment supports only test data. All activity in the Production environment is real. When you’re getting ready to launch into production, please let us know by emailing [contact@givechariot.com](contact@givechariot.com) to get your production credentials.

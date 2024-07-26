@@ -1,0 +1,16 @@
+---
+title: "Create Grant"
+slug: "create-grant"
+subtitle: "Create a grant from a workflow session. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request.\nThe grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.\nA grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.\nThe grant amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants.\nThe grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.\nThe grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request."
+hidden: false
+createdAt: "Fri Nov 11 2022 21:12:48 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Jan 26 2024 19:37:55 GMT+0000 (Coordinated Universal Time)"
+---
+This is useful to capture a grant intent from an authorized Connect workflow session and submit the grant request. A grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
+
+The grant amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants. The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request. The grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
+
+<Info> 
+Generally grants should be captured as soon as possible after a grant intent is authorized by a user to optimize for conversion. We recommend a soft limit of 5 minutes and enforce a hard limit of 15 minutes. This means that after 5 minutes, there's a higher chance of an error and after 15 minutes, the request will return status 410 Gone.
+</Info>
+

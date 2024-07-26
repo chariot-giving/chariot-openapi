@@ -1,0 +1,94 @@
+---
+title: "Button Styles"
+slug: "button-styles"
+subtitle: "Provided styles for the Chariot Connect button"
+hidden: false
+createdAt: "Mon Feb 20 2023 16:24:01 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Feb 15 2024 17:21:29 GMT+0000 (Coordinated Universal Time)"
+---
+# Using a default theme
+
+Choose your theme by adding the theme name as a parameter to the `chariot-connect` modal, as below.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect 
+	id="chariot" 
+	cid="GENERATED_CONNECT_IDENTIFIER" 
+	theme="THEME_NAME" <!-- Add this parameter ->
+>
+</chariot-connect>
+```
+```javascript React
+<ChariotConnect 
+  cid="GENERATED_CONNECT_IDENTIFIER" 
+  theme="THEME_NAME" <!-- Add this parameter -> 
+  ...
+/>
+```
+</CodeBlocks>
+
+We provide the options below as default themes. If `theme` is not defined, `DefaultTheme` will be used.
+
+## `DefaultTheme`
+
+<img src='../../images/8155407-DefaultTheme.svg' />
+
+
+## `LightModeTheme`
+
+<img src='../../images/a7b65c5-LightMode.svg' />
+
+
+## `LightBlueTheme`
+
+<img src='../../images/9c06770-LightBlue.svg' />
+
+
+## `GradientTheme`
+
+<img src='../../images/446fbf1-Gradient.svg' />
+
+
+# Creating a custom theme
+
+To create a custom theme for the Chariot Connect button, create an object with the desired properties that you wish to change. Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.
+
+<Info title="Important Note for Style Customizations">  
+ Style customizations for Chariot Connect require that all available CSS be packaged within the `chariot-connect.umd.js` bundle. The problem is that for Chariot to allow any customizations, we would need to include the entire [tailwindcss](https://v1.tailwindcss.com/docs/controlling-file-size) package (~2.4Mb uncompressed) which would degrade performance and load times to an unacceptable level. While performance is a concern, we also realize the need for a consistent and seamless user experience and are also committed to providing configurations for size, padding, border radius, etc. on top of the pre-built themes that we offer.
+</Info>
+
+<CodeBlocks>
+```javascript JavaScript
+// get the element from the DOM
+const chariot = document.getElementById("chariot")
+
+// define your alterations using valid properties from the table below
+const alterations = {
+	width: "w-12",
+	height: "h-8",
+};
+
+// register your new theme with a custom name
+chariot.registerTheme("myTheme", alterations);
+```
+```javascript React
+<ChariotConnect 
+  cid="GENERATED_CONNECT_IDENTIFIER" 
+  theme={
+        width: "w-12",
+        height: "h-8",
+    }
+  ...
+/>
+```
+</CodeBlocks>
+
+### Theme Properties
+
+| Parameter Name     | Use                                                                                      | Allowed value                                                                             |
+| :----------------- | :--------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| `width`            | The width of the button                                                                  | [width](https://tailwindcss.com/docs/width) up to `16` or `64px`                          |
+| `height`           | The height of the button                                                                 | [height](https://tailwindcss.com/docs/height) at least `9` or `36px` up to `12` or `48px` |
+| `showExtendedText` | Show an extended text (`Give with Donor Advised Fund`) version of the DAFpay button text | `true` or `false` (this value is `false` by default)                                      |
+
