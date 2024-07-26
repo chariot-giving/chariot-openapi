@@ -13,7 +13,7 @@ navigation:
             path: ./pages/getting-started/faq.mdx
       - section: Connect (FRONTEND)
         contents: 
-          - page: Integrating Connect (DaFpay)
+          - page: Integrating Connect (DAFpay)
             path: ./pages/connect-frontend/integrating-connect.mdx
           - page: Button Styles
             path: ./pages/connect-frontend/button-styles.mdx
