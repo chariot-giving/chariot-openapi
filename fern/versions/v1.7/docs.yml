@@ -13,7 +13,7 @@ navigation:
             path: ./pages/getting-started/faq.mdx
       - section: Connect (FRONTEND)
         contents: 
-          - page: Integrating Connect (DAFpay)
+          - page: Integrating Connect (DaFpay)
             path: ./pages/connect-frontend/integrating-connect.mdx
           - page: Button Styles
             path: ./pages/connect-frontend/button-styles.mdx
@@ -39,3 +39,5 @@ navigation:
     display-errors: true
     snippets: 
       typescript: chariot
+    layout: 
+      - auth

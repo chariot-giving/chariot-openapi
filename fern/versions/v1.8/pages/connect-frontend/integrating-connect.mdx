@@ -1,22 +1,22 @@
 ---
-title: "Integrating Connect (DAFpay)"
+title: "Integrating Connect (DaFpay)"
 slug: "integrating-connect"
-subtitle: "Reference for initializing DAFpay using React or JavaScript SDK"
+subtitle: "Reference for initializing DaFpay using React or JavaScript SDK"
 hidden: false
 createdAt: "Fri Feb 17 2023 18:02:35 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Fri Jul 12 2024 18:04:07 GMT+0000 (Coordinated Universal Time)"
 ---
 <Note title="Recommended Implementation">
- **Enable by Default**: DAFpay supports transactions for all eligible 501(c)(3) organizations, allowing DAFpay to function on a donation form prior to the completion of the nonprofit's onboarding with Chariot. Thus, we advise setting DAFpay as a default payment option across your donation pages. This will improve  fundraising outcomes and help develop relationships with key donors!
+ **Enable by Default**: DaFpay supports transactions for all eligible 501(c)(3) organizations, allowing DaFpay to function on a donation form prior to the completion of the nonprofit's onboarding with Chariot. Thus, we advise setting DaFpay as a default payment option across your donation pages. This will improve  fundraising outcomes and help develop relationships with key donors!
  
- **Express Checkout Option**: DAFpay offers the capability to automatically gather crucial donor information, such as names, email addresses, physical addresses, and more. Additionally, DAFpay provides Intelligent Donation Recommendations, taking into account factors like the donor's account balance. For this reason, we recommend featuring DAFpay as an Express Checkout option, making it visible early in the donation process, before donors are prompted to input their information or decide on a donation amount. This enhances conversion rates and encourages larger donations.
+ **Express Checkout Option**: DaFpay offers the capability to automatically gather crucial donor information, such as names, email addresses, physical addresses, and more. Additionally, DaFpay provides Intelligent Donation Recommendations, taking into account factors like the donor's account balance. For this reason, we recommend featuring DaFpay as an Express Checkout option, making it visible early in the donation process, before donors are prompted to input their information or decide on a donation amount. This enhances conversion rates and encourages larger donations.
  
  Please don't hesitate to contact us with any questions!
 </Note>
 
 ## Installation
 
-Chariot Connect (DAFpay button) comes as a small JavaScript package. It can be loaded directly from the Chariot CDN or installed via [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. When loading from the CDN, It must always be loaded directly from [https://cdn.givechariot.com](https://cdn.givechariot.com), rather than included in a bundle or hosted yourself.
+Chariot Connect (DaFpay button) comes as a small JavaScript package. It can be loaded directly from the Chariot CDN or installed via [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. When loading from the CDN, It must always be loaded directly from [https://cdn.givechariot.com](https://cdn.givechariot.com), rather than included in a bundle or hosted yourself.
 
 <CodeBlocks>
 ```html CDN
@@ -32,7 +32,7 @@ yarn add react-chariot-connect
 
 ## Add Chariot Connect
 
-Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DAFpay) button with a single line. Add Chariot-Connect component where you want the DAFpay button to appear.
+Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DaFpay) button with a single line. Add Chariot-Connect component where you want the DaFpay button to appear.
 
 <CodeBlocks>
 ```html HTML
@@ -58,7 +58,7 @@ A nonprofit's `cid`  (Connect ID) should be retrieved from your database after t
 
 <br />
 
-_Note: For testing purposes in a sandbox environment the following credentials will log in to any DAF provider._
+_Note: For testing purposes in a sandbox environment the following credentials will log in to any DaF provider._
 
 ```
 username: good-user
@@ -136,7 +136,7 @@ The given donation data must match the following schema to be accepted by Chario
 | anonymous  | Indicates if this donation should be sent anonymously (default: false)                                                                                                                                                                                | boolean (optional)|
 | address    | The donor's address: line1, line2, city, state, postalCode                                                                                                                                                                                            | object (optional) |
 | metadata   | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                    | object (optional) |
-| fundId     | The ID of the preselected DAF provider.  <br /><br />If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                               | string (optional) |
+| fundId     | The ID of the preselected DaF provider.  <br /><br />If this value is provided, the donor will not be shown the default DaF dropdown and will instead be taken straight to that DaF's login.                                                               | string (optional) |
 
 
 ## Capture your grant intent
@@ -226,22 +226,22 @@ const App = () => {
 ```javascript JavaScript
 enum ExitReason {
   USER_EXIT = "USER_EXIT", // User exited the flow
-  UNINTEGRATED_DAF = "UNINTEGRATED_DAF", // DAF is not integrated with Chariot
+  UNINTEGRATED_DaF = "UNINTEGRATED_DaF", // DaF is not integrated with Chariot
   UNINTEGRATED_GRANT_CONFIRMED = "UNINTEGRATED_GRANT_CONFIRMED",  // Unintegrated grant confirmed with Chariot
   CID_NOT_FOUND = "CID_NOT_FOUND", // Connect Identifier is not found
-  INELIGIBLE_ORGANIZATION = "INELIGIBLE_ORGANIZATION", // This Organization is not eligible to receive DAF donations
+  INELIGIBLE_ORGANIZATION = "INELIGIBLE_ORGANIZATION", // This Organization is not eligible to receive DaF donations
   CREDENTIALS_ERROR = "CREDENTIALS_ERROR", // Invalid credentials
   INVALID_CARD = "INVALID_CARD", // Invalid card number
   TFA_ERROR = "TFA_VERIFICATION_ERROR", // Two-factor authentication error
   ZERO_AMOUNT = "ZERO_GRANT_AMOUNT", // Grant amount is zero
   SERVICE_DEACTIVATED = "SERVICE_DEACTIVATED", // Nonprofit's Connect is deactivated (active = false)
-  ACCESS_RESTRICTED = "ACCOUNT_ACCESS_RESTRICTED", // User's DAF sponsor account electronic access is restricted
-  EIN_NOT_FOUND = "NONPROFIT_NOT_FOUND", // DAF sponsor does not support grants to the Nonprofit
-  CONNECTION_FAILED = "CONNECTION_FAILED", // Connection to the DAF sponsor failed
+  ACCESS_RESTRICTED = "ACCOUNT_ACCESS_RESTRICTED", // User's DaF sponsor account electronic access is restricted
+  EIN_NOT_FOUND = "NONPROFIT_NOT_FOUND", // DaF sponsor does not support grants to the Nonprofit
+  CONNECTION_FAILED = "CONNECTION_FAILED", // Connection to the DaF sponsor failed
   SESSION_NOT_FOUND = "SESSION_NOT_FOUND", // User session is not found and may have expired
   CUSTOM_ERROR = "CUSTOM_ERROR", // Custom error
   INTERNAL_ERROR = "INTERNAL_ERROR", // Internal error
-  INSTITUTION_DOWN_ERROR = "INSTITUTION_DOWN_ERROR", // DAF sponsor institution is down; user should try again later
+  INSTITUTION_DOWN_ERROR = "INSTITUTION_DOWN_ERROR", // DaF sponsor institution is down; user should try again later
   NO_CHARITABLE_ACCOUNTS = "NO_CHARITABLE_ACCOUNTS", // Donor has no charitable accounts in the logged in account
 }
 ```
