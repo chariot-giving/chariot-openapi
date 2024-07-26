@@ -123,6 +123,9 @@ paths:
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken
+      servers:
+      - url: https://login.givechariot.com/
+        x-name: Login
       requestBody:
         required: true
         content:

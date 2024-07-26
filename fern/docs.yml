@@ -17,13 +17,13 @@ colors:
     dark: "#35BBF4"
   background:
     light: "#f8f9fb"
-    dark: "#004676"
+    dark: "#080E4B"
   sidebar-background:
     light: "#ffffff"
-    dark: "#000000"
+    dark: "#000435"
   header-background: 
     light: '#ffffff'
-    dark: "#000000"
+    dark: "#000435"
 logo:
   light: assets/logo.png
   dark: assets/logo.png
