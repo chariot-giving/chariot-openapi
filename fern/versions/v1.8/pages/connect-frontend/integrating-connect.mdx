@@ -141,7 +141,7 @@ The given donation data must match the following schema to be accepted by Chario
 
 ## Capture your grant intent
 
-When a user completes a Chariot Connect session you will receive a grant intent. After you submit your own donation form, don't forget to call the [ Create Grant](ref:create-grant) API to complete the transaction.
+When a user completes a Chariot Connect session you will receive a grant intent. After you submit your own donation form, don't forget to call the [ Create Grant](/api-reference/grants/create) API to complete the transaction.
 
 Most workflows proceed as follows:
 
@@ -149,7 +149,7 @@ Most workflows proceed as follows:
    1. If you would like to collect any additional information from the user  such as additional contact information you can do so at this step. If the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a completed grant.  
    _Note: Submitting your own donation form before converting the grant ensures consistency between your systems and Chariot._
-3. Have your backend call Chariot's [Create Grant](ref:create-grant) API to complete the grant (and capture the grant intent).
+3. Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent).
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -217,7 +217,7 @@ const App = () => {
 | Event Name         | Description                                                                                                                                                                                                                                                      | Metadata Type         |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
 | `CHARIOT_INIT`     | The init event is called when the Chariot Connect script is initialized and ready to be run. This is useful to be able to know when Chariot Connect is initialized and ready to be used.                                                                          | No metadata is provided for this event. |
-| `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](ref:create-grant) route. | `OnSuccessMetadata`   |
+| `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api-reference/grants/create) route. | `OnSuccessMetadata`   |
 | `CHARIOT_EXIT`     | The exit event is called when a user exits without successfully completing the flow, when an error occurs during the flow, or when a user confirms an unintegrated grant.                                                                                       | `OnExitMetadata`      |
 
 

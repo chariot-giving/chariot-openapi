@@ -1,5 +1,6 @@
 instances:
   - url: https://chariot.docs.buildwithfern.com
+    custom-domain: docs.givechariot.com
 title: Chariot Documentation
 
 versions:

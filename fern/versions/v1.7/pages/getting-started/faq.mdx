@@ -8,15 +8,15 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
 ---
 ### How can my platform collect our processing fees?
 
-In the [Create Grant](ref:create-grant) endpoint, there is a parameter named `applicationFeeAmount`. This will allow the caller to pass in a processing fee for the grant. Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the Nonprofit and send the fees in a cadence according to an agreed-upon contract.
+In the [Create Grant](/api-reference/grants/create) endpoint, there is a parameter named `applicationFeeAmount`. This will allow the caller to pass in a processing fee for the grant. Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the Nonprofit and send the fees in a cadence according to an agreed-upon contract.
 
 ### How can I run form validations before the Connect button launches?
 
-To perform form validation before Chariot Connect launches, simply return `false` in the onDonationRequest. Please see  [Integrating Connect](ref:integrating-connect) to learn more.
+To perform form validation before Chariot Connect launches, simply return `false` in the onDonationRequest. Please see  [Integrating Connect](/integrating-connect) to learn more.
 
 ### How can donors cover fees?
 
-If a donor wishes to cover the fees, increase the final amount sent to the [Create Grant](ref:create-grant) route to compensate for the processing fees. Take into consideration that increasing the final amount also raises the processing fee and **don't forget to round the final amount to a whole dollar (nearest 100) as DAFs only allow grants in dollar increments**.
+If a donor wishes to cover the fees, increase the final amount sent to the [Create Grant](/api-reference/grants/create) route to compensate for the processing fees. Take into consideration that increasing the final amount also raises the processing fee and **don't forget to round the final amount to a whole dollar (nearest 100) as DAFs only allow grants in dollar increments**.
 
 To calculate the final amount you can use the following formula: 
 
