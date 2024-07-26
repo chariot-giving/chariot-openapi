@@ -1,0 +1,15 @@
+/* :not(.dark) body {
+    color: #240642 !important;
+}
+
+:is(.dark) body {
+    color: #ffffff !important;
+}
+
+:not(.dark) .prose {
+    color: #240642 !important;
+}
+
+:is(.dark) .prose {
+    color: #ffffff !important;
+} */
