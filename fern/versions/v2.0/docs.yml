@@ -33,10 +33,6 @@ navigation:
             path: ./pages/api-backend/postman.mdx
           - page: Webhooks and Events
             path: ./pages/api-backend/webhooks-and-events.mdx
-          - page: SDKs
-            path: ./pages/api-backend/sdk-api.mdx
-          - page: Grant Statuses
-            path: ./pages/api-backend/grant-statuses.mdx
   - api: API Reference
     display-errors: true
     snippets: 
