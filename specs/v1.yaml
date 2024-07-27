@@ -729,7 +729,7 @@ paths:
       description: List all DAF objects. This API allows for paginating over many results.
       operationId: list-dafs
       tags:
-        - DAFs
+        - dAFs
       parameters:
         - name: pageLimit
           in: query
@@ -759,7 +759,7 @@ paths:
         If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
       operationId: get-daf
       tags:
-        - DAFs
+        - dAFs
       parameters:
         - name: id
           in: path

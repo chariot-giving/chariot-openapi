@@ -17,13 +17,13 @@ colors:
     dark: "#35BBF4"
   background:
     light: "#f8f9fb"
-    dark: "#080E4B"
+    dark: "#171717"
   sidebar-background:
     light: "#ffffff"
-    dark: "#000435"
+    dark: "#2C2E2F"
   header-background: 
     light: '#ffffff'
-    dark: "#000435"
+    dark: "#2C2E2F"
 logo:
   light: assets/logo.png
   dark: assets/logo.png
@@ -33,7 +33,7 @@ css: assets/styles.css
 layout:
   page-width: full
   disable-header: false
-  header-height: 73px
+  header-height: 68px
   searchbar-placement: header
 typography:
   bodyFont:
