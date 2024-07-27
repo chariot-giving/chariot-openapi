@@ -73,12 +73,12 @@ paths:
     get:
       x-fern-pagination: true
       x-fern-sdk-group-name:
-        - daFs
+        - dAFs
       x-fern-sdk-method-name: list
   /v1/dafs/{id}:
     get:
       x-fern-sdk-group-name:
-        - daFs
+        - dAFs
       x-fern-sdk-method-name: get
   /v1/events:
     get:
@@ -123,6 +123,9 @@ paths:
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken
+      servers:
+      - url: https://login.givechariot.com/
+        x-name: Login
       requestBody:
         required: true
         content:

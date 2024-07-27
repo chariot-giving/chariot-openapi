@@ -39,3 +39,5 @@ navigation:
     display-errors: true
     snippets: 
       typescript: chariot
+    layout:
+      - auth
