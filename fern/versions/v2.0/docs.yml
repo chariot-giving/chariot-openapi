@@ -1,6 +1,6 @@
 navigation: 
-  - section: Documentation
-    contents:  
+  - section: Guides
+    contents:
       - section: Getting Started
         contents: 
           - page: Overview
@@ -27,10 +27,8 @@ navigation:
             path: ./pages/api-backend/overview.mdx
           - page: Authentication
             path: ./pages/api-backend/authentication-1.mdx
-          - page: Error Codes
+          - page: Errors
             path: ./pages/api-backend/errors-1.mdx
-          - page: Grant Statuses
-            path: ./pages/api-backend/grant-statuses.mdx
           - page: Postman
             path: ./pages/api-backend/postman.mdx
           - page: Webhooks and Events
