@@ -317,7 +317,7 @@ paths:
         Create a grant from a workflow session. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request.
         The grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
         A grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
-        The grant amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants.
+        The grant amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status 400 Bad Request.
         The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.
         The grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
       operationId: create-grant
@@ -497,12 +497,12 @@ paths:
     post:
       summary: Create Recurring Grant
       description: |-
-        Create a recurring grant from a workflow session. This is useful to capture a recurring grant intent from an authorized connect workflow session and submit the recurring grant request. 
+        Create a recurring grant from a workflow session. This is useful to capture a recurring grant intent from an authorized connect workflow session and submit the recurring grant request.
         The recurring grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
         A recurring grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
-        The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants.
+        The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status 400 Bad Request.
         The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.
-        The amount for the first grant must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.      
+        The amount for the first grant must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
       operationId: create-recurring-grant
       tags:
         - Grants
@@ -1397,8 +1397,8 @@ components:
     RecurringGrant:
       type: object
       description: |-
-        A RecurringGrant represents a successfully initiated recurring grant request with a Donor Advised Fund. 
-        RecurringGrants are created when a person interacts with an instance of Chariot Connect and successfully submits a recurring grant and completes the workflow. 
+        A RecurringGrant represents a successfully initiated recurring grant request with a Donor Advised Fund.
+        RecurringGrants are created when a person interacts with an instance of Chariot Connect and successfully submits a recurring grant and completes the workflow.
         On creation, each RecurringGrant object will also have a Grant object created to represent the first grant of the recurring grant.
         There can be many grants associated with the same recurring grant.
       required:
@@ -1433,7 +1433,7 @@ components:
         frequency:
           type: string
           description: |-
-            How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
+            How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency.
           enum:
             - MONTHLY
           example: MONTHLY
@@ -1825,7 +1825,7 @@ components:
                 type: number
                 description: |-
                   This parameter specifies the fee your platform plans to take from the grant in cents.
-                  This is a fee in addition to Chariot's processing fee. With application fees, 
+                  This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
                   Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
@@ -1880,9 +1880,9 @@ components:
         The request should specify the grant amount. The grant will re-occur according to the scheduled frequency or recurrence of the request.
         The recurring grant will continue indefinitely until the donor runs out of funds or until the donor cancels the recurring grant with their DAF provider.
         Some DAF providers require an end-date or number of payments in order to create a recurring grant.
-        In most cases, the recurring grant will continue indefinitely until the donor's account runs out of funds or until the donor cancels the recurring grant with their DAF provider. 
+        In most cases, the recurring grant will continue indefinitely until the donor's account runs out of funds or until the donor cancels the recurring grant with their DAF provider.
         Some DAF providers require an explicit bound to the time period or the number of payments in which case currently we opt for the longest recurring donation timeline possible.
-        For example, if the DAF provider allows recurring donations to continue for up to 10 years we will submit the request as such.        
+        For example, if the DAF provider allows recurring donations to continue for up to 10 years we will submit the request as such.
         This is the amount submitted for processing by the DAF.
       required: true
       content:
@@ -1900,7 +1900,7 @@ components:
               frequency:
                 type: string
                 description: |-
-                  How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency. 
+                  How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency.
                 enum:
                   - MONTHLY
                 example: MONTHLY
@@ -1914,7 +1914,7 @@ components:
                 type: number
                 description: |-
                   This parameter specifies the fee your platform plans to take from the first grant in cents.
-                  This is a fee in addition to Chariot's processing fee. With application fees, 
+                  This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
                   Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
@@ -2134,8 +2134,8 @@ components:
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 20000
                     status: "Received"
-    ListRecurringGrantsResponse: 
-      description: The response for RecurringGrants.list 
+    ListRecurringGrantsResponse:
+      description: The response for RecurringGrants.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
