@@ -40,4 +40,4 @@ navigation:
     layout:
       - auth
       - DAFs:
-          title: DAFs
+          title: Donor Advised Funds
