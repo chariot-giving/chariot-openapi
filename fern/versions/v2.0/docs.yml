@@ -39,5 +39,5 @@ navigation:
       typescript: chariot
     layout:
       - auth
-      - dAFs:
+      - DAFs:
           title: DAFs
