@@ -37,20 +37,20 @@ paths:
       x-fern-pagination: true
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: list-grants
+      x-fern-sdk-method-name: list
     post:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: create-grant
+      x-fern-sdk-method-name: create
   /v1/grants/{id}:
     get:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: get-grant
+      x-fern-sdk-method-name: get
     patch:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: update-grant
+      x-fern-sdk-method-name: update
   /v1/recurring_grants:
     get:
       x-fern-pagination: true
@@ -71,16 +71,16 @@ paths:
       x-fern-pagination: true
       x-fern-sdk-group-name:
         - unintegrated_grants
-      x-fern-sdk-method-name: list-unintegrated-grants
+      x-fern-sdk-method-name: list
   /v1/unintegrated_grants/{id}:
     get:
       x-fern-sdk-group-name:
         - unintegrated_grants
-      x-fern-sdk-method-name: get-unintegrated-grant
+      x-fern-sdk-method-name: get
     patch:
       x-fern-sdk-group-name:
         - unintegrated_grants
-      x-fern-sdk-method-name: update-unintegrated-grant
+      x-fern-sdk-method-name: update
   /v1/dafs:
     get:
       x-fern-pagination: true
