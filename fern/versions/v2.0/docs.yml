@@ -39,5 +39,5 @@ navigation:
       typescript: chariot
     layout:
       - auth
-      - daFs:
+      - DAFs:
           title: Donor Advised Funds
