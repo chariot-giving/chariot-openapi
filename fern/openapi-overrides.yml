@@ -70,12 +70,12 @@ paths:
     get:
       x-fern-pagination: true
       x-fern-sdk-group-name:
-        - dAFs
+        - DAFs
       x-fern-sdk-method-name: list
   /v1/dafs/{id}:
     get:
       x-fern-sdk-group-name:
-        - dAFs
+        - DAFs
       x-fern-sdk-method-name: get
   /v1/events:
     get:
