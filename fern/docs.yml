@@ -16,14 +16,14 @@ colors:
     light: "#35BBF4"
     dark: "#35BBF4"
   background:
-    light: "#f8f9fb"
-    dark: "#171717"
+    light: "#F6F8FA"
+    dark: "#212121"
   sidebar-background:
-    light: "#ffffff"
-    dark: "#2C2E2F"
+    light: "#F6F8FA"
+    dark: "#212121"
   header-background: 
-    light: '#ffffff'
-    dark: "#2C2E2F"
+    light: '#F6F8FA'
+    dark: "#212121"
 logo:
   light: assets/logo.png
   dark: assets/logo.png
