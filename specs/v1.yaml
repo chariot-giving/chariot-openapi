@@ -18,11 +18,10 @@ paths:
     get:
       summary: Get nonprofit by EIN
       description: |-
-        Get a nonprofit organization by EIN.
-        If the nonprofit does not exist, this returns 404 Not Found status.
-        If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
-        In the case that the nonprofit does not exist, you can create one by calling the POST /v1/nonprofits API endpoint.
-        The EIN should be exactly 9 digits and should not contain any special characters such as dashes.
+        Retrieves a nonprofit organization by an [Employee Identification Number](https://www.irs.gov/charities-non-profits/employer-identification-number) (EIN).
+        The EIN is a unique number that identifies the organization to the Internal Revenue Service (IRS).
+        
+        In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api-reference/nonprofits/create) API endpoint.
       operationId: get-nonprofit-by-ein
       tags:
         - Nonprofits
@@ -66,11 +65,20 @@ paths:
     post:
       summary: Create nonprofit
       description: |-
-        Create a nonprofit organization account.
+        Create a nonprofit organization.
+
         This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
-        If a nonprofit does not already exist for the EIN, this will return a 201 Created status.
-        If a nonprofit already exists for the given EIN on the system, this will return a 200 Created status.
-        If the nonprofit does not pass our compliance checks, a 422 Unprocessable Content is returned with a reason.
+
+        <Tip>
+        If a nonprofit does not already exist for the EIN, this will return a `201 Created` status.
+        If a nonprofit already exists for the given EIN on the system, this will return a `200 OK` status.
+        </Tip>
+
+        <Warning>
+        Handling errors:
+        - If the nonprofit does not exist within Chariot's database, a `404 Not Found` status is returned.
+        - If the nonprofit exists but does not pass Chariot's compliance checks, a `412 Precondition Failed` status is returned with a reason.
+        </Warning>
       operationId: create-nonprofit
       tags:
         - Nonprofits
@@ -114,10 +122,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/nonprofits/{id}:
     get:
-      summary: Get nonprofit by ID
+      summary: Get nonprofit
       description: |-
-        Get a nonprofit organization by ID.
-        If the nonprofit does not exist, this returns 404 Not Found status.
+        Retrieves the nonprofit organization with the given ID.
       operationId: get-nonprofit-by-id
       tags:
         - Nonprofits
@@ -159,7 +166,14 @@ paths:
     post:
       summary: Create Connect
       description: |-
-        Get or create a Connect object. Only one Connect object can be created per Nonprofit for a given Fundraising Application. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property.
+        Get an existing connect or create a new connect for an existing nonprofit organization.
+        
+        The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
+
+        <Note>
+        Only one Connect object can be created per Nonprofit.
+        If one already exists, this will return a `200 OK` status with the existing object.
+        </Note>
       operationId: create-connect
       tags:
         - Connects
@@ -170,9 +184,8 @@ paths:
         - name: nonprofit
           in: query
           description: |-
-            The unique identifier (ID) for the nonprofit.
+            The unique id of the nonprofit.
             The format should be a v4 UUID according to RFC 4122.
-            This can be found by calling the /v1/nonprofit/{ein} API endpoint.
           schema:
             type: string
             format: uuid
@@ -181,9 +194,8 @@ paths:
         - name: suborganization
           in: query
           description: |-
-            The unique identifier (ID) for the suborganization within the nonprofit.
+            The unique id for the suborganization within the nonprofit.
             The format should be a v4 UUID according to RFC 4122.
-            This can be found by calling the /v1/nonprofit/{ein} API endpoint.
           schema:
             type: string
             format: uuid
@@ -193,7 +205,7 @@ paths:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
         "200":
-          description: the existing Connect object
+          description: OK
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
@@ -207,7 +219,7 @@ paths:
                 Simple:
                   $ref: "#/components/examples/ConnectOutput"
         "201":
-          description: the created connect object
+          description: Created
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
@@ -234,7 +246,7 @@ paths:
     get:
       summary: Get Connect
       description: |-
-        Get a Connect object with the unique identifier (CID)
+        Retrieve a connect with the given ID.
       operationId: get-connect
       tags:
         - Connects
@@ -273,7 +285,7 @@ paths:
     get:
       summary: List Grants
       description: |-
-        List all grants for the provided API Key. This API allows for paginating over many results.
+        Returns a list of all grants for a given Connect. This API allows for paginating over many results.
       operationId: list-grants
       tags:
         - Grants
@@ -283,7 +295,7 @@ paths:
       parameters:
         - name: x-chariot-api-key
           in: header
-          description: the apiKey of the Connect object
+          description: the `apiKey` of the Connect object
           schema:
             type: string
           required: true
@@ -314,12 +326,16 @@ paths:
     post:
       summary: Create Grant
       description: |-
-        Create a grant from a workflow session. This is useful to capture a grant intent from an authorized connect workflow session and submit the grant request.
-        The grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
-        A grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
-        The grant amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status 400 Bad Request.
-        The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.
-        The grant amount must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
+        Create and submit a new grant. This should be used to capture a grant intent from an authorized DAFpay workflow session and submit the grant request to the DAF sponsor.
+        
+        <Warning>
+        Error handling:
+        - The grant must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
+        - A grant can only be captured once from any given workflow session so any duplicate requests will return status `409 Conflict`.
+        - The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status `400 Bad Request`.
+        - The amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status `400 Bad Request`.
+        - The amount must be less than or equal to the user's DAF account balance otherwise the request will return status `400 Bad Request`.
+        </Warning>
       operationId: create-grant
       tags:
         - Grants
@@ -330,7 +346,7 @@ paths:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
         "201":
-          description: Created grant
+          description: Created
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
@@ -364,9 +380,7 @@ paths:
     get:
       summary: Get Grant
       description: |-
-        Get a grant object generated by Chariot Connect.
-        If the grant does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Retrieve a grant with the given ID.
       operationId: get-grant
       tags:
         - Grants
@@ -376,7 +390,9 @@ paths:
       parameters:
         - name: id
           in: path
-          description: the unique id of the grant
+          description: |-
+            The unique id of the grant.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -408,10 +424,8 @@ paths:
     patch:
       summary: Update Grant
       description: |-
-        Update a grant object generated by Chariot Connect.
-        This is useful to update the status or acknowledgement of the grant.
-        If the grant does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Update a grant object with the given ID.
+        This can be used to update the status or acknowledgement of the grant.
       operationId: update-grant
       tags:
         - Grants
@@ -421,7 +435,9 @@ paths:
       parameters:
         - name: id
           in: path
-          description: the unique id of the grant
+          description: |-
+            The unique id of the grant.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -454,19 +470,19 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/recurring_grants:
     get:
-      summary: List recurring Grants
+      summary: List Recurring Grants
       description: |-
-        List all recurring grants for the provided API Key. This API allows for paginating over many results.
+        Returns a list of all recurring grants for a given Connect. This API allows for paginating over many results.
       operationId: list-recurring-grants
       tags:
-        - Grants
+        - recurring_grants
       security:
         - auth0:
             - "read:recurring_grants"
       parameters:
         - name: x-chariot-api-key
           in: header
-          description: the apiKey of the Connect object
+          description: the `apiKey` of the Connect object
           schema:
             type: string
           required: true
@@ -497,15 +513,19 @@ paths:
     post:
       summary: Create Recurring Grant
       description: |-
-        Create a recurring grant from a workflow session. This is useful to capture a recurring grant intent from an authorized connect workflow session and submit the recurring grant request.
-        The recurring grant must be captured within 5 minutes of authorization otherwise the request will return status 410 Gone.
-        A recurring grant can only be captured once from any given workflow session so any duplicate requests will return status 409 Conflict.
-        The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status 400 Bad Request.
-        The grant amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status 400 Bad Request.
-        The amount for the first grant must be less than or equal to the user's DAF account balance otherwise the request will return status 400 Bad Request.
+        Create and submit a new recurring grant. This should be used to capture a recurring grant intent from an authorized DAFpay workflow session and submit the recurring grant request to the DAF sponsor.
+        
+        <Warning>
+        Error handling:
+        - The recurring grant must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
+        - A recurring grant can only be captured once from any given workflow session so any duplicate requests will return status `409 Conflict`.
+        - The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status `400 Bad Request`.
+        - The amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status `400 Bad Request`.
+        - The amount must be less than or equal to the user's DAF account balance otherwise the request will return status `400 Bad Request`.
+        </Warning>
       operationId: create-recurring-grant
       tags:
-        - Grants
+        - recurring_grants
       security:
         - auth0:
             - "create:recurring_grants"
@@ -547,19 +567,19 @@ paths:
     get:
       summary: Get Recurring Grant
       description: |-
-        Get a recurring grant object generated by Chariot Connect.
-        If the grant does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Retrieve a recurring grant with a given ID.
       operationId: get-recurring-grant
       tags:
-        - Grants
+        - recurring_grants
       security:
         - auth0:
             - "read:recurring_grants"
       parameters:
         - name: id
           in: path
-          description: the unique id of the recurring grant
+          description: |-
+            The unique id of the recurring grant.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -588,22 +608,21 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-
   /v1/unintegrated_grants:
     get:
       summary: List Unintegrated Grants
       description: |-
-        List all unintegrated grants for the provided API Key. This API allows for paginating over many results.
+        Returns a list of all unintegrated grants for a given Connect. This API allows for paginating over many results.
       operationId: list-unintegrated-grants
       tags:
-        - Grants
+        - unintegrated_grants
       security:
         - auth0:
             - "read:grants"
       parameters:
         - name: x-chariot-api-key
           in: header
-          description: the apiKey of the Connect object
+          description: the `apiKey` of the Connect object
           schema:
             type: string
           required: true
@@ -635,19 +654,19 @@ paths:
     get:
       summary: Get Unintegrated Grant
       description: |-
-        Get an unintegrated grant object generated by Chariot Connect.
-        If the grant does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Retrieve an unintegrated grant with a given ID.
       operationId: get-unintegrated-grant
       tags:
-        - Grants
+        - unintegrated_grants
       security:
         - auth0:
             - "read:grants"
       parameters:
         - name: id
           in: path
-          description: the unique id of the unintegrated grant
+          description: |-
+            The unique id of the unintegrated grant.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -679,20 +698,20 @@ paths:
     patch:
       summary: Update Unintegrated Grant
       description: |-
-        Update an unintegrated grant object generated by Chariot Connect.
-        This is useful to update the status or acknowledgement of the unintegrated grant.
-        If the unintegrated grant does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Update an unintegrated grant object with the given ID.
+        This can be used to update the status or acknowledgement of the unintegrated grant.
       operationId: update-unintegrated-grant
       tags:
-        - Grants
+        - unintegrated_grants
       security:
         - auth0:
             - "update:grants"
       parameters:
         - name: id
           in: path
-          description: the unique id of the unintegrated grant
+          description: |-
+            The unique id of the unintegrated grant.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -726,7 +745,12 @@ paths:
   /v1/dafs:
     get:
       summary: List DAFs
-      description: List all DAF objects. This API allows for paginating over many results.
+      description: |-
+        Returns a list of all Donor Advised Funds within Chariot's system. This API allows for paginating over many results.
+
+        <Note>
+        If there are DAFs missing from the list, please contact support at support@givechariot.com.
+        </Note>
       operationId: list-dafs
       tags:
         - DAFs
@@ -752,18 +776,18 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
     get:
-      summary: Get DAF object
+      summary: Get DAF
       description: |-
-        Get a DAF object by id.
-        If the DAF does not exist, returns a 404 status.
-        If the provided ID is not a v4 UUID according to RFC 4122, returns a 400 status.
+        Retrieve a DAF with a given ID.
       operationId: get-daf
       tags:
         - DAFs
       parameters:
         - name: id
           in: path
-          description: the unique id of the DAF
+          description: |-
+            The unique id of the DAF.
+            The format should be a v4 UUID according to RFC 4122.
           schema:
             type: string
             format: uuid
@@ -833,9 +857,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/events/{id}:
     get:
-      summary: Retrieve an Event
+      summary: Get Event
       description: |-
-        Retrieve an event corresponding to your Chariot account.
+        Retrieve an event with the given ID.
       operationId: getEvent
       tags:
         - Events
@@ -845,13 +869,13 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the event
+          description: The unique id for the event
           required: true
           schema:
             type: string
       responses:
         "200":
-          description: The event was retrieved
+          description: OK
           content:
             application/json:
               schema:
@@ -881,7 +905,7 @@ paths:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
       responses:
         "201":
-          description: The event subscription was created
+          description: Created
           headers:
             Location:
               $ref: "#/components/headers/Location"
@@ -936,9 +960,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/event_subscriptions/{id}:
     get:
-      summary: Retrieve an Event Subscription
+      summary: Get an Event Subscription
       description: |-
-        Retrieve an event subscription corresponding to your Chariot account.
+        Retrieve an event subscription with the given ID.
       operationId: getEventSubscription
       tags:
         - Event Subscriptions
@@ -954,7 +978,7 @@ paths:
             type: string
       responses:
         "200":
-          description: The event subscription was received
+          description: OK
           content:
             application/json:
               schema:
@@ -972,7 +996,7 @@ paths:
     patch:
       summary: Update an Event Subscription
       description: |-
-        Update an event subscription corresponding to your Chariot account.
+        Update an event subscription with the given ID.
       operationId: updateEventSubscription
       tags:
         - Event Subscriptions
@@ -990,7 +1014,7 @@ paths:
         $ref: "#/components/requestBodies/UpdateEventSubscriptionRequest"
       responses:
         "200":
-          description: The event subscription was updated
+          description: Updated
           content:
             application/json:
               schema:
@@ -1209,7 +1233,9 @@ components:
     Daf:
       type: object
       description: |-
-        A DAF represents Donor-Advised Funds which are connected with Chariot. These may be integrated (able to authenticate through Chariot) or unintegrated.
+        A Donor-Advised Fund, or `DAF` for short, is a special-purpose, tax-advantaged charitable account.
+        For more information, please see the [IRS website](https://www.irs.gov/charities-non-profits/charitable-organizations/donor-advised-funds) for a full description.
+        In the case that a DAF is supported, a donor will be able to initiate a grant directly through DAFpay.
       required:
         - id
         - orgName
@@ -1260,13 +1286,13 @@ components:
         supported:
           type: boolean
           readOnly: true
-          description: A flag to indicate if this DAF is supported by Chariot.
+          description: A flag to indicate if this DAF is supported by DAFpay.
           example: false
         minimumGrantAmount:
           type: number
           readOnly: true
-          description: The minimum grant amount allowed for this DAF.
-          example: 123
+          description: The minimum grant amount in cents allowed for this DAF.
+          example: 5000
         institutionDown:
           type: boolean
           readOnly: true
@@ -1801,7 +1827,7 @@ components:
   requestBodies:
     GrantCaptureRequest:
       description: |-
-        The request to create and submit a grant. This is useful to capture a grant intent associated with Connect workflow session.
+        The request to create and submit a grant. This is useful to capture a grant intent associated with DAFpay workflow session.
         The request should specify the grant amount. This is the amount submitted for processing by the DAF.
       required: true
       content:
@@ -1814,13 +1840,15 @@ components:
             properties:
               workflowSessionId:
                 type: string
-                description: The identifier of the Workflow Session
+                description: |-
+                  The identifier of the donor's DAFpay Workflow Session.
+                  See [Integrating Connect](/integrating-connect) for how to get this value from the DAFpay client-side SDK.
               amount:
                 type: number
                 description: |-
                   The grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
-                  all DAFs only accept whole dollar grants.
+                  all DAFs only accept whole dollar grant amounts.
               applicationFeeAmount:
                 type: number
                 description: |-
@@ -1829,7 +1857,7 @@ components:
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
                   Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
-                  If the 5% limit is exceeded, a 400 error will be returned.
+                  If the fee limit is exceeded, a `400 Bad Request` error will be returned.
               donor:
                 type: object
                 properties:
@@ -1866,6 +1894,7 @@ components:
                 enum:
                   - "Initiated"
                   - "Completed"
+                example: "Completed"
               acknowledgedAt:
                 type: string
                 format: date-time
@@ -1873,7 +1902,7 @@ components:
                   The date and time the grant was acknowledged by the nonprofit.
                   This is useful for nonprofits to indicate when they have received and processed the grant.
                   Expressed in ISO 8601 format.
-                  A null value indicates that the grant has not been acknowledged.
+                example: "2020-07-10 15:00:00.000"
     RecurringGrantCaptureRequest:
       description: |-
         The request to create and submit a monthly recurring grant. This is useful to capture a recurring grant intent associated with Connect workflow session.
@@ -1896,18 +1925,20 @@ components:
             properties:
               workflowSessionId:
                 type: string
-                description: The identifier of the Workflow Session
+                description: |-
+                  The identifier of the donor's DAFpay Workflow Session.
+                  See [Integrating Connect](/integrating-connect) for how to get this value from the DAFpay client-side SDK.
               frequency:
                 type: string
                 description: |-
-                  How often the DAF provider will submit the recurring grant. At the moment, monthly is the only supported frequency.
+                  The recurrence interval schedule for the recurring grant. Currently, only `MONTHLY` is supported.
                 enum:
                   - MONTHLY
                 example: MONTHLY
               amount:
                 type: number
                 description: |-
-                  The final grant amount in cents that will be processed by Chariot and submitted to the DAF for monthly recurring gifts.
+                  The final grant amount in cents that will be processed by Chariot and submitted to the DAF for recurring gifts.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
               applicationFeeAmount:
@@ -2110,6 +2141,7 @@ components:
                   $ref: "#/components/schemas/Grant"
               nextPageToken:
                 type: string
+                nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
           examples:
@@ -2134,6 +2166,7 @@ components:
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 20000
                     status: "Received"
+                nextPageToken: null
     ListRecurringGrantsResponse:
       description: The response for RecurringGrants.list
       headers:

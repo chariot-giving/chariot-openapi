@@ -17,6 +17,7 @@ The Chariot API uses standard HTTP status response codes
 | 405  | Method Not Allowed: The method/verb specified in the request is not allowed for the resource.                                                                                             |
 | 409  | Conflict: The request conflicts with the current state of the target resource.                                                                                                            |
 | 410  | Gone: Access to the target resource is no longer available as the resource may have expired.                                                                                              |
+| 412  | Precondition Failed: The server does not meet one of the preconditions that the requester put on the request.                                                                             |
 | 422  | Unprocessable Content: The server cannot process the request due to validation issues                                                                                                     |
 | 500  | Internal Server Error: The request was valid, but something failed on the server.                                                                                                         |
 | 502  | Bad Gateway: The server received an invalid response from an upstream server.                                                                                                             |

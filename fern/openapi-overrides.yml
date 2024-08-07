@@ -37,35 +37,50 @@ paths:
       x-fern-pagination: true
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: list
+      x-fern-sdk-method-name: list-grants
     post:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: create
+      x-fern-sdk-method-name: create-grant
   /v1/grants/{id}:
     get:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: get
+      x-fern-sdk-method-name: get-grant
     patch:
       x-fern-sdk-group-name:
         - grants
-      x-fern-sdk-method-name: update
+      x-fern-sdk-method-name: update-grant
+  /v1/recurring_grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: create
+  /v1/recurring_grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: get
   /v1/unintegrated_grants:
     get:
       x-fern-pagination: true
       x-fern-sdk-group-name:
-        - grants
-      x-fern-sdk-method-name: list
+        - unintegrated_grants
+      x-fern-sdk-method-name: list-unintegrated-grants
   /v1/unintegrated_grants/{id}:
     get:
       x-fern-sdk-group-name:
-        - grants
-      x-fern-sdk-method-name: get
+        - unintegrated_grants
+      x-fern-sdk-method-name: get-unintegrated-grant
     patch:
       x-fern-sdk-group-name:
-        - grants
-      x-fern-sdk-method-name: update
+        - unintegrated_grants
+      x-fern-sdk-method-name: update-unintegrated-grant
   /v1/dafs:
     get:
       x-fern-pagination: true
@@ -116,7 +131,7 @@ paths:
   /oauth/token:
     post:
       summary: Request an access token
-      description: Obtain an access token using client credentials
+      description: Obtain an OAuth2 access token using client credentials
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken

@@ -8,15 +8,18 @@ updatedAt: "Tue Dec 12 2023 22:09:32 GMT+0000 (Coordinated Universal Time)"
 ---
 ## API access
 
-In order to access the Chariot API, you will need to authenticate requests using the OAuth 2.0 [Client Credentials](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow) flow. 
+In order to access the Chariot API, you will need to authenticate requests using an OAuth2 access token obtained from an OAuth2 [Client Credentials](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow) flow. 
 
 - **OAuth 2.0 Access Token**: This is a JWT that should be provided as a Bearer token in the Authorization header for all API endpoints. This Access Token is temporary and once it expires you can request a new one. We recommend you save these tokens somewhere safe and re-use them until they expire so you can avoid having to re-fetch which can add latency to your requests. 
 
-To obtain the necessary `client_id` and `client_secret` please email [contact@givechariot.com](mailto:contact@givechariot.com).
+To obtain the necessary `client_id` and `client_secret` please email [support@givechariot.com](mailto:support@givechariot.com).
 
 ### Getting an OAuth2.0 Access Token for your API
 
-You can execute a client credentials exchange to get an access token for Chariot. Here are a few examples in a variety of languages. Replace any `CLIENT_ID` and `CLIENT_SECRET` with the ones privately shared with you. Note that in this example we are retrieving an access token for the Chariot Sandbox environment. If you wanted to retrieve an access token for the Chariot Production environment, you would use the following URL `https://login.givechariot.com/oauth/token` with Production environment specific OAuth Client Credentials.
+You can execute a client credentials exchange to get an access token for Chariot.
+Here are a few examples in a variety of languages. Replace any `CLIENT_ID` and `CLIENT_SECRET` with the ones privately shared with you.
+Note that in this example we are retrieving an access token for the Chariot Sandbox environment.
+If you wanted to retrieve an access token for the Chariot Production environment, you would use the following URL `https://login.givechariot.com/oauth/token` with Production environment specific OAuth Client Credentials.
 
 <CodeBlocks>
 ```curl cURL
