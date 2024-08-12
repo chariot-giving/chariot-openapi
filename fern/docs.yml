@@ -4,13 +4,9 @@ instances:
 title: Chariot Documentation
 
 versions:
-  - display-name: v2.0
-    path: versions/v2.0/docs.yml
-  - display-name: v1.8
-    path: versions/v1.8/docs.yml
-  - display-name: v1.7
-    path: versions/v1.7/docs.yml
-       
+  - display-name: v1
+    path: versions/v1/docs.yml
+
 colors:
   accentPrimary: 
     light: "#35BBF4"
