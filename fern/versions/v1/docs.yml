@@ -31,6 +31,8 @@ navigation:
             path: ./pages/api-backend/errors-1.mdx
           - page: Postman
             path: ./pages/api-backend/postman.mdx
+          - page: Software Development Kits
+            path: ./pages/api-backend/sdk-1.mdx
           - page: Webhooks and Events
             path: ./pages/api-backend/webhooks-and-events.mdx
   - api: API Reference
