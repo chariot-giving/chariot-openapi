@@ -11,9 +11,9 @@ navigation:
             path: ./pages/getting-started/navigating-the-docs.mdx
           - page: FAQ
             path: ./pages/getting-started/faq.mdx
-      - section: Connect (FRONTEND)
+      - section: Integrating DAFpay
         contents: 
-          - page: Integrating Connect (DAFpay)
+          - page: Overview
             path: ./pages/connect-frontend/integrating-connect.mdx
           - page: Button Styles
             path: ./pages/connect-frontend/button-styles.mdx
@@ -21,7 +21,7 @@ navigation:
             path: ./pages/connect-frontend/configurations.mdx
           - page: Error Handling & Edge Cases
             path: ./pages/connect-frontend/error-handling-1.mdx
-      - section: API (BACKEND)
+      - section: Using the API
         contents: 
           - page: Overview
             path: ./pages/api-backend/overview.mdx
@@ -35,6 +35,16 @@ navigation:
             path: ./pages/api-backend/sdk-1.mdx
           - page: Webhooks and Events
             path: ./pages/api-backend/webhooks-and-events.mdx
+      - section: Implementation Guide
+        contents:
+          - page: Overview
+            path: ./pages/implementation-guide/overview.mdx
+          - page: Onboarding
+            path: ./pages/implementation-guide/onboarding.mdx
+          - page: Donation Forms
+            path: ./pages/implementation-guide/donation-form.mdx
+          - page: Managing Transactions
+            path: ./pages/implementation-guide/transactions.mdx
   - api: API Reference
     display-errors: true
     snippets: 
