@@ -1,7 +1,3 @@
-servers:  
-  - url: https://api.givechariot.com
-    description: API
-    x-fern-server-name: API
 x-fern-pagination: 
   cursor: $request.pageToken
   next_cursor: $response.nextPageToken
@@ -135,9 +131,7 @@ paths:
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken
-      servers:
-      - url: https://login.givechariot.com/
-        x-name: Login
+      x-fern-server-name: login
       requestBody:
         required: true
         content:
