@@ -48,7 +48,10 @@ navigation:
   - api: API Reference
     display-errors: true
     snippets: 
-      typescript: chariot
+      typescript: "@chariot-giving/typescript-sdk"
+    playground:
+      environments:
+        - Sandbox      
     layout:
       - auth
       - nonprofits
