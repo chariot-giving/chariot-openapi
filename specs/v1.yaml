@@ -20,7 +20,7 @@ paths:
       description: |-
         Retrieves a nonprofit organization by an [Employee Identification Number](https://www.irs.gov/charities-non-profits/employer-identification-number) (EIN).
         The EIN is a unique number that identifies the organization to the Internal Revenue Service (IRS).
-        
+
         In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api-reference/nonprofits/create) API endpoint.
       operationId: get-nonprofit-by-ein
       tags:
@@ -167,7 +167,7 @@ paths:
       summary: Create Connect
       description: |-
         Get an existing connect or create a new connect for an existing nonprofit organization.
-        
+
         The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
 
         <Note>
@@ -327,7 +327,7 @@ paths:
       summary: Create Grant
       description: |-
         Create and submit a new grant. This should be used to capture a grant intent from an authorized DAFpay workflow session and submit the grant request to the DAF sponsor.
-        
+
         <Warning>
         Error handling:
         - The grant must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
@@ -514,7 +514,7 @@ paths:
       summary: Create Recurring Grant
       description: |-
         Create and submit a new recurring grant. This should be used to capture a recurring grant intent from an authorized DAFpay workflow session and submit the recurring grant request to the DAF sponsor.
-        
+
         <Warning>
         Error handling:
         - The recurring grant must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
@@ -762,6 +762,12 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: query
+          in: query
+          description: |-
+            If included, filters DAFs to only those that contain the query. This parameter is case insensitive.
+          schema:
+            type: string
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
