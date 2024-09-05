@@ -5009,6 +5009,11 @@
 							],
 							"query": [
 								{
+									"description": "Whether to return only supported DAFs; defaults to false",
+									"key": "supportedOnly",
+									"value": "false"
+								},
+								{
 									"description": "the number of results to return; defaults to 10, max is 100",
 									"key": "pageLimit",
 									"value": "10"

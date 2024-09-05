@@ -755,6 +755,13 @@ paths:
       tags:
         - DAFs
       parameters:
+        - name: supportedOnly
+          in: query
+          description: |-
+            If set to true, filters DAFs to only those that have a direct integration with Chariot.
+          schema:
+            type: boolean
+            default: false
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
