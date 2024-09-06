@@ -46,6 +46,7 @@ navigation:
           - page: Managing Transactions
             path: ./pages/implementation-guide/transactions.mdx
   - api: API Reference
+    api-name: core
     display-errors: true
     snippets: 
       typescript: "@chariot-giving/typescript-sdk"
@@ -63,3 +64,5 @@ navigation:
           title: Unintegrated Grants
       - DAFs:
           title: Donor Advised Funds
+  - api: Webhook Reference
+    api-name: webhook          

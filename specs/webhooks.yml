@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  title: Chariot Webhooks API
+  version: "v1"
+  description: The Chariot Webhook Endpoints. 
+  termsOfService: https://www.givechariot.com/legal-nonprofit
+paths: 
+  /payment/updated/: 
+    post: 
+      summary: Payment Initiated
+      x-fern-webhook: true # tells fern its a webhook
+      operationId: payment_initiated
+      x-fern-sdk-group-name: payments
+      x-fern-sdk-method-name: updated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                currency:
+                  $ref: '#/components/schemas/Currency'
+              required:
+                - amount
+                - currency  
