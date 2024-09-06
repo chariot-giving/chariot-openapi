@@ -1,6 +1,13 @@
+auth-schemes: 
+  OAuth: 
+    scheme: oauth
+    type: client-credentials
+    get-token:
+      endpoint: POST /oauth/token
 api:
   default-environment: Production
   default-url: api
+  auth: OAuth
   environments: 
     Production: 
       urls: 
