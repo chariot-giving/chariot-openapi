@@ -8,9 +8,9 @@ updatedAt: "Fri Jun 14 2024 15:18:26 GMT+0000 (Coordinated Universal Time)"
 ---
 <Note title="Recommended Implementation">
  **Enable by Default**: DAFpay supports transactions for all eligible 501(c)(3) organizations, allowing DAFpay to function on a donation form prior to the completion of the nonprofit's onboarding with Chariot. Thus, we advise setting DAFpay as a default payment option across your donation pages. This will improve  fundraising outcomes and help develop relationships with key donors!
- 
+
  **Express Checkout Option**: DAFpay offers the capability to automatically gather crucial donor information, such as names, email addresses, physical addresses, and more. Additionally, DAFpay provides Intelligent Donation Recommendations, taking into account factors like the donor's account balance. For this reason, we recommend featuring DAFpay as an Express Checkout option, making it visible early in the donation process, before donors are prompted to input their information or decide on a donation amount. This enhances conversion rates and encourages larger donations.
- 
+
  Please don't hesitate to contact us at support@givechariot.com with any questions!
 </Note>
 
@@ -94,6 +94,7 @@ chariot.onDonationRequest(async () => {
       state: "NY",
       postalCode: "12345"
     },
+    designation: "My Special Designation",
     metadata: {
       fundraiserTag: "marathon"
     },
@@ -131,19 +132,20 @@ const App = () => {
 
 The given donation data must match the following schema to be accepted by Chariot:
 
-| Parameter  | Description                                                                                                                                                                                                                                           | Type              |
-|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| amount     | The donation amount in cents. e.g., for a $20 donation, enter 2000.  <br /><br />If this value is not passed in, Chariot will use the user's account balance to recommend a donation amount. This can lead to significantly larger donation amounts.         | number (optional) |
-| firstName  | The donor's first name                                                                                                                                                                                                                                | string (optional) |
-| lastName   | The donor's last name                                                                                                                                                                                                                                 | string (optional) |
-| email      | The donor's email address. Must be in email format                                                                                                                                                                                                    | string (optional) |
-| phone      | The donor's phone number. Please provide the phone number with the country code and without special characters                                                                                                                                        | string (optional) |
-| note       | A note the donor wants to send to the nonprofit                                                                                                                                                                                                       | string (optional) |
-| anonymous  | Indicates if this donation should be sent anonymously (default: false)                                                                                                                                                                                | boolean (optional)|
-| address    | The donor's address: line1, line2, city, state, postalCode                                                                                                                                                                                            | object (optional) |
-| metadata   | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                    | object (optional) |
-| fundId     | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
-| frequency  | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](#recurring-donations-beta) | string (optional) |
+| Parameter   | Description                                                                                                                                                                                                                                           | Type              |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| amount      | The donation amount in cents. e.g., for a $20 donation, enter 2000.  <br /><br />If this value is not passed in, Chariot will use the user's account balance to recommend a donation amount. This can lead to significantly larger donation amounts.  | number (optional) |
+| firstName   | The donor's first name                                                                                                                                                                                                                                | string (optional) |
+| lastName    | The donor's last name                                                                                                                                                                                                                                 | string (optional) |
+| email       | The donor's email address. Must be in email format                                                                                                                                                                                                    | string (optional) |
+| phone       | The donor's phone number. Please provide the phone number with the country code and without special characters                                                                                                                                        | string (optional) |
+| note        | A note the donor wants to send to the nonprofit                                                                                                                                                                                                       | string (optional) |
+| anonymous   | Indicates if this donation should be sent anonymously (default: false)                                                                                                                                                                                | boolean (optional)|
+| designation | The designation to include on the grant. If this is left blank, "Where needed most" will be used. Note that including a custom designation may cause the grant approval process to take longer. Designations over 100 characters will be truncated.   | string (optional) |
+| address     | The donor's address: line1, line2, city, state, postalCode                                                                                                                                                                                            | object (optional) |
+| metadata    | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                   | object (optional) |
+| fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
+| frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](#recurring-donations-beta) | string (optional) |
 
 ## Capture your grant intent
 
@@ -154,7 +156,7 @@ Most workflows proceed as follows:
 
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    1. If you would like to collect any additional information from the user such as additional contact information you can do so at this step. If the Chariot Connect session is the last step in your donation form this is not necessary.
-2. Submit your own donation form before converting the grant intent into a completed grant.  
+2. Submit your own donation form before converting the grant intent into a completed grant.
 3. Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent).
 
 <Note>
@@ -187,11 +189,11 @@ const App = () => {
 
   return (
     <div>
-        <ChariotConnect 
-          cid="GENERATED_CONNECT_IDENTIFIER" 
-          onDonationRequest={onDonationRequest} 
-          onSuccess={onSuccess} 
-          onExit={onExit} 
+        <ChariotConnect
+          cid="GENERATED_CONNECT_IDENTIFIER"
+          onDonationRequest={onDonationRequest}
+          onSuccess={onSuccess}
+          onExit={onExit}
         />
     </div>
   );
@@ -205,7 +207,7 @@ const App = () => {
 ```json onSuccessMetadata
   {
     "workflowSessionId":"79e772be-547d-4c9c-8b76-4ac4ed4c441a", //Id of the Connect session
-    "grantIntent": { 
+    "grantIntent": {
       "userFriendlyId": "100020", //The user-friendly identifier for the grant intent
       "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
       "amount": 2000, //The grant amount expressed in units of cents; USD only
@@ -216,7 +218,7 @@ const App = () => {
 
 ```json onExitMetadata
   {
-    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.	
+    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.
     "nodeId": "consent-node-id", // The id representing the pane where the user exited the Connect flow.
     "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", // The id of the donor advised fund that the user selected.
     "reason": "USER_EXIT", // An enum giving a reason to why the modal exited.
@@ -273,7 +275,7 @@ When a user completes a Chariot Connect session for a recurring donation, instea
 ```json onSuccessMetadata
   {
     "workflowSessionId":"79e772be-547d-4c9c-8b76-4ac4ed4c441a", //Id of the Connect session
-    "recurringGrantIntent": { 
+    "recurringGrantIntent": {
       "userFriendlyId": "100020", //The user-friendly identifier for the grant intent
       "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
       "amount": 2000, //The grant amount expressed in units of cents; USD only
@@ -285,7 +287,7 @@ When a user completes a Chariot Connect session for a recurring donation, instea
 
 ```json onExitMetadata
   {
-    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.	
+    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.
     "nodeId": "consent-node-id", // The id representing the pane where the user exited the Connect flow.
     "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", // The id of the donor advised fund that the user selected.
     "reason": "USER_EXIT", // An enum giving a reason to why the modal exited.
