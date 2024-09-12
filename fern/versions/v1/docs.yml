@@ -51,7 +51,8 @@ navigation:
       typescript: "@chariot-giving/typescript-sdk"
     playground:
       environments:
-        - Sandbox      
+        - Sandbox   
+      oauth: true   
     layout:
       - auth
       - nonprofits
