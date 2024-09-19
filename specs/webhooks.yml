@@ -5,23 +5,150 @@ info:
   description: The Chariot Webhook Endpoints. 
   termsOfService: https://www.givechariot.com/legal-nonprofit
 paths: 
-  /payment/updated/: 
+  /grant/created: 
     post: 
-      summary: Payment Initiated
+      summary: Grant Created
       x-fern-webhook: true # tells fern its a webhook
-      operationId: payment_initiated
-      x-fern-sdk-group-name: payments
-      x-fern-sdk-method-name: updated
+      operationId: grant_created
+      x-fern-sdk-group-name: grant
+      x-fern-sdk-method-name: created
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                currency:
-                  $ref: '#/components/schemas/Currency'
-              required:
-                - amount
-                - currency  
+              $ref: '#/components/schemas/Event'
+            example:
+              id: "event_123abc"
+              created_at: "2023-01-31T23:59:59Z"
+              category: "grant.created"
+              associated_object_type: "grant"
+              associated_object_id: "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+      responses:
+        '200':
+          description: Webhook received successfully
+        '400':
+          description: Bad request
+  /grant/updated:
+    post:
+      summary: Grant Updated
+      x-fern-webhook: true # tells fern its a webhook
+      operationId: grant_updated
+      x-fern-sdk-group-name: grant
+      x-fern-sdk-method-name: updated
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+            example:
+              id: "event_456def"
+              created_at: "2023-02-01T12:30:00Z"
+              category: "grant.updated"
+              associated_object_type: "grant"
+              associated_object_id: "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+      responses:
+        '200':
+          description: Webhook received successfully
+        '400':
+          description: Bad request
+  /unintegrated_grant/created:
+    post:
+      summary: Unintegrated Grant Created
+      x-fern-webhook: true # tells fern its a webhook
+      operationId: unintegrated_grant_created
+      x-fern-sdk-group-name: unintegrated_grant
+      x-fern-sdk-method-name: created
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+            example:
+              id: "event_789ghi"
+              created_at: "2023-02-02T10:15:00Z"
+              category: "unintegrated_grant.created"
+              associated_object_type: "unintegrated_grant"
+              associated_object_id: "98e77c90-62b1-5f28-b8c4-29d6dbad6472"
+      responses:
+        '200':
+          description: Webhook received successfully
+        '400':
+          description: Bad request
+  /unintegrated_grant/updated:
+    post:
+      summary: Unintegrated Grant Updated
+      x-fern-webhook: true # tells fern its a webhook
+      operationId: unintegrated_grant_updated
+      x-fern-sdk-group-name: unintegrated_grant
+      x-fern-sdk-method-name: updated
+      parameters:
+        - $ref: '#/components/parameters/WebhookSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+            example:
+              id: "event_101jkl"
+              created_at: "2023-02-03T14:45:00Z"
+              category: "unintegrated_grant.updated"
+              associated_object_type: "unintegrated_grant"
+              associated_object_id: "98e77c90-62b1-5f28-b8c4-29d6dbad6472"
+      responses:
+        '200':
+          description: Webhook received successfully
+        '400':
+          description: Bad request
+components:
+  parameters:
+    WebhookSignature:
+      in: header
+      name: Chariot-Webhook-Signature
+      schema:
+        type: string
+      required: true
+      description: |
+        Signature for webhook verification.
+        Please see the [webhook verification guide](/webhooks-and-events#secure-your-webhooks) for more information
+        on how to verify and secure your webhook endpoints.
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the event
+          example: "event_123abc"
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of when the event was created
+          example: "2023-01-31T23:59:59Z"
+        category:
+          type: string
+          description: The category of the event
+          example: "grant.created"
+        associated_object_type:
+          type: string
+          description: The type of object associated with this event
+          example: "grant"
+        associated_object_id:
+          type: string
+          description: The unique identifier of the associated object
+          example: "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+      required:
+        - id
+        - created_at
+        - category
+        - associated_object_type
+        - associated_object_id
