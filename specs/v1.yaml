@@ -1886,8 +1886,14 @@ components:
                   phone:
                     type: string
                     description: The phone number of the donor
-              address:
-                $ref: "#/components/schemas/GrantAddress"
+                  address:
+                    $ref: "#/components/schemas/GrantAddress"
+              designation:
+                type: string
+                description: |-
+                  The designation to include on the grant. If this is left blank, "Where needed most" will be used.
+                  Note that including a custom designation may cause the grant approval process to take longer.
+                  Designations over 100 characters will be truncated.
     UpdateGrantRequest:
       description: |-
         The request to update a grant. This is useful to update the status of a grant.
@@ -1978,8 +1984,14 @@ components:
                   phone:
                     type: string
                     description: The phone number of the donor
-              address:
-                $ref: "#/components/schemas/GrantAddress"
+                  address:
+                    $ref: "#/components/schemas/GrantAddress"
+              designation:
+                type: string
+                description: |-
+                  The designation to include on the grant. If this is left blank, "Where needed most" will be used.
+                  Note that including a custom designation may cause the grant approval process to take longer.
+                  Designations over 100 characters will be truncated.
     CreateConnectRequest:
       description: |-
         The request to create a new Connect object for a Nonprofit.
