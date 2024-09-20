@@ -1605,6 +1605,11 @@ components:
           description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
           example: "1234455"
           deprecated: true
+        trackingId:
+          type: string
+          readOnly: true
+          description: The tracking ID for the unintegrated grant
+          example: L9E182VBGP
         workflowSessionId:
           type: string
           readOnly: true
