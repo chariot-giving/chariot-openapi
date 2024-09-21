@@ -744,7 +744,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs:
     get:
-      summary: List DAFs
+      summary: List Donor Advised Funds
       description: |-
         Returns a list of all Donor Advised Funds within Chariot's system. This API allows for paginating over many results.
 
@@ -789,7 +789,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
     get:
-      summary: Get DAF
+      summary: Get Donor Advised Fund
       description: |-
         Retrieve a DAF with a given ID.
       operationId: get-daf
