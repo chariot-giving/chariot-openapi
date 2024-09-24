@@ -1042,6 +1042,47 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/charity:
+    get:
+      summary: List charities
+      description: |-
+        Retrieves a list of charities, can be filtered by name.
+      operationId: list-charities
+      tags:
+        - Charities
+      security:
+        - auth0:
+            - "read:charities"
+      parameters:
+        - name: query
+          in: query
+          description: |-
+            If included, filters DAFs to only those that contain the query. This parameter is case insensitive.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Charity"
+              examples:
+                RedCross:
+                  $ref: "#/components/examples/NonprofitRedCross"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     auth0:
@@ -1833,6 +1874,53 @@ components:
           type: string
           description: The description of the error
           example: Expected an API key to be provided in the header `x-chariot-api-key`
+    Charity:
+      type: object
+      description: |-
+        A Nonprofit represents a registered 501(c)(3) charitable organization in good standing with the IRS.
+      required:
+        - id
+        - name
+        - ein
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+        name:
+          type: string
+          description: The IRS registered name of the charity organization
+          example: Leading for Children
+        ein:
+          type: string
+          description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          example: "043567500"
+        address:
+          $ref: "#/components/schemas/Address"
+        logo:
+          type: string
+          description: The URI of the nonprofit's logo
+        website:
+          type: string
+          description: The URL of the nonprofit's website
+        isDafEnabled:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the charity is eligible to receive Donor-Advised Fund grants.
+            This field returns true if the charity is a tax-exempt 501(c)(3), is in good standing
+            with the IRS (i.e. they are pub78 verified), and are not present on one of the OFAC lists.
+          example: false
+        verificationStatus:
+          $ref: "#/components/schemas/CharityVerificationStatus"
+    CharityVerificationStatus:
+      properties:
+        chariotVerified:
+          type: boolean
+          description: |-
+            A flag to indicate if the charity has been verified by Chariot.
+          example: true
   headers:
     X-Request-Id:
       description: The unique identifier for the request
