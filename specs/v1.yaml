@@ -1072,7 +1072,7 @@ paths:
                 $ref: "#/components/schemas/Charity"
               examples:
                 RedCross:
-                  $ref: "#/components/examples/NonprofitRedCross"
+                  $ref: "#/components/examples/CharityRedCross"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1914,6 +1914,8 @@ components:
           example: false
         verificationStatus:
           $ref: "#/components/schemas/CharityVerificationStatus"
+        banking:
+          $ref: "#/components/schemas/CharityBanking"
     CharityVerificationStatus:
       properties:
         chariotVerified:
@@ -1921,6 +1923,23 @@ components:
           description: |-
             A flag to indicate if the charity has been verified by Chariot.
           example: true
+    CharityBanking:
+      properties:
+        accountNumber:
+          type: string
+          description: The bank account number of the charity
+          example: "1234567890"
+        routingNumber:
+          type: string
+          description: The bank routing number of the charity
+          example: "123456789"
+        accountType:
+          type: string
+          description: The bank account type of the charity
+          example: "checking"
+          enum:
+            - checking
+            - savings
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -2585,3 +2604,10 @@ components:
         supported: true
         minimumGrantAmount: 25000
         institutionDown: false
+    CharityRedCross:
+      summary: American Red Cross
+      value:
+        id: "021cf6aa-cb91-4b92-ae03-82a211cc8328"
+        name: "American Red Cross"
+        ein: "530196605"
+        isDafEnabled: true
