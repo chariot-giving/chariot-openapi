@@ -1057,7 +1057,7 @@ paths:
         - name: query
           in: query
           description: |-
-            If included, filters DAFs to only those that contain the query. This parameter is case insensitive.
+            If included, filters charities to only those that contain the query. This parameter is case insensitive.
           schema:
             type: string
       responses:
