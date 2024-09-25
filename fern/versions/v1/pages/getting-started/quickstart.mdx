@@ -11,7 +11,9 @@ This guide will help you get up and running making your first Chariot API call i
 This guide assumes you have already been shared a `client_id` and `client_secret`. If that is not the case, please email [support@givechariot.com](mailto:support@givechariot.com).
 </Info>
 
-## 1. Generate an access token 🔑
+<Steps>
+
+### Generate an access token 🔑
 
 First, you'll need to create an access token that lets you access the APIs. Fill in the provided client_id and client_secret to in the preferred code snippet and get an access token.
 
@@ -49,15 +51,14 @@ request(options, function (error, response, body) {
 ```
 </CodeBlocks>
 
-## 2. Create a CID for a nonprofit  🪪
-
 Now that you have an access token, you're set to initiate an API request. We're going to utilize Chariot's APIs to generate a CID (Connect Identifier) for a nonprofit organization. This CID is a crucial element needed to activate the DAFpay button.
 
 To create a CID to a nonprofit, we first establish the nonprofit's ID by utilizing their EIN (Employer Identification Number). Following that, we proceed to create a Connect with the nonprofit's ID.
 
-### 2a. Create Nonprofit :hospital:
 
-The [Create nonprofit](/api-reference/nonprofits/create) endpoint registers a new nonprofit or confirms its existence within the Chariot system.
+### Create Nonprofit :hospital:
+
+The [Create nonprofit](/api/nonprofits/create) endpoint registers a new nonprofit or confirms its existence within the Chariot system.
 
 For registration, it's necessary to supply the nonprofit's EIN and details for a contact person at the nonprofit for Chariot's customer support purposes.
 
@@ -110,9 +111,9 @@ fetch('https://sandboxapi.givechariot.com/v1/nonprofits', options)
 
 Bravo! You have just created a nonprofit in the Chariot system. Mark down the nonprofit's `id` and now let's create a Connect for this nonprofit. 
 
-### 2b. Create Connect 🪪
+### Create Connect 🪪
 
-The [Create Connect](/api-reference/connects/create) endpoint creates a Connect record or retrieves it if a Connect already exists for this nonprofit in Chariot's system. 
+The [Create Connect](/api/connects/create) endpoint creates a Connect record or retrieves it if a Connect already exists for this nonprofit in Chariot's system. 
 
 To create a Connect, the nonprofit's `id` must be provided, which you should have from the previous step!
 
@@ -143,15 +144,15 @@ fetch('https://sandboxapi.givechariot.com/v1/connects?nonprofit=NONPROFIT_ID', o
 ```
 </CodeBlocks>
 
-Amazing! You can now start [Integrating Connect](integrating-connect) to build a front end and start receiving grants for this nonprofit. 
+Amazing! You can now start [Integrating DAFpay](guides/dafpay/overview) to build a front end and start receiving grants for this nonprofit. 
 
-## 3. List Grants 💵
+### List Grants 💵
 
 After submitting several grants through Chariot Connect, you can access Chariot's APIs to retrieve information on those grants. 
 
-The [List Grants](/api-reference/grants/list) endpoint lists all the grants for a particular CID.
+The [List Grants](/api/grants/list) endpoint lists all the grants for a particular CID.
 
-To retrieve grants, you must supply the API key of the Connect. You can obtain the API Key by using the [Get Connect](/api-reference/connects/get) endpoint or by noting it down from the setup process when you initially created the Connect.
+To retrieve grants, you must supply the API key of the Connect. You can obtain the API Key by using the [Get Connect](/api/connects/get) endpoint or by noting it down from the setup process when you initially created the Connect.
 
 Now we are ready to list grants. Below are a few examples of different implementations. Modify the `API_KEY` with the Connect's API key. Don't forget to add the access_token! 
 
@@ -179,3 +180,5 @@ fetch('https://sandboxapi.givechariot.com/v1/grants?pageLimit=10', options)
   .catch(err => console.error(err));
 ```
 </CodeBlocks>
+
+</Steps>

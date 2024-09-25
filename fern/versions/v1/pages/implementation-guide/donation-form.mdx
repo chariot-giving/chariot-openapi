@@ -15,7 +15,7 @@ Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e.,
 </Frame>
 
 <Check>
-    We require brand consistency for the DAFpay button and logo. Please see [Button Styles](button-styles) for more information.
+    We require brand consistency for the DAFpay button and logo. Please see [Button Styles](/guides/dafpay/button-styles) for more information.
 </Check>
 
 ## Express Checkout
@@ -40,14 +40,26 @@ When integrating DAFpay at the end of the donation form, make sure to use the `o
 - **anonymous** - set to true if the donor indicated that they want their gift to be anonymous
 - **metadata** - use for miscellaneous information (e.g., form title, designation, rider name)
 
-Use the `CHARIOT_SUCCESS` and `CHARIOT_EXIT` events to capture any donation details about the grantIntent, which should be used to call the [Create Grant](/api-reference/grants/create) API
+Use the `CHARIOT_SUCCESS` and `CHARIOT_EXIT` events to capture any donation details about the grantIntent, which should be used to call the [Create Grant](/api/grants/create) API
+
+## Loading Screen
+
+Occasionally, there may be a delay between clicking "Donate" on DAFpay and being redirected to the organization’s confirmation page.
+To provide an intuitive user experience, make sure to implement an intermediary loading screen to notify the donor that their gift is being processed and that they should avoid navigating away from the page during this time.
+
+This loading screen should be displayed between the time you receive the `CHARIOT_SUCCESS` event and the time your systems have successfully processed the grant.
+
+<Frame caption="Loading screen example">
+    <img src='../../images/dafpay_form_click.png' />
+    <img src='../../images/dafpay_loading_screen.png' />
+</Frame>
 
 ## Handling Grants
 
 ### Whole Dollars
 
-DAFpay only processes whole dollar amounts. Ensure that you round to the nearest whole dollar when passing the gift amount into the `onDonationRequest` or when calling the [Create Grant](/api-reference/grants/create) route (e.g., $505.95 → $506.00)
-    - If you pass in $505.95 to the onDonationRequest, the DAFpay front-end will automatically round the amount to the nearest whole dollar; however, your platform must make sure to record the rounded amount when calling the [Create Grant](/api-reference/grants/create) API.
+DAFpay only processes whole dollar amounts. Ensure that you round to the nearest whole dollar when passing the gift amount into the `onDonationRequest` or when calling the [Create Grant](/api/grants/create) route (e.g., $505.95 → $506.00)
+    - If you pass in $505.95 to the onDonationRequest, the DAFpay front-end will automatically round the amount to the nearest whole dollar; however, your platform must make sure to record the rounded amount when calling the [Create Grant](/api/grants/create) API.
 
 ### Amount Changes
 
@@ -56,7 +68,7 @@ DAFpay allows donors to change the donation amount within the modal for two prim
     1. **Minimum Donation Requirements:** Some DAF providers have a minimum donation amount (e.g., $50). If a donor tries to donate less than the minimum, DAFpay will ask the donor to increase their gift amount.
     2. **Donation Boosting:** Donors may choose to increase their donation after seeing their available account balance in the DAFpay modal.
 
-If the donation amount is changed within the modal, make sure that your platform submits the updated amount when calling the [Create Grant](/api-reference/grants/create) API.
+If the donation amount is changed within the modal, make sure that your platform submits the updated amount when calling the [Create Grant](/api/grants/create) API.
 
 ### Split Designations
 
@@ -67,7 +79,7 @@ If the donation amount for a split gift is increased within the modal, we sugges
 ### Form Submission
 
 After a donor clicks "Donate" in the DAFpay modal, no further action should be required from the user.
-Your platform should call the [Create Grant](/api-reference/grants/create) API, submit the organization’s donation form, render the thank you page, and send the donation confirmation email.
+Your platform should call the [Create Grant](/api/grants/create) API, submit the organization’s donation form, render the thank you page, and send the donation confirmation email.
 
 ## Handling Fees
 
@@ -87,9 +99,9 @@ The total combined fee cannot exceed 5% of the grant amount; exceeding this limi
 
 ### Donor Fee Coverage
 
-If a donor chooses to cover fees, increase the final amount sent to the [Create Grant](/api-reference/grants/create) route to account for processing fees (e.g., \$100 gift + 3% fee = \$103).
+If a donor chooses to cover fees, increase the final amount sent to the [Create Grant](/api/grants/create) route to account for processing fees (e.g., \$100 gift + 3% fee = \$103).
 Round the final amount as required.
-Please see the [FAQ](/faq) for the detailed covered fee calculation.
+Please see the [FAQ](/guides/getting-started/faq) for the detailed covered fee calculation.
 
 <Tip>
     *If the donor opted to cover fees, and the donation amount is boosted within the modal, we suggest treating the gift as a standard donation without fee coverage. Your platform does not need to recalculate a new fee amount*
@@ -99,8 +111,8 @@ Please see the [FAQ](/faq) for the detailed covered fee calculation.
 
 Unintegrated Grants represent a *donation intent* from a DAF provider that DAFpay is not yet integrated with.
 Unintegrated grants will be marked with an `unknown` status.
-    - Use the [List Unintegrated Grants](/reference/list-unintegrated-grants) API to access details such as gift amount, DAF provider name, and donor information.
-    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting BNY Mellon
+    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
+    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting Goldman Sachs Philanthropy Fund.
 
 <Info>
     If your platform does not want to support unintegrated grants, DAFpay can redirect donors back to your donation form to select a different payment method (if the donor chooses an unsupported provider).

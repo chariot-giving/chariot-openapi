@@ -1,5 +1,5 @@
 ---
-title: "Overview"
+title: "API Reference"
 subtitle: "A comprehensive reference for using the Chariot API endpoints"
 hidden: false
 createdAt: "Wed Jun 01 2022 23:43:34 GMT+0000 (Coordinated Universal Time)"
@@ -23,15 +23,38 @@ For faster support, include the request_id when contacting support regarding a s
 
 ## API host
 
-```javascript Server.js
-https://sandboxapi.givechariot.com (Sandbox)
-https://api.givechariot.com (Production)
-```
+<Aside>
+    ### Just Getting Started?
+
+    Check out our [Development Quickstart](/guides/getting-started/quickstart) guide.
+
+    ### Not a Developer?
+
+    Check out our [Implementation Guide](/guides/dafpay/implementation) for a high-level overview of how to integrate Chariot into your website.
+
+    ```curl Base URL
+    https://api.givechariot.com
+    ```
+
+    ### Client Libraries
+
+    We offer a variety of client libraries to make integrating with our API easier. Check out our [Software Development Kits](/api/sdks) page for a list of available SDKs and installation instructions.
+
+    <Card
+        title="Software Development Kits"
+        icon="code"
+        href="/api/sdks"
+    >
+        Explore our list of client libraries and SDKs to simplify your integration with the Chariot API.
+    </Card>
+</Aside>
 
 Chariot has two environments: Sandbox and Production.
 The Sandbox environment supports only test data.
 All activity in the Production environment is real.
 
+Production API requests should be to `https://api.givechariot.com` and sandbox requests should be to `https://sandboxapi.givechariot.com`.
+
 When you’re getting ready to launch into production, please let us know by emailing [support@givechariot.com](mailto:support@givechariot.com) to get your production credentials.
-We strongly encourage you to read through the [Implementation Guide](/implementation) to understand best practices for creating
+We strongly encourage you to read through the [Implementation Guide](/guides/dafpay/implementation) to understand best practices for creating
 a successful DAFpay integration with Chariot.

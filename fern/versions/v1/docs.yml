@@ -39,16 +39,16 @@ navigation:
         contents: 
           - page: Overview
             slug: overview
-            path: ./pages/connect-frontend/integrating-connect.mdx
+            path: ./pages/dafpay/integrating-connect.mdx
           - page: Button Styles
             slug: button-styles
-            path: ./pages/connect-frontend/button-styles.mdx
+            path: ./pages/dafpay/button-styles.mdx
           - page: Workflow Configurations
             slug: configurations
-            path: ./pages/connect-frontend/configurations.mdx
+            path: ./pages/dafpay/configurations.mdx
           - page: Error Handling & Edge Cases
             slug: error-handling
-            path: ./pages/connect-frontend/error-handling-1.mdx
+            path: ./pages/dafpay/error-handling-1.mdx
           - section: Implementation
             contents:
               - page: Best Practices
@@ -65,28 +65,8 @@ navigation:
                 path: ./pages/implementation-guide/transactions.mdx
   - tab: api
     layout:
-      - section: Introduction
-        skip-slug: true
-        contents: 
-          - page: Overview
-            slug: overview
-            path: ./pages/api-backend/overview.mdx
-          - page: Authentication
-            slug: authentication
-            path: ./pages/api-backend/authentication-1.mdx
-          - page: Errors
-            slug: errors
-            path: ./pages/api-backend/errors-1.mdx
-          - page: Postman
-            slug: postman
-            path: ./pages/api-backend/postman.mdx
-          - page: Software Development Kits
-            slug: sdks
-            path: ./pages/api-backend/sdk-1.mdx
-          - page: Webhooks and Events
-            slug: webhooks
-            path: ./pages/api-backend/webhooks-and-events.mdx
       - api: API Reference
+        flattened: true
         skip-slug: true
         display-errors: true
         snippets: 
@@ -96,14 +76,41 @@ navigation:
             - Sandbox   
           oauth: true   
         layout:
-          - auth
-          - nonprofits
-          - connects
-          - grants
-          - recurring_grants:
-              title: Recurring Grants
-          - unintegrated_grants:
-              title: Unintegrated Grants
-          - DAFs:
-              title: Donor Advised Funds
+          - section: Introduction
+            skip-slug: true
+            contents: 
+              - page: Overview
+                slug: /
+                path: ./pages/api/overview.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/api/authentication-1.mdx
+              - page: Errors
+                slug: errors
+                path: ./pages/api/errors-1.mdx
+              - page: Software Development Kits
+                slug: sdks
+                path: ./pages/api/sdk-1.mdx
+              - page: Webhooks and Events
+                slug: webhooks
+                path: ./pages/api/webhooks-and-events.mdx
+          - section: Core Resources
+            skip-slug: true
+            contents:
+              - auth
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
+              - nonprofits
+              - events
+              - eventSubscriptions:
+                  title: Event Subscriptions
+          - section: Fundraising
+            skip-slug: true
+            contents:
+              - connects
+              - grants
+              - recurringGrants:
+                  title: Recurring Grants
+              - unintegratedGrants:
+                  title: Unintegrated Grants
   - tab: changelog

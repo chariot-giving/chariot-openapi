@@ -36,7 +36,7 @@ Once a nonprofit receives the funds from the DAF provider and identifies the spe
 the trackingId/externalId, they should be able to manually update the status from `Initiated` to `Received` directly in your platform’s dashboard.
     
 <Tip>
-    When a grant status is updated in your fundraising platform’s dashboard, make sure to use the [Update Grant](/api-reference/grants/update) API so we can reflect those changes on our end.
+    When a grant status is updated in your fundraising platform’s dashboard, make sure to use the [Update Grant](/api/grants/update) API so we can reflect those changes on our end.
     If a grant status is updated directly on the Chariot dashboard, subscribe to the `grant.updated` Webhook Event to receive notifications.
 </Tip>
 
@@ -55,4 +55,4 @@ Donations made via DAFpay are typically **final and irrevocable** gifts (dependi
 ## DAF Object
 
 If you would like to include the name of the DAF provider on each grant in your dashboard (i.e., Fidelity Charitable),
-you can use the `fundId` from the Grant object to call the [Get DAF](/api-reference/da-fs/get) API.
+you can use the `fundId` from the Grant object to call the [Get DAF](/api/donor-advised-funds/get) API.

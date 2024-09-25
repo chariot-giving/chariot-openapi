@@ -22,14 +22,15 @@ The Chariot API uses standard HTTP status response codes
 | 502  | Bad Gateway: The server received an invalid response from an upstream server.                                                                                                             |
 | 503  | Service Unavailable: The server is not ready to handle the request.                                                                                                                       |
 
-All error responses come with the following standard shape.
+<Aside>
+  All error responses come with the following standard shape.
 
-```json JSON
-{
-  "timestamp": "2020-07-10 15:00:00.000",
-  "code": 400,
-  "error" : "Bad Request",
-  "message": "a descriptive, yet terse snippet explaining what went wrong"
-}
-```
-
+  ```json Error Response
+  {
+    "timestamp": "2020-07-10 15:00:00.000",
+    "code": 400,
+    "error" : "Bad Request",
+    "message": "a descriptive, yet terse snippet explaining what went wrong"
+  }
+  ```
+</Aside>
