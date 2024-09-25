@@ -1,66 +1,109 @@
+tabs:
+  guides:
+    display-name: Guides
+    slug: guides
+    icon: light book-open
+  api:
+    display-name: API Reference
+    slug: api
+    icon: light code
+  changelog:
+    display-name: Changelog
+    icon: light clock-rotate-left
+    changelog: ../../changelog
+
+landing-page:
+  page: Chariot Documentation
+  path: pages/index.mdx
+
 navigation: 
-  - section: Guides
-    contents:
+  - tab: guides
+    layout:
       - section: Getting Started
+        skip-slug: true
         contents: 
           - page: Overview
+            slug: getting-started/overview
             path: ./pages/getting-started/how-chariot-works.mdx
           - page: Quick Start
+            slug: getting-started/quickstart
             path: ./pages/getting-started/quickstart.mdx
           - page: Navigating the Docs
+            slug: getting-started/navigating-the-docs
             path: ./pages/getting-started/navigating-the-docs.mdx
           - page: FAQ
+            slug: getting-started/faq
             path: ./pages/getting-started/faq.mdx
       - section: Integrating DAFpay
+        slug: dafpay
         contents: 
           - page: Overview
+            slug: overview
             path: ./pages/connect-frontend/integrating-connect.mdx
           - page: Button Styles
+            slug: button-styles
             path: ./pages/connect-frontend/button-styles.mdx
           - page: Workflow Configurations
+            slug: configurations
             path: ./pages/connect-frontend/configurations.mdx
           - page: Error Handling & Edge Cases
+            slug: error-handling
             path: ./pages/connect-frontend/error-handling-1.mdx
-      - section: Using the API
+          - section: Implementation
+            contents:
+              - page: Best Practices
+                slug: /
+                path: ./pages/implementation-guide/overview.mdx
+              - page: Onboarding
+                slug: onboarding
+                path: ./pages/implementation-guide/onboarding.mdx
+              - page: Donation Forms
+                slug: donation-forms
+                path: ./pages/implementation-guide/donation-form.mdx
+              - page: Managing Transactions
+                slug: transactions
+                path: ./pages/implementation-guide/transactions.mdx
+  - tab: api
+    layout:
+      - section: Introduction
+        skip-slug: true
         contents: 
           - page: Overview
+            slug: overview
             path: ./pages/api-backend/overview.mdx
           - page: Authentication
+            slug: authentication
             path: ./pages/api-backend/authentication-1.mdx
           - page: Errors
+            slug: errors
             path: ./pages/api-backend/errors-1.mdx
           - page: Postman
+            slug: postman
             path: ./pages/api-backend/postman.mdx
           - page: Software Development Kits
+            slug: sdks
             path: ./pages/api-backend/sdk-1.mdx
           - page: Webhooks and Events
+            slug: webhooks
             path: ./pages/api-backend/webhooks-and-events.mdx
-      - section: Implementation Guide
-        contents:
-          - page: Overview
-            path: ./pages/implementation-guide/overview.mdx
-          - page: Onboarding
-            path: ./pages/implementation-guide/onboarding.mdx
-          - page: Donation Forms
-            path: ./pages/implementation-guide/donation-form.mdx
-          - page: Managing Transactions
-            path: ./pages/implementation-guide/transactions.mdx
-  - api: API Reference
-    display-errors: true
-    snippets: 
-      typescript: "@chariot-giving/typescript-sdk"
-    playground:
-      environments:
-        - Sandbox   
-      oauth: true   
-    layout:
-      - auth
-      - nonprofits
-      - connects
-      - grants
-      - recurring_grants:
-          title: Recurring Grants
-      - unintegrated_grants:
-          title: Unintegrated Grants
-      - DAFs:
-          title: Donor Advised Funds
+      - api: API Reference
+        skip-slug: true
+        display-errors: true
+        snippets: 
+          typescript: "@chariot-giving/typescript-sdk"
+        playground:
+          environments:
+            - Sandbox   
+          oauth: true   
+        layout:
+          - auth
+          - nonprofits
+          - connects
+          - grants
+          - recurring_grants:
+              title: Recurring Grants
+          - unintegrated_grants:
+              title: Unintegrated Grants
+          - DAFs:
+              title: Donor Advised Funds
+  - tab: changelog

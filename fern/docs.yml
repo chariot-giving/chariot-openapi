@@ -1,11 +1,52 @@
 instances:
   - url: https://chariot.docs.buildwithfern.com
     custom-domain: docs.givechariot.com
-title: Chariot Documentation
+title: Chariot
 
 versions:
   - display-name: v1
     path: versions/v1/docs.yml
+    slug: v1
+
+logo:
+  href: /
+  light: assets/logo.png
+  dark: assets/logo.png
+  height: 24
+
+favicon: assets/favicon.png
+css: assets/styles.css
+
+layout:
+  page-width: full
+  disable-header: false
+  header-height: 62px
+  searchbar-placement: header
+  tabs-placement: header
+
+navbar-links:
+  - type: secondary
+    text: Contact us
+    url: https://www.givechariot.com/contact
+  - type: primary
+    text: Login
+    url: https://dashboard.givechariot.com/login
+
+footer-links:
+  github: https://github.com/chariot-giving
+  x: https://x.com/chariotgiving
+  linkedin: https://www.linkedin.com/company/givechariot
+  website: https://givechariot.com
+
+typography:
+  bodyFont:
+    name: OpenSans
+    path: ./assets/matter.woff2
+    weight: "400"
+  headingsFont:
+    name: OpenSans
+    path: ./assets/matter-bold.woff2
+    weight: "600"
 
 colors:
   accentPrimary: 
@@ -20,23 +61,3 @@ colors:
   header-background: 
     light: '#F6F8FA'
     dark: "#212121"
-logo:
-  light: assets/logo.png
-  dark: assets/logo.png
-  height: 40
-favicon: assets/favicon.png
-css: assets/styles.css
-layout:
-  page-width: full
-  disable-header: false
-  header-height: 68px
-  searchbar-placement: header
-typography:
-  bodyFont:
-    name: OpenSans
-    path: ./assets/matter.woff2
-    weight: "400"
-  headingsFont:
-    name: OpenSans
-    path: ./assets/matter-bold.woff2
-    weight: "600"
