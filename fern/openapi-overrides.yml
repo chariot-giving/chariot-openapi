@@ -81,12 +81,12 @@ paths:
     get:
       x-fern-pagination: true
       x-fern-sdk-group-name:
-        - Donor Advised Funds
+        - donorAdvisedFunds
       x-fern-sdk-method-name: list
   /v1/dafs/{id}:
     get:
       x-fern-sdk-group-name:
-        - Donor Advised Funds
+        - donorAdvisedFunds
       x-fern-sdk-method-name: get
   /v1/events:
     get:
@@ -128,6 +128,8 @@ paths:
     post:
       summary: Request an access token
       description: Obtain an OAuth2 access token using client credentials
+      tags:
+        - Authentication
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken

@@ -1,6 +1,5 @@
 ---
 title: "Button Styles"
-slug: "button-styles"
 subtitle: "Provided styles for the Chariot Connect button"
 hidden: false
 createdAt: "Mon Feb 20 2023 16:24:01 GMT+0000 (Coordinated Universal Time)"
@@ -8,7 +7,7 @@ updatedAt: "Thu Feb 15 2024 17:21:29 GMT+0000 (Coordinated Universal Time)"
 ---
 # Using a default theme
 
-Choose your theme by adding the theme name as a parameter to the `chariot-connect` modal, as below.
+Choose your theme by adding the theme name as a parameter to the `chariot-connect` component, as below.
 
 <CodeBlocks>
 ```html HTML
@@ -49,13 +48,15 @@ We provide the options below as default themes. If `theme` is not defined, `Defa
 
 <img src='../../images/446fbf1-Gradient.svg' />
 
-
 # Creating a custom theme
 
-To create a custom theme for the Chariot Connect button, create an object with the desired properties that you wish to change. Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.
+To create a custom theme for the DAFpay button, create an object with the desired properties that you wish to change.
+Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.
 
 <Info title="Important Note for Style Customizations">  
- Style customizations for Chariot Connect require that all available CSS be packaged within the `chariot-connect.umd.js` bundle. The problem is that for Chariot to allow any customizations, we would need to include the entire [tailwindcss](https://v1.tailwindcss.com/docs/controlling-file-size) package (~2.4Mb uncompressed) which would degrade performance and load times to an unacceptable level. While performance is a concern, we also realize the need for a consistent and seamless user experience and are also committed to providing configurations for size, padding, border radius, etc. on top of the pre-built themes that we offer.
+ Style customizations for DAFpay require that all available CSS be packaged within the `chariot-connect.umd.js` bundle.
+ The problem is that for Chariot to allow any customizations, we would need to include the entire [tailwindcss](https://v1.tailwindcss.com/docs/controlling-file-size) package (~2.4Mb uncompressed) which would degrade performance and load times to an unacceptable level.
+ While performance is a concern, we also realize the need for a consistent and seamless user experience and are also committed to providing configurations for size, padding, border radius, etc. on top of the pre-built themes that we offer.
 </Info>
 
 <CodeBlocks>

@@ -21,7 +21,7 @@ paths:
         Retrieves a nonprofit organization by an [Employee Identification Number](https://www.irs.gov/charities-non-profits/employer-identification-number) (EIN).
         The EIN is a unique number that identifies the organization to the Internal Revenue Service (IRS).
 
-        In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api-reference/nonprofits/create) API endpoint.
+        In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api/nonprofits/create) API endpoint.
       operationId: get-nonprofit-by-ein
       tags:
         - Nonprofits
@@ -753,7 +753,7 @@ paths:
         </Note>
       operationId: list-dafs
       tags:
-        - DAFs
+        - Donor Advised Funds
       parameters:
         - name: supportedOnly
           in: query
@@ -794,7 +794,7 @@ paths:
         Retrieve a DAF with a given ID.
       operationId: get-daf
       tags:
-        - DAFs
+        - Donor Advised Funds
       parameters:
         - name: id
           in: path
