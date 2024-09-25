@@ -130,6 +130,8 @@ paths:
       description: Obtain an OAuth2 access token using client credentials
       tags:
         - Authentication
+      x-fern-audiences:
+        - fundraising
       x-fern-sdk-group-name: 
         - auth
       x-fern-sdk-method-name: getToken

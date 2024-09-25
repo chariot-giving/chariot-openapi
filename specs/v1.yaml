@@ -25,6 +25,9 @@ paths:
       operationId: get-nonprofit-by-ein
       tags:
         - Nonprofits
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:nonprofits"
@@ -82,6 +85,9 @@ paths:
       operationId: create-nonprofit
       tags:
         - Nonprofits
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "create:nonprofits"
@@ -128,6 +134,9 @@ paths:
       operationId: get-nonprofit-by-id
       tags:
         - Nonprofits
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:nonprofits"
@@ -177,6 +186,8 @@ paths:
       operationId: create-connect
       tags:
         - Connects
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "create:connects"
@@ -250,6 +261,8 @@ paths:
       operationId: get-connect
       tags:
         - Connects
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:connects"
@@ -289,6 +302,8 @@ paths:
       operationId: list-grants
       tags:
         - Grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:grants"
@@ -339,6 +354,8 @@ paths:
       operationId: create-grant
       tags:
         - Grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "create:grants"
@@ -384,6 +401,8 @@ paths:
       operationId: get-grant
       tags:
         - Grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:grants"
@@ -429,6 +448,8 @@ paths:
       operationId: update-grant
       tags:
         - Grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "update:grants"
@@ -476,6 +497,8 @@ paths:
       operationId: list-recurring-grants
       tags:
         - recurring_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:recurring_grants"
@@ -526,6 +549,8 @@ paths:
       operationId: create-recurring-grant
       tags:
         - recurring_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "create:recurring_grants"
@@ -571,6 +596,8 @@ paths:
       operationId: get-recurring-grant
       tags:
         - recurring_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:recurring_grants"
@@ -616,6 +643,8 @@ paths:
       operationId: list-unintegrated-grants
       tags:
         - unintegrated_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:grants"
@@ -658,6 +687,8 @@ paths:
       operationId: get-unintegrated-grant
       tags:
         - unintegrated_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "read:grants"
@@ -703,6 +734,8 @@ paths:
       operationId: update-unintegrated-grant
       tags:
         - unintegrated_grants
+      x-fern-audiences:
+        - fundraising
       security:
         - auth0:
             - "update:grants"
@@ -754,6 +787,8 @@ paths:
       operationId: list-dafs
       tags:
         - Donor Advised Funds
+      x-fern-audiences:
+        - fundraising
       parameters:
         - name: supportedOnly
           in: query
@@ -795,6 +830,8 @@ paths:
       operationId: get-daf
       tags:
         - Donor Advised Funds
+      x-fern-audiences:
+        - fundraising
       parameters:
         - name: id
           in: path
@@ -833,6 +870,9 @@ paths:
       operationId: listEvents
       tags:
         - Events
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:events"
@@ -876,6 +916,9 @@ paths:
       operationId: getEvent
       tags:
         - Events
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:events"
@@ -911,6 +954,9 @@ paths:
       operationId: createEventSubscription
       tags:
         - Event Subscriptions
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "create:event_subscriptions"
@@ -943,6 +989,9 @@ paths:
       operationId: listEventSubscriptions
       tags:
         - Event Subscriptions
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:event_subscriptions"
@@ -979,6 +1028,9 @@ paths:
       operationId: getEventSubscription
       tags:
         - Event Subscriptions
+      x-fern-audiences:
+        - fundraising
+        - payments
       security:
         - auth0:
             - "read:event_subscriptions"
@@ -1042,6 +1094,511 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /files:
+    post:
+      summary: Create a file
+      description: |
+        Create & upload a file.
+        To upload a file to Chariot, you'll need to send a request of Content-Type multipart/form-data.
+        The request should contain the file you would like to upload, as well as the parameters for creating a file.
+      operationId: uploadFile
+      x-fern-audiences:
+        - payments
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: The file to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - purpose
+              properties:
+                file:
+                  description: |
+                    The file contents.
+                    This should follow the specifications of RFC 7578 which defines file transfers for the multipart/form-data protocol.
+                  type: string
+                  format: binary
+                purpose:
+                  type: string
+                  description: |
+                    What the File will be used for. We may add additional possible values for this enum over time; 
+                    your application should be able to handle such additions gracefully.
+                    grant_letter: A grant letter
+                    tax_document: A tax document
+                    other: A file purpose not covered by any of the other cases.
+                  example: "grant_letter"
+                  enum:
+                    - grant_letter
+                    - tax_document
+                    - other
+                description:
+                  type: string
+                  description: A description of the file
+                  example: "Grant letter for the grant to the nonprofit"
+      responses:
+        "201":
+          description: The file was uploaded
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List files
+      description: |
+        List files.
+      operationId: listFiles
+      x-fern-audiences:
+        - payments
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: purpose
+          in: query
+          description: The purpose of the file
+          required: false
+          schema:
+            type: string
+            enum:
+              - grant_letter
+              - tax_document
+              - other
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The files were retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /files/{id}:
+    get:
+      summary: Retrieve a file
+      description: |
+        Get a file by its unique identifier.
+      operationId: getFile
+      x-fern-audiences:
+        - payments
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+      responses:
+        "200":
+          description: The file was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /accounts:
+    get:
+      summary: List accounts
+      description: |
+        Returns a list of accounts.
+      operationId: listAccounts
+      tags:
+        - Accounts
+      x-fern-audiences:
+        - payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ein
+          in: query
+          description: The Employer Identification Number (EIN) or TaxID for the recipient.
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The accounts were retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /accounts/{id}:
+    get:
+      summary: Retrieve an account.
+      description: |
+        Get an account by its unique identifier.
+      operationId: getAccount
+      tags:
+        - Accounts
+      x-fern-audiences:
+        - payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+          example: "acc_1LaXpKGUcADgqoEMl0Cx0Ygg"
+      responses:
+        "200":
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /transactions:
+    post:
+      summary: Create a transaction
+      description: |
+        This endpoint is used to send transactional data to a nonprofit account for a payment that happens outside of Chariot.
+        Open payment networks that depend on the Federal Reserve are often very limited in terms of the data that can be sent with a payment.
+        This endpoint allows you to send additional data to the account that can be used to reconcile the payment.
+      operationId: createTransaction
+      tags:
+        - Transactions
+      x-fern-audiences:
+        - payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: |
+            The unique identifier for the request.
+            This header is used to ensure idempotency for requests that may be retried.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: The transaction to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"
+      responses:
+        "201":
+          description: The transaction was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List transactions
+      description: |
+        List transactions. 
+      operationId: listTransactions
+      tags:
+        - Transactions
+      x-fern-audiences:
+        - payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: account_id
+          in: query
+          description: The unique identifier for the account
+          required: false
+          schema:
+            type: string
+        - name: nonprofit_id
+          in: query
+          description: The unique identifier for the nonprofit
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: The page token to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The transactions were retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /transactions/{id}:
+    get:
+      summary: Retrieve a transaction
+      description: |
+        Get a transaction by its unique identifier.
+      operationId: getTransaction
+      tags:
+        - Transactions
+      x-fern-audiences:
+        - payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the transaction
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The transaction was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /payments:
+    post:
+      summary: Create a payment
+      description: |
+        Create a payment to send money to a nonprofit account.
+        In order to use this endpoint, you must be a registered Chariot Payments partner.
+      operationId: createPayment
+      tags:
+        - Payments
+      security:
+        - bearerAuth: []
+      x-fern-audiences:
+        - payments
+      requestBody:
+        description: The payment to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+      responses:
+        "201":
+          description: The payment was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    get:
+      summary: List payments
+      description: |
+        Returns a list of payments.
+      operationId: listPayments
+      tags:
+        - Payments
+      security:
+        - bearerAuth: []
+      x-fern-audiences:
+        - payments
+      parameters:
+        - name: account_id
+          in: query
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+          example: "acc_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The payments were retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /payments/{id}:
+    get:
+      summary: Retrieve a payment
+      description: |
+        Get a payment by its unique identifier.
+        This endpoint is used to retrieve a payment by its unique identifier.
+      operationId: getPayment
+      tags:
+        - Payments
+      security:
+        - bearerAuth: []
+      x-fern-audiences:
+        - payments
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the payment
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The payment was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     auth0:
@@ -1062,6 +1619,10 @@ components:
             "create:event_subscriptions": "create event subscriptions"
             "read:event_subscriptions": "read event subscriptions"
             "update:event_subscriptions": "update event subscriptions"
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque
   schemas:
     Nonprofit:
       type: object
@@ -1809,6 +2370,473 @@ components:
           example: "https://example.com/webhook"
         category:
           $ref: "#/components/schemas/EventCategory"
+    File:
+      type: object
+      description: |
+        Files are objects that represent a file hosted on Chariot's servers.
+        Files are uploaded by you (for example, when uploading a grant letter).
+      required:
+        - id
+        - purpose
+        - mime_type
+        - created_at
+      x-fern-audiences:
+        - payments
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the file
+          example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        purpose:
+          type: string
+          description: |
+            What the File will be used for. We may add additional possible values for this enum over time; 
+            your application should be able to handle such additions gracefully.
+            grant_letter: A grant letter
+            tax_document: A tax document
+            other: A file purpose not covered by any of the other cases.
+          example: "grant_letter"
+          enum:
+            - grant_letter
+            - tax_document
+            - other
+        file_name:
+          type: string
+          description: The name of the file
+          example: "grant_letter.pdf"
+        mime_type:
+          type: string
+          description: The MIME type of the file
+          example: "application/pdf"
+        download_url:
+          type: string
+          description: |
+            A URL from where the File can be downloaded at this point in time.
+            The location of this URL may change over time.
+          example: "https://sandboxapi.givechariot.com/files/file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        description:
+          type: string
+          description: A description of the file
+          example: "Grant letter for the grant to the nonprofit"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the file was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    FileList:
+      description: A list of files
+      x-fern-audiences:
+        - payments
+      properties:
+        results:
+          type: array
+          description: The list of files
+          items:
+            $ref: "#/components/schemas/File"
+        paging:
+          type: object
+          description: The paging information
+          properties:
+            nextPageToken:
+              type: string
+              description: The token to use for pagination. If not set, the first page of results will be returned.
+              example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+            total:
+              type: integer
+    Transaction:
+      type: object
+      description: |
+        A transaction represents an individual line-item or donation for the receiving organization.
+        There can be many transactions associated with a single payment.
+      required:
+        - account_id
+        - amount
+        - description
+        - payment
+      x-fern-audiences:
+        - payments
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the transaction
+          example: "tx_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        account_id:
+          type: string
+          description: The identifier for the nonprofit's account that will receive the transaction.
+          example: "acc_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        amount:
+          type: integer
+          format: int64
+          description: The transaction amount in minor currency units (cents)
+          example: 10000
+        currency:
+          type: string
+          description: The currency code for the transaction
+          example: "USD"
+          default: "USD"
+        description:
+          type: string
+          description: |
+            A description of the transaction.
+            Remittance information for the payment that will show on the recipient's bank statement.
+          example: "Payment to Nonprofit"
+        source:
+          $ref: "#/components/schemas/TransactionSource"
+        donors:
+          type: array
+          description: The list of donors for the transaction
+          items:
+            $ref: "#/components/schemas/Donor"
+        payment:
+          $ref: "#/components/schemas/PaymentDetails"
+        attachment_file_id:
+          type: string
+          description: |-
+            The unique identifier for the file that is attached to the transaction.
+            This is useful if you want to attach a letter or another document to the transaction.
+          example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        status:
+          type: string
+          description: The status of the transaction
+          example: "pending"
+          readOnly: true
+          enum:
+            - canceled
+            - pending
+            - submitted
+            - complete
+            - rejected
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the payment was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the payment was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        metadata:
+          type: object
+          description: Additional metadata for the transaction
+          additionalProperties: 
+            type: string
+    TransactionList:
+      description: A list of transactions
+      x-fern-audiences:
+        - payments
+      properties:
+        results:
+          type: array
+          description: The list of transactions
+          items:
+            $ref: "#/components/schemas/Transaction"
+        paging:
+          type: object
+          description: The paging information
+          properties:
+            nextPageToken:
+              type: string
+              description: The token to use for pagination. If not set, the first page of results will be returned.
+              example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+            total:
+              type: integer
+    PaymentDetails:
+      type: object
+      description: The payment details for the transaction
+      required:
+        - method
+        - reference
+        - sent_at
+      x-fern-audiences:
+        - payments
+      properties:
+        method:
+          type: string
+          description: The payment method
+          example: "ach"
+          enum:
+            - ach
+            - check
+        reference:
+          $ref: "#/components/schemas/PaymentReference"
+        sent_at:
+          type: string
+          format: timestamp
+          description: The date and time when the payment was sent
+          example: "2020-07-10 15:00:00.000"
+    PaymentReference:
+      type: object
+      description: The payment reference for the transaction
+      x-fern-audiences:
+        - payments
+      properties:
+        ach:
+          $ref: "#/components/schemas/AchPaymentReference"
+        check:
+          $ref: "#/components/schemas/CheckPaymentReference"
+    AchPaymentReference:
+      type: object
+      description: The ACH payment reference for the transaction
+      x-fern-audiences:
+        - payments
+      properties:
+        group_id:
+          type: string
+          description: The group ID is a unique identifier for the group of transactions that are sent together.
+          example: "123456789"
+        originator_company_id:
+          type: string
+          description: An identifier for the originating company. This is generally, but not always, a stable identifier across multiple transfers.
+          example: "123456789"
+        originator_company_name:
+          type: string
+          description: The name of the originating company.
+          example: "Charitable Payer Inc."
+        trace_number:
+          type: string
+          description: |
+            A 15 digit number recorded in the Nacha file and available to both the originating and receiving bank.
+            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at either bank.
+            ACH trace numbers are not unique, but are used to correlate returns.
+          example: "386503938889057"
+    CheckPaymentReference:
+      type: object
+      description: The check payment reference for the transaction
+      x-fern-audiences:
+        - payments
+      properties:
+        carrier:
+          type: string
+          description: The carrier for the check
+          example: "USPS"
+        memo:
+          type: string
+          description: The memo for the check
+          example: "Payment to Nonprofit"
+        check_number:
+          type: string
+          description: The check number
+          example: "123456789"
+    TransactionSource:
+      type: object
+      description: |
+        This is an object that allows you to specify the source of the transaction.
+        Note that for backwards compatibility reasons, additional undocumented keys may appear in this object.
+        These should be treated as deprecated and will be removed in the future.
+      x-fern-audiences:
+        - payments
+      properties:
+        donor_advised_fund_grant:
+          $ref: "#/components/schemas/DonorAdvisedFundGrant"
+        corporate_match:
+          $ref: "#/components/schemas/CorporateMatch"
+    DonorAdvisedFundGrant:
+      type: object
+      description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
+      x-fern-audiences:
+        - payments
+      properties:
+        organization_name:
+          type: string
+          description: The name of the DAF organization that made the grant
+          example: "Vanguard Charitable"
+        fund_name:
+          type: string
+          description: The name of the DAF fund that made the grant
+          example: "John Doe Fund"
+        purpose:
+          type: string
+          description: The purpose of the grant
+          example: "General Operating Support"
+        note:
+          type: string
+          description: A note about the grant
+          example: "This grant is for the general operating support of the organization."
+    CorporateMatch:
+      type: object
+      description: A corporate match is a charitable donation made by a corporation on behalf of an employee.
+      x-fern-audiences:
+        - payments
+      properties:
+        program_name:
+          type: string
+          description: The name of the corporate match program
+          example: "Matching Gifts Program"
+        company_name:
+          type: string
+          description: The name of the company that made the match
+          example: "Chariot Giving, Inc."
+        employee_name:
+          type: string
+          description: The name of the employee that requested the match
+          example: "John Doe"
+    Donor:
+      type: object
+      description: The donor information for the transaction
+      x-fern-audiences:
+        - payments
+      properties:
+        name:
+          type: string
+          description: The name of the donor
+          example: "John Doe"
+        email:
+          type: string
+          description: The email address of the donor
+          example: "developers@givechariot.com"
+        phone:
+          type: string
+          description: The phone number of the donor
+          example: "415-555-1212"
+        address:
+          $ref: "#/components/schemas/Address"
+    AccountList:
+      description: A list of accounts
+      x-fern-audiences:
+        - payments
+      properties:
+        results:
+          type: array
+          description: The list of accounts
+          items:
+            $ref: "#/components/schemas/Account"
+        paging:
+          type: object
+          description: The paging information
+          properties:
+            nextPageToken:
+              type: string
+              description: The token to use for pagination. If not set, the first page of results will be returned.
+              example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+            total:
+              type: integer
+    Account:
+      type: object
+      description: An account represents a verified location to send both payments and corresponding data to a nonprofit.
+      required:
+        - id
+        - email_address
+        - us_bank_account_address
+      x-fern-audiences:
+        - payments
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account
+          example: "acc_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        name:
+          type: string
+          description: The name of the account
+          example: "Chariot Giving Network"
+        mailing_address:
+          $ref: "#/components/schemas/Address"
+        email_address:
+          type: string
+          description: The email address
+          example: "developers@givechariot.com"
+        us_bank_account_address:
+          $ref: "#/components/schemas/UsBankAccountAddress"
+    UsBankAccountAddress:
+      type: object
+      description: The payment information for a US bank account
+      x-fern-audiences:
+        - payments
+      properties:
+        ach:
+          $ref: "#/components/schemas/UsBankAccountAchAddress"
+    UsBankAccountAchAddress:
+      type: object
+      description: The ACH payment information for a US bank account
+      x-fern-audiences:
+        - payments
+      required:
+        - account_number
+        - routing_number
+      properties:
+        account_number:
+          type: string
+          description: The account number
+          example: "884727222"
+        routing_number:
+          type: string
+          description: The American Bankers' Association (ABA) Routing Transit Number (RTN).
+          example: "123456789"
+    Payment:
+      type: object
+      description: A payment moves funds to a verified nonprofit Chariot account.
+      required:
+        - account_id
+        - amount
+        - description
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the payment
+          example: "1234567890"
+          readOnly: true
+        account_id:
+          type: string
+          description: The identifier for the account that will receive the payment.
+          example: "acc_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        amount:
+          type: integer
+          format: int64
+          description: The payment amount in USD cents. Must be a positive amount.
+          example: 10000
+        description:
+          type: string
+          description: |
+            A description of the payment.
+            Remittance information for the payment that will show on the recipient's bank statement.
+          example: "Payment to Nonprofit"
+        chariot_id:
+          type: string
+          description: |
+            The unique identifier for the initiated payment from Chariot.
+            This is useful if the payment was initiated by Chariot and allows for end-to-end tracking of the payment for the donor.
+          example: "1200321"
+        status:
+          type: string
+          description: The status of the payment
+          example: "pending"
+          enum:
+            - canceled
+            - pending
+            - submitted
+            - complete
+            - rejected
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the payment was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    PaymentList:
+      description: A list of payments
+      properties:
+        results:
+          type: array
+          description: The list of payments
+          items:
+            $ref: "#/components/schemas/Payment"
+        paging:
+          type: object
+          description: The paging information
+          properties:
+            nextPageToken:
+              type: string
+              description: The token to use for pagination. If not set, the first page of results will be returned.
+              example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+            total:
+              type: integer
     Error:
       type: object
       required:
@@ -1836,6 +2864,12 @@ components:
   headers:
     X-Request-Id:
       description: The unique identifier for the request
+      schema:
+        type: string
+    Idempotency-Key:
+      description: |
+        The unique identifier for the request.
+        This header is used to ensure idempotency for requests that may be retried.
       schema:
         type: string
     Location:

@@ -63,12 +63,24 @@ navigation:
               - page: Managing Transactions
                 slug: transactions
                 path: ./pages/implementation-guide/transactions.mdx
+      - section: Payments
+        slug: payments
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/payments/overview.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/payments/compliance.mdx
   - tab: api
     layout:
       - api: API Reference
         flattened: true
         skip-slug: true
         display-errors: true
+        audiences:
+          - fundraising
+          - payments
         snippets: 
           typescript: "@chariot-giving/typescript-sdk"
         playground:
@@ -113,4 +125,14 @@ navigation:
                   title: Recurring Grants
               - unintegratedGrants:
                   title: Unintegrated Grants
+          - section: Payments
+            skip-slug: true
+            contents:
+              - accounts
+              - transactions
+              - payments
+          - section: Files and Exports
+            skip-slug: true
+            contents:
+              - files
   - tab: changelog

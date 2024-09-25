@@ -1,0 +1,105 @@
+---
+title: "Overview"
+subtitle: "An introduction to Chariot Payment APIs"
+hidden: false
+createdAt: "Sun May 21 2023 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+
+Grantmakers aim to distribute funds to nonprofits in a secure, electronic, and cost-efficient manner.
+
+However, current practices require each grantmaker to independently establish and manage a system for registering electronic payment information, presenting both technical and operational challenges.
+
+## Current Challenges
+
+### Nonprofit Verification
+
+Verifying a nonprofit's electronic payment information is critical to ensure authenticity and security. Creating an effective Know Your Business (KYB) process is complex and costly. Current verification options include:
+   
+1. Data Aggregators (e.g., Plaid):
+    - Advantages**:** Reliable and instant verifications.
+    - Disadvantages:
+    - High cost: $2.50 per identity check and for each edit.
+    - Prone to errors and failures, potentially resulting in poor user experience.
+    - Limited coverage and lack of holistic solutions necessitate secondary verification methods.
+2. Banking Networks (e.g., Zelle):
+    - Advantages: Effective within the network.
+    - Disadvantages: Excludes nonprofits whose banks are not in the network.
+3. Build your own Document Submission (bank statements or voided checks):
+    - Advantages: Accessible to all nonprofits.
+    - Disadvantages:
+    - High upfront costs
+    - Requires manual review, introducing delays and potential fraud risks.
+    - Requires significant work to onboard and build up a robust database.
+
+### Leaky Bucket Problem
+
+After verifying a nonprofit, grantmakers must make sure the electronic payment information is up-to-date.
+This problem is especially tricky for the long-tail of nonprofits that are hard to get in touch with. 
+
+### Incomplete Database: 
+
+Grantmakers must revert to issuing checks when nonprofits are not present in their system.
+Compounding the issue is the fact that every grantmaker is redundantly undertaking the same laborious technical and operational tasks.
+
+From the perspective of nonprofits, they are required to register with over 50 grantmaker portals to receive electronic payments.
+This process involves managing numerous portals and logins, making the task of reconciling payments with their respective data exceedingly cumbersome.
+
+A more effective solution would involve a _shared_ database that upholds stringent Know Your Business (KYB) standards, which nonprofits need to meet only once. This database would allow grantmakers to retrieve the necessary payment information, similar to how they currently query the IRS for mailing addresses. Furthermore, this system would facilitate the transmission of payment data in a structured format that is easily accessible for nonprofits. Implementing such a service would not only benefit both grantmakers and nonprofits by streamlining processes but also significantly reduce redundant efforts.
+
+<br />
+
+## Addressing PayPal Grant Payments
+
+PayPal Grant Payments (PPGP) in many ways serves as this centralized database.  However, being a PayPal service, it mandates that grantmakers process payments within its ecosystem, leading to significant **vendor lock**.
+
+PPGP also imposes a **lengthy onboarding** process and charges transaction fees ranging from $1 to $5—about 10x-50x more expensive than if you sent the transaction using a regular ACH payment.
+
+Additionally, PPGP requires grantmakers to maintain funds in a For Benefit Of (FBO) account sufficient to cover the grants issued through the platform, necessitating that grantmakers keep an adequate balance in this account.
+
+<br />
+
+## A Better Solution
+
+<Frame>
+    <img src="/images/chariot_payments.png" alt="Overview" />
+</Frame>
+
+
+An optimal solution would provide grantmakers access to a shared database from which they can retrieve a nonprofit's electronic payment information. This setup would enable grantmakers to send payments using any method—ACH, wire, FedNow, RTP, etc.—through their existing banks, eliminating lengthy onboarding processes and vendor lock-in.
+
+For nonprofits, the ability to update their records in this shared database would ensure that changes are automatically reflected across all grantmakers. Additionally, payment data should be transmitted in a structured format, allowing nonprofit teams to easily understand and reconcile these transactions.
+
+## Chariot Payment APIs
+
+Chariot is developing an easy and intuitive API to solve this problem.
+
+### GET Account
+
+Chariot is developing a superset of Guidestar’s API, incorporating IRS data extracts and enriching it with verified banking details for nonprofits.
+
+Every nonprofit that participates in DAFpay—a number that currently exceeds 30,000—undergoes Chariot's comprehensive KYB Process. Once verified, Chariot integrates their banking information into the nonprofit's record.
+
+Beyond accessing basic nonprofit details available through Guidestar, grantmakers can now also obtain a nonprofit’s account and routing numbers for electronic payments. Should there be any inaccuracies in a nonprofit's banking information, Chariot will work with provider to insure any resulting fraud.
+
+Grantmakers can direct nonprofits to register with Chariot, the KYB is automatically handled, and the nonprofit’s banking information is added to the shared API. Additionally, this API provides a verified nonprofit email address, facilitating direct communication between grantmakers and nonprofits.
+
+To learn more about this endpoint please visit: [Get Account](/api/accounts/get-account)
+
+### POST Transaction
+
+Once you acquire a nonprofit's banking details, you can transmit the associated payment data using this API.
+
+The API permits grantmakers to identify specific designations and subsidiary organizations, as returned from the GET Organization endpoint.
+
+Data is delivered in a structured format to facilitate straightforward reconciliation by nonprofits with respect to the payment's intended use and donor information. For data that is unstructured, attachments can be provided.
+
+For more information on this API endpoint, please visit: [Create Transaction](/api/transactions/create-transaction) .
+
+### Vendor Lock
+
+Although this solution involves some degree of vendor lock-in because Chariot hosts and maintains the database of verified nonprofit payment information, it features significantly less vendor lock-in compared to alternatives like PayPal Grant Payments.
+Firstly, this solution integrates seamlessly with existing grantmaker workflows, facilitating an easy transition back to traditional methods if needed, which effectively caps the pricing.
+Secondly, should a grantmaker decide to export all the data from this verified database, Chariot provides the capability to do so.
+
+_If you want a solution that provides a managed payment distribution for all your grants please contact [partners@givechariot.com](mailto:partners@givechariot.com)._
