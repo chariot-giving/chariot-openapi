@@ -1,0 +1,148 @@
+tabs:
+  guides:
+    display-name: Guides
+    slug: guides
+    icon: light book-open
+  api:
+    display-name: API Reference
+    slug: api
+    icon: light code
+  changelog:
+    display-name: Changelog
+    icon: light clock-rotate-left
+    changelog: ../../changelog
+
+landing-page:
+  page: Chariot Documentation
+  path: pages/index.mdx
+
+navigation: 
+  - tab: guides
+    layout:
+      - section: Getting Started
+        skip-slug: true
+        contents: 
+          - page: Overview
+            slug: getting-started/overview
+            path: ./pages/getting-started/how-chariot-works.mdx
+          - page: Quick Start
+            slug: getting-started/quickstart
+            path: ./pages/getting-started/quickstart.mdx
+          - page: Navigating the Docs
+            slug: getting-started/navigating-the-docs
+            path: ./pages/getting-started/navigating-the-docs.mdx
+      - section: Fundraising
+        slug: fundraising
+        contents: 
+          - section: Donor Advised Funds
+            slug: dafpay
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/dafpay/overview.mdx
+              - page: Integrating Connect
+                slug: integrating-connect
+                path: ./pages/dafpay/integrating-connect.mdx
+              - page: Button Styles
+                slug: button-styles
+                path: ./pages/dafpay/button-styles.mdx
+              - page: Workflow Configurations
+                slug: configurations
+                path: ./pages/dafpay/configurations.mdx
+              - page: Error Handling & Edge Cases
+                slug: error-handling
+                path: ./pages/dafpay/error-handling-1.mdx
+              - section: Implementation
+                contents:
+                  - page: Best Practices
+                    slug: /
+                    path: ./pages/implementation-guide/overview.mdx
+                  - page: Onboarding
+                    slug: onboarding
+                    path: ./pages/implementation-guide/onboarding.mdx
+                  - page: Donation Forms
+                    slug: donation-forms
+                    path: ./pages/implementation-guide/donation-form.mdx
+                  - page: Managing Transactions
+                    slug: transactions
+                    path: ./pages/implementation-guide/transactions.mdx
+          - section: Qualified Charitable Distributions
+            slug: qcd
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/qcd/overview.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/dafpay/faq.mdx
+      - section: Payments
+        slug: payments
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/payments/overview.mdx
+          - page: Concepts
+            slug: concepts
+            path: ./pages/payments/concepts.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/payments/how-it-works.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/payments/compliance.mdx
+  - tab: api
+    layout:
+      - api: API Reference
+        api-name: "2024-10-30"
+        flattened: true
+        skip-slug: true
+        display-errors: true
+        layout:
+          - section: Introduction
+            skip-slug: true
+            contents: 
+              - page: Overview
+                slug: /
+                path: ./pages/api/overview.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/api/authentication-1.mdx
+              - page: Errors
+                slug: errors
+                path: ./pages/api/errors-1.mdx
+              - page: Software Development Kits
+                slug: sdks
+                path: ./pages/api/sdk-1.mdx
+              - page: Webhooks and Events
+                slug: webhooks
+                path: ./pages/api/webhooks-and-events.mdx
+          - section: Core Resources
+            skip-slug: true
+            contents:
+              - entities
+              - organizations
+              - events
+              - eventSubscriptions:
+                  title: Event Subscriptions
+          - section: Fundraising
+            skip-slug: true
+            contents:
+              - connects
+              - grants
+              - recurringGrants:
+                  title: Recurring Grants
+              - grantIntents:
+                  title: Grant Intents
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
+          - section: Payments
+            skip-slug: true
+            contents:
+              - addresses
+              - transactions
+              - payments
+          - section: Files and Exports
+            skip-slug: true
+            contents:
+              - files
+  - tab: changelog

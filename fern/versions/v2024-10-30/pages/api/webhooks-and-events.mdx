@@ -1,0 +1,126 @@
+---
+title: "Webhooks and Events"
+subtitle: "Listen for events on your Chariot account so your platform can automatically trigger reactions."
+hidden: false
+createdAt: "Tue Jan 23 2024 19:53:12 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Apr 17 2024 17:28:24 GMT+0000 (Coordinated Universal Time)"
+---
+When something interesting happens on the nonprofit's Chariot account, such as a Grant being created or its status being updated, Chariot can send a message to your application so that you can take action automatically.
+
+The first step is to create an Event Subscription via the [API](/v2024-10-30/api/event-subscriptions/create). As part of this, you specify a URL for a server endpoint that will receive real-time events. Chariot will then send HTTPS requests to that URL to notify you of activity for certain events.
+
+When a noteworthy event happens, Chariot first generates an [Event](/v2024-10-30/api/events/get). Next, we'll send a POST request to your endpoint.
+
+<Aside>
+  The body of the `POST` webhook request will be the same as the API representation of the [Event](/v2024-10-30/api/events/get) resource.
+
+  ```json Webhook Event Payload
+  {
+    "id": "event_123abc",
+    "created_at": "2023-01-31T23:59:59Z",
+    "category": "grant.created",
+    "associated_object_type": "grant",
+    "associated_object_id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+  }
+  ```
+
+  ### Event Types
+
+  These events represent specific occurrences within our system that you can subscribe to and receive notifications for. 
+
+  - `organization.created`: This event is triggered when an organization is created.
+  - `organization.updated`: This event is triggered when an organization is updated.
+  - `address.created`: This event is triggered when an address is created.
+  - `address.updated`: This event is triggered when an address is updated.
+  - `grant.created`: This event is triggered when a grant is created.
+  - `grant.updated`: This event is triggered when a grant is updated. This can happen when the status changes for example.
+  - `grant_intent.created`: This event is triggered when a grant intent is created.
+  - `grant_intent.updated`: This event is triggered when a grant intent is updated.
+</Aside>
+
+Note that you can create Event Subscriptions in Production and Sandbox. Sandbox Event Subscriptions will receive events for Sandbox events and vice versa.
+
+## Consuming Events
+
+Individual Events don’t contain very much information on their own. This is by design, as the API structure can remain extremely stable and avoid difficult webhook migrations in the future as the Chariot API changes. If you need additional metadata, such as the amount or status of the Grant in the above example, make a GET request to the API for that information.
+
+If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/v2024-10-30/api/events/list). Events will remain in the Chariot system for up to 30 days.
+
+## Secure your webhooks
+
+After you've confirmed that your webhook endpoint connections works as expected, secure the connection by verifying the signature provided in the header of the webhook request.
+
+<Note>
+In order to verify signatures for webhooks, you need to specify the signing secret that you will use in the [Create Event Subscription API](/v2024-10-30/api/event-subscriptions/create).
+</Note>
+
+Chariot will include the `Chariot-Webhook-Signature` header in each webhook request. This header will contain a timestamp and one or more signatures. The timestamp is prefixed by `t=`, and each signature is prefixed by a scheme. Schemes start with `v`, followed by an integer. Currently, the only valid live signature scheme is `v1`.
+
+```
+Chariot-Webhook-Signature: t=2024-01-19T18:48:56Z,v1=e0632fb61f7d1068ecbde75410d5c3cc152926f97eaacf53c6228624647329da
+```
+
+Chariot generates signatures using a hash-based message authentication code ([HMAC](https://en.wikipedia.org/wiki/HMAC)) with [SHA-256](https://en.wikipedia.org/wiki/SHA-2). To prevent [downgrade attacks](https://en.wikipedia.org/wiki/Downgrade_attack), ignore all schemes that are not v1.
+
+### Verify Signatures Manually
+
+#### Step 1: Extract the timestamp and signatures from the header
+
+Split the header using the `,` character as the separator to get a list of elements. Then split each element using the `=` character as the separator to get a prefix and value pair.
+
+The value for the prefix `t` corresponds to the timestamp, and `v1` corresponds to the signature. You can discard all other elements.
+
+#### Step 2: Prepare the signed payload
+
+The `signed_payload` string is created by concatenating:
+
+- The timestamp (as a string)
+- The character `.`
+- The actual JSON payload (that is, the request body)
+
+#### Step 3: Determine the expected signature
+
+Compute an HMAC with the SHA256 hash function. Use the Event Subscription's `signingSecret` as the key, and use the `signed_payload` string as the message.
+
+#### Step 4: Compare the Signatures
+
+Compare the signature (or signatures) in the header to the expected signature. For an equality match, compute the difference between the current timestamp and the received timestamp, then decide if the difference is within your tolerance.
+
+To protect against timing attacks, use a constant-time-string comparison to compare the expected signature to each of the received signatures.
+
+## Failures and Retries
+
+In production, if your application returns anything other than a 20x HTTP status code, we’ll retry it up to 10 times with exponentially increasing backoffs. In your webhook endpoint implementation, we recommend you place inbound Events into your application’s own queuing system for asynchronous event processing, and return a 200 response from your endpoint as quickly as possible. Because we can't guarantee we'll receive your 200 acknowledgement, your webhook implementation should gracefully handle receiving the same webhook multiple times.
+
+To avoid queueing issues, we will not retry failed webhooks in the sandbox.
+
+<Info> 
+If all attempts to a webhook endpoint fail, after 5 days the endpoint will be disabled and we will stop sending event messages to that endpoint.
+</Info>
+
+## Best Practices
+
+Review these best practices to make sure your webhooks remain secure and function well with your integration.
+
+### Handle Duplicate Events
+
+Webhook endpoints might occasionally receive the same event more than once. You can guard against duplicated event receipts by making your event processing idempotent.
+
+### Only subscribe to event categories your integration requires
+
+Configure your webhook endpoints to receive only the types of events required by your integration. Listening for extra events (or all events) puts undue strain on your server and we don’t recommend it.
+
+You can [Update an Event Subscription](/v2024-10-30/api/event-subscriptions/update) to change the event category for a webhook endpoint with the API.
+
+### Receive events with an HTTPS server
+
+If you use an HTTPS URL for your webhook endpoint, Chariot validates that the connection to your server is secure before sending your webhook data. For this to work, your server must be correctly configured to support HTTPS with a valid server certificate. The Production environment requires HTTPS URLs.
+
+### Quickly return a 2xx response
+
+Your endpoint must quickly return a successful status code (2xx) prior to any complex logic that could cause a timeout.
+
+### Verify webhook signatures
+
+See the section above on [verifying webhook signatures](/v2024-10-30/api/webhooks#secure-your-webhooks)
+
