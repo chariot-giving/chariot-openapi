@@ -1,0 +1,13 @@
+api:
+  default-environment: Production
+  default-url: api
+  environments: 
+    Production: 
+      urls: 
+        api: https://api.givechariot.com
+    Sandbox:
+      urls: 
+        api: https://sandboxapi.givechariot.com
+  specs: 
+    - openapi: ../../../specs/2024-10-30.yaml
+      overrides: ./openapi-overrides.yml

@@ -1,0 +1,107 @@
+x-fern-pagination: 
+  cursor: $request.page_token
+  next_cursor: $response.paging.next_page_token
+  results: $response.results
+paths:
+  /connects:
+    post:
+      x-fern-sdk-group-name:
+        - connects
+      x-fern-sdk-method-name: create
+  /connects/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - connects
+      x-fern-sdk-method-name: get
+  /grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: create
+  /grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: update
+  /recurring_grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: create
+  /recurring_grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: get
+  /grant_intents:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - grant_intents
+      x-fern-sdk-method-name: list
+  /grant_intents/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grant_intents
+      x-fern-sdk-method-name: get
+  /dafs:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - donorAdvisedFunds
+      x-fern-sdk-method-name: list
+  /dafs/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donorAdvisedFunds
+      x-fern-sdk-method-name: get
+  /events:
+    get:
+      x-fern-pagination: 
+        cursor: $request.cursor
+        next_cursor: $response.paging.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: list
+  /events/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: get
+  /event_subscriptions:
+    get:
+      x-fern-pagination: 
+        cursor: $request.cursor
+        next_cursor: $response.paging.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: create
+  /event_subscriptions/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: update
