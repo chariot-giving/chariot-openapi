@@ -121,6 +121,19 @@ paths:
           example: "en_1LaXpKGUcADgqoEMl0Cx0Ygg"
           schema:
             type: string
+        - name: ein
+          in: query
+          description: |-
+            The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
+          schema:
+            type: string
+        - name: expand
+          in: query
+          description: |-
+            A comma-separated list of objects to expand and include in the response for each organization.
+          schema:
+            type: string
+          example: "entity"
         - name: limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
@@ -136,7 +149,7 @@ paths:
             type: string
       responses:
         "200":
-          description: The entities were retrieved
+          description: The organizations were retrieved
           content:
             application/json:
               schema:
@@ -284,19 +297,13 @@ paths:
         - Connects
       security:
         - bearerAuth: []
-      parameters:
-        - name: organization_id
-          in: query
-          description: |-
-            The unique id of the organization.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: true
-          example: 6af3f58e-7a80-4997-8259-770c033d7d3a
       requestBody:
-        $ref: "#/components/requestBodies/CreateConnectRequest"
+        description: The connect to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Connect"
       responses:
         "200":
           description: OK
@@ -1364,7 +1371,7 @@ paths:
     post:
       summary: Create a payment
       description: |
-        Create a payment to send money to an organization's address.
+        Create a payment to send money to an organization.
       operationId: createPayment
       tags:
         - Payments
@@ -1539,6 +1546,17 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Person"
+        compliance:
+          $ref: "#/components/schemas/EntityCompliance"
+        financials:
+          $ref: "#/components/schemas/EntityFinancials"
+        ntee_code:
+          type: string
+          description: |-
+            The National Taxonomy of Exempt Entities (NTEE) Code is a four-digit code used to classify
+            an exempt organization in terms of its primary exempt activity.
+            The first digit (Common Code) is a modifier used to describe activities in support of nonprofit organizations.
+          example: P50
         status:
           type: string
           description: The status of the entity
@@ -1629,7 +1647,6 @@ components:
         - name
         - entity_id
         - affiliation
-        - domain
       properties:
         id:
           type: string
@@ -1638,7 +1655,11 @@ components:
           example: org_01j8rs605a4gctmbm58d87mvsj
         name:
           type: string
-          description: The registered name of the suborganization
+          description: |-
+            The name of the organization.
+            For organizations that operate under a different name than the one tied to the legal entity, 
+            this name will differ from the name of the linked entity.
+            This is also known as the "DBA" or "Doing Business As" name of the organization.
           example: American Red Cross
         entity_id:
           type: string
@@ -1663,19 +1684,14 @@ components:
           example: org_01j8rs605a4gctmbm58d87mvsk
         web:
           $ref: "#/components/schemas/WebDomain"
-        logo:
-          type: string
-          description: The URL of the organization's logo
+        brand:
+          $ref: "#/components/schemas/Brand"
         mission_statement:
           type: string
           description: The mission statement of the organization
           example: To provide relief to those in need
-        ntee_code:
-          type: string
-          description: The NTEE code of the organization
-          example: P50
-        compliance:
-          $ref: "#/components/schemas/Compliance"
+        donation_eligibility:
+          $ref: "#/components/schemas/DonationEligibility"
         donation_acceptance:
           $ref: "#/components/schemas/DonationAcceptance"
         created_at:
@@ -1700,7 +1716,7 @@ components:
         On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`.
         More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
       required:
-        - id
+        - organization_id
       properties:
         id:
           type: string
@@ -1712,6 +1728,10 @@ components:
           type: string
           description: A human readable name for the connect, optional.
           example: website
+        organization_id:
+          type: string
+          description: The unique identifier for the organization that this connect belongs to.
+          example: org_01j8rs605a4gctmbm58d87mvsk
         active:
           type: boolean
           description: |-
@@ -2088,39 +2108,27 @@ components:
           type: string
           description: The verification status of the domain
           enum:
+            - verified
             - unverified
             - pending
-            - verified
           example: "verified"
         verification_method:
           type: string
           description: The method used to verify the domain ownership
           enum:
             - dns_txt
-            - dns_cname
-            - file
           example: "dns_txt"
         verification_token:
           type: string
           description: |-
             The token used for domain verification.
-            This token must be set on a DNS TXT record at the domain's DNS server.
+            For dns_txt verification method, this token must be set on a DNS TXT record at the domain's DNS server.
           example: "chariot-verify=abc123xyz789"
         verified_at:
           type: string
           format: date-time
           description: The timestamp when the domain was verified
           example: "2023-04-15T14:30:00Z"
-        ssl_status:
-          type: string
-          description: |-
-            The SSL certificate status for the domain.
-            This indicates if a valid SSL certificate is currently provisioned for the domain.
-          enum:
-            - none
-            - pending
-            - active
-          example: "active"
         created_at:
           type: string
           format: date-time
@@ -2131,6 +2139,17 @@ components:
           format: date-time
           description: The timestamp when the domain was last updated
           example: "2023-04-15T14:30:00Z"
+    Brand:
+      type: object
+      description: |-
+        Fair use brand assets that are associated with an organization and can be used for identification and informational purposes.
+      properties:
+        favicon_url:
+          type: string
+          description: The URL of the organization's favicon
+        logo_url:
+          type: string
+          description: The URL of the organization's logo
     Address:
       type: object
       description: |-
@@ -2246,6 +2265,8 @@ components:
         - "grant_intent.updated"
         - "address.created"
         - "address.updated"
+        - "payment.created"
+        - "payment.updated"
     Event:
       type: object
       description: |
@@ -2560,33 +2581,97 @@ components:
           type: string
           description: The check number
           example: "123456789"
-    Compliance:
+    EntityCompliance:
       type: object
       description: |-
-        Compliance is an object that contains legal information about the nonprofit organization.
-        This information is used to comply with regulations and ensure the legitimacy of the organization.
+        An object that contains legal information about the nonprofit entity and its tax-exemption status.
+        This information is used to comply with regulations and ensure the legitimacy of the nonprofit for purposes of donations and disbursements.
       properties:
+        irs_group_exemption_number:
+          type: string
+          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters. 
         irs_subsection_code:
           type: string
-          description: The IRS subsection code for the organization
+          description: The IRS subsection code for the entity
           example: "03"
+        irs_filing_requirement_code:
+          type: string
+          description: |-
+            This indicates the primary return(s) the entity is required to files.
+            - 01: 990 (all other) or 990EZ return
+            - 02: 990 - Required to file Form 990-N - Income less than $50,000 per year
+            - 03: 990 - Group return
+            - 04: 990 - Required to file Form 990-BL, Black Lung Trusts
+            - 06: 990 - Not required to file (church)
+            - 07: 990 - Government 501(c)(1)
+            - 13: 990 - Not required to file (religious organization)
+            - 14: 990 - Not required to file (instrumentalities of states or political subdivisions)
+            - 00: 990 - Not required to file (all other)
+          example: "00"
         irs_pub_78:
           type: boolean
-          description: Whether the organization is listed on the IRS Publication 78 dataset
+          description: Whether the entity is listed on the IRS Publication 78 dataset
           example: true
         irs_revocation:
           type: boolean
-          description: Whether the organization is listed on the IRS revocation dataset
+          description: Whether the entity is listed on the IRS revocation dataset
           example: false
         ofac_list:
           type: boolean
-          description: Whether the organization is listed on the OFAC list
+          description: Whether the entity is listed on the OFAC list
           example: false
+    EntityFinancials:
+      type: object
+      description: |-
+        An object that contains the financial details of the nonprofit entity as reported to the IRS.
+      properties:
+        asset_amount:
+          type: number
+          description: |-
+            Asset Amount is an amount from the most recent Form 990 series return filed by the organization. Asset Amount is the
+            Book Value Total Assets End of Year - PART X Balance Sheet Line 16 Col. (B) shown on the Form 990. This field is also
+            from PART II, Line 25, Col. (B) EOY on Form 990EZ and PART II, Line 16, Col. (b) on Form 990PF. This field is dollars
+            only.
+        income_amount:
+          type: number
+          description: |-
+            Income Amount is a computer-generated amount from the most recent Form 990 series return filed by the organization.
+            Income Amount is computer generated using PART I, Total Revenue Line 12 and adding "back in" the expense items, i.e.
+            Line 6b (Rental Expenses) shown on the Form 990 return. On Form 990EZ it is generated using PART I, Line 9 and
+            adding "back in" the expense items, i.e. Line 5b (Cost or Other Basis Expenses). Income Amount for Form 990PF is
+            generated using Part I, Line 10b (Cost of Goods) and adding Part I, Line 12, Col. (A) (Total Revenue Col. A) and Part IV,
+            Line 1, Col. (G) (Cost or Other Basis). This field is dollars only.
+        revenue_amount:
+          type: number
+          description: |-
+            Form 990 Revenue Amount.
+            Amount from Form 990, Part 1, Line 12, or Part 1, Line 9, of Form 990EZ.
+    DonationEligibility:
+      type: object
+      description: |-
+        Donation eligibility defines the types of donations that the organization can receive.
+        This is useful for grantmakers to use to determine if they can facilitate donations and/or
+        pay a nonprofit organization.
+        Chariot assumes financial liability for this information.
+        This does not replace the checks that a grantmaker should perform in reviewing whether a donor can initiate a donation.
+        Grantmakers can use the compliance information available on an entity as reported from the IRS for their own
+        internal review purposes.
+      properties:
+        allowed_donation_types:
+          type: array
+          description: The list of donation types that the organization is eligible to receive.
+          items:
+            $ref: "#/components/schemas/DonationType"
     DonationAcceptance:
       type: object
       description: |-
         Donation acceptance is an object that contains information about the donation acceptance policy and preferences of the nonprofit organization.
+        This object will only be populated if the organization has an account with Chariot and has specified their preferences with what types of gifts they can receive and how they wish to receive them.
       properties:
+        allow_online_giving:
+          type: boolean
+          description: Whether the organization allows online donations
+          example: true
         accepted_donation_types:
           type: array
           description: The list of donation types that are accepted by the organization
@@ -2757,9 +2842,12 @@ components:
           example: "Payment to Nonprofit"
         status:
           type: string
-          description: The status of the payment
+          description: |-
+            The status is a string that captures the lifecycle of a payment.
+            For more information on payment lifecycle and the flow of funds, see [Flow of Funds](/v2024-10-30/guides/payments/flow-of-funds).
           example: "pending"
           enum:
+            - initiated
             - pending
             - submitted
             - completed
@@ -2829,7 +2917,7 @@ components:
       schema:
         type: string
   requestBodies:
-    CreateNonprofitRequest:
+    CreateOrganizationRequest:
       description: |-
         The request to create and register a nonprofit organization account.
         The ein and user.email properties are required.
@@ -2840,63 +2928,30 @@ components:
           schema:
             type: object
             required:
-              - ein
-              - user
+              - entity
+              - contact
             properties:
-              user:
+              contact:
+                $ref: "#/components/schemas/Person"
+              entity:
                 type: object
                 required:
-                  - email
+                  - ein
+                  - physical_address
                 properties:
-                  email:
+                  ein:
                     type: string
-                    description: The email address for the nonprofit account contact
-                    example: ben.give@co.com
-                  phone:
+                    description: The US federal employer identification number (Tax ID) for the nonprofit
+                    example: "043567500"
+                  name:
                     type: string
-                    description: The phone number for the nonprofit account contact
-                    example: "9127772424"
-                  firstName:
-                    type: string
-                    description: The first name of the nonprofit account contact
-                    example: Ben
-                  lastName:
-                    type: string
-                    description: The last name of the nonprofit account contact
-                    example: Give
-              ein:
-                type: string
-                description: The US federal employer identification number (Tax ID); unique on the system
-                example: "043567500"
-              preferredName:
-                type: string
-                description: |-
-                  The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
-              picture:
-                type: string
-                description: The URI of the nonprofit's logo
+                    description: The name of the nonprofit
+                    example: "The Doe Foundation"
+                  physical_address:
+                    $ref: "#/components/schemas/PostalAddress"
               website:
                 type: string
                 description: The URL of the nonprofit's website
-    CreateConnectRequest:
-      description: |-
-        The request to create a new Connect object for an Organization.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: |-
-                  A human readable name of the Connect, optional.
-                example: "First connect"
-              metadata:
-                type: object
-                description: A map of arbitrary string keys and values to store information about the object.
-                additionalProperties:
-                  type: string
     GrantCaptureRequest:
       description: |-
         The request to create and submit a grant. This is useful to capture a grant intent associated with DAFpay workflow session.
@@ -2914,7 +2969,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Integrating Connect](/integrating-connect) for how to get this value from the DAFpay client-side SDK.
+                  See [Integrating Connect](/v2024-10-30/guides/fundraising/dafpay/integrating-connect) for how to get this value from the DAFpay client-side SDK.
               amount:
                 type: number
                 description: |-
@@ -2990,7 +3045,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Integrating Connect](/integrating-connect) for how to get this value from the DAFpay client-side SDK.
+                  See [Integrating Connect](/v2024-10-30/guides/fundraising/dafpay/integrating-connect) for how to get this value from the DAFpay client-side SDK.
               frequency:
                 type: string
                 description: |-
