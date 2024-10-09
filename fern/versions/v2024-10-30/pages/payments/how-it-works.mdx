@@ -47,7 +47,7 @@ First, you need to find the nonprofit `Organization` that you want to send a pay
 
 <EndpointRequestSnippet endpoint="GET /organizations" />
 
-You can use the response to verify the details of the `Organization` to ensure it is the correct one and elligble for DAF grants.
+You can use the response to verify the details of the `Organization` to ensure it is the correct one and eligible for DAF grants.
 
 <EndpointResponseSnippet endpoint='GET /organizations' />
 
@@ -59,7 +59,7 @@ Next, you'll create a `Payment` to the Organization with the amount that you wan
 
 Once, you receive a successful response, you can be sure that the payment will be processed.
 Chariot will use the funds in your FBO to push a payment to the organization.
-After Chariot processes and submits the payment, you will be able to track the lifecycle of the payment using webhook events. [INSERT LINK TO WEBHOOKS]
+After Chariot processes and submits the payment, you will be able to track the lifecycle of the payment using webhook events.
 
 <EndpointResponseSnippet endpoint='POST /payments' example="WithPaymentId" />
 
