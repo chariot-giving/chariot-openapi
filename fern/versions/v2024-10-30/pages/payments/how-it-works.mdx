@@ -7,33 +7,34 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
 ---
 
 ## Platform Onboarding
-<CardGroup cols={2}>
+<CardGroup cols={3}>
     <Card
-        title='1. Set up Chariot Payments account'
+        title='1. Set up account'
         icon='user-plus'
     >
-    Create an account at payments.givechariot.com
+    Create a Chariot Payments Account
     </Card>
 
     <Card
-        title='2. Add and verify your bank account'
+        title='2. Add your bank'
         icon='bank'
     >
-    Add and verify your bank account to fund payments via the Chariot FBO account.
+    Add and verify your bank account to fund payments
     </Card>
         <Card
-        title='3. Send your first payment'
-        icon='payment'
+        title='3. Send a payment'
+        icon='money-check-dollar-pen'
     >
-    Send your first payment to a verified nonprofit.
+    Send your first payment to a verified nonprofit
     </Card>
 </CardGroup>
+
 To get started with Chariot Payments, you'll need to register for an account with Chariot and go through an onboarding process.
 After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`.
 
 The onboarding process involves verifying your identity and setting up your account.
-Chariot will provision a For-Benefit-Of (FBO) bank account for you in order to facilitate sending payments.
-You will also need to link an operating bank account to fund payments via the Chariot FBO account.
+The specific requirements of account setup and onboarding depend on how your organization wants to manage payments and use Chariot's API.
+In most cases, you will need to provide Chariot with sufficient information to open and fund a bank account on your behalf.
 
 ## Making a Payment
 
@@ -90,6 +91,20 @@ If a Nonprofit does not have an account with Chariot, they can still receive pay
 In this case, Chariot will mail a paper check to the nonprofit's verified postal address.
 We strongly recommend that nonprofits sign up for a free account with Chariot to receive payments electronically.
 
+## Payment Rails
+
+### Checks
+
+<Frame>
+    <img src='../../images/how-it-works-checks-w-descriptions.png' />
+</Frame>
+
+### Electronic (ACH, RTP, etc.)
+
+<Frame>
+    <img src='../../images/how-it-works-electronic-w-descriptions.png' />
+</Frame>
+
 ## Managing Payments
 
 Chariot offers several ways to manage payments.
@@ -112,7 +127,7 @@ Caution: Requires compliance overhead and being able to send payments via Check 
 
 In this flow, the payers call the API to read the public-facing `Address`
 and create a payment intent for a payment that will be sent via the appropriate payment rail.
-This option is ideal for payers that manage their own Accounts Payable systems or already have capabilities to send payments.
+This option is great for payers that manage their own Accounts Payable systems or already have capabilities to send payments.
 
 ### Delegate to Accounts Payable Systems
 

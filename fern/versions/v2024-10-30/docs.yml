@@ -90,6 +90,16 @@ navigation:
           - page: Compliance
             slug: compliance
             path: ./pages/payments/compliance.mdx
+          - page: Flow of Funds
+            slug: flow-of-funds
+            hidden: true
+            path: ./pages/payments/flow-of-funds.mdx
+          - page: How Chariot Compares
+            slug: comparisons
+            path: ./pages/payments/how-chariot-compares.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/payments/faq.mdx
   - tab: api
     layout:
       - api: API Reference
