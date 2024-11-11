@@ -2418,7 +2418,6 @@ components:
       required:
         - organization_id
         - amount
-        - payment_id
       properties:
         id:
           type: string
