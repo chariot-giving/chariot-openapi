@@ -1101,7 +1101,7 @@ paths:
                 purpose:
                   type: string
                   description: |
-                    What the File will be used for. We may add additional possible values for this enum over time; 
+                    What the File will be used for. We may add additional possible values for this enum over time;
                     your application should be able to handle such additions gracefully.
                     grant_letter: A grant letter
                     tax_document: A tax document
@@ -1657,7 +1657,7 @@ components:
           type: string
           description: |-
             The name of the organization.
-            For organizations that operate under a different name than the one tied to the legal entity, 
+            For organizations that operate under a different name than the one tied to the legal entity,
             this name will differ from the name of the linked entity.
             This is also known as the "DBA" or "Doing Business As" name of the organization.
           example: American Red Cross
@@ -2355,7 +2355,7 @@ components:
         purpose:
           type: string
           description: |
-            What the File will be used for. We may add additional possible values for this enum over time; 
+            What the File will be used for. We may add additional possible values for this enum over time;
             your application should be able to handle such additions gracefully.
             grant_letter: A grant letter
             tax_document: A tax document
@@ -2457,27 +2457,12 @@ components:
           description: |-
             The unique identifier for the payment that the transaction is associated with.
           example: "pay_1LaXpKGUcADgqoEMl0Cx0Ygg"
-        payment:
-          $ref: "#/components/schemas/Payment"
-        payment_details:
-          $ref: "#/components/schemas/PaymentDetails"
         attachment_file_id:
           type: string
           description: |-
             The unique identifier for the file that is attached to the transaction.
             This is useful if you want to attach a letter or another document to the transaction.
           example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
-        status:
-          type: string
-          description: The status of the transaction
-          example: "pending"
-          readOnly: true
-          enum:
-            - pending
-            - submitted
-            - completed
-            - canceled
-            - rejected
         created_at:
           type: string
           format: date-time
@@ -2589,7 +2574,7 @@ components:
       properties:
         irs_group_exemption_number:
           type: string
-          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters. 
+          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters.
         irs_subsection_code:
           type: string
           description: The IRS subsection code for the entity
