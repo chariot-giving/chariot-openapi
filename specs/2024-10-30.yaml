@@ -823,41 +823,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /addresses/{id}:
-    get:
-      summary: Get Address
-      description: |
-        Retrieve an address with the given ID.
-      operationId: getAddress
-      tags:
-        - Addresses
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the address
-          required: true
-          schema:
-            type: string
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
-      responses:
-        "200":
-          description: The address was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Address"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /events:
     get:
       summary: List Events
