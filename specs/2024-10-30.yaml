@@ -1293,12 +1293,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: address_id
-          in: query
-          description: The unique identifier for the address
-          required: false
-          schema:
-            type: string
         - name: organization_id
           in: query
           description: The unique identifier for the organization
@@ -1412,13 +1406,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: address_id
-          in: query
-          description: The unique identifier for the address
-          required: true
-          schema:
-            type: string
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
         - name: organization_id
           in: query
           description: The unique identifier for the organization
@@ -2159,16 +2146,10 @@ components:
           * postal: a mailing address
           * bank: a bank account number and routing number
       required:
-        - id
         - organization_id
         - type
         - supported_payment_methods
       properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the object.
-          example: addr_1LaXpKGUcADgqoEMl0Cx0Ygg
         organization_id:
           type: string
           description: The unique identifier for the organization that this address is associated with.
@@ -2808,12 +2789,6 @@ components:
           type: string
           description: The unique identifier for the organization that will receive the payment
           example: "org_1234567890"
-        address_id:
-          type: string
-          description: |-
-            The identifier for the address that will receive the payment.
-            If not specified, the primary address for the organization will be used.
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
         amount:
           type: integer
           format: int64
