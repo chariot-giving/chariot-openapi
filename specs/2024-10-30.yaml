@@ -2136,18 +2136,6 @@ components:
           $ref: "#/components/schemas/PostalAddress"
         us_bank_account:
           $ref: "#/components/schemas/UsBankAccountAddress"
-        created_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
-        updated_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
-          example: "2021-07-11 15:34:00.000"
     PostalAddress:
       type: object
       description: |-
