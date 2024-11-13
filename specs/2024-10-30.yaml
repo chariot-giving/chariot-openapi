@@ -823,41 +823,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /addresses/{id}:
-    get:
-      summary: Get Address
-      description: |
-        Retrieve an address with the given ID.
-      operationId: getAddress
-      tags:
-        - Addresses
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the address
-          required: true
-          schema:
-            type: string
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
-      responses:
-        "200":
-          description: The address was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Address"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /events:
     get:
       summary: List Events
@@ -1101,7 +1066,7 @@ paths:
                 purpose:
                   type: string
                   description: |
-                    What the File will be used for. We may add additional possible values for this enum over time; 
+                    What the File will be used for. We may add additional possible values for this enum over time;
                     your application should be able to handle such additions gracefully.
                     grant_letter: A grant letter
                     tax_document: A tax document
@@ -1293,12 +1258,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: address_id
-          in: query
-          description: The unique identifier for the address
-          required: false
-          schema:
-            type: string
         - name: organization_id
           in: query
           description: The unique identifier for the organization
@@ -1412,13 +1371,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: address_id
-          in: query
-          description: The unique identifier for the address
-          required: true
-          schema:
-            type: string
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
         - name: organization_id
           in: query
           description: The unique identifier for the organization
@@ -1657,7 +1609,7 @@ components:
           type: string
           description: |-
             The name of the organization.
-            For organizations that operate under a different name than the one tied to the legal entity, 
+            For organizations that operate under a different name than the one tied to the legal entity,
             this name will differ from the name of the linked entity.
             This is also known as the "DBA" or "Doing Business As" name of the organization.
           example: American Red Cross
@@ -2159,16 +2111,10 @@ components:
           * postal: a mailing address
           * bank: a bank account number and routing number
       required:
-        - id
         - organization_id
         - type
         - supported_payment_methods
       properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the object.
-          example: addr_1LaXpKGUcADgqoEMl0Cx0Ygg
         organization_id:
           type: string
           description: The unique identifier for the organization that this address is associated with.
@@ -2190,18 +2136,6 @@ components:
           $ref: "#/components/schemas/PostalAddress"
         us_bank_account:
           $ref: "#/components/schemas/UsBankAccountAddress"
-        created_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
-        updated_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
-          example: "2021-07-11 15:34:00.000"
     PostalAddress:
       type: object
       description: |-
@@ -2355,7 +2289,7 @@ components:
         purpose:
           type: string
           description: |
-            What the File will be used for. We may add additional possible values for this enum over time; 
+            What the File will be used for. We may add additional possible values for this enum over time;
             your application should be able to handle such additions gracefully.
             grant_letter: A grant letter
             tax_document: A tax document
@@ -2418,7 +2352,6 @@ components:
       required:
         - organization_id
         - amount
-        - payment_id
       properties:
         id:
           type: string
@@ -2457,27 +2390,12 @@ components:
           description: |-
             The unique identifier for the payment that the transaction is associated with.
           example: "pay_1LaXpKGUcADgqoEMl0Cx0Ygg"
-        payment:
-          $ref: "#/components/schemas/Payment"
-        payment_details:
-          $ref: "#/components/schemas/PaymentDetails"
         attachment_file_id:
           type: string
           description: |-
             The unique identifier for the file that is attached to the transaction.
             This is useful if you want to attach a letter or another document to the transaction.
           example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
-        status:
-          type: string
-          description: The status of the transaction
-          example: "pending"
-          readOnly: true
-          enum:
-            - pending
-            - submitted
-            - completed
-            - canceled
-            - rejected
         created_at:
           type: string
           format: date-time
@@ -2589,7 +2507,7 @@ components:
       properties:
         irs_group_exemption_number:
           type: string
-          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters. 
+          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters.
         irs_subsection_code:
           type: string
           description: The IRS subsection code for the entity
@@ -2824,12 +2742,6 @@ components:
           type: string
           description: The unique identifier for the organization that will receive the payment
           example: "org_1234567890"
-        address_id:
-          type: string
-          description: |-
-            The identifier for the address that will receive the payment.
-            If not specified, the primary address for the organization will be used.
-          example: "addr_1LaXpKGUcADgqoEMl0Cx0Ygg"
         amount:
           type: integer
           format: int64
