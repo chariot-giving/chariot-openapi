@@ -2865,6 +2865,33 @@ components:
                   This is necessary to verify that the webhook is coming from Chariot.
                   While this parameter is optional, it is highly recommended to pass a value
                   for the secret and implement webhook signature verification.
+    CreatePaymentRequest:
+      description: |-
+        The request to create payments and their corresponding transactions.
+        The organization and amount are required.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - organization_id
+              - amount
+            properties:
+              organization_id:
+                type: string
+                description: The ID of the organization that will receive the payment.
+                example: "org_1234567890"
+              amount:
+                type: integer
+                format: int64
+                description: The payment amount in USD cents. Must be a positive amount.
+                example: 10000
+              description:
+                type: string
+                description: |-
+                  A description of the payment that will be displayed to the receiving organization.
+                example: "Payment to Nonprofit"
     UpdateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
@@ -2995,33 +3022,6 @@ components:
             code: 400
             error: "Bad Request"
             message: "Expected an API key to be provided in the header `x-chariot-api-key`"
-    CreatePaymentRequest:
-      description: |-
-        The request to create payments and their corresponding transactions.
-        The organization and amount are required.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - organization_id
-              - amount
-            properties:
-              organization_id:
-                type: string
-                description: The ID of the organization that will receive the payment.
-                example: "org_1234567890"
-              amount:
-                type: integer
-                format: int64
-                description: The payment amount in USD cents. Must be a positive amount.
-                example: 10000
-              description:
-                type: string
-                description: |-
-                  A description of the payment that will be displayed to the receiving organization.
-                example: "Payment to Nonprofit"
     AuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
