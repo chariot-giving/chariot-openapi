@@ -2899,49 +2899,33 @@ components:
                 type: array
                 description: The list of transactions associated with the payment
                 items:
-                  $ref: "#/components/requestBodies/CreateTransactionRequest"
-    CreateTransactionRequest:
-      type: object
-      description: |
-        The request to create a transaction.
-      required:
-        - amount
-      properties:
-        amount:
-          type: integer
-          format: int64
-          description: The transaction amount in minor currency units (cents)
-          example: 10000
-        currency:
-          type: string
-          description: The currency code for the transaction
-          example: "USD"
-          default: "USD"
-        description:
-          type: string
-          description: |
-            A description of the transaction.
-            This description is displayed to the receiving organization.
-          example: "Transaction to Nonprofit"
-        donation:
-          $ref: "#/components/schemas/Donation"
-        donors:
-          type: array
-          description: The list of donors for the transaction
-          items:
-            $ref: "#/components/schemas/Donor"
-        # TODO: we don't have the ability to create files yet, so leaving this out for now
-        # attachment_file_id:
-        #   type: string
-        #   description: |-
-        #     The unique identifier for the file that is attached to the transaction.
-        #     This is useful if you want to attach a letter or another document to the transaction.
-        #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
-        metadata:
-          type: object
-          description: Additional metadata for the transaction
-          additionalProperties:
-            type: string
+                  type: object
+                  description: |
+                    The request to create a transaction.
+                  required:
+                    - amount
+                  properties:
+                    amount:
+                      type: integer
+                      format: int64
+                      description: The transaction amount in minor currency units (cents)
+                      example: 10000
+                    currency:
+                      type: string
+                      description: The currency code for the transaction
+                      example: "USD"
+                      default: "USD"
+                    description:
+                      type: string
+                      description: |
+                        A description of the transaction.
+                        This description is displayed to the receiving organization.
+                      example: "Transaction to Nonprofit"
+                    metadata:
+                      type: object
+                      description: Additional metadata for the transaction
+                      additionalProperties:
+                        type: string
     UpdateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
