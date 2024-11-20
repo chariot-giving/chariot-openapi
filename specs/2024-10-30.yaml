@@ -2921,6 +2921,20 @@ components:
                         A description of the transaction.
                         This description is displayed to the receiving organization.
                       example: "Transaction to Nonprofit"
+                    donation:
+                      $ref: "#/components/schemas/Donation"
+                    donors:
+                      type: array
+                      description: The list of donors for the transaction
+                      items:
+                        $ref: "#/components/schemas/Donor"
+                    # TODO: we don't have the ability to create files yet, so leaving this out for now
+                    # attachment_file_id:
+                    #   type: string
+                    #   description: |-
+                    #     The unique identifier for the file that is attached to the transaction.
+                    #     This is useful if you want to attach a letter or another document to the transaction.
+                    #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
                     metadata:
                       type: object
                       description: Additional metadata for the transaction
