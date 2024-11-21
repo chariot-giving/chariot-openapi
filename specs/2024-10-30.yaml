@@ -2631,6 +2631,11 @@ components:
           readOnly: true
         submission:
           $ref: "#/components/schemas/PaymentReference"
+        transactions:
+          type: array
+          description: The list of transactions for the payment
+          items:
+            $ref: "#/components/schemas/Transaction"
     PaymentList:
       description: A list of payments
       properties:
