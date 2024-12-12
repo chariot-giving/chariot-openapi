@@ -75,31 +75,6 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/dafpay/faq.mdx
-      - section: Payments
-        slug: payments
-        contents:
-          - page: Overview
-            slug: /
-            path: ./pages/payments/overview.mdx
-          - page: Concepts
-            slug: concepts
-            path: ./pages/payments/concepts.mdx
-          - page: How It Works
-            slug: how-it-works
-            path: ./pages/payments/how-it-works.mdx
-          - page: Compliance
-            slug: compliance
-            path: ./pages/payments/compliance.mdx
-          - page: Flow of Funds
-            slug: flow-of-funds
-            hidden: true
-            path: ./pages/payments/flow-of-funds.mdx
-          - page: How Chariot Compares
-            slug: comparisons
-            path: ./pages/payments/how-chariot-compares.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/payments/faq.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -145,14 +120,4 @@ navigation:
                   title: Grant Intents
               - donorAdvisedFunds:
                   title: Donor Advised Funds
-          - section: Payments
-            skip-slug: true
-            contents:
-              - addresses
-              - transactions
-              - payments
-          - section: Files and Exports
-            skip-slug: true
-            contents:
-              - files
   - tab: changelog
