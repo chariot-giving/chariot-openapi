@@ -1,0 +1,28 @@
+---
+title: Implementation Checklist
+subtitle: A comprehensive guide for integrating with Chariot API endpoints
+---
+
+<Info> 
+This guide assumes you have already been shared a `client_id` and `client_secret`. If that is not the case, please email [support@givechariot.com](mailto:support@givechariot.com).
+</Info>
+
+### [Set Up](https://docs.givechariot.com/integrating-da-fpay/set-up)
+* [ ]  [Generate API access token](https://docs.givechariot.com/integrating-da-fpay/set-up#generate-an-access-token-_)
+* [ ]  [Register your nonprofit(s) in the Chariot system](https://docs.givechariot.com/integrating-da-fpay/set-up#create-nonprofit-hospital)
+* [ ]  [Create Connects for your nonprofit(s)](https://docs.givechariot.com/integrating-da-fpay/set-up#create-connect-)
+
+### Build Front End 
+* [ ]  [Install the Chariot Connect (DAFpay button) JavaScript package](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/front-end#installation)
+* [ ]  [Add the Connect ID to the Chariot-Connect component](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/front-end#add-chariot-connect)
+* [ ]  [Customize Button Style (optional)](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/front-end#dafpay-button-themes)
+
+### Configure DAFpay Button
+* [ ]  [Collect donor data in the Connect](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/back-end#collecting-donor-data)
+* [ ]  [Capture grant intents](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/back-end#capturing-grant-intents)
+* [ ]  [Enable recurring dontions (optional)](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/back-end#recurring-donations)
+* [ ]  [Configure unintegrated DAF providers (optional)](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/back-end#unintegrated-daf-providers)
+
+### Managing Transactions
+* [ ]  Display `TrackingID` and `ExternalID` in your dashbaord
+* [ ]  Set up grant status webhook and/or API call 

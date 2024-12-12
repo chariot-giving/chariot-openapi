@@ -63,6 +63,35 @@ navigation:
               - page: Managing Transactions
                 slug: transactions
                 path: ./pages/implementation-guide/transactions.mdx
+      - section: Integrating DAFpay V2
+        slug: dafpay
+        contents: 
+          - page: Overview
+            slug: getting-started/overview
+            path: ./pages/getting-started/how-chariot-works.mdx
+          - page: Best Practices
+            slug: best-practices
+            path: ./pages/integrating-dafpay/best-practices.mdx
+          - page: FAQ
+            slug: getting-started/faq
+            path: ./pages/getting-started/faq.mdx
+          - section: Integrating DAFpay 
+            contents:
+              - page: Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/integrating-dafpay/set-up.mdx
+              - page: Front End Configuration
+                slug: front-end
+                path: ./pages/integrating-dafpay/front-end.mdx
+              - page: Back End Configuration
+                slug: back-end
+                path: ./pages/integrating-dafpay/back-end.mdx
+              - page: Transaction Management
+                slug: transactions
+                path: ./pages/integrating-dafpay/transactions.mdx
   - tab: api
     layout:
       - api: API Reference
