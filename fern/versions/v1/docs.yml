@@ -39,7 +39,7 @@ navigation:
         contents: 
           - page: Overview
             slug: overview
-            path: ./pages/dafpay/integrating-connect.mdx
+            path: ./pages/integrating-dafpay/overview.mdx
           - page: Button Styles
             slug: button-styles
             path: ./pages/dafpay/button-styles.mdx
@@ -63,15 +63,12 @@ navigation:
               - page: Managing Transactions
                 slug: transactions
                 path: ./pages/implementation-guide/transactions.mdx
-      - section: Integrating DAFpay V2
+      - section: Implementation Guide V2
         slug: dafpay
         contents: 
           - page: Overview
-            slug: getting-started/overview
-            path: ./pages/getting-started/how-chariot-works.mdx
-          - page: Best Practices
-            slug: best-practices
-            path: ./pages/integrating-dafpay/best-practices.mdx
+            slug: overview
+            path: ./pages/integrating-dafpay/overview.mdx
           - page: FAQ
             slug: getting-started/faq
             path: ./pages/getting-started/faq.mdx
