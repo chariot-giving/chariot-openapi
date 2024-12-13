@@ -5,12 +5,12 @@ hidden: false
 createdAt: "Mon Dec 18 2023 20:30:30 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
 ---
-### Nonprofit Onboaridng
+### Nonprofit Onboarding
 <AccordionGroup>
     <Accordion title="What information is needed to register a nonprofit?">
     To register a nonprofit using the [Create nonprofit](/api/nonprofits/create) endpoint you need:
      1. The nonprofit's EIN
-     2. Contact email (only be used to reach out to the nonprofit to claim their account)
+     2. Contact Information (only used to reach out to the nonprofit to claim their account)
 
     </Accordion>
     <Accordion title="How do nonprofits claim their accounts?">
@@ -56,11 +56,11 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
     </Accordion>    
     <Accordion title="Can we add an optional tip?">
 
-        DAF giving can not be used to give to a for-profit entity which means tipping to the fundriaisng platform is not allowed.
+        DAF giving can not be used to give to a for-profit entity which means tipping to the fundraising platform is not allowed.
 
         If a donor has selected to enable DAFPay, you must suppress the option to add a tip. 
 
-        See [Go Fund Me](https://www.gofundme.com/f/help-leo-aid-hurricane-milton-and-helene-victims/donate?source=btn_donate) for an example of how to remove the tip funcitonality when DAFpay is selected. 
+        See [Go Fund Me](https://www.gofundme.com/f/help-leo-aid-hurricane-milton-and-helene-victims/donate?source=btn_donate) for an example of how to remove the tip functionality when DAFpay is selected. 
     </Accordion>
 
     <Accordion title="How can donors cover fees?">
@@ -124,6 +124,12 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
     </Accordion>
     <Accordion title="What are manual grant intents?">
 
+    Manual grant intents is an optional feature where DAFpay can facilitate donations from unintegrated DAF providers.
+
+    If configured, if a user selects a DAF provider that is not integreated with DAFpay, the modal can collect the donation amopunt and donor information so the non porfit can be notified in real time. The donor is then given the trackingID and asked to included in the the note when they make their donaiton through their DAf portal that way  it can be used for reconciliation.
+
+    Since the donor has to leave the nonprofit site to actualy submit the donation we do not have visibility into wheather or not the donation was actually made.
+
     </Accordion>
     <Accordion title="How do recurring donations work?">
 
@@ -138,7 +144,11 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
 
 ## DAFpay Configuration
 <AccordionGroup>
-    <Accordion title="What best practices for placing the DAFpay button ona  donation form?">
+    <Accordion title="What are some best practices and recommendations?">
+
+        **Enable by Default**: DAFpay supports transactions for all eligible 501(c)(3) organizations, allowing DAFpay to function on a donation form prior to the completion of the nonprofit's onboarding with Chariot. Thus, we advise setting DAFpay as a default payment option across your donation pages. This will improve  fundraising outcomes and help develop relationships with key donors!
+
+        **Express Checkout Option**: DAFpay offers the capability to automatically gather crucial donor information, such as names, email addresses, physical addresses, and more. Additionally, DAFpay provides Intelligent Donation Recommendations, taking into account factors like the donor's account balance. For this reason, we recommend featuring DAFpay as an Express Checkout option, making it visible early in the donation process, before donors are prompted to input their information or decide on a donation amount. This enhances conversion rates and encourages larger donations.
 
     </Accordion>
     <Accordion title="How can I run form validations before the DAFpay button launches?">

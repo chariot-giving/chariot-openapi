@@ -257,3 +257,5 @@ Chariot offers two workflows for unintegrated DAF Providers
 Please let the Chariot team know which option you would like implement in your DAfpay integration.
 
 <img src='../../images/dafpay-manual-options.png' />
+
+If you go with manual grant intents (option 1), you will need to render the trackingID and DAF provider url in the thank you redirect page so the donor will be able to add the trackingID on their gift. This information is included on the user exit event `UNINTEGRATED_GRANT_CONFIRMED` for.
