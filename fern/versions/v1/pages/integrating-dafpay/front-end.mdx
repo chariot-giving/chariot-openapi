@@ -52,7 +52,19 @@ A nonprofit's `cid` (Connect ID) should be retrieved from your database after th
   ```
 </Tip>
 
+## Button Placement
+
+Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e., credit card, bank transfer, and Apple Pay)
+
+<Frame caption="Placement is key!">
+    <img src='../../images/button-placement.png' />
+</Frame>
+
 ## DAFpay Button Themes
+
+<Check>
+    We require brand consistency for the DAFpay button and logo.
+</Check>
 
 Choose your theme by adding the theme name as a parameter to the `chariot-connect` component, as below.
 
@@ -76,26 +88,26 @@ Choose your theme by adding the theme name as a parameter to the `chariot-connec
 
 We provide the options below as default themes. If `theme` is not defined, `DefaultTheme` will be used.
 
-### `DefaultTheme`
+**DefaultTheme**
 
 <img src='../../images/8155407-DefaultTheme.svg' />
 
 
-### `LightModeTheme`
+**LightModeTheme**
 
 <img src='../../images/a7b65c5-LightMode.svg' />
 
 
-### `LightBlueTheme`
+**LightBlueTheme**
 
 <img src='../../images/9c06770-LightBlue.svg' />
 
 
-### `GradientTheme`
+**GradientTheme**
 
 <img src='../../images/446fbf1-Gradient.svg' />
 
-### Custom Theme
+**Custom Theme**
 
 To create a custom theme for the DAFpay button, create an object with the desired properties that you wish to change.
 Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.

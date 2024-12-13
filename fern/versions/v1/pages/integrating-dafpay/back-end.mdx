@@ -8,7 +8,7 @@ Chariot offers "express checkout" where the Chariot Connect modal pulls the dono
 
 The user always has the ability to review their information and make changes before submission. Chariot makes no guarantee on the completeness or consistency of the information fetched from the donor's DAF account and serves purely as a convenience feature for donors to expedite the donation experience.
 
-### Pre-populate Data
+### Pre-populated Data
 Alternatively, you can pass donor information to Chariot before launching a Connect session.
 To provide this information, leverage the `onDonationRequest` function from the Chariot element.
 
@@ -175,7 +175,7 @@ const App = () => {
 | `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api-reference/grants/create) or [Create Recurring Grant](/api-reference/grants/create-recurring-grant) route based on the grant intent data. | `OnSuccessMetadata`   |
 | `CHARIOT_EXIT`     | The exit event is called when a user exits without successfully completing the flow, when an error occurs during the flow, or when a user confirms an unintegrated grant.                                                                                                                  | `OnExitMetadata`      |
 
-#### Exit Reasons
+**Exit Reasons**
 
 | Exit Reason                | Description                                                                                                                                                                                                                   |
 |----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
