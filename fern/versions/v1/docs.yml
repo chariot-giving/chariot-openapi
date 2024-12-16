@@ -77,12 +77,12 @@ navigation:
               - page: Set Up
                 slug: set-up
                 path: ./pages/integrating-dafpay/set-up.mdx
-              - page: Front End Configuration
-                slug: front-end
-                path: ./pages/integrating-dafpay/front-end.mdx
-              - page: Back End Configuration
-                slug: back-end
-                path: ./pages/integrating-dafpay/back-end.mdx
+              - page: Front End Rendering
+                slug: front-end-rendering
+                path: ./pages/integrating-dafpay/front-end-rendering.mdx
+              - page: Front End Configurations
+                slug: front-end-configurations
+                path: ./pages/integrating-dafpay/front-end-configurations.mdx
               - page: Transaction Management
                 slug: transactions
                 path: ./pages/integrating-dafpay/transactions.mdx

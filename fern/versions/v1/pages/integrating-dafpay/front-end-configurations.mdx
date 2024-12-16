@@ -1,18 +1,25 @@
 ## Collecting Donor Data
-Chariot offers two ways of processing donor data.
+DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest
 
 ### Express Checkout
 Chariot offers "express checkout" where the Chariot Connect modal pulls the donor's name, email, and address information from their account with the DAF provider. This allows for "one-click" checkout experiences and removes the need for a donor to fill out a lengthy form before making a DAF donation.
 
- If this feature is enabled, the donor information will be pre-populated in the last pane of the workflow as long as **NO** donor information was passed into Connect via the `onDonationRequest` callback.
-
 The user always has the ability to review their information and make changes before submission. Chariot makes no guarantee on the completeness or consistency of the information fetched from the donor's DAF account and serves purely as a convenience feature for donors to expedite the donation experience.
 
-### Pre-populated Data
+<Tip> 
+No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider. To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
+</Tip>
+
+### Pre-Populated Data
 Alternatively, you can pass donor information to Chariot before launching a Connect session.
 To provide this information, leverage the `onDonationRequest` function from the Chariot element.
 
-You can use metadata if you want to associate the payment or session with any data in your system.
+- You can use metadata if you want to associate the payment or session with any data in your system.
+- Use the anonymous parameter to indicate if a donor has chosen to give anonymously on your donation form
+
+<Info> 
+If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
+</Info>
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -86,8 +93,9 @@ The given donation data must match the following schema to be accepted by Chario
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
 | frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](#recurring-donations-beta) | string (optional) |
 
-To prevent Connect from initiating until form validation is performed, passing `false` to the onDonationRequest will stop the button from launching.
+### Disabling Connect
 
+To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
 
 
 ## Capturing Grant Intents
@@ -102,7 +110,7 @@ Most workflows proceed as follows:
 3. Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent).
 
 <Note>
-  Submitting your own donation form before capturing the grant ensures consistency between your systems and Chariot.
+  Submitting your own donation form before capturing the grant (calling Chariot's [Create Grant](/api-reference/grants/create)I) ensures consistency between your systems and Chariot.
 </Note>
 
 <CodeBlocks>
@@ -204,16 +212,35 @@ const App = () => {
 
 ### Donation Amount Changes
 
+<Info> 
+Please note that the donation amount passed into DAFpay from your platform may change within the DAFpay modal for various reasons.
+To ensure accuracy, always use the information provided in the onSuccessMetadata from Chariot when calling the Create Grant route.
+</Info>
+
 If a donor tries to submit a grant request for an amount that exceeds their current account balance, Connect will alert the donor and suggest the donor to adjust the donation amount to the available account balance.
 
 Additionally, if a Donor Advised Fund platform has a minimum donation requirement, Connect will alert donors of this requirement and suggest the donor to alter the donation size to match the minimum threshold for submission.
 
 <img src='../../images/15e7e65-Error-handling-picture.png' />
 
-## Recurring Donations
-Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund. 
+### Loading Screen
 
-A recurring donation via DAFpay indicates that the donation was initiated on a monthly recurring basis. The actual recurrence is managed through the DAF provider so if the donor wants to cancel the recurrence they log into their DAF provider portal and cancel it there. As a result, we are not aware when a recurrence is canceled so we do not create a new grant each month in our system. 
+Occasionally, there may be a delay between clicking "Donate" on DAFpay and being redirected to the organization’s confirmation page.
+To provide an intuitive user experience, make sure to implement an intermediary loading screen to notify the donor that their gift is being processed and that they should avoid navigating away from the page during this time.
+
+This loading screen should be displayed between the time you receive the `CHARIOT_SUCCESS` event and the time your systems have successfully processed the grant.
+
+<Frame caption="Loading screen example">
+    <img src='../../images/dafpay_form_click.png' />
+    <img src='../../images/dafpay_loading_screen.png' />
+</Frame>
+
+## Recurring Donations
+<Tip> 
+When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, we only record the initial grant with a monthly frequency and do not create a new grant each month in our system.
+</Tip>
+
+Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund. 
 
 When a user completes a Chariot Connect session for a recurring donation, instead of receiving a `grantIntent` as part of the `CHARIOT_SUCCESS` event, you will receive a `recurringGrantIntent`.
 
@@ -250,12 +277,26 @@ Note that if your platform enables recurring donations through Chariot, you will
 </Note>
 
 ## Unintegrated DAF Providers
-Chariot offers two workflows for unintegrated DAF Providers
-1. User is prompted to enter dontation data and redirected to DAF provider site (left)
-2. User is prompted to close modal and select another payment option (right).
+Unintegrated Grants represent a *donation intent* from a DAF provider that DAFpay is not yet integrated with.
+Unintegrated grants will be marked with an `unknown` status.
+    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
+    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting Goldman Sachs Philanthropy Fund.
 
-Please let the Chariot team know which option you would like implement in your DAfpay integration.
+<Info>
+    If your platform does not want to support unintegrated grants, DAFpay can redirect donors back to your donation form to select a different payment method (if the donor chooses an unsupported provider).
+    
+    Please let the Chariot team know if you would like to disable Unintegrated Grants for your platform.
+</Info>
 
-<img src='../../images/dafpay-manual-options.png' />
+<Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">
+    <img src='../../images/disconnected-submit.png' />
+    <img src='../../images/disconnected-return.png' />
+</Frame>
 
-If you go with manual grant intents (option 1), you will need to render the trackingID and DAF provider url in the thank you redirect page so the donor will be able to add the trackingID on their gift. This information is included on the user exit event `UNINTEGRATED_GRANT_CONFIRMED` for.
+After submitting a gift intent, donors will receive instructions both within the DAFpay modal and via email, guiding them on how to complete their donation.
+Unintegrated grants should arrive with a Tracking ID in the grant message or purpose field that can be used for reconciliation.
+
+<Frame caption="The grant intent donor experience">
+    <img src='../../images/grant-intent-pane.png' />
+    <img src='../../images/grant-intent-email.png' />
+</Frame>
