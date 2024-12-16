@@ -235,7 +235,32 @@ This loading screen should be displayed between the time you receive the `CHARIO
     <img src='../../images/dafpay_loading_screen.png' />
 </Frame>
 
-## Recurring Donations
+## Unintegrated DAF Providers
+Unintegrated Grants represent a *donation intent* from a DAF provider that DAFpay is not yet integrated with.
+Unintegrated grants will be marked with an `unknown` status.
+    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
+    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting Goldman Sachs Philanthropy Fund.
+
+<Info>
+    If your platform does not want to support unintegrated grants, DAFpay can redirect donors back to your donation form to select a different payment method (if the donor chooses an unsupported provider).
+    
+    Please let the Chariot team know if you would like to disable Unintegrated Grants for your platform.
+</Info>
+
+<Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">
+    <img src='../../images/disconnected-submit.png' />
+    <img src='../../images/disconnected-return.png' />
+</Frame>
+
+After submitting a gift intent, donors will receive instructions both within the DAFpay modal and via email, guiding them on how to complete their donation.
+Unintegrated grants should arrive with a Tracking ID in the grant message or purpose field that can be used for reconciliation.
+
+<Frame caption="The grant intent donor experience">
+    <img src='../../images/grant-intent-pane.png' />
+    <img src='../../images/grant-intent-email.png' />
+</Frame>
+
+## Recurring Donations (Optional)
 <Tip> 
 When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, we only record the initial grant with a monthly frequency and do not create a new grant each month in our system.
 </Tip>
@@ -275,28 +300,3 @@ After you submit your own donation form, don't forget to call the [Create Recurr
 <Note>
 Note that if your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
 </Note>
-
-## Unintegrated DAF Providers
-Unintegrated Grants represent a *donation intent* from a DAF provider that DAFpay is not yet integrated with.
-Unintegrated grants will be marked with an `unknown` status.
-    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
-    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting Goldman Sachs Philanthropy Fund.
-
-<Info>
-    If your platform does not want to support unintegrated grants, DAFpay can redirect donors back to your donation form to select a different payment method (if the donor chooses an unsupported provider).
-    
-    Please let the Chariot team know if you would like to disable Unintegrated Grants for your platform.
-</Info>
-
-<Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">
-    <img src='../../images/disconnected-submit.png' />
-    <img src='../../images/disconnected-return.png' />
-</Frame>
-
-After submitting a gift intent, donors will receive instructions both within the DAFpay modal and via email, guiding them on how to complete their donation.
-Unintegrated grants should arrive with a Tracking ID in the grant message or purpose field that can be used for reconciliation.
-
-<Frame caption="The grant intent donor experience">
-    <img src='../../images/grant-intent-pane.png' />
-    <img src='../../images/grant-intent-email.png' />
-</Frame>
