@@ -69,9 +69,6 @@ navigation:
           - page: Overview
             slug: overview
             path: ./pages/integrating-dafpay/overview.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/integrating-dafpay/faq.mdx
           - section: Integrating DAFpay 
             contents:
               - page: Checklist
@@ -89,6 +86,12 @@ navigation:
               - page: Transaction Management
                 slug: transactions
                 path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/integrating-dafpay/prod-keys.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
   - tab: api
     layout:
       - api: API Reference
