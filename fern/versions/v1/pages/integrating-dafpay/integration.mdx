@@ -241,8 +241,9 @@ This loading screen should be displayed between the time you receive the `CHARIO
 </Frame>
 
 ## Unintegrated DAF Providers
-Unintegrated Grants represent a *donation intent* from a DAF provider that DAFpay is not yet integrated with.
-Unintegrated grants will be marked with an `unknown` status.
+Unintegrated Grant Intents represent a donation *intent* from a DAF provider that DAFpay is not yet integrated with.
+
+Unintegrated grants intents will be marked with an `unknown` status.
     - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
     - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting Goldman Sachs Philanthropy Fund.
 
@@ -257,11 +258,17 @@ Unintegrated grants will be marked with an `unknown` status.
     <img src='../../images/disconnected-return.png' />
 </Frame>
 
-After submitting a gift intent, donors will receive instructions both within the DAFpay modal and via email, guiding them on how to complete their donation.
-Unintegrated grants should arrive with a Tracking ID in the grant message or purpose field that can be used for reconciliation.
+If manual grant intents are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
 
-<Frame caption="The grant intent donor experience">
-    <img src='../../images/grant-intent-pane.png' />
+In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (Tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. 
+
+<Frame caption="Unintegrated grant intent thank you page">
+    <img src='../../images/manual-grant-intent.png' />
+</Frame>
+
+We will also send an email to the donor reiterating the instructions. 
+
+<Frame caption="Unintegrated grant donor email">
     <img src='../../images/grant-intent-email.png' />
 </Frame>
 
