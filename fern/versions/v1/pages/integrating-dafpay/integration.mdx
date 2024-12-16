@@ -258,7 +258,7 @@ Unintegrated grants intents will be marked with an `unknown` status.
     <img src='../../images/disconnected-return.png' />
 </Frame>
 
-If manual grant intents are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
+If unintegrated grant intents are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
 
 In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (Tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. 
 
