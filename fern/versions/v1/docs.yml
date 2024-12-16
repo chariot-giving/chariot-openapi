@@ -78,11 +78,11 @@ navigation:
                 slug: set-up
                 path: ./pages/integrating-dafpay/set-up.mdx
               - page: Installing Connect
-                slug: front-end-rendering
-                path: ./pages/integrating-dafpay/front-end-rendering.mdx
+                slug: installation
+                path: ./pages/integrating-dafpay/installation.mdx
               - page: Integrating Connect
-                slug: front-end-configurations
-                path: ./pages/integrating-dafpay/front-end-configurations.mdx
+                slug: integration
+                path: ./pages/integrating-dafpay/integration.mdx
               - page: Transaction Management
                 slug: transactions
                 path: ./pages/integrating-dafpay/transactions.mdx
