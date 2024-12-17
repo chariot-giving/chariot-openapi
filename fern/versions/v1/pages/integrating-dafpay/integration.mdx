@@ -4,23 +4,24 @@ hidden: false
 ---
 
 ## Collecting Donor Data
-DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest
+DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest.
 
 ### Express Checkout
 Chariot offers "express checkout" where the Chariot Connect modal pulls the donor's name, email, and address information from their account with the DAF provider. This allows for "one-click" checkout experiences and removes the need for a donor to fill out a lengthy form before making a DAF donation.
 
+DAFpay express checkout feature only works when DAFpay is listed at the top of a donation form (before the donor’s contact details are collected).
+
 The user always has the ability to review their information and make changes before submission. Chariot makes no guarantee on the completeness or consistency of the information fetched from the donor's DAF account and serves purely as a convenience feature for donors to expedite the donation experience.
 
 <Tip> 
-No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider. To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
+No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider. 
+
+To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
 </Tip>
 
 ### Pre-Populated Data
 Alternatively, you can pass donor information to Chariot before launching a Connect session.
 To provide this information, leverage the `onDonationRequest` function from the Chariot element.
-
-- You can use metadata if you want to associate the payment or session with any data in your system.
-- Use the anonymous parameter to indicate if a donor has chosen to give anonymously on your donation form
 
 <Info> 
 If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
@@ -98,10 +99,17 @@ The given donation data must match the following schema to be accepted by Chario
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
 | frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](#recurring-donations-beta) | string (optional) |
 
+<Note>
+You can use metadata if you want to associate the payment or session with any data in your system.
+
+Use the anonymous parameter to indicate if a donor has chosen to give anonymously on your donation form
+</Note>
+
 ### Disabling Connect
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
 
+<img src='../../images/on-donation-false.png' />
 
 ## Capturing Grant Intents
 When a user completes a Chariot Connect session you will receive a grant intent.
@@ -112,10 +120,10 @@ Most workflows proceed as follows:
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    1. If you would like to collect any additional information from the user such as additional contact information you can do so at this step. If the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a completed grant.
-3. Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent).
+3. **Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent)**.
 
 <Note>
-  Submitting your own donation form before capturing the grant (calling Chariot's [Create Grant](/api-reference/grants/create)I) ensures consistency between your systems and Chariot.
+  Submitting your own donation form before calling Chariot’s [Create Grant](/api-reference/grants/create) ensures consistency between your system and Chariot.
 </Note>
 
 <CodeBlocks>
@@ -262,8 +270,12 @@ If unintegrated grant intents are enabled, the modal automatically closes after 
 
 In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. 
 
+<Note>
+  Make sure to offer the ability for a donor to copy the tracking ID (including the "Tracking ID" prefix) directly on your confirmation page. 
+</Note>
+
 <Frame caption="Unintegrated grant intent thank you page">
-    <img src='../../images/manual-grant-intent.png' />
+    <img src='../../images/unintegrated-grant-intent.png' />
 </Frame>
 
 We will also send an email to the donor reiterating the instructions. 

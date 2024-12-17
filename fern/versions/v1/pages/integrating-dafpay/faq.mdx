@@ -10,29 +10,35 @@ hidden: false
      1. The nonprofit's EIN
      2. Contact Information (only used to reach out to the nonprofit to claim their account)
 
+    Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com). This email will be used for important messaging related to the nonprofit’s Chariot account and can be updated later.
+
     </Accordion>
     <Accordion title="How do nonprofits claim their accounts?">
         - Upon calling the [Create Connect](/api/connects/create) route, Chariot will automatically email the nonprofit (using the email provided during nonprofit creation) with instructions on how to claim their Chariot account.
         - Article: [Claiming your account with Chariot](https://intercom.help/givechariot/en/articles/9141609-claiming-your-account-with-chariot)
-        <Note>
-        *If a nonprofit has not claimed their account with Chariot, they will still be able to receive donations via DAFpay.
-        However, the funds will be sent via the [DAFpay Network](https://www.dafpaynetwork.org/).
-        See flow of funds guide in [Manage Transactions](/manage-transactions).*
-        </Note>
 
         <Frame caption="Claim account email from Chariot">
             <img src='../../images/claim-account-reference-gb.png' />
         </Frame>
+    </Accordion>
+    <Accordion title="Why did Create Nonprofit return an error?">
+    `This organization is ineligible to receive DAF gifts because they are not in good standing with the IRS. If you have a concern or disagree with this statement, then please reach out to contact@givechariot.com`
+
+    If you received the above error when calling the Create Nonprofit route, it means that this organization is not eligible for Donor Advised Fund gifts and cannot add DAFpay to their form.
+
+    Typically, this error means that the organization is no longer in good standing with the IRS or that they are a religious oganization that is not registered with the IRS directly.
     </Accordion>
 </AccordionGroup>
 
 ### Sandbox Development
 <AccordionGroup>
     <Accordion title="What is the sandbox API url">
-        For testing you can use the sandbox API url: `https://chariot-sandbox.us.auth0.com/oauth/token`
+       Access token: `https://chariot-sandbox.us.auth0.com/oauth/token` 
+
+       API calls: `https://sandboxapi.givechariot.com/v1`
     </Accordion>
     <Accordion title="What EIN should I use for testing?">
-        You can use any valid EIN for testing in sandbox.
+        You can use any valid EIN for testing in sandbox (i.e., American Red Cross 53-0196605).
     </Accordion>
     <Accordion title="What are the test credentials?">
         Yuc can use the following credentials for testing in Sandbox:

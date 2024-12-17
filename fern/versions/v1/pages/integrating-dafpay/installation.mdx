@@ -26,6 +26,10 @@ yarn add react-chariot-connect
 Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DAFpay) button with a single line.
 Add Chariot-Connect component where you want the DAFpay button to appear.
 
+<Info> 
+Make sure to add the Connect ID (cid) to the Chariot-Connect component. Remember, you only need to call the Create Connect route one time per nonprofit to generate this cid.
+</Info>
+
 <CodeBlocks>
 ```html HTML
 <chariot-connect id="chariot" cid="GENERATED_CONNECT_IDENTIFIER"></chariot-connect>
@@ -45,11 +49,6 @@ const App = () => {
 };
 ```
 </CodeBlocks>
-
-<Info> 
-You only need to call the Create Connect route one time per nonprofit.
-</Info>
-
 
 A nonprofit's `cid` (Connect ID) should be retrieved from your database after the nonprofit has been registered with Chariot.
 
