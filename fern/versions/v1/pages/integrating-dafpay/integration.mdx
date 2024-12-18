@@ -32,6 +32,10 @@ To provide this information, leverage the `onDonationRequest` function from the 
 If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
 </Info>
 
+<Error title="Avoid Asynchronous Actions">
+If your platform performs something asynchronously during the onDonationRequest, there can be a disconnect between the user clicking the button and the modal actually launching. As a result, the browser will flag DAFpay as a popup and block it from launching.
+</Error> 
+
 <CodeBlocks>
 ```javascript JavaScript
 // get the element from the DOM
