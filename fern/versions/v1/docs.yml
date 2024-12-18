@@ -63,7 +63,7 @@ navigation:
       #         - page: Managing Transactions
       #           slug: transactions
       #           path: ./pages/implementation-guide/transactions.mdx
-      - section: Implementation Guide **
+      - section: Implementation Guide
         slug: dafpay
         contents: 
           - page: Overview

@@ -24,11 +24,11 @@ yarn add react-chariot-connect
 ## Add Chariot Connect
 
 Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DAFpay) button with a single line.
-Add Chariot-Connect component where you want the DAFpay button to appear.
+Add Chariot-Connect component where you want the DAFpay button to appear and make sure to add the Connect ID (CID). 
 
-<Info> 
-Make sure to add the Connect ID (cid) to the Chariot-Connect component. Remember, you only need to call the Create Connect route one time per nonprofit to generate this cid.
-</Info>
+<Warning title="Save Down Your CID"> 
+You only need to call the Create Connect route one time per nonprofit to generate the cid; Once generated, you can save it down in your system.
+</Warning>
 
 <CodeBlocks>
 ```html HTML
@@ -53,8 +53,8 @@ const App = () => {
 A nonprofit's `cid` (Connect ID) should be retrieved from your database after the nonprofit has been registered with Chariot.
 
 
-<Tip>
-  _Note: For testing purposes in the sandbox environment the following credentials will log in to any DAF provider._
+<Tip title="Sandbox Credentials">
+  Use the following credentials to log in to any DAF provider in the sandbox environment.
 
   ```
   username: good-user
@@ -71,10 +71,6 @@ Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e.,
 </Frame>
 
 ## Button Themes (Optional)
-
-<Check>
-    We require brand consistency for the DAFpay button and logo.
-</Check>
 
 Choose your theme by adding the theme name as a parameter to the `chariot-connect` component, as below.
 
@@ -122,9 +118,10 @@ We provide the options below as default themes. If `theme` is not defined, `Defa
 To create a custom theme for the DAFpay button, create an object with the desired properties that you wish to change.
 Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.
 
-<Info title="Important Note for Style Customizations">  
+<Info title="Style Customizations Notice">  
  Style customizations for DAFpay require that all available CSS be packaged within the `chariot-connect.umd.js` bundle.
  The problem is that for Chariot to allow any customizations, we would need to include the entire [tailwindcss](https://v1.tailwindcss.com/docs/controlling-file-size) package (~2.4Mb uncompressed) which would degrade performance and load times to an unacceptable level.
+ 
  While performance is a concern, we also realize the need for a consistent and seamless user experience and are also committed to providing configurations for size, padding, border radius, etc. on top of the pre-built themes that we offer.
 </Info>
 
