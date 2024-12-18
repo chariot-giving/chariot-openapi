@@ -2611,7 +2611,7 @@ components:
             For more information on payment lifecycle and the flow of funds, see [Flow of Funds](/v2024-10-30/guides/payments/flow-of-funds).
           example: "pending"
           enum:
-            - accepted
+            - open
             - pending
             - submitted
             - completed
