@@ -106,7 +106,7 @@ The given donation data must match the following schema to be accepted by Chario
 | address     | The donor's address: line1, line2, city, state, postalCode                                                                                                                                                                                            | object (optional) |
 | metadata    | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                   | object (optional) |
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
-| frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](#recurring-donations-beta) | string (optional) |
+| frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](/guides/dafpay/integrating-da-fpay/integration#recurring-donations) | string (optional) |
 
 <Note title="Popular Parameters">
 - Metadata: Allows you to associate the payment or session with any data in your system (i.e., Form ID, Campaign Name).
@@ -123,7 +123,7 @@ To prevent the DAFpay button from launching until form validation is performed, 
 When a user completes a Chariot Connect session you will receive a grant intent.
 
 <Warning title="Create Grant Route">
-After you submit your own donation form, do not forget to call the [Create Grant](/api-reference/grants/create) API to complete the transaction.
+After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to complete the transaction.
 </Warning>
 
 Most workflows proceed as follows:
@@ -131,10 +131,10 @@ Most workflows proceed as follows:
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a completed grant.
-3. Have your backend call Chariot's [Create Grant](/api-reference/grants/create) API to complete the grant (and capture the grant intent).
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to complete the grant (and capture the grant intent).
 
 <Error>
-  Submitting your own donation form before calling Chariot’s [Create Grant](/api-reference/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
+  Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
 </Error>
 
 <CodeBlocks>
@@ -204,7 +204,7 @@ const App = () => {
 | Event Name         | Description                                                                                                                                                                                                                                                                               | Metadata Type         |
 |--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
 | `CHARIOT_INIT`     | The init event is called when the Chariot Connect script is initialized and ready to be run. This is useful to be able to know when Chariot Connect is initialized and ready to be used.                                                                                                   | No metadata is provided for this event. |
-| `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api-reference/grants/create) or [Create Recurring Grant](/api-reference/grants/create-recurring-grant) route based on the grant intent data. | `OnSuccessMetadata`   |
+| `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create) route based on the grant intent data. | `OnSuccessMetadata`   |
 | `CHARIOT_EXIT`     | The exit event is called when a user exits without successfully completing the flow, when an error occurs during the flow, or when a user confirms an unintegrated grant.                                                                                                                  | `OnExitMetadata`      |
 
 **Exit Reasons**
@@ -327,7 +327,7 @@ When a user completes a Chariot Connect session for a recurring donation, instea
 
 </CodeBlocks>
 
-After you submit your own donation form, don't forget to call the [Create Recurring Grant](/api-reference/grants/create-recurring-grant) API to complete the transaction.
+After you submit your own donation form, don't forget to call the [Create Recurring Grant](/api/recurring-grants/create) API to complete the transaction.
 
 <Note title="Create Recurring Grant API">
 If your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
