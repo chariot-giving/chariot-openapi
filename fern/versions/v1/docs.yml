@@ -19,50 +19,79 @@ landing-page:
 navigation: 
   - tab: guides
     layout:
-      - section: Getting Started
-        skip-slug: true
-        contents: 
-          - page: Overview
-            slug: getting-started/overview
-            path: ./pages/getting-started/how-chariot-works.mdx
-          - page: Quick Start
-            slug: getting-started/quickstart
-            path: ./pages/getting-started/quickstart.mdx
-          - page: Navigating the Docs
-            slug: getting-started/navigating-the-docs
-            path: ./pages/getting-started/navigating-the-docs.mdx
-          - page: FAQ
-            slug: getting-started/faq
-            path: ./pages/getting-started/faq.mdx
-      - section: Integrating DAFpay
+      # - section: Getting Started
+      #   skip-slug: true
+      #   contents: 
+      #     - page: Overview
+      #       slug: getting-started/overview
+      #       path: ./pages/getting-started/how-chariot-works.mdx
+      #     - page: Quick Start
+      #       slug: getting-started/quickstart
+      #       path: ./pages/getting-started/quickstart.mdx
+      #     - page: Navigating the Docs
+      #       slug: getting-started/navigating-the-docs
+      #       path: ./pages/getting-started/navigating-the-docs.mdx
+      #     - page: FAQ
+      #       slug: getting-started/faq
+      #       path: ./pages/getting-started/faq.mdx
+      # - section: Integrating DAFpay
+      #   slug: dafpay
+      #   contents: 
+      #     - page: Overview
+      #       slug: overview
+      #       path: ./pages/dafpay/integrating-connect.mdx
+      #     - page: Button Styles
+      #       slug: button-styles
+      #       path: ./pages/dafpay/button-styles.mdx
+      #     - page: Workflow Configurations
+      #       slug: configurations
+      #       path: ./pages/dafpay/configurations.mdx
+      #     - page: Error Handling & Edge Cases
+      #       slug: error-handling
+      #       path: ./pages/dafpay/error-handling-1.mdx
+      #     - section: Implementation
+      #       contents:
+      #         - page: Best Practices
+      #           slug: /
+      #           path: ./pages/implementation-guide/overview.mdx
+      #         - page: Onboarding
+      #           slug: onboarding
+      #           path: ./pages/implementation-guide/onboarding.mdx
+      #         - page: Donation Forms
+      #           slug: donation-forms
+      #           path: ./pages/implementation-guide/donation-form.mdx
+      #         - page: Managing Transactions
+      #           slug: transactions
+      #           path: ./pages/implementation-guide/transactions.mdx
+      - section: Implementation Guide
         slug: dafpay
         contents: 
           - page: Overview
             slug: overview
-            path: ./pages/dafpay/integrating-connect.mdx
-          - page: Button Styles
-            slug: button-styles
-            path: ./pages/dafpay/button-styles.mdx
-          - page: Workflow Configurations
-            slug: configurations
-            path: ./pages/dafpay/configurations.mdx
-          - page: Error Handling & Edge Cases
-            slug: error-handling
-            path: ./pages/dafpay/error-handling-1.mdx
-          - section: Implementation
+            path: ./pages/integrating-dafpay/overview.mdx
+          - section: Integrating DAFpay 
             contents:
-              - page: Best Practices
-                slug: /
-                path: ./pages/implementation-guide/overview.mdx
-              - page: Onboarding
-                slug: onboarding
-                path: ./pages/implementation-guide/onboarding.mdx
-              - page: Donation Forms
-                slug: donation-forms
-                path: ./pages/implementation-guide/donation-form.mdx
-              - page: Managing Transactions
+              - page: Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/integrating-dafpay/set-up.mdx
+              - page: Installing Connect
+                slug: installation
+                path: ./pages/integrating-dafpay/installation.mdx
+              - page: Integrating Connect
+                slug: integration
+                path: ./pages/integrating-dafpay/integration.mdx
+              - page: Transaction Management
                 slug: transactions
-                path: ./pages/implementation-guide/transactions.mdx
+                path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/integrating-dafpay/prod-keys.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
   - tab: api
     layout:
       - api: API Reference
