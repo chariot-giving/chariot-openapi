@@ -1,0 +1,38 @@
+---
+title: Implementation Checklist
+subtitle: A comprehensive guide for integrating with Chariot API endpoints
+hidden: false
+---
+
+<Tip title="Sandbox Key Prerequisite"> 
+Before using this implementation guide, ensure that your organization has been provided with a client_id and client_secret for our sandbox environment. If you have not yet received your sandbox keys, please reach out to support@givechariot.com for assistance.
+</Tip>
+
+<Warning title="Production Key Requirements"> 
+All items on this implementation checklist must be completed before your organization can receive production keys. Once everything is complete, please fill out the production keys request form to proceed.
+</Warning>
+
+### Set Up
+* [ ]  [Generate API access token](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/set-up#generate-an-access-token) 
+* [ ]  [Register your nonprofit(s) in the Chariot system](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/set-up#create-nonprofit)
+* [ ]  [Create Connects for your nonprofit(s)](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/set-up#create-connect)
+
+### Installing Connect 
+* [ ]  [Install the Chariot Connect (DAFpay button) JavaScript package](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/installation#install-javascript-package)
+* [ ]  [Add the Connect ID to the Chariot-Connect component](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/installation#add-chariot-connect)
+* [ ]  [Determine button placement](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/installation#button-placement)
+* [ ]  [Style your DAFpay button](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/integrating-da-fpay/installation#button-themes-optional)
+
+
+### Integrating Connect
+* [ ]  [Pre-load form data into the Connect experience](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/integration#collecting-donor-data)
+* [ ]  [Completing grant intents](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/integration#capturing-grant-intents)
+* [ ]  [Determine unintegrated DAF provider preference](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/integration#unintegrated-daf-providers)
+* [ ]  [Implement Recurring grants (optional)](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/integration#recurring-donations)
+
+### Managing Transactions
+* [ ]  [Display Tracking ID and External ID in your dashboard](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/transactions#reconciliation--grant-identifiers)
+* [ ]  [Implement Update Grant API and grant.status webhook](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/transactions#grant-statuses)
+
+### Request Production Keys
+* [ ]  [Complete production keys request form](https://docs.givechariot.com/guides/dafpay/integrating-da-fpay/prod-keys)
