@@ -335,6 +335,7 @@ paths:
         - The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status `400 Bad Request`.
         - The amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status `400 Bad Request`.
         - The amount must be less than or equal to the user's DAF account balance otherwise the request will return status `400 Bad Request`.
+        - Any inputs exceeding the maximum allowed length will be automatically truncated.
         </Warning>
       operationId: create-grant
       tags:
@@ -522,6 +523,7 @@ paths:
         - The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status `400 Bad Request`.
         - The amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status `400 Bad Request`.
         - The amount must be less than or equal to the user's DAF account balance otherwise the request will return status `400 Bad Request`.
+        - Any inputs exceeding the maximum allowed length will be automatically truncated unless otherwise stated.
         </Warning>
       operationId: create-recurring-grant
       tags:
@@ -1718,19 +1720,19 @@ components:
       properties:
         line1:
           type: string
-          description: Address line 1 (e.g. street, PO Box, or company name)
+          description: "Address line 1 (e.g. street, PO Box, or company name). Maximum length: 255 characters."
         line2:
           type: string
-          description: Address line 2 (e.g. apartment, suite, unit, or building)
+          description: "Address line 2 (e.g. apartment, suite, unit, or building). Maximum length: 255 characters."
         city:
           type: string
-          description: City, district, suburb, town, or village.
+          description: "City, district, suburb, town, or village.. Maximum length: 255 characters."
         state:
           type: string
-          description: State, county, province, or region
+          description: "State, county, province, or region. Maximum length: 255 characters."
         postalCode:
           type: string
-          description: ZIP or postal code
+          description: "ZIP or postal code. Maximum length: 255 characters."
     EventCategory:
       type: string
       description: |
@@ -1881,24 +1883,28 @@ components:
                 properties:
                   firstName:
                     type: string
-                    description: The first name of the donor
+                    description: "The first name of the donor. Maximum length: 255 characters."
                   lastName:
                     type: string
-                    description: The last name of the donor
+                    description: "The last name of the donor. Maximum length: 255 characters."
                   email:
                     type: string
-                    description: The email address of the donor
+                    description: "The email address of the donor. Maximum length: 255 characters."
                   phone:
                     type: string
-                    description: The phone number of the donor
+                    description: "The phone number of the donor. Maximum length: 255 characters."
                   address:
                     $ref: "#/components/schemas/GrantAddress"
+              note:
+                type: string
+                description: |-
+                  A note the donor wants to send to the nonprofit. Maximum length: 400 characters.
               designation:
                 type: string
                 description: |-
                   The designation to include on the grant. If this is left blank, "Where needed most" will be used.
                   Note that including a custom designation may cause the grant approval process to take longer.
-                  Designations over 100 characters will be truncated.
+                  Maximum length: 100 characters.
     UpdateGrantRequest:
       description: |-
         The request to update a grant. This is useful to update the status of a grant.
@@ -1979,18 +1985,22 @@ components:
                 properties:
                   firstName:
                     type: string
-                    description: The first name of the donor
+                    description: "The first name of the donor. Maximum length: 255 characters."
                   lastName:
                     type: string
-                    description: The last name of the donor
+                    description: "The last name of the donor. Maximum length: 255 characters."
                   email:
                     type: string
-                    description: The email address of the donor
+                    description: "The email address of the donor. Maximum length: 255 characters."
                   phone:
                     type: string
-                    description: The phone number of the donor
+                    description: "The phone number of the donor. Maximum length: 255 characters."
                   address:
                     $ref: "#/components/schemas/GrantAddress"
+              note:
+                type: string
+                description: |-
+                  A note the donor wants to send to the nonprofit. Maximum length: 400 characters.
               designation:
                 type: string
                 description: |-

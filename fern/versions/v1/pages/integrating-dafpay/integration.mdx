@@ -14,13 +14,13 @@ Chariot offers "Express Checkout" where the Chariot Connect modal pulls the dono
 DAFpay's Express Checkout feature only works when the button is placed at the top of a donation form (before the donor’s contact details are collected).
 </Warning>
 
-<Tip title="Automatically Active"> 
-No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider. 
+<Tip title="Automatically Active">
+No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider.
 
 To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
 </Tip>
 
-<Note title="Donation Amount"> 
+<Note title="Donation Amount">
 If your platform opts for Express Checkout, you will still need to utilize the onDonationRequest to pass in the amount from your donation form to the DAFpay modal. See below for a list of potential onDonationRequest parameters that can be utilized (even when Express Checkout is active).
 </Note>
 
@@ -28,13 +28,13 @@ If your platform opts for Express Checkout, you will still need to utilize the o
 You can pass form information to Chariot before launching a Connect session.
 To provide this information, leverage the `onDonationRequest` function from the Chariot element.
 
-<Info title="Leveraging The onDonationRequest"> 
+<Info title="Leveraging The onDonationRequest">
 If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
 </Info>
 
 <Error title="Avoid Asynchronous Actions">
 If your platform performs something asynchronously during the onDonationRequest, there can be a disconnect between the user clicking the button and the modal actually launching. As a result, the browser will flag DAFpay as a popup and block it from launching.
-</Error> 
+</Error>
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -96,17 +96,21 @@ The given donation data must match the following schema to be accepted by Chario
 | Parameter   | Description                                                                                                                                                                                                                                           | Type              |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | amount      | The donation amount in cents. e.g., for a $20 donation, enter 2000.  <br /><br />If this value is not passed in, Chariot will use the user's account balance to recommend a donation amount. This can lead to significantly larger donation amounts.  | number (optional) |
-| firstName   | The donor's first name                                                                                                                                                                                                                                | string (optional) |
-| lastName    | The donor's last name                                                                                                                                                                                                                                 | string (optional) |
-| email       | The donor's email address. Must be in email format                                                                                                                                                                                                    | string (optional) |
-| phone       | The donor's phone number. Please provide the phone number with the country code and without special characters                                                                                                                                        | string (optional) |
-| note        | A note the donor wants to send to the nonprofit                                                                                                                                                                                                       | string (optional) |
+| firstName   | The donor's first name. Maximum length: 255 characters.                                                                                                                                                                                               | string (optional) |
+| lastName    | The donor's last name. Maximum length: 255 characters.                                                                                                                                                                                                | string (optional) |
+| email       | The donor's email address. Must be in email format. Maximum length: 255 characters.                                                                                                                                                                   | string (optional) |
+| phone       | The donor's phone number. Please provide the phone number with the country code and without special characters. Maximum length: 255 characters.                                                                                                       | string (optional) |
+| note        | A note the donor wants to send to the nonprofit. Maximum length: 400 characters.                                                                                                                                                                      | string (optional) |
 | anonymous   | Indicates if this donation should be sent anonymously (default: false)                                                                                                                                                                                | boolean (optional)|
-| designation | The designation to include on the grant. If this is left blank, "Where needed most" will be used. Note that including a custom designation may cause the grant approval process to take longer. Designations over 100 characters will be truncated.   | string (optional) |
-| address     | The donor's address: line1, line2, city, state, postalCode                                                                                                                                                                                            | object (optional) |
+| designation | The designation to include on the grant. If this is left blank, "Where needed most" will be used. Note that including a custom designation may cause the grant approval process to take longer. Designations over 100 characters will be truncated. Maximum length: 255 characters. | string (optional) |
+| address     | The donor's address: line1, line2, city, state, postalCode. Maximum length: 255 characters.                                                                                                                                                           | object (optional) |
 | metadata    | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                   | object (optional) |
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
 | frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](/guides/dafpay/integrating-da-fpay/integration#recurring-donations) | string (optional) |
+
+<Warning title="Data Validation">
+To prevent request failures, any inputs exceeding the maximum allowed length will be automatically truncated.
+</Warning>
 
 <Note title="Popular Parameters">
 - Metadata: Allows you to associate the payment or session with any data in your system (i.e., Form ID, Campaign Name).
@@ -236,7 +240,7 @@ const App = () => {
 
 ### Donation Amount Changes
 
-<Warning title="Accounting For Changes Within a Session"> 
+<Warning title="Accounting For Changes Within a Session">
 Please note that the donation amount passed into DAFpay from your platform may change within the DAFpay modal for various reasons.
 To ensure accuracy, always use the information provided in the onSuccessMetadata from Chariot when calling the Create Grant route.
 </Warning>
@@ -278,7 +282,7 @@ Unintegrated grants will be marked with an `unknown` status.
 If unintegrated grants are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
 
 <Note title="Unintegrated Grants Confirmation Page">
-  In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. Make sure to offer the ability for a donor to copy the tracking ID (including the "Tracking ID" prefix) directly on your confirmation page. 
+  In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. Make sure to offer the ability for a donor to copy the tracking ID (including the "Tracking ID" prefix) directly on your confirmation page.
 </Note>
 
 <Frame caption="Unintegrated Grant Confirmation Page">
@@ -293,9 +297,9 @@ DAFpay will also send an email directly to the donor reiterating the instruction
 
 ## Recurring Donations
 
-Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund. 
+Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund.
 
-<Tip title="Managing Recurrence Schedule"> 
+<Tip title="Managing Recurrence Schedule">
 When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, we only record the initial grant with a monthly frequency and do not create a new grant each month in our system.
 </Tip>
 
