@@ -1862,7 +1862,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Capturing Grant Intents](/guides/dafpay/integrating-da-fpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                  See [Capturing Grant Intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
               amount:
                 type: number
                 description: |-
@@ -1957,7 +1957,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Capturing Grant Intents](/guides/dafpay/integrating-da-fpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                  See [Capturing Grant Intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
               frequency:
                 type: string
                 description: |-
