@@ -121,7 +121,7 @@ To prevent request failures, any inputs exceeding the maximum allowed length wil
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
 
-<img src='../../images/on-donation-false.png' />
+<img src='../../../images/on-donation-false.png' />
 
 ## Capturing Grant Intents
 When a user completes a Chariot Connect session you will receive a grant intent.
@@ -249,7 +249,7 @@ If a donor tries to submit a grant request for an amount that exceeds their curr
 
 Additionally, if a Donor Advised Fund platform has a minimum donation requirement, Connect will alert donors of this requirement and suggest the donor to alter the donation size to match the minimum threshold for submission.
 
-<img src='../../images/15e7e65-Error-handling-picture.png' />
+<img src='../../../images/15e7e65-Error-handling-picture.png' />
 
 ### Loading Screen
 
@@ -259,8 +259,8 @@ To provide an intuitive user experience, make sure to implement an intermediary 
 This loading screen should be displayed between the time you receive the `CHARIOT_SUCCESS` event and the time your systems have successfully processed the grant by calling the Create Grant route.
 
 <Frame caption="Loading screen example">
-    <img src='../../images/dafpay_form_click.png' />
-    <img src='../../images/dafpay_loading_screen.png' />
+    <img src='../../../images/dafpay_form_click.png' />
+    <img src='../../../images/dafpay_loading_screen.png' />
 </Frame>
 
 ## Unintegrated DAF Providers
@@ -275,8 +275,8 @@ Unintegrated grants will be marked with an `unknown` status.
 </Note>
 
 <Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">
-    <img src='../../images/disconnected-submit.png' />
-    <img src='../../images/disconnected-return.png' />
+    <img src='../../../images/disconnected-submit.png' />
+    <img src='../../../images/disconnected-return.png' />
 </Frame>
 
 If unintegrated grants are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
@@ -286,13 +286,13 @@ If unintegrated grants are enabled, the modal automatically closes after the use
 </Note>
 
 <Frame caption="Unintegrated Grant Confirmation Page">
-    <img src='../../images/unintegrated-grant-intent.png' />
+    <img src='../../../images/unintegrated-grant-intent.png' />
 </Frame>
 
 DAFpay will also send an email directly to the donor reiterating the instructions.
 
 <Frame caption="Unintegrated Grant Donor Instructions Email">
-    <img src='../../images/grant-intent-email.png' />
+    <img src='../../../images/grant-intent-email.png' />
 </Frame>
 
 ## Recurring Donations
