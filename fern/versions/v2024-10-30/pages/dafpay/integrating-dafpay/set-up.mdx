@@ -1,19 +1,9 @@
 ---
-title: "Quick Start"
-subtitle: ""
+title: "Set Up"
 hidden: false
-createdAt: "Wed Jan 04 2023 20:44:11 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Wed Mar 27 2024 22:59:22 GMT+0000 (Coordinated Universal Time)"
 ---
-This guide will help you get up and running making your first Chariot API call in just a few minutes. You will create an access token, get a CID for a nonprofit, and query for the grants of that CID.
 
-<Info> 
-This guide assumes you have already been shared a `client_id` and `client_secret`. If that is not the case, please email [support@givechariot.com](mailto:support@givechariot.com).
-</Info>
-
-<Steps>
-
-### Generate an access token 🔑
+### Generate An Access Token
 
 First, you'll need to create an access token that lets you access the APIs. Fill in the provided client_id and client_secret to in the preferred code snippet and get an access token.
 
@@ -56,13 +46,14 @@ Now that you have an access token, you're set to initiate an API request. We're 
 To create a CID to a nonprofit, we first establish the nonprofit's ID by utilizing their EIN (Employer Identification Number). Following that, we proceed to create a Connect with the nonprofit's ID.
 
 
-### Create Nonprofit :hospital:
+### Create Nonprofit
+<Warning title="Nonprofit EIN & Email Address Requirements">
+This route requires the organization’s EIN and a unique email address. Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com). This email will be used for important messaging related to the nonprofit’s Chariot account and can be updated later.
+</Warning>
 
-The [Create nonprofit](/v2024-10-30/api/nonprofits/create) endpoint registers a new nonprofit or confirms its existence within the Chariot system.
+The [Create Nonprofit](/api/nonprofits/create) endpoint registers a new nonprofit or confirms its existence within the Chariot system. For registration, it's necessary to supply the nonprofit's EIN and details for a contact person at the nonprofit.
 
-For registration, it's necessary to supply the nonprofit's EIN and details for a contact person at the nonprofit for Chariot's customer support purposes.
-
-Below are a few examples of different implementations. Modify the `user` object,  `ein` field, and access token from step 1 before making the request. 
+Below are a few examples of different implementations. Modify the `user` object,  `ein` field, and access token from step 1 before making the request.
 
 <CodeBlocks>
 ```curl cURL
@@ -109,15 +100,15 @@ fetch('https://sandboxapi.givechariot.com/v1/nonprofits', options)
 ```
 </CodeBlocks>
 
-Bravo! You have just created a nonprofit in the Chariot system. Mark down the nonprofit's `id` and now let's create a Connect for this nonprofit. 
+Bravo! You have just created a nonprofit in the Chariot system. Save down the nonprofit's `id` and now let's create a Connect for this nonprofit.
 
-### Create Connect 🪪
+### Create Connect
 
-The [Create Connect](/v2024-10-30/api/connects/create) endpoint creates a Connect record or retrieves it if a Connect already exists for this nonprofit in Chariot's system. 
+The [Create Connect](/api/connects/create) endpoint creates a Connect record or retrieves it if a Connect already exists for this nonprofit in Chariot's system.
 
 To create a Connect, the nonprofit's `id` must be provided, which you should have from the previous step!
 
-Below are a few examples of different implementations. Modify the `NONPROFIT_ID` query parameter with the nonprofit's `id`. Don't forget to add the access_token! 
+Below are a few examples of different implementations. Modify the `NONPROFIT_ID` query parameter with the nonprofit's `id`. Don't forget to add the access_token!
 
 <CodeBlocks>
 ```curl cURL
@@ -144,41 +135,4 @@ fetch('https://sandboxapi.givechariot.com/v1/connects?nonprofit=NONPROFIT_ID', o
 ```
 </CodeBlocks>
 
-Amazing! You can now start [Integrating DAFpay](guides/dafpay/overview) to build a front end and start receiving grants for this nonprofit. 
-
-### List Grants 💵
-
-After submitting several grants through Chariot Connect, you can access Chariot's APIs to retrieve information on those grants. 
-
-The [List Grants](/v2024-10-30/api/grants/list) endpoint lists all the grants for a particular CID.
-
-To retrieve grants, you must supply the API key of the Connect. You can obtain the API Key by using the [Get Connect](/v2024-10-30/api/connects/get) endpoint or by noting it down from the setup process when you initially created the Connect.
-
-Now we are ready to list grants. Below are a few examples of different implementations. Modify the `API_KEY` with the Connect's API key. Don't forget to add the access_token! 
-
-<CodeBlocks>
-```curl cURL
-curl --request GET \
-     --url 'https://sandboxapi.givechariot.com/v1/grants?pageLimit=10' \
-     --header 'accept: application/json' \
-     --header 'authorization: Bearer ACCESS_TOKEN' \
-     --header 'x-chariot-api-key: API_KEY'
-```
-```javascript JavaScript
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    authorization: 'Bearer YOUR_TOKEN_FROM_STEP_1_HERE',
-    'x-chariot-api-key': 'API_KEY'
-  }
-};
-
-fetch('https://sandboxapi.givechariot.com/v1/grants?pageLimit=10', options)
-  .then(response => response.json())
-  .then(response => console.log(response))
-  .catch(err => console.error(err));
-```
-</CodeBlocks>
-
-</Steps>
+Amazing! You can now start integrating DAFpay to build a front end and start receiving grants for this nonprofit.

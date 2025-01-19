@@ -16,90 +16,70 @@ landing-page:
   page: Chariot Documentation
   path: pages/index.mdx
 
-navigation: 
+navigation:
   - tab: guides
     layout:
       - section: Getting Started
         skip-slug: true
-        contents: 
-          - page: Overview
-            slug: getting-started/overview
-            path: ./pages/getting-started/how-chariot-works.mdx
-          - page: Quick Start
-            slug: getting-started/quickstart
-            path: ./pages/getting-started/quickstart.mdx
+        contents:
           - page: Navigating the Docs
             slug: getting-started/navigating-the-docs
             path: ./pages/getting-started/navigating-the-docs.mdx
-      - section: Fundraising
-        slug: fundraising
-        contents: 
-          - section: Donor Advised Funds
-            slug: dafpay
+      - section: DAFpay
+        slug: dafpay
+        contents:
+          - page: Overview
+            slug: overview
+            path: ./pages/dafpay/overview.mdx
+          - section: Integrating DAFpay
+            slug: integrating-dafpay
             contents:
-              - page: Overview
-                slug: /
-                path: ./pages/dafpay/overview.mdx
+              - page: Checklist
+                slug: checklist
+                path: ./pages/dafpay/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/dafpay/integrating-dafpay/set-up.mdx
+              - page: Installing Connect
+                slug: installation
+                path: ./pages/dafpay/integrating-dafpay/installation.mdx
               - page: Integrating Connect
-                slug: integrating-connect
-                path: ./pages/dafpay/integrating-connect.mdx
-              - page: Button Styles
-                slug: button-styles
-                path: ./pages/dafpay/button-styles.mdx
-              - page: Workflow Configurations
-                slug: configurations
-                path: ./pages/dafpay/configurations.mdx
-              - page: Error Handling & Edge Cases
-                slug: error-handling
-                path: ./pages/dafpay/error-handling-1.mdx
-              - section: Implementation
-                contents:
-                  - page: Best Practices
-                    slug: /
-                    path: ./pages/implementation-guide/overview.mdx
-                  - page: Onboarding
-                    slug: onboarding
-                    path: ./pages/implementation-guide/onboarding.mdx
-                  - page: Donation Forms
-                    slug: donation-forms
-                    path: ./pages/implementation-guide/donation-form.mdx
-                  - page: Managing Transactions
-                    slug: transactions
-                    path: ./pages/implementation-guide/transactions.mdx
-          - section: Qualified Charitable Distributions
-            slug: qcd
-            contents:
-              - page: Overview
-                slug: /
-                path: ./pages/qcd/overview.mdx
+                slug: integration
+                path: ./pages/dafpay/integrating-dafpay/integration.mdx
+              - page: Transaction Management
+                slug: transactions
+                path: ./pages/dafpay/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/dafpay/integrating-dafpay/prod-keys.mdx
           - page: FAQ
             slug: faq
             path: ./pages/dafpay/faq.mdx
-      - section: Payments
-        slug: payments
+      - section: Disbursements
+        slug: disbursements
         contents:
           - page: Overview
             slug: /
-            path: ./pages/payments/overview.mdx
+            path: ./pages/disbursements/overview.mdx
           - page: Concepts
             slug: concepts
-            path: ./pages/payments/concepts.mdx
+            path: ./pages/disbursements/concepts.mdx
           - page: How It Works
             slug: how-it-works
-            path: ./pages/payments/how-it-works.mdx
+            path: ./pages/disbursements/how-it-works.mdx
           - page: Compliance
             slug: compliance
-            path: ./pages/payments/compliance.mdx
+            path: ./pages/disbursements/compliance.mdx
           - page: Flow of Funds
             slug: flow-of-funds
             hidden: true
-            path: ./pages/payments/flow-of-funds.mdx
+            path: ./pages/disbursements/flow-of-funds.mdx
           - page: How Chariot Compares
             slug: comparisons
-            path: ./pages/payments/how-chariot-compares.mdx
+            path: ./pages/disbursements/how-chariot-compares.mdx
           - page: FAQ
             slug: faq
-            path: ./pages/payments/faq.mdx
+            path: ./pages/disbursements/faq.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -110,7 +90,7 @@ navigation:
         layout:
           - section: Introduction
             skip-slug: true
-            contents: 
+            contents:
               - page: Overview
                 slug: /
                 path: ./pages/api/overview.mdx
