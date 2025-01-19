@@ -1194,7 +1194,24 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        $ref: "#/components/requestBodies/CreatePaymentRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/CreatePaymentRequest"
+            examples:
+              ExampleWithTransactions:
+                value:
+                  organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                  amount: 10000
+                  transactions:
+                    - amount: 10000
+                      description: "Payment to Nonprofit"
+                      donors:
+                        - email: "developers@givechariot.com"
+                          id: "donor_1234567890"
+                          name: "John Doe"
+                          phone: "415-555-1212"
+                      attachment_file_id: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
       responses:
         "201":
           description: The payment was created

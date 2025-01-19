@@ -56,26 +56,20 @@ You can use the response to verify the details of the `Organization` to ensure i
 
 Next, you'll create a `Payment` to the Organization with the amount that you want to send.
 
-<EndpointRequestSnippet endpoint="POST /payments" />
-
-Once, you receive a successful response, you can be sure that the payment will be processed.
-Chariot will use the funds in your FBO to push a payment to the organization.
-After Chariot processes and submits the payment, you will be able to track the lifecycle of the payment using webhook events.
-
-<EndpointResponseSnippet endpoint='POST /payments' example="WithPaymentId" />
-
-### Attach Data to the Payment by Creating Transactions
-
-Finally, using the `Payment` ID, you can attach data to the payment by creating a `Transaction`.
+You can create multiple `Transactions` for a single `Payment` to attribute multiple individual donations to the same `Payment`.
 
 <Note>
 You can attach a document or file to the payment by [first uploading a file to Chariot's servers](/v2024-10-30/api/files/upload-file)
 and then creating a `Transaction` with the `attachment_file_id` field populated.
 </Note>
 
-<EndpointRequestSnippet endpoint="POST /transactions" />
+<EndpointRequestSnippet endpoint="POST /payments"  example="ExampleWithTransactions"/>
 
-You can create multiple `Transactions` for a single `Payment` to attribute multiple individual donations to the same `Payment`.
+Once, you receive a successful response, you can be sure that the payment will be processed.
+Chariot will use the funds in your FBO to push a payment to the organization.
+After Chariot processes and submits the payment, you will be able to track the lifecycle of the payment using webhook events.
+
+<EndpointResponseSnippet endpoint='POST /payments' example="WithPaymentId" />
 
 </Steps>
 
