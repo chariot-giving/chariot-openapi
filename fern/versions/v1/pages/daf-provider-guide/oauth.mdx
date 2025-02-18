@@ -1,5 +1,5 @@
 # Oauth APIs Endpoints
-*The following API endpoints are required for Chariot to integrate with your portal.*
+*Please expose the following API endpoints with the specified inputs/outputs.*
 
 **Authentication**
 
@@ -21,7 +21,7 @@ Get basic information of funds that the current user is authorized for. If the u
 
 Search Nonprofit organizations using the organization’s EIN.
 
-| Inputs     | Outputs  |
+| Input     | Output  |
 |------------|--|
 | `EIN` | `ID`|
 | |`EIN`|
@@ -33,7 +33,7 @@ Search Nonprofit organizations using the organization’s EIN.
 
 Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
 
-| Inputs          | Outputs  |
+| Input        | Output|
 |-----------------|--|
 | `Organization ID`|`Grant ID` |
 |`Fund ID`| |
@@ -46,7 +46,7 @@ Create a one-time grant for a user. We need to pass through the Chariot ID which
 
 Get the status of a grant.
 
-| Inputs      | Outputs|
+| Input      | Output|
 |-------------|--|
 | `Grant ID`  | `Created At`|
 | |`Updated At`|
@@ -58,7 +58,7 @@ Get the status of a grant.
 Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
 
 **Outputs**
-| Inputs  | Outputs  |
+| Input  | Output  |
 |-----|--|
 |  | `ID`|
 |  | `First Name`|
