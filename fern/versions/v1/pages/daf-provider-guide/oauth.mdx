@@ -1,33 +1,100 @@
-# OAuth & OIDC
-
-[OpenID Connect](https://openid.net/connect/) (OIDC) is an authentication protocol commonly used by consumer-facing SSO implementations. It’s an identity layer built on top of the industry standard OAuth 2.0 protocol.
-
-# Overview
-
-1. Donor begins the Chariot flow and selects their [DAF Provider].
-2. Chariot’s server returns an ***Authorize URL,*** which we launch in a popup window when the user continues to sign in. We form this URL by communicating with the issuer and establishing the Chariot ***Callback URL***.
-3. Chariot redirects the donor to the identity provider via the ***Authorize URL*** for [DAF Provider] for authentication and sign-in.
-4. The identity provider verifies the donor.
-5. If verification is successful, the identity provider generates a token which it sends in the request (either as the payload or query parameters) to the configured Chariot ***Callback URL***.
-6. The donor returns to the Chariot flow where they now can see information about their [DAF Provider] account including name and balance on the account.
-7. The donor submits the grant request to their [DAF Provider] and completes the Chariot flow.
-
 ## Checklist for the OAuth Provider
 
 - OAuth 2.0 Authorization Server (Okta, Auth0, or custom)
 - OAuth 2.0 User Authorization Login Page (Universal Login for Okta/Auth0)
 - OAuth 2.0 Client Credentials Application for Chariot (we’ll need to register and configure Callback URLs for local, staging, and production environments).
-- [OAuth APIs](https://www.notion.so/OAuth-APIs-1671c7d810ce4bbf91a87a2745c3ee52?pvs=21)
 
-## Information Chariot needs for the integration
+## Authentication
 
-- ISSUER_BASE_URL - this is the URL for the Token issuer (identity provider)
-- CLIENT_ID - the unique identifier for the OAuth 2.0 client
-- CLIENT_SECRET - the unique secret for the same corresponding OAuth 2.0 client
-- [DAF Provider] API Endpoints and Documentation
+All the API endpoints should be protected with OAuth authentication. This means the server will need to validate an access_token or an id_token (depending on the specific OAuth flow).
 
-## Estimated Integration Timeline
+## API Endpoints
 
-This depends highly on the current authentication and authorization schemes for the [DAF Provider]. Chariot will need 2 weeks to build and test the integration.
+### Get Funds
 
-If the [DAF Provider] already uses Okta or Auth0 for Authentication and/or Authorization, integration should require one engineer for around 3 days. 
+Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
+
+Output(s): 
+
+- Fund ID
+- Fund Name
+- Fund (Grantable) Balance
+
+---
+
+### Search Organization
+
+Search Nonprofit organizations using the organization’s EIN.
+
+Inputs: 
+
+- EIN
+
+Outputs — A List of objects containing this information
+
+- ID
+- EIN
+- Name
+- Description
+- Address
+    - Line 1
+    - Line 2
+    - City
+    - State
+    - Zip
+
+---
+
+### Create Grant
+
+Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
+
+Inputs:
+
+- Organization (charity) ID
+- Fund ID
+- Amount
+- Note (Chariot ID will go here)
+- Purpose
+- IsAnonymousDonor
+
+Outputs:
+
+- Grant ID
+
+---
+
+### Get Grant Status
+
+Get the status of a grant.
+
+Inputs: 
+
+- Grant ID
+
+Outputs: 
+
+- Created At
+- Updated At
+- Grant Status
+- Optional: Status Description
+
+---
+
+### Get Current User
+
+Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
+
+Outputs: 
+
+- ID
+- First Name
+- Last Name
+- Email
+- Phone
+- Address
+    - Line 1
+    - Line 2
+    - City
+    - State
+    - Zip
