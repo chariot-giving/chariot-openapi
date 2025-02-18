@@ -96,7 +96,7 @@ navigation:
       - section: DAF Provider Guide
         slug: daf-provider-guide
         contents:
-          - section: OAuth & OIDC
+          - section: OAuth Integration
             slug: oauth-oidc
             contents:  
             - page: Overview
