@@ -19,19 +19,19 @@ OIDC is an authentication protocol commonly used by consumer-facing SSO implemen
 - OAuth 2.0 User Authorization Login Page (Universal Login for Okta/Auth0)
 - OAuth 2.0 Client Credentials Application for Chariot (we’ll need to register and configure Callback URLs for local, staging, and production environments).
 
-### Information Chariot needs for the integration
+### Required Information 
 
-`ISSUER_BASE_URL`: This is the URL for the Token issuer (identity provider)
-
-`CLIENT_ID`: The unique identifier for the OAuth 2.0 client
-
-`CLIENT_SECRET`: The unique secret for the same corresponding OAuth 2.0 client
-
-DAF Provider API Endpoints and Documentation
+Please provide the following information needed for the integration:
+1. `ISSUER_BASE_URL`: This is the URL for the Token issuer (identity provider)
+2. `CLIENT_ID`: The unique identifier for the OAuth 2.0 client
+3. `CLIENT_SECRET`: The unique secret for the same corresponding OAuth 2.0 client
+4. DAF Provider API Endpoints and Documentation
 
 
 ## Estimated Integration Timeline
 
-This depends highly on the current authentication and authorization schemes for your DAF. Chariot will need 2 weeks to build and test the integration.
+This depends highly on the current authentication and authorization schemes for your DAF. 
 
 If you already uses Okta or Auth0 for Authentication and/or Authorization, integration should require one engineer for around 3 days. 
+
+Chariot will need 2 weeks to build and test the integration.
