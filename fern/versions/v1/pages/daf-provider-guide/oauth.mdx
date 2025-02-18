@@ -1,6 +1,12 @@
 # API Endpoints
 *The following API endpoints are required for Chariot to integrate with your portal.*
 
+**Authentication**
+
+All the API endpoints should be protected with OAuth authentication. 
+
+This means the server will need to validate an `access_token` or an `id_token` (depending on the specific OAuth flow).
+
 ### Get Funds
 
 Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
