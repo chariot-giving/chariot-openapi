@@ -1,92 +1,45 @@
-## Checklist for the OAuth Provider
-
-* [ ] OAuth 2.0 Authorization Server (Okta, Auth0, or custom)
-* [ ] OAuth 2.0 User Authorization Login Page (Universal Login for Okta/Auth0)
-* [ ] OAuth 2.0 Client Credentials Application for Chariot (we’ll need to register and configure Callback URLs for local, staging, and production environments).
-
-## Authentication
-
-All the API endpoints should be protected with OAuth authentication. 
-
-This means the server will need to validate an `access_token` or an `id_token` (depending on the specific OAuth flow).
 
 # API Endpoints
 
 ### Get Funds
 
-Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
+*Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.*
 
 **Outputs**
-| Value               | Description  |
+| Input               | Output  |
 |----------------------------|--|
-| `Fund ID`                 |  |
-| `Fund Name`                 |  |
-| `Fund (Grantable) Balance`                 |  |
+|                      | `Fund ID`\n `Fund Name`\n`Fund (Grantable) Balance` |
 
 ### Search Organization
 
 Search Nonprofit organizations using the organization’s EIN.
 
-**Inputs**
-| Value               | Description  |
+| Inputs               | Outputs  |
 |----------------------------|--|
-| `EIN`                 |  | 
-
-**Outputs**
-| Value               | Description  |
-|----------------------------|--|
-| `ID`                 |  | 
-| `EIN`                 |  | 
-| `Name`                 |  | 
-| `Description`          |  | 
-| `Address`                 | Line 1, Line 2, City, State, Zip | 
+| `EIN`                 | `ID`\n`EIN`\n `Name`\n`Description`\n`Address (Line 1, Line 2, City, State, Zip)`   | 
 
 ### Create Grant
 
-Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
+*Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.*
 
 **Inputs**
-| Value               | Description  |
+| Inputs               | Outputs  |
 |----------------------------|--|
-| `Organization ID`                 |  Charity ID  |
-| `Fund ID`                 |  |
-| `Amount`                 |  |
-| `Note`                 |  Chariot ID will go here |
-| `Purpose`                 |  |
-| `IsAnonymousDonor`                 |  |
-
-**Outputs**
-| Value               | Description  |
-|----------------------------|--|
-| `Grant ID`                 |  |
+| `Organization ID`\n`Fund ID`\n`Amount`\n`Note`\n`Purpose`\n`IsAnonymousDonor` |  `Grant ID`    |
 
 ### Get Grant Status
 
-Get the status of a grant.
+*Get the status of a grant.*
 
-**Inputs** 
-| Value               | Description  |
+| Inputs               | Outputs  |
 |----------------------------|--|
-| `Grant ID`                 |  |
-
-**Outputs**
-| Value               | Description                  |
-|----------------------------|-----------------------|
-| `Created At`                 |  |
-| `Updated At`                 |  |
-| `Created At`                 |  |
-| `Status Description`                 | *Optional* |
+| `Grant ID`                 | `Created At`\n `Updated At`\n`Created At`\n`Status Description (optional)` |
 
 ### Get Current User
 
 Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
 
 **Outputs**
-| Value               | Description  |
+| Inputs               | Outputs  |
 |----------------------------|--|
-| `ID`                 |  | 
-| `First Name`                 |  | 
-| `Last Name`                 |  | 
-| `Email`          |  | 
-| `Phone`          |  | 
-| `Address`                 | Line 1, Line 2, City, State, Zip | 
+|                  | `ID`\n`First Name` \n`Last Name`\n`Email`\n`Phone`\n `Address (Line 1, Line 2, City, State, Zip)`| 
