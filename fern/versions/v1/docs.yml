@@ -101,10 +101,10 @@ navigation:
             path: ./pages/daf-provider-guide/oauth.mdx      
           - page: Auth0 Guide
             slug: auth0
-            path: ./pages/daf-provider-guide/oauth/auth0.mdx  
+            path: ./pages/daf-provider-guide/auth0.mdx  
           - page: OauthAPI Guide
             slug: auth0
-            path: ./pages/daf-provider-guide/oauth/oauthAPI.mdx  
+            path: ./pages/daf-provider-guide/oauthAPI.mdx  
           - page: Manual Connection
             slug: manual
             path: ./pages/daf-provider-guide/manual.mdx         
