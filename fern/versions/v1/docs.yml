@@ -106,8 +106,8 @@ navigation:
               slug: auth0
               path: ./pages/daf-provider-guide/auth0.mdx  
             - page: Oauth Guide
-              slug: auth0
-              path: ./pages/daf-provider-guide/oauth.mdx  
+              slug: oauth
+              path: ./pages/daf-provider-guide/oauth.mdx
           - page: Manual Connection
             slug: manual
             path: ./pages/daf-provider-guide/manual.mdx         

@@ -9,7 +9,7 @@
 4. The identity provider verifies the donor.
 5. If verification is successful, the identity provider generates a token which it sends in the request (either as the payload or query parameters) to the configured Chariot ***Callback URL***.
 6. The donor returns to the Chariot flow where they now can see information about their DAF Provider account including name and balance on the account.
-7. The donor submits the grant request to their [DAF Provider] and completes the Chariot flow.
+7. The donor submits the grant request to their DAF Provider and completes the Chariot flow.
 
 
 
@@ -18,10 +18,10 @@
 - ISSUER_BASE_URL - this is the URL for the Token issuer (identity provider)
 - CLIENT_ID - the unique identifier for the OAuth 2.0 client
 - CLIENT_SECRET - the unique secret for the same corresponding OAuth 2.0 client
-- [DAF Provider] API Endpoints and Documentation
+- DAF Provider API Endpoints and Documentation
 
 ## Estimated Integration Timeline
 
-This depends highly on the current authentication and authorization schemes for the [DAF Provider]. Chariot will need 2 weeks to build and test the integration.
+This depends highly on the current authentication and authorization schemes for your DAF. Chariot will need 2 weeks to build and test the integration.
 
-If the [DAF Provider] already uses Okta or Auth0 for Authentication and/or Authorization, integration should require one engineer for around 3 days. 
+If you already uses Okta or Auth0 for Authentication and/or Authorization, integration should require one engineer for around 3 days. 
