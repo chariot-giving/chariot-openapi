@@ -1,0 +1,17 @@
+1. Setup a new Auth0 account or login to an existing Auth0 account
+2. Configure Universal Login under Branding tab
+3. Setup Auth0 API for your API endpoints
+4. Create Auth0 Application (M2M app)
+    1. Define application Allowed Callback URLs that are specific for Chariot. This allows OAuth callbacks to be sent to Chariot’s system after a user logs in to your application.
+        1. Local - [http://localhost:8080/v1/callback](http://localhost:8080/callback)
+        2. Staging - https://devapi.givechariot.com/v1/callback 
+        3. Production - https://api.givechariot.com/v1/callback 
+    2. Make a few decisions
+        1. Choose an Authorization Flow (Grant Types) from Advanced Settings. We recommend Authorization Code Flow.
+        2. Choose Token Endpoint Authentication Method. We suggest using default “Post” method.
+        3. If you are using OIDC, ensure your application has OIDC discovery enabled (./well-known/openid-configuration endpoint)
+    3. Give Chariot the necessary information about the M2M Auth0 application
+        1. Issuer URL
+        2. Client ID
+        3. Client Secret
+5. Give Chariot API Docs
