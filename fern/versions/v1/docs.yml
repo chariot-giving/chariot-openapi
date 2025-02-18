@@ -96,18 +96,21 @@ navigation:
       - section: DAF Provider Guide
         slug: daf-provider-guide
         contents:
-          - page: OAuth & OIDC
-            slug: oauth
-            path: ./pages/daf-provider-guide/oauth.mdx      
-          - page: Auth0 Guide
-            slug: auth0
-            path: ./pages/daf-provider-guide/auth0.mdx  
-          - page: OauthAPI Guide
-            slug: auth0
-            path: ./pages/daf-provider-guide/oauthAPI.mdx  
-          - page: Manual Connection
-            slug: manual
-            path: ./pages/daf-provider-guide/manual.mdx         
+          - section: OAuth & OIDC
+            slug: oauth-oidc
+            contents:  
+            - page: Overview
+              slug: oauth
+              path: ./pages/daf-provider-guide/oauth.mdx  
+            - page: Auth0 Guide
+              slug: auth0
+              path: ./pages/daf-provider-guide/auth0.mdx  
+            - page: OauthAPI Guide
+              slug: auth0
+              path: ./pages/daf-provider-guide/oauthAPI.mdx  
+        - page: Manual Connection
+          slug: manual
+          path: ./pages/daf-provider-guide/manual.mdx         
   - tab: api
     layout:
       - api: API Reference
