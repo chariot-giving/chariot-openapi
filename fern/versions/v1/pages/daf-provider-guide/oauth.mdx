@@ -1,45 +1,62 @@
-
 # API Endpoints
+*The following API endpoints are required for Chariot to integrate with your portal.*
 
 ### Get Funds
 
-*Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.*
+Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
 
-**Outputs**
 | Input               | Output  |
 |----------------------------|--|
-|                      | `Fund ID`\n `Fund Name`\n`Fund (Grantable) Balance` |
+|                      | `Fund ID`|
+| | `Fund Name`|
+| |`Fund (Grantable) Balance` |
 
 ### Search Organization
 
 Search Nonprofit organizations using the organization’s EIN.
 
-| Inputs               | Outputs  |
-|----------------------------|--|
-| `EIN`                 | `ID`\n`EIN`\n `Name`\n`Description`\n`Address (Line 1, Line 2, City, State, Zip)`   | 
+| Inputs     | Outputs  |
+|------------|--|
+| `EIN` | `ID`|
+| |`EIN`|
+| |`Name`|
+| |`Description`|
+| |`Address (Line 1, Line 2, City, State, Zip)` | 
 
 ### Create Grant
 
-*Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.*
+Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
 
-**Inputs**
-| Inputs               | Outputs  |
-|----------------------------|--|
-| `Organization ID`\n`Fund ID`\n`Amount`\n`Note`\n`Purpose`\n`IsAnonymousDonor` |  `Grant ID`    |
+| Inputs          | Outputs  |
+|-----------------|--|
+| `Organization ID`|`Grant ID` |
+|`Fund ID`| |
+|`Amount`| |
+|`Note`| |
+|`Purpose`| |
+|`IsAnonymousDonor`| |
 
 ### Get Grant Status
 
-*Get the status of a grant.*
+Get the status of a grant.
 
-| Inputs               | Outputs  |
-|----------------------------|--|
-| `Grant ID`                 | `Created At`\n `Updated At`\n`Created At`\n`Status Description (optional)` |
+| Inputs      | Outputs|
+|-------------|--|
+| `Grant ID`  | `Created At`|
+| |`Updated At`|
+| |`Created At`|
+| |`Status Description (optional)`|
 
 ### Get Current User
 
 Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
 
 **Outputs**
-| Inputs               | Outputs  |
-|----------------------------|--|
-|                  | `ID`\n`First Name` \n`Last Name`\n`Email`\n`Phone`\n `Address (Line 1, Line 2, City, State, Zip)`| 
+| Inputs  | Outputs  |
+|-----|--|
+|  | `ID`|
+|  | `First Name`|
+| |`Last Name`|
+| |`Email`|
+| |`Phone`|
+| | `Address (Line 1, Line 2, City, State, Zip)`| 
