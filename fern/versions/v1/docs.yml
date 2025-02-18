@@ -100,7 +100,7 @@ navigation:
             slug: oauth-oidc
             contents:  
             - page: Overview
-              slug: oauth
+              slug: overview
               path: ./pages/daf-provider-guide/overview.mdx  
             - page: Auth0 Guide
               slug: auth0
@@ -108,9 +108,9 @@ navigation:
             - page: Oauth Guide
               slug: oauth
               path: ./pages/daf-provider-guide/oauth.mdx
-          - page: Manual Connection
-            slug: manual
-            path: ./pages/daf-provider-guide/manual.mdx         
+          - page: Custom DAFpay Adaptor
+            slug: custom
+            path: ./pages/daf-provider-guide/custom.mdx         
   - tab: api
     layout:
       - api: API Reference
