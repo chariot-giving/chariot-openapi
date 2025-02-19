@@ -1,5 +1,5 @@
 # Oauth APIs Endpoints
-*Please expose the following API endpoints for Chariot to call.*
+*Please expose the following API endpoints to Chariot.*
 
 **Authentication**
 
@@ -11,19 +11,19 @@ This means the server will need to validate an `access_token` or an `id_token` (
 
 Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
 
-| Input               | Output  |
-|----------------------------|--|
-|                      | `Fund ID`|
-| | `Fund Name`|
+| Input  | Output  |
+|--------|---------|
+|        |`Fund ID`|
+| |`Fund Name`|
 | |`Fund (Grantable) Balance` |
 
 ### Search Organization
 
 Search Nonprofit organizations using the organization’s EIN.
 
-| Input     | Output  |
-|------------|--|
-| `EIN` | `ID`|
+| Input  | Output  |
+|--------|---------|
+| `EIN`|`ID`|
 | |`EIN`|
 | |`Name`|
 | |`Description`|
@@ -33,9 +33,9 @@ Search Nonprofit organizations using the organization’s EIN.
 
 Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
 
-| Input        | Output|
-|-----------------|--|
-| `Organization ID`|`Grant ID` |
+| Input  | Output  |
+|--------|---------|
+|`Organization ID`|`Grant ID` |
 |`Fund ID`| |
 |`Amount`| |
 |`Note`| |
@@ -46,9 +46,9 @@ Create a one-time grant for a user. We need to pass through the Chariot ID which
 
 Get the status of a grant.
 
-| Input      | Output|
-|-------------|--|
-| `Grant ID`  | `Created At`|
+| Input  | Output  |
+|--------|---------|
+|`Grant ID`|`Created At`|
 | |`Updated At`|
 | |`Created At`|
 | |`Status Description (optional)`|
@@ -59,10 +59,10 @@ Get basic information about the authorized user and/or account. This is useful f
 
 **Outputs**
 | Input  | Output  |
-|-----|--|
-|  | `ID`|
-|  | `First Name`|
+|--------|---------|
+|  |`ID`|
+|  |`First Name`|
 | |`Last Name`|
 | |`Email`|
 | |`Phone`|
-| | `Address (Line 1, Line 2, City, State, Zip)`| 
+| |`Address (Line 1, Line 2, City, State, Zip)`| 
