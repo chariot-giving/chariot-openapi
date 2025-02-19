@@ -1,6 +1,18 @@
-<Tip>
-If your DAF uses Auth0 as your identity provider, follow the below steps for transmitting the access token.
-</Tip>
+Chariot uses [OpenID Connect](https://openid.net/connect/) (OIDC) to facilitate access token transmission. OIDC is an authentication protocol commonly used by consumer-facing SSO implementations that is built on top of the industry standard OAuth 2.0 protocol.
+
+### Checklist for the OAuth Provider
+
+- OAuth 2.0 Authorization Server (Okta, Auth0, or custom)
+- OAuth 2.0 User Authorization Login Page (Universal Login for Okta/Auth0)
+- OAuth 2.0 Client Credentials Application for Chariot (we’ll need to register and configure Callback URLs for local, staging, and production environments).
+
+### Required Information 
+
+Please provide the following information needed for the integration:
+1. `ISSUER_BASE_URL`: This is the URL for the Token issuer (identity provider)
+2. `CLIENT_ID`: The unique identifier for the OAuth 2.0 client
+3. `CLIENT_SECRET`: The unique secret for the same corresponding OAuth 2.0 client
+4. DAF Provider API Endpoints and Documentation
 
 ## Auth0 Access Token Instructions
 1. Setup a new Auth0 account or login to an existing Auth0 account
