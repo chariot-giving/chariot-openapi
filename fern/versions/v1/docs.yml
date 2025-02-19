@@ -102,10 +102,10 @@ navigation:
             - page: Overview
               slug: overview
               path: ./pages/daf-provider-guide/overview.mdx  
-            - page: Auth0 Guide
+            - page: Access Token
               slug: auth0
               path: ./pages/daf-provider-guide/auth0.mdx  
-            - page: Oauth APIs
+            - page: OAuth APIs
               slug: oauth
               path: ./pages/daf-provider-guide/oauth.mdx
           - page: Custom DAFpay Adaptor
