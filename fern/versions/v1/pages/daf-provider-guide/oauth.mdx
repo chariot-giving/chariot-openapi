@@ -14,9 +14,22 @@ Get basic information of funds that the current user is authorized for. If the u
 
 | Input  | Output  |
 |--------|---------|
-|        |`Fund ID`|
+| `OAuth Access Token`|`Fund ID`|
 |        |`Fund Name`|
 |        |`Fund (Grantable) Balance` |
+
+### Get Current User
+
+Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
+
+| Input  | Output  |
+|--------|---------|
+| `OAuth Access Token` |`ID`|
+|        |`First Name`|
+|        |`Last Name`|
+|        |`Email`|
+|        |`Phone`|
+|        |`Address (Line 1, Line 2, City, State, Zip)`| 
 
 ### Search Organization
 
@@ -39,7 +52,7 @@ Create a one-time grant for a user. We need to pass through the Chariot ID which
 |`Organization ID`|`Grant ID`|
 |`Fund ID`|                  |
 |`Amount`|                   |
-|`Note`|                     |
+|`Note` (Chariot ID)|                     |
 |`Purpose`|                  |
 |`IsAnonymousDonor`|         |
 
@@ -53,16 +66,3 @@ Get the status of a grant.
 |          |`Updated At`|
 |          |`Created At`|
 |          |`Status Description (optional)`|
-
-### Get Current User
-
-Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
-
-| Input  | Output  |
-|--------|---------|
-|        |`ID`|
-|        |`First Name`|
-|        |`Last Name`|
-|        |`Email`|
-|        |`Phone`|
-|        |`Address (Line 1, Line 2, City, State, Zip)`| 
