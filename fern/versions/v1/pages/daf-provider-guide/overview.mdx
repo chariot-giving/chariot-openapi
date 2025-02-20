@@ -1,6 +1,6 @@
-### Workflow
-
 <img src='../../images/backend_integration.png' />
+
+### Workflow
 
 1. Chariot’s server returns an ***Authorize URL*** which launches in a popup window when the user continues to sign in. Chariot redirects the donor to the identity provider via the ***Authorize URL*** for authentication and sign-in.
 2. If verification is successful, the identity provider generates a token which it sends in the request (either as the payload or query parameters) to the configured Chariot ***Callback URL***.
@@ -9,7 +9,7 @@
 5. The DAF provider responds with the status of the grant request
 6. The Chariot Modal displays the DAF response to the user to let them know the status of the grant (success or failure)
 
-### Estimated Integration Timeline
+### Estimated Timeline
 
 This depends highly on the current authentication and authorization schemes for your DAF. If you already uses Okta or Auth0 for Authentication and/or Authorization, integration should require one engineer for around 3 days. 
 
