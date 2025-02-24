@@ -26,8 +26,7 @@ paths:
       tags:
         - Nonprofits
       security:
-        - auth0:
-            - "read:nonprofits"
+        - bearerAuth: []
       parameters:
         - name: ein
           in: path
@@ -83,8 +82,7 @@ paths:
       tags:
         - Nonprofits
       security:
-        - auth0:
-            - "create:nonprofits"
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitRequest"
       responses:
@@ -129,8 +127,7 @@ paths:
       tags:
         - Nonprofits
       security:
-        - auth0:
-            - "read:nonprofits"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -178,8 +175,7 @@ paths:
       tags:
         - Connects
       security:
-        - auth0:
-            - "create:connects"
+        - bearerAuth: []
       parameters:
         - name: nonprofit
           in: query
@@ -251,8 +247,7 @@ paths:
       tags:
         - Connects
       security:
-        - auth0:
-            - "read:connects"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -290,8 +285,7 @@ paths:
       tags:
         - Grants
       security:
-        - auth0:
-            - "read:grants"
+        - bearerAuth: []
       parameters:
         - name: x-chariot-api-key
           in: header
@@ -341,8 +335,7 @@ paths:
       tags:
         - Grants
       security:
-        - auth0:
-            - "create:grants"
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
@@ -386,8 +379,7 @@ paths:
       tags:
         - Grants
       security:
-        - auth0:
-            - "read:grants"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -431,8 +423,7 @@ paths:
       tags:
         - Grants
       security:
-        - auth0:
-            - "update:grants"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -478,8 +469,7 @@ paths:
       tags:
         - recurring_grants
       security:
-        - auth0:
-            - "read:recurring_grants"
+        - bearerAuth: []
       parameters:
         - name: x-chariot-api-key
           in: header
@@ -529,8 +519,7 @@ paths:
       tags:
         - recurring_grants
       security:
-        - auth0:
-            - "create:recurring_grants"
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/RecurringGrantCaptureRequest"
       responses:
@@ -574,8 +563,7 @@ paths:
       tags:
         - recurring_grants
       security:
-        - auth0:
-            - "read:recurring_grants"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -619,8 +607,7 @@ paths:
       tags:
         - unintegrated_grants
       security:
-        - auth0:
-            - "read:grants"
+        - bearerAuth: []
       parameters:
         - name: x-chariot-api-key
           in: header
@@ -661,8 +648,7 @@ paths:
       tags:
         - unintegrated_grants
       security:
-        - auth0:
-            - "read:grants"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -706,8 +692,7 @@ paths:
       tags:
         - unintegrated_grants
       security:
-        - auth0:
-            - "update:grants"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -836,8 +821,7 @@ paths:
       tags:
         - Events
       security:
-        - auth0:
-            - "read:events"
+        - bearerAuth: []
       parameters:
         - name: limit
           in: query
@@ -879,8 +863,7 @@ paths:
       tags:
         - Events
       security:
-        - auth0:
-            - "read:events"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -914,8 +897,7 @@ paths:
       tags:
         - Event Subscriptions
       security:
-        - auth0:
-            - "create:event_subscriptions"
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
       responses:
@@ -946,8 +928,7 @@ paths:
       tags:
         - Event Subscriptions
       security:
-        - auth0:
-            - "read:event_subscriptions"
+        - bearerAuth: []
       parameters:
         - name: limit
           in: query
@@ -982,8 +963,7 @@ paths:
       tags:
         - Event Subscriptions
       security:
-        - auth0:
-            - "read:event_subscriptions"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1016,8 +996,7 @@ paths:
       tags:
         - Event Subscriptions
       security:
-        - auth0:
-            - "update:event_subscriptions"
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1046,24 +1025,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
-    auth0:
-      type: oauth2
-      description: This API uses OAuth2 with the client credentials flow.
-      flows:
-        clientCredentials:
-          tokenUrl: https://login.givechariot.com/oauth/token
-          scopes:
-            "create:nonprofits": create a nonprofit and user
-            "read:nonprofits": read all nonprofits
-            "create:connects": create any connect, principle does not need to be associated with nonprofit
-            "read:connects": read all connects for a nonprofit
-            "create:grants": create a grant from a workflow session
-            "read:grants": "read grants"
-            "update:grants": "update grants"
-            "read:events": "read events"
-            "create:event_subscriptions": "create event subscriptions"
-            "read:event_subscriptions": "read event subscriptions"
-            "update:event_subscriptions": "update event subscriptions"
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     Nonprofit:
       type: object
