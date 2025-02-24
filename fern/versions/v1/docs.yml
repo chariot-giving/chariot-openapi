@@ -93,6 +93,25 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
+      - section: DAF Provider Guide
+        slug: daf-provider-guide
+        hidden: true
+        contents:
+          - section: OAuth Integration
+            slug: oauth-oidc
+            contents:  
+            - page: Overview
+              slug: overview
+              path: ./pages/daf-provider-guide/overview.mdx  
+            - page: Access Token
+              slug: auth0
+              path: ./pages/daf-provider-guide/auth0.mdx  
+            - page: OAuth APIs
+              slug: oauth
+              path: ./pages/daf-provider-guide/oauth.mdx
+          - page: Custom DAFpay Adaptor
+            slug: custom
+            path: ./pages/daf-provider-guide/custom.mdx         
   - tab: api
     layout:
       - api: API Reference

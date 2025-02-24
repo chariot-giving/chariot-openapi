@@ -1,0 +1,68 @@
+*Please expose the following API endpoints to Chariot.*
+
+## Authentication
+
+All the API endpoints should be protected with OAuth authentication. 
+
+This means the server will need to validate an `access_token` or an `id_token` (depending on the specific OAuth flow).
+
+## API Endpoints
+
+### Get Funds
+
+Get basic information of funds that the current user is authorized for. If the user has grant access to multiple fund accounts then this should return a list of the funds.
+
+| Input  | Output  |
+|--------|---------|
+| `OAuth Access Token`|`Fund ID`|
+|        |`Fund Name`|
+|        |`Fund (Grantable) Balance` |
+
+### Get Current User
+
+Get basic information about the authorized user and/or account. This is useful for Chariot to display in the grant review pane.
+
+| Input  | Output  |
+|--------|---------|
+| `OAuth Access Token` |`ID`|
+|        |`First Name`|
+|        |`Last Name`|
+|        |`Email`|
+|        |`Phone`|
+|        |`Address (Line 1, Line 2, City, State, Zip)`| 
+
+### Search Organization
+
+Search Nonprofit organizations using the organization’s EIN.
+
+| Input  | Output  |
+|--------|---------|
+| `EIN`  |`ID`     |
+|        |`EIN`    |
+|        |`Name`   |
+|        |`Description`|
+|        |`Address (Line 1, Line 2, City, State, Zip)`| 
+
+### Create Grant
+
+Create a one-time grant for a user. We need to pass through the Chariot ID which should also be present on the grant letter.
+
+| Input           | Output   |
+|-----------------|----------|
+|`Organization ID`|`Grant ID`|
+|`Fund ID`|                  |
+|`Amount`|                   |
+|`Note` (Chariot ID)|                     |
+|`Purpose`|                  |
+|`IsAnonymousDonor`|         |
+
+### Get Grant Status
+
+Get the status of a grant.
+
+| Input    | Output  |
+|----------|---------|
+|`Grant ID`|`Created At`|
+|          |`Updated At`|
+|          |`Created At`|
+|          |`Status Description (optional)`|
