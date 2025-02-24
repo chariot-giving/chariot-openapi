@@ -7,6 +7,9 @@ versions:
   - display-name: v1
     path: versions/v1/docs.yml
     slug: v1
+  - display-name: v2025-02-24
+    path: versions/v2025-02-24/docs.yml
+    slug: v2025-02-24
 
 logo:
   href: /
@@ -49,7 +52,7 @@ typography:
     weight: "600"
 
 colors:
-  accentPrimary: 
+  accentPrimary:
     light: "#35BBF4"
     dark: "#35BBF4"
   background:
@@ -58,6 +61,6 @@ colors:
   sidebar-background:
     light: "#F6F8FA"
     dark: "#212121"
-  header-background: 
+  header-background:
     light: '#F6F8FA'
     dark: "#212121"
