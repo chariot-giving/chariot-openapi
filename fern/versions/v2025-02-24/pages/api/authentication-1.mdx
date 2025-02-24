@@ -3,38 +3,32 @@ title: "Authentication"
 subtitle: ""
 hidden: false
 createdAt: "Wed Jun 01 2022 23:44:11 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Tue Dec 12 2023 22:09:32 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Mon Feb 25 2025 16:00:00 GMT+0000 (Coordinated Universal Time)"
 ---
 ## API access
 
-In order to access the Chariot API, you will need to authenticate requests using an OAuth2 access token obtained from an OAuth2 [Client Credentials](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow) flow. 
-
-- **OAuth 2.0 Access Token**: This is a JWT that should be provided as a Bearer token in the Authorization header for all API endpoints. This Access Token is temporary and once it expires you can request a new one. We recommend you save these tokens somewhere safe and re-use them until they expire so you can avoid having to re-fetch which can add latency to your requests. 
-
+The Chariot API uses API keys to authenticate requests. You can view and manage your API keys in the Chariot Dashboard.
 <Info>
-To obtain the necessary `client_id` and `client_secret` please email [support@givechariot.com](mailto:support@givechariot.com).
+  Test mode secret keys have the prefix `sk_test_` and live mode secret keys have the prefix `sk_live_`.
 </Info>
 
-### Getting an OAuth2.0 Access Token for your API
+Your API keys carry many privileges, so be sure to keep them secure!
+Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, and so forth.
 
-You can execute a client credentials exchange to get an access token for Chariot.
-Here are a few examples in a variety of languages. Replace any `CLIENT_ID` and `CLIENT_SECRET` with the ones privately shared with you.
-Note that in this example we are retrieving an access token for the Chariot Sandbox environment.
-If you wanted to retrieve an access token for the Chariot Production environment, you would use the following URL `https://login.givechariot.com/oauth/token` with Production environment specific OAuth Client Credentials.
+Authentication to the API is performed via HTTP Bearer Token. Provide your API key as the `Authentication: Bearer {TOKEN}` value.
+
+All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
 
 <Aside>
   <CodeBlocks>
-    ```curl cURL
-    curl --request POST \
-      --url https://chariot-sandbox.us.auth0.com/oauth/token \
-      --header 'content-type: application/json' \
-      --data '{"client_id":"CLIENT_ID","client_secret":"CLIENT_SECRET","audience":"https://api.givechariot.com","grant_type":"client_credentials"}'
+    ```curl
+    curl https://api.givechariot.com/organizations \
+      -H "Authorization: Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
     ```
     ```csharp C#
-    var client = new RestClient("https://chariot-sandbox.us.auth0.com/oauth/token");
-    var request = new RestRequest(Method.POST);
-    request.AddHeader("content-type", "application/json");
-    request.AddParameter("application/json", "{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}", ParameterType.RequestBody);
+    var client = new RestClient("https://api.givechariot.com/organizations");
+    var request = new RestRequest(Method.GET);
+    request.AddHeader("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc");
     IRestResponse response = client.Execute(request);
     ```
     ```go Go
@@ -42,20 +36,18 @@ If you wanted to retrieve an access token for the Chariot Production environment
 
     import (
       "fmt"
-      "strings"
       "net/http"
       "io/ioutil"
     )
 
     func main() {
 
-      url := "https://chariot-sandbox.us.auth0.com/oauth/token"
+      url := "https://api.givechariot.com/organizations"
 
-      payload := strings.NewReader("{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}")
+      req, _ := http.NewRequest("GET", url, nil)
 
-      req, _ := http.NewRequest("POST", url, payload)
-
-      req.Header.Add("content-type", "application/json")
+      // Add the Authorization header with the Bearer token
+      req.Header.Add("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc")
 
       res, _ := http.DefaultClient.Do(req)
 
@@ -67,21 +59,19 @@ If you wanted to retrieve an access token for the Chariot Production environment
     }
     ```
     ```java Java
-    HttpResponse<String> response = Unirest.post("https://chariot-sandbox.us.auth0.com/oauth/token")
-      .header("content-type", "application/json")
-      .body("{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}")
+    HttpResponse<String> response = Unirest.get("https://api.givechariot.com/organizations")
+      .header("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc")
       .asString();
     ```
     ```javascript jQuery
     var settings = {
       "async": true,
       "crossDomain": true,
-      "url": "https://chariot-sandbox.us.auth0.com/oauth/token",
-      "method": "POST",
+      "url": "https://api.givechariot.com/organizations",
+      "method": "GET",
       "headers": {
-        "content-type": "application/json"
-      },
-      "data": "{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}"
+        "Authorization": "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+      }
     }
 
     $.ajax(settings).done(function (response) {
@@ -91,10 +81,9 @@ If you wanted to retrieve an access token for the Chariot Production environment
     ```javascript NodeJS
     var request = require("request");
 
-    var options = { method: 'POST',
-      url: 'https://chariot-sandbox.us.auth0.com/oauth/token',
-      headers: { 'content-type': 'application/json' },
-      body: '{"client_id":"CLIENT_ID","client_secret":"CLIENT_SECRET","audience":"https://api.givechariot.com","grant_type":"client_credentials"}' };
+    var options = { method: 'GET',
+      url: 'https://api.givechariot.com/organizations',
+      headers: { 'Authorization': 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc' } };
 
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
@@ -106,16 +95,15 @@ If you wanted to retrieve an access token for the Chariot Production environment
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-      CURLOPT_URL => "https://chariot-sandbox.us.auth0.com/oauth/token",
+      CURLOPT_URL => "https://api.givechariot.com/organizations",
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 30,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => "POST",
-      CURLOPT_POSTFIELDS => "{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}",
+      CURLOPT_CUSTOMREQUEST => "GET",
       CURLOPT_HTTPHEADER => array(
-        "content-type: application/json"
+        "Authorization: Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
       ),
     ));
 
@@ -133,13 +121,11 @@ If you wanted to retrieve an access token for the Chariot Production environment
     ```python Python
     import http.client
 
-    conn = http.client.HTTPSConnection("chariot-sandbox.us.auth0.com")
+    conn = http.client.HTTPSConnection("api.givechariot.com")
 
-    payload = "{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}"
+    headers = { 'Authorization': "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc" }
 
-    headers = { 'content-type': "application/json" }
-
-    conn.request("POST", "/oauth/token", payload, headers)
+    conn.request("GET", "/organizations", headers=headers)
 
     res = conn.getresponse()
     data = res.read()
@@ -150,30 +136,18 @@ If you wanted to retrieve an access token for the Chariot Production environment
     require 'uri'
     require 'net/http'
 
-    url = URI("https://chariot-sandbox.us.auth0.com/oauth/token")
+    url = URI("https://api.givechariot.com/organizations")
 
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-    request = Net::HTTP::Post.new(url)
-    request["content-type"] = 'application/json'
-    request.body = "{\"client_id\":\"CLIENT_ID\",\"client_secret\":\"CLIENT_SECRET\",\"audience\":\"https://api.givechariot.com\",\"grant_type\":\"client_credentials\"}"
+    request = Net::HTTP::Get.new(url)
+    request["Authorization"] = 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
     response = http.request(request)
     puts response.read_body
     ```
     </CodeBlocks>
-
-    **Response**: 
-
-    ```json JSON
-    {
-      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlBfNkVWSWt0S2p5ZkhNNWdET3RMaSJ9.eyJpc3MiOiJodHRwczovL2NoYXJpb3QtZGV2LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJXSXpEaWVPaWY4a3Z0T2gxZUlxcGRTaDRUOWtYeFR0MUBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9hcGkuZ2l2ZWNoYXJpb3QuY29tIiwiaWF0IjoxNjc4MzI2MTUwLCJleHAiOjE2Nzg0MTI1NTAsImF6cCI6IldJekRpZU9pZjhrdnRPaDFlSXFwZFNoNFQ5a1h4VHQxIiwic2NvcGUiOiJyZWFkOnVzZXJzIHJlYWQ6dXNlciB1cGRhdGU6dXNlcnMgdXBkYXRlOnVzZXIgZGVsZXRlOnVzZXJzIGRlbGV0ZTp1c2VyIHJlYWQ6bm9ucHJvZml0cyByZWFkOm5vbnByb2ZpdCB1cGRhdGU6bm9ucHJvZml0cyB1cGRhdGU6bm9ucHJvZml0IGRlbGV0ZTpub25wcm9maXRzIGRlbGV0ZTpub25wcm9maXQgbGlzdDpncmFudHMgcmVhZDpncmFudHMgdXBkYXRlOmdyYW50cyBjcmVhdGU6Y29ubmVjdCByZWFkOmNvbm5lY3RzIHJlYWQ6Y29ubmVjdCB1cGRhdGU6Y29ubmVjdHMgdXBkYXRlOmNvbm5lY3QgZGVsZXRlOmNvbm5lY3RzIGRlbGV0ZTpjb25uZWN0IGV4Y2hhbmdlOnRva2VuIGNyZWF0ZTpncmFudHMgY3JlYXRlOnNhbmRib3ggcmVhZDpzYW5kYm94IGNyZWF0ZTpjb25uZWN0cyBsaXN0OmNvbm5lY3RzIGNyZWF0ZTpub25wcm9maXRzIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsicmVhZDp1c2VycyIsInJlYWQ6dXNlciIsInVwZGF0ZTp1c2VycyIsInVwZGF0ZTp1c2VyIiwiZGVsZXRlOnVzZXJzIiwiZGVsZXRlOnVzZXIiLCJyZWFkOm5vbnByb2ZpdHMiLCJyZWFkOm5vbnByb2ZpdCIsInVwZGF0ZTpub25wcm9maXRzIiwidXBkYXRlOm5vbnByb2ZpdCIsImRlbGV0ZTpub25wcm9maXRzIiwiZGVsZXRlOm5vbnByb2ZpdCIsImxpc3Q6Z3JhbnRzIiwicmVhZDpncmFudHMiLCJ1cGRhdGU6Z3JhbnRzIiwiY3JlYXRlOmNvbm5lY3QiLCJyZWFkOmNvbm5lY3RzIiwicmVhZDpjb25uZWN0IiwidXBkYXRlOmNvbm5lY3RzIiwidXBkYXRlOmNvbm5lY3QiLCJkZWxldGU6Y29ubmVjdHMiLCJkZWxldGU6Y29ubmVjdCIsImV4Y2hhbmdlOnRva2VuIiwiY3JlYXRlOmdyYW50cyIsImNyZWF0ZTpzYW5kYm94IiwicmVhZDpzYW5kYm94IiwiY3JlYXRlOmNvbm5lY3RzIiwibGlzdDpjb25uZWN0cyIsImNyZWF0ZTpub25wcm9maXRzIl19.nvRxt8u6Pynevl4H2zoskkZ4xxTwwAhauuE0Tko42vcZ8bSMAOHSQlV3Wvolqy9YIcYgQa9vWJ4BjaD62bBS7dmZJT9KmzV4dOaZV91hFfWY-rcgYQQIWE2RGUv6ptmjGjE2n15-eiPs7fWtPBD4rV7Y5hAkfkDkubtLtxvBhTP8SZZps0lQUoMQf0eKH1jLqdeXAy52Gi5ui25uc1iVB-rUdjLyK6GMO5hfeNMmuSs0rprXhTR9J0jreEL0I2-8lnyIbSSdHhj-tyaUbeVXhUt7ApatcMARAgqqp-anBUi00vux4ePl9O2xN8Lxo0vA5na7C53lken0PyRVCbXAyw",
-      "scope": "create:nonprofits read:nonprofits create:connects read:connects create:grants read:grants",
-      "expires_in": 86400,
-      "token_type": "Bearer"
-    }
-    ```
 </Aside>
 

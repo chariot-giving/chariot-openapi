@@ -104,7 +104,6 @@ navigation:
         playground:
           environments:
             - Sandbox
-          oauth: true
         layout:
           - section: Introduction
             skip-slug: true
@@ -127,7 +126,6 @@ navigation:
           - section: Core Resources
             skip-slug: true
             contents:
-              - auth
               - donorAdvisedFunds:
                   title: Donor Advised Funds
               - nonprofits
