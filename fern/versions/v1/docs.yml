@@ -95,6 +95,7 @@ navigation:
             path: ./pages/integrating-dafpay/faq.mdx
       - section: DAF Provider Guide
         slug: daf-provider-guide
+        hidden: true
         contents:
           - section: OAuth Integration
             slug: oauth-oidc
