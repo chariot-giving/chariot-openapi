@@ -52,7 +52,7 @@ navigation:
   - tab: api
     layout:
       - api: API Reference
-        api-name: "2025-01-10"
+        api-name: "2023-01-01"
         flattened: true
         skip-slug: true
         display-errors: true
