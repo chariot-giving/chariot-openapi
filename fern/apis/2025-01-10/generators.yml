@@ -18,7 +18,7 @@ api:
         api: https://sandboxapi.givechariot.com
         login: https://chariot-sandbox.us.auth0.com
   specs:
-    - openapi: ../specs/v2025-01-10.yaml
+    - openapi: ../../../specs/2025-01-10.yaml
       overrides: ./openapi-overrides.yml
 groups:
   ts-sdk:
