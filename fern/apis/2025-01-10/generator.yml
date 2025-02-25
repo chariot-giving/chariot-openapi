@@ -1,5 +1,5 @@
-auth-schemes: 
-  OAuth: 
+auth-schemes:
+  OAuth:
     scheme: oauth
     type: client-credentials
     get-token:
@@ -8,17 +8,17 @@ api:
   default-environment: Production
   default-url: api
   auth: OAuth
-  environments: 
-    Production: 
-      urls: 
+  environments:
+    Production:
+      urls:
         api: https://api.givechariot.com
         login: https://login.givechariot.com/
     Sandbox:
-      urls: 
+      urls:
         api: https://sandboxapi.givechariot.com
         login: https://chariot-sandbox.us.auth0.com
-  specs: 
-    - openapi: ../specs/v1.yaml
+  specs:
+    - openapi: ../specs/v2025-01-10.yaml
       overrides: ./openapi-overrides.yml
 groups:
   ts-sdk:
@@ -29,9 +29,9 @@ groups:
           location: npm
           package-name: "@chariot-giving/typescript-sdk"
           token: ${NPM_TOKEN}
-        github: 
+        github:
           repository: "chariot-giving/typescript-sdk"
-        config: 
+        config:
           namespaceExport: Chariot
           allowCustomFetcher: true
           skipResponseValidation: true

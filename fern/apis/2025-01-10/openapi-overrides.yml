@@ -1,4 +1,4 @@
-x-fern-pagination: 
+x-fern-pagination:
   cursor: $request.pageToken
   next_cursor: $response.nextPageToken
   results: $response.results
@@ -90,7 +90,7 @@ paths:
       x-fern-sdk-method-name: get
   /v1/events:
     get:
-      x-fern-pagination: 
+      x-fern-pagination:
         cursor: $request.cursor
         next_cursor: $response.nextPageToken
         results: $response.results
@@ -104,7 +104,7 @@ paths:
       x-fern-sdk-method-name: get
   /v1/event_subscriptions:
     get:
-      x-fern-pagination: 
+      x-fern-pagination:
         cursor: $request.cursor
         next_cursor: $response.nextPageToken
         results: $response.results
@@ -130,7 +130,7 @@ paths:
       description: Obtain an OAuth2 access token using client credentials
       tags:
         - Authentication
-      x-fern-sdk-group-name: 
+      x-fern-sdk-group-name:
         - auth
       x-fern-sdk-method-name: getToken
       x-fern-server-name: login
@@ -162,7 +162,7 @@ paths:
           description: Successful response
           content:
             application/json:
-              schema: 
+              schema:
                 x-fern-type-name: GetTokenResponse
                 type: object
                 properties:
