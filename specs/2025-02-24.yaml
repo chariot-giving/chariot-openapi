@@ -14,7 +14,7 @@ servers:
   - url: https://api.givechariot.com
     description: Production
 paths:
-  /nonprofit/{ein}:
+  /v1/nonprofit/{ein}:
     get:
       summary: Get nonprofit by EIN
       description: |-
@@ -60,7 +60,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /nonprofits:
+  /v1/nonprofits:
     post:
       summary: Create nonprofit
       description: |-
@@ -118,7 +118,7 @@ paths:
           $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /nonprofits/{id}:
+  /v1/nonprofits/{id}:
     get:
       summary: Get nonprofit
       description: |-
@@ -159,7 +159,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /connects:
+  /v1/connects:
     post:
       summary: Create Connect
       description: |-
@@ -238,7 +238,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /connects/{id}:
+  /v1/connects/{id}:
     get:
       summary: Get Connect
       description: |-
@@ -276,7 +276,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /grants:
+  /v1/grants:
     get:
       summary: List Grants
       description: |-
@@ -370,7 +370,7 @@ paths:
           $ref: "#/components/responses/GoneError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /grants/{id}:
+  /v1/grants/{id}:
     get:
       summary: Get Grant
       description: |-
@@ -460,7 +460,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /recurring_grants:
+  /v1/recurring_grants:
     get:
       summary: List Recurring Grants
       description: |-
@@ -554,7 +554,7 @@ paths:
           $ref: "#/components/responses/GoneError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /recurring_grants/{id}:
+  /v1/recurring_grants/{id}:
     get:
       summary: Get Recurring Grant
       description: |-
@@ -598,7 +598,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /unintegrated_grants:
+  /v1/unintegrated_grants:
     get:
       summary: List Unintegrated Grants
       description: |-
@@ -639,7 +639,7 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /unintegrated_grants/{id}:
+  /v1/unintegrated_grants/{id}:
     get:
       summary: Get Unintegrated Grant
       description: |-
@@ -729,7 +729,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /dafs:
+  /v1/dafs:
     get:
       summary: List Donor Advised Funds
       description: |-
@@ -774,7 +774,7 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /dafs/{id}:
+  /v1/dafs/{id}:
     get:
       summary: Get Donor Advised Fund
       description: |-
@@ -812,7 +812,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /events:
+  /v1/events:
     get:
       summary: List Events
       description: |-
@@ -854,7 +854,7 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /events/{id}:
+  /v1/events/{id}:
     get:
       summary: Get Event
       description: |-
@@ -888,7 +888,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /event_subscriptions:
+  /v1/event_subscriptions:
     post:
       summary: Create an Event Subscription
       description: |-
@@ -954,7 +954,7 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /event_subscriptions/{id}:
+  /v1/event_subscriptions/{id}:
     get:
       summary: Get an Event Subscription
       description: |-
