@@ -20,11 +20,11 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
 <Aside>
   <CodeBlocks>
     ```curl
-    curl https://api.givechariot.com/nonprofit/530196605 \
+    curl https://api.givechariot.com/v1/nonprofit/530196605 \
       -H "Authorization: Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
     ```
     ```csharp C#
-    var client = new RestClient("https://api.givechariot.com/nonprofit/530196605");
+    var client = new RestClient("https://api.givechariot.com/v1/nonprofit/530196605");
     var request = new RestRequest(Method.GET);
     request.AddHeader("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc");
     IRestResponse response = client.Execute(request);
@@ -40,7 +40,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
 
     func main() {
 
-      url := "https://api.givechariot.com/nonprofit/530196605"
+      url := "https://api.givechariot.com/v1/nonprofit/530196605"
 
       req, _ := http.NewRequest("GET", url, nil)
 
@@ -57,7 +57,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
     }
     ```
     ```java Java
-    HttpResponse<String> response = Unirest.get("https://api.givechariot.com/nonprofit/530196605")
+    HttpResponse<String> response = Unirest.get("https://api.givechariot.com/v1/nonprofit/530196605")
       .header("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc")
       .asString();
     ```
@@ -65,7 +65,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
     var settings = {
       "async": true,
       "crossDomain": true,
-      "url": "https://api.givechariot.com/nonprofit/530196605",
+      "url": "https://api.givechariot.com/v1/nonprofit/530196605",
       "method": "GET",
       "headers": {
         "Authorization": "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
@@ -80,7 +80,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
     var request = require("request");
 
     var options = { method: 'GET',
-      url: 'https://api.givechariot.com/nonprofit/530196605',
+      url: 'https://api.givechariot.com/v1/nonprofit/530196605',
       headers: { 'Authorization': 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc' } };
 
     request(options, function (error, response, body) {
@@ -93,7 +93,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-      CURLOPT_URL => "https://api.givechariot.com/nonprofit/530196605",
+      CURLOPT_URL => "https://api.givechariot.com/v1/nonprofit/530196605",
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
@@ -123,7 +123,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
 
     headers = { 'Authorization': "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc" }
 
-    conn.request("GET", "/nonprofit/530196605", headers=headers)
+    conn.request("GET", "/v1/nonprofit/530196605", headers=headers)
 
     res = conn.getresponse()
     data = res.read()
@@ -134,7 +134,7 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
     require 'uri'
     require 'net/http'
 
-    url = URI("https://api.givechariot.com/nonprofit/530196605")
+    url = URI("https://api.givechariot.com/v1/nonprofit/530196605")
 
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true

@@ -33,8 +33,6 @@ hidden: false
 ### Sandbox Development
 <AccordionGroup>
     <Accordion title="What is the sandbox API url">
-       Access token: `https://chariot-sandbox.us.auth0.com/oauth/token` 
-
        API calls: `https://sandboxapi.givechariot.com/v1`
     </Accordion>
     <Accordion title="What EIN should I use for testing?">
@@ -57,23 +55,23 @@ hidden: false
         This will allow the caller to pass in a processing fee for the grant.
         Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the Nonprofit and send the fees in a cadence according to an agreed-upon contract.
 
-    </Accordion>    
+    </Accordion>
     <Accordion title="Can we add an optional tip?">
 
         DAF giving can not be used to give to a for-profit entity which means tipping to the fundraising platform is not allowed.
 
-        If a donor has selected to enable DAFPay, you must suppress the option to add a tip. 
+        If a donor has selected to enable DAFPay, you must suppress the option to add a tip.
 
-        See [GoFundMe](https://www.gofundme.com/f/help-leo-aid-hurricane-milton-and-helene-victims/donate?source=btn_donate) for an example of how to remove the tip functionality when DAFpay is selected. 
+        See [GoFundMe](https://www.gofundme.com/f/help-leo-aid-hurricane-milton-and-helene-victims/donate?source=btn_donate) for an example of how to remove the tip functionality when DAFpay is selected.
     </Accordion>
 
     <Accordion title="How can donors cover fees?">
 
         If a donor wishes to cover the fees, increase the final amount sent to the [Create Grant](/api/grants/create) route to compensate for the processing fees.
-        Take into consideration that increasing the final amount also raises the processing fee 
+        Take into consideration that increasing the final amount also raises the processing fee
         and **don't forget to round the final amount to a whole dollar (nearest 100) as DAFs only allow grants in dollar increments**.
 
-        To calculate the final amount you can use the following formula: 
+        To calculate the final amount you can use the following formula:
 
         <Frame caption="Covered fee calculation">
             <img src='../../images/68157f8-lagrida_latex_editor.png' />
@@ -82,11 +80,11 @@ hidden: false
 </AccordionGroup>
 
 
-### Payment Reconciliation 
+### Payment Reconciliation
 <AccordionGroup>
     <Accordion title="What is the DAFpay Network?">
 
-        For nonprofits that haven't completed onboarding and verification with Chariot, 
+        For nonprofits that haven't completed onboarding and verification with Chariot,
         DAFpay routes payments through a 501(c)(3) nonprofit entity named [DAFpay Network](https://www.dafpaynetwork.org/).
         The DAFpay Network then sends the funds to the nonprofit minus processing fees.
         This enables DAFpay to accommodate payments to all eligible 501(c)(3) nonprofits for receiving DAF (Donor-Advised Fund) donations.
@@ -121,7 +119,7 @@ hidden: false
         <Frame caption="Schwab Grant Letter & Check with Tracking ID in letter and External Grant ID in Check memo">
             <img src='../../images/SchwabGrantLetter.png' />
         </Frame>
-        
+
         <Frame caption="PayPal Grant Payments Dashboard with External Grant ID">
             <img src='../../images/paypal_grant_dashboard.png' />
         </Frame>
@@ -138,11 +136,11 @@ hidden: false
     <Accordion title="How do recurring donations work?">
 
     A recurring donation via DAFpay  indicates that the donation was initiated on a monthly recurring basis. We indicate that the initial grant was set up with frequency of monthly but do not create a new grant each month in our system.
-    
-    The actual recurrence is managed through the DAF provider so if the donor wants to cancel the recurrence they log into their DAF provider portal and cancel it there. As a result, we are not aware when a recurrence is canceled. 
-    
+
+    The actual recurrence is managed through the DAF provider so if the donor wants to cancel the recurrence they log into their DAF provider portal and cancel it there. As a result, we are not aware when a recurrence is canceled.
+
     </Accordion>
-    
+
 </AccordionGroup>
 
 
