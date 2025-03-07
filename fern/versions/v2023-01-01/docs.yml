@@ -15,6 +15,7 @@ tabs:
 landing-page:
   page: Chariot Documentation
   path: pages/index.mdx
+  slug: /v2023-01-01/chariot-documentation
 
 navigation:
   - tab: guides
