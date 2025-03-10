@@ -118,9 +118,7 @@ Certain mobile browsers impose restrictions on popups if they are considered “
 
 To ensure a seamless integration with DAFpay, platforms must be mindful of potential pitfalls when handling donation requests.
 
-Common Scenarios Where Popup Blocking Occurs:
-
-[1] Custom Button with Shadow DOM and Delayed API Calls
+**Custom Button with Shadow DOM and Delayed API Calls**
 
   If your platform has implemented a custom donation button using the Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
 
@@ -128,7 +126,7 @@ Common Scenarios Where Popup Blocking Occurs:
 
   To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
 
-[2] Async Operations in onDonationRequest Callback
+**Async Operations in onDonationRequest Callback**
 
 Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup. However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
   -	Fetching user donation history
