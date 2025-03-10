@@ -125,15 +125,15 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
 - Where possible, prefetch necessary data before the user clicks the donation button.
 </Tip>
 
-**Common Scenarios Where Popup Blocking Occurs**
-<Accordion title="Custom Button with Shadow DOM and Delayed API Calls">
+**Common scenarios where popup blocking occurs**
+<Accordion title="Custom button with Shadow DOM and delayed API calls">
   If your platform has implemented a custom donation button using the Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
 
   When a user clicks the platform’s custom button and the platform makes an API call to its own servers before triggering the DAFpay popup, if the delay exceeds 1000ms, the browser may block the popup.
 
   To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
 </Accordion>
-<Accordion title="Async Operations in onDonationRequest Callback">
+<Accordion title="Async operations in onDonationRequest callback">
   Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup. 
   
   However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
