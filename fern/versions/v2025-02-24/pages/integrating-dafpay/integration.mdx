@@ -118,7 +118,16 @@ Certain mobile browsers impose restrictions on popups if they are considered “
 
 To ensure a seamless integration with DAFpay, platforms must be mindful of potential pitfalls when handling donation requests.
 
-**Custom Button with Shadow DOM and Delayed API Calls**
+
+<Note title="General Best Practices">
+  -	Keep the interval between user action and popup launch under 1000ms.
+	-	Minimize blocking API calls before launching the popup.
+	-	Avoid long-running async operations in the donation request flow.
+	-	Where possible, prefetch necessary data before the user clicks the donation button.
+</Note>
+
+**Common Scenarios**
+1. Custom Button with Shadow DOM and Delayed API Calls**
 
   If your platform has implemented a custom donation button using the Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
 
@@ -126,7 +135,7 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
 
   To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
 
-**Async Operations in onDonationRequest Callback**
+2. Async Operations in onDonationRequest Callback**
 
   Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup. However, they introduce additional asynchronous operations in the onDonationRequest callback, such as fetching user donation history, verifying donor eligibility via API calls, and retrieving pre-filled form data
 
@@ -134,13 +143,9 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
 
   To prevent the popup from being blocked, minimize async logic inside onDonationRequest.	If additional data fetching is required, perform it before triggering the donation request or use background loading strategies.
 
-**General Best Practices**
-	-	Keep the interval between user action and popup launch under 1000ms.
-	-	Minimize blocking API calls before launching the popup.
-	-	Avoid long-running async operations in the donation request flow.
-	-	Where possible, prefetch necessary data before the user clicks the donation button.
-
+<Tip>
 Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
+</Tip>
 
 ### Disabling Connect
 
