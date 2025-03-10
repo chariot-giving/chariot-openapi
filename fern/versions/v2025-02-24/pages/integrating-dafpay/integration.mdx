@@ -166,7 +166,7 @@ Most workflows proceed as follows:
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a grant.
-3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to create the grant (and capture the grant intent).
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) to create the grant (i.e., capture the grant intent).
 
 <Error>
   Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
