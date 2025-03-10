@@ -153,7 +153,7 @@ To prevent the DAFpay button from launching until form validation is performed, 
 When a user completes a Chariot Connect session you will receive a grant intent.
 
 <Warning title="Create Grant Route">
-After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to initiate the transaction.
+After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to initiate the grant.
 </Warning>
 
 Most workflows proceed as follows:
@@ -161,7 +161,7 @@ Most workflows proceed as follows:
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a grant.
-3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to initiate the grant (and capture the grant intent).
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to create the grant (and capture the grant intent).
 
 <Error>
   Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
