@@ -32,10 +32,6 @@ To provide this information, leverage the `onDonationRequest` function from the 
 If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
 </Info>
 
-<Error title="Avoid Asynchronous Actions">
-If your platform performs something asynchronously during the onDonationRequest, there can be a disconnect between the user clicking the button and the modal actually launching. As a result, the browser will flag DAFpay as a popup and block it from launching.
-</Error>
-
 <CodeBlocks>
 ```javascript JavaScript
 // get the element from the DOM
@@ -117,6 +113,41 @@ To prevent request failures, any inputs exceeding the maximum allowed length wil
 - Anonymous: Indicate if a donor has chosen to give anonymously on your donation form so the donation can be properly anonymized by the DAF provider.
 </Note>
 
+### Preventing Blocked Popups
+Certain mobile browsers impose restrictions on popups if they are considered “decoupled” from the original user action. This often occurs when long-running asynchronous operations are introduced between the user’s action (e.g., a button click) and the popup launch.
+
+To ensure a seamless integration with DAFpay, platforms must be mindful of potential pitfalls when handling donation requests.
+
+<Tip title="General Best Practices">
+- Keep the interval between user action and popup launch under 1000ms.
+- Minimize blocking API calls before launching the popup.
+- Avoid long-running async operations in the donation request flow.
+- Where possible, prefetch necessary data before the user clicks the donation button.
+</Tip>
+
+**Common scenarios where popup blocking occurs**
+<Accordion title="Custom button with Shadow DOM and delayed API calls">
+  If your platform has implemented a custom donation button using the Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
+
+  When a user clicks the platform’s custom button and the platform makes an API call to its own servers before triggering the DAFpay popup, if the delay exceeds 1000ms, the browser may block the popup.
+
+  To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
+</Accordion>
+<Accordion title="Async operations in onDonationRequest callback">
+  Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup. 
+  
+  However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
+  - fetching user donation history
+  - verifying donor eligibility via API calls
+  - retrieving pre-filled form data
+
+  Since onDonationRequest allows for async operations, any delay beyond 1000ms increases the risk of the popup being blocked.
+
+  To prevent the popup from being blocked, minimize async logic inside onDonationRequest.	If additional data fetching is required, perform it before triggering the donation request or use background loading strategies.
+</Accordion>
+
+Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
+
 ### Disabling Connect
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
@@ -127,15 +158,15 @@ To prevent the DAFpay button from launching until form validation is performed, 
 When a user completes a Chariot Connect session you will receive a grant intent.
 
 <Warning title="Create Grant Route">
-After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to complete the transaction.
+After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to initiate the grant.
 </Warning>
 
 Most workflows proceed as follows:
 
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
-2. Submit your own donation form before converting the grant intent into a completed grant.
-3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to complete the grant (and capture the grant intent).
+2. Submit your own donation form before converting the grant intent into a grant.
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) to create the grant (i.e., capture the grant intent).
 
 <Error>
   Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
