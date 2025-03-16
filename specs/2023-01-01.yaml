@@ -1865,12 +1865,14 @@ components:
                   See [Capturing Grant Intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
               amount:
                 type: number
+                example: 15000
                 description: |-
                   The grant amount in cents that will be processed by Chariot and submitted to the DAF.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grant amounts.
               applicationFeeAmount:
                 type: number
+                example: 3000
                 description: |-
                   This parameter specifies the fee your platform plans to take from the grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
@@ -1967,12 +1969,14 @@ components:
                 example: MONTHLY
               amount:
                 type: number
+                example: 15000
                 description: |-
                   The final grant amount in cents that will be processed by Chariot and submitted to the DAF for recurring gifts.
                   This amount must be in whole dollar increments (rounded to the nearest hundred) as currently
                   all DAFs only accept whole dollar grants.
               applicationFeeAmount:
                 type: number
+                example: 3000
                 description: |-
                   This parameter specifies the fee your platform plans to take from the first grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
