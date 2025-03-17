@@ -3,26 +3,16 @@ x-fern-pagination:
   next_cursor: $response.nextPageToken
   results: $response.results
 paths:
-  /v1/nonprofit/{ein}:
+  /v1/organizations:
     get:
       x-fern-sdk-group-name:
-        - nonprofits
-      x-fern-sdk-method-name: getByEin
-  /v1/nonprofits:
-    post:
-      x-fern-sdk-group-name:
-        - nonprofits
-      x-fern-sdk-method-name: create
-  /v1/nonprofits/{id}:
+        - organizations
+      x-fern-sdk-method-name: list
+  /v1/organizations/{id}:
     get:
       x-fern-sdk-group-name:
-        - nonprofits
-      x-fern-sdk-method-name: getById
-  /v1/connects:
-    post:
-      x-fern-sdk-group-name:
-        - connects
-      x-fern-sdk-method-name: create
+        - organizations
+      x-fern-sdk-method-name: get
   /v1/connects/{id}:
     get:
       x-fern-sdk-group-name:
@@ -124,4 +114,17 @@ paths:
       x-fern-sdk-group-name:
         - eventSubscriptions
       x-fern-sdk-method-name: update
-
+  /v1/disbursements:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: list
+  /v1/disbursements/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: get

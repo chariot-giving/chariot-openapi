@@ -2,140 +2,177 @@ openapi: 3.0.0
 info:
   title: Chariot API
   version: "v1"
-  description: The Chariot REST API. Please see https://givechariot.readme.io/reference/overview for more details.
+  description: The Chariot REST API. Please see https://docs.givechariot.com/api for more details.
   contact:
     name: Chariot Development Team
-    url: https://www.givechariot.com/contact
-    email: partners@givechariot.com
-  termsOfService: https://www.givechariot.com/legal-nonprofit
+    url: https://givechariot.com/contact
+    email: developers@givechariot.com
+  termsOfService: https://givechariot.com/legal-nonprofit
 servers:
   - url: https://sandboxapi.givechariot.com
     description: Sandbox
   - url: https://api.givechariot.com
     description: Production
 paths:
-  /v1/nonprofit/{ein}:
+  /v1/entities:
     get:
-      summary: Get nonprofit by EIN
-      description: |-
-        Retrieves a nonprofit organization by an [Employee Identification Number](https://www.irs.gov/charities-non-profits/employer-identification-number) (EIN).
-        The EIN is a unique number that identifies the organization to the Internal Revenue Service (IRS).
-
-        In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api/nonprofits/create) API endpoint.
-      operationId: get-nonprofit-by-ein
+      summary: List entities
+      description: |
+        Returns a list of entities
+      operationId: listEntities
       tags:
-        - Nonprofits
+        - entities
       security:
         - bearerAuth: []
       parameters:
         - name: ein
-          in: path
-          description: |-
-            The unique federal employer identification number (EIN) of the nonprofit.
-            This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          in: query
+          description: The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
+          required: false
           schema:
             type: string
-          required: true
-          example: "530196605"
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: "OK"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
+          description: The entities were retrieved
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Nonprofit"
-              examples:
-                RedCross:
-                  $ref: "#/components/examples/NonprofitRedCross"
+                $ref: "#/components/schemas/EntityList"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/nonprofits:
-    post:
-      summary: Create nonprofit
-      description: |-
-        Create a nonprofit organization.
-
-        This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
-
-        <Tip>
-        If a nonprofit does not already exist for the EIN, this will return a `201 Created` status.
-        If a nonprofit already exists for the given EIN on the system, this will return a `200 OK` status.
-        </Tip>
-
-        <Warning>
-        Handling errors:
-        - If the nonprofit does not exist within Chariot's database, a `404 Not Found` status is returned.
-        - If the nonprofit exists but does not pass Chariot's compliance checks, a `412 Precondition Failed` status is returned with a reason.
-        </Warning>
-      operationId: create-nonprofit
-      tags:
-        - Nonprofits
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CreateNonprofitRequest"
-      responses:
-        "200":
-          description: "OK"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Nonprofit"
-        "201":
-          description: "Created"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-            Location:
-              $ref: "#/components/headers/Location"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Nonprofit"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "412":
-          $ref: "#/components/responses/PreconditionFailedError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/nonprofits/{id}:
+  /v1/entities/{id}:
     get:
-      summary: Get nonprofit
-      description: |-
-        Retrieves the nonprofit organization with the given ID.
-      operationId: get-nonprofit-by-id
+      summary: Get entity
+      description: |
+        Get an entity by its unique identifier.
+      operationId: getAccount
       tags:
-        - Nonprofits
+        - entities
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the nonprofit
+          description: The unique identifier for the legal entity
+          required: true
+          schema:
+            type: string
+          example: "en_1LaXpKGUcADgqoEMl0Cx0Ygg"
+      responses:
+        "200":
+          description: The entity was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Entity"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/organizations:
+    get:
+      summary: List organizations
+      description: |
+        Returns a list of organizations.
+      operationId: listOrganizations
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: The name of the organization.
+          required: false
+          example: "American Red Cross"
+          schema:
+            type: string
+        - name: ein
+          in: query
+          description: |-
+            The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
+          schema:
+            type: string
+        - name: expand
+          in: query
+          description: |-
+            A comma-separated list of objects to expand and include in the response for each organization.
+          schema:
+            type: string
+          example: "entity"
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The organizations were retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationList"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/organizations/{id}:
+    get:
+      summary: Get organization
+      description: |-
+        Retrieves the organization with the given ID.
+      operationId: getOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the organization
           schema:
             type: string
           required: true
-          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
       responses:
         "200":
           description: "OK"
@@ -145,10 +182,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Nonprofit"
-              examples:
-                RedCross:
-                  $ref: "#/components/examples/NonprofitRedCross"
+                $ref: "#/components/schemas/Organization"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -176,27 +210,6 @@ paths:
         - Connects
       security:
         - bearerAuth: []
-      parameters:
-        - name: nonprofit
-          in: query
-          description: |-
-            The unique id of the nonprofit.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: true
-          example: 6af3f58e-7a80-4997-8259-770c033d7d3a
-        - name: suborganization
-          in: query
-          description: |-
-            The unique id for the suborganization within the nonprofit.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: false
-          example: c00d1aa2-09ab-4e76-8461-7ac34578a70c
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -1023,12 +1036,325 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements:
+    post:
+      summary: Create a disbursement
+      description: |
+        Create a disbursement to send money to an organization.
+      operationId: createDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDisbursementRequest"
+      responses:
+        "201":
+          description: The disbursement was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    get:
+      summary: List disbursements
+      description: |
+        Returns a list of disbursements.
+      operationId: listDisbursements
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: The unique identifier for the organization
+          required: false
+          schema:
+            type: string
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
+        - name: pageLimit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDisbursementsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}:
+    get:
+      summary: Retrieve a disbursement
+      description: |
+        Get a disbursement by its unique identifier.
+      operationId: getDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The disbursement was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
   schemas:
+    Entity:
+      type: object
+      description: |-
+        An Entity represents a tax-exempt (as defined by the IRS) nonprofit or a fiscal sponsor for a charitable organization.
+        An entity is a legal entity with a name, EIN (Federal Tax ID), officers, and a physical address.
+      required:
+        - id
+        - name
+        - ein
+        - physical_address
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: en_1LaXpKGUcADgqoEMl0Cx0Ygg
+        name:
+          type: string
+          description: The IRS registered legal name of the nonprofit entity
+          example: American Red Cross
+        ein:
+          type: string
+          description: |-
+            The US federal employer identification number (Tax ID); unique on the system.
+            This value should be exactly 9 digits and should not contain any special characters such as dashes.
+          example: "043567500"
+        physical_address:
+          $ref: "#/components/schemas/PostalAddress"
+        incorporation:
+          $ref: "#/components/schemas/Incorporation"
+        created_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+        officers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        compliance:
+          $ref: "#/components/schemas/EntityCompliance"
+        financials:
+          $ref: "#/components/schemas/EntityFinancials"
+        ntee_code:
+          type: string
+          description: |-
+            The National Taxonomy of Exempt Entities (NTEE) Code is a four-digit code used to classify
+            an exempt organization in terms of its primary exempt activity.
+            The first digit (Common Code) is a modifier used to describe activities in support of nonprofit organizations.
+          example: P50
+        status:
+          type: string
+          description: The status of the entity
+          enum:
+            - active
+            - inactive
+    EntityList:
+      description: A list of entities
+      properties:
+        results:
+          type: array
+          description: The list of entities
+          items:
+            $ref: "#/components/schemas/Entity"
+        paging:
+          $ref: "#/components/schemas/Paging"
+    Incorporation:
+      type: object
+      description: |-
+        An incorporation contains details about a nonprofit's incorporation status.
+      required:
+        - date
+        - state
+        - jurisdiction
+      properties:
+        date:
+          type: string
+          format: date
+          description: The date of incorporation
+          example: "2021-07-11"
+        state:
+          type: string
+          description: The 2-letter state code where the nonprofit is incorporated
+          example: "CA"
+        jurisdiction:
+          type: string
+          description: The jurisdiction where the nonprofit is incorporated
+          enum:
+            - federal
+            - state
+          example: "federal"
+    Person:
+      type: object
+      description: |-
+        A person is an individual who is an officer of a nonprofit.
+      required:
+        - id
+        - name
+        - email
+        - physical_address
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: psn_1234567890
+        name:
+          type: string
+          description: The name of the person
+        title:
+          type: string
+          description: The title or role of the person with respect to the nonprofit entity
+          example: Executive Director
+        email:
+          type: string
+          description: The email address of the person
+          example: johndoe@example.com
+        physical_address:
+          $ref: "#/components/schemas/PostalAddress"
+        created_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    EntityCompliance:
+      type: object
+      description: |-
+        An object that contains legal information about the nonprofit entity and its tax-exemption status.
+        This information is used to comply with regulations and ensure the legitimacy of the nonprofit for purposes of donations and disbursements.
+      properties:
+        irs_group_exemption_number:
+          type: string
+          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters.
+        irs_subsection_code:
+          type: string
+          description: The IRS subsection code for the entity
+          example: "03"
+        irs_filing_requirement_code:
+          type: string
+          description: |-
+            This indicates the primary return(s) the entity is required to files.
+            - 01: 990 (all other) or 990EZ return
+            - 02: 990 - Required to file Form 990-N - Income less than $50,000 per year
+            - 03: 990 - Group return
+            - 04: 990 - Required to file Form 990-BL, Black Lung Trusts
+            - 06: 990 - Not required to file (church)
+            - 07: 990 - Government 501(c)(1)
+            - 13: 990 - Not required to file (religious organization)
+            - 14: 990 - Not required to file (instrumentalities of states or political subdivisions)
+            - 00: 990 - Not required to file (all other)
+          example: "00"
+        irs_pub_78:
+          type: boolean
+          description: Whether the entity is listed on the IRS Publication 78 dataset
+          example: true
+        irs_revocation:
+          type: boolean
+          description: Whether the entity is listed on the IRS revocation dataset
+          example: false
+        ofac_list:
+          type: boolean
+          description: Whether the entity is listed on the OFAC list
+          example: false
+    EntityFinancials:
+      type: object
+      description: |-
+        An object that contains the financial details of the nonprofit entity as reported to the IRS.
+      properties:
+        asset_amount:
+          type: number
+          description: |-
+            Asset Amount is an amount from the most recent Form 990 series return filed by the organization. Asset Amount is the
+            Book Value Total Assets End of Year - PART X Balance Sheet Line 16 Col. (B) shown on the Form 990. This field is also
+            from PART II, Line 25, Col. (B) EOY on Form 990EZ and PART II, Line 16, Col. (b) on Form 990PF. This field is dollars
+            only.
+        income_amount:
+          type: number
+          description: |-
+            Income Amount is a computer-generated amount from the most recent Form 990 series return filed by the organization.
+            Income Amount is computer generated using PART I, Total Revenue Line 12 and adding "back in" the expense items, i.e.
+            Line 6b (Rental Expenses) shown on the Form 990 return. On Form 990EZ it is generated using PART I, Line 9 and
+            adding "back in" the expense items, i.e. Line 5b (Cost or Other Basis Expenses). Income Amount for Form 990PF is
+            generated using Part I, Line 10b (Cost of Goods) and adding Part I, Line 12, Col. (A) (Total Revenue Col. A) and Part IV,
+            Line 1, Col. (G) (Cost or Other Basis). This field is dollars only.
+        revenue_amount:
+          type: number
+          description: |-
+            Form 990 Revenue Amount.
+            Amount from Form 990, Part 1, Line 12, or Part 1, Line 9, of Form 990EZ.
     Nonprofit:
       type: object
       description: |-
@@ -1154,6 +1480,140 @@ components:
           format: date-time
           description: Time when this object was last updated. Expressed in ISO 8601 format.
           example: "2021-07-11 15:34:00.000"
+    OrganizationList:
+      description: A list of organizations
+      properties:
+        results:
+          type: array
+          description: The list of organizations
+          items:
+            $ref: "#/components/schemas/Organization"
+        paging:
+          $ref: "#/components/schemas/Paging"
+    Organization:
+      type: object
+      description: |-
+        An `Organization` represents an operating nonprofit or an operating sub-organization of a parent or sponsoring nonprofit.
+        The generally accepted identifier for an organization is its domain. This domain provides proof of identity, ownership and relationship to an entity.
+        Organizations can receive payments from payers on the network.
+      required:
+        - id
+        - name
+        - affiliation
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: org_01j8rs605a4gctmbm58d87mvsj
+        name:
+          type: string
+          description: |-
+            The name of the organization.
+            For organizations that operate under a different name than the one tied to the legal entity,
+            this name will differ from the name of the linked entity.
+            This is also known as the "DBA" or "Doing Business As" name of the organization.
+          example: American Red Cross
+        entity_id:
+          type: string
+          description: The unique identifier for the legal entity that this organization attributes their tax-exempt status to.
+          example: en_1LaXpKGUcADgqoEMl0Cx0Ygg
+        entity:
+          $ref: "#/components/schemas/Entity"
+        affiliation:
+          type: string
+          description: Indicates the organizational structure and relationship to other entities
+          enum:
+            - fiscal_sponsor
+            - parent_organization
+            - independent_nonprofit
+            - sponsored_organization
+          example: independent_nonprofit
+        parent_organization_id:
+          type: string
+          description: |-
+            The unique identifier of the parent organization, if this is a sponsored organization.
+            This value is `null` or empty if the organization is not sponsored or not a child of a parent organization.
+          example: org_01j8rs605a4gctmbm58d87mvsk
+        mission_statement:
+          type: string
+          description: The mission statement of the organization
+          example: To provide relief to those in need
+        web:
+          $ref: "#/components/schemas/WebDomain"
+        brand:
+          $ref: "#/components/schemas/Brand"
+        created_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created. Expressed in ISO 8601 format.
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          example: "2021-07-11 15:34:00.000"
+    WebDomain:
+      type: object
+      description: |-
+        A web domain is a unique identifier for a website or web application that is associated with an organization.
+        Domains are important identity constructs that underpin the web and online interactions.
+        The domain can be used as an identifier and its validity can be asserted via DNS.
+      required:
+        - domain
+      properties:
+        domain:
+          type: string
+          description: The DNS domain name
+          example: "redcross.org"
+        status:
+          type: string
+          description: The verification status of the domain
+          enum:
+            - verified
+            - unverified
+            - pending
+          example: "verified"
+        verification_method:
+          type: string
+          description: The method used to verify the domain ownership
+          enum:
+            - dns_txt
+          example: "dns_txt"
+        verification_token:
+          type: string
+          description: |-
+            The token used for domain verification.
+            For dns_txt verification method, this token must be set on a DNS TXT record at the domain's DNS server.
+          example: "chariot-verify=abc123xyz789"
+        verified_at:
+          type: string
+          format: date-time
+          description: The timestamp when the domain was verified
+          example: "2023-04-15T14:30:00Z"
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the domain was added to the system
+          example: "2023-04-10T09:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp when the domain was last updated
+          example: "2023-04-15T14:30:00Z"
+    Brand:
+      type: object
+      description: |-
+        Fair use brand assets that are associated with an organization and can be used for identification and informational purposes.
+      properties:
+        favicon_url:
+          type: string
+          description: The URL of the organization's favicon
+        logo_url:
+          type: string
+          description: The URL of the organization's logo
     Connect:
       type: object
       description: |-
@@ -1697,6 +2157,269 @@ components:
         postalCode:
           type: string
           description: "ZIP or postal code. Maximum length: 255 characters."
+    PostalAddress:
+      type: object
+      description: |-
+        A postal address is a mailing address where physical mail can be received.
+        Postal addresses can be used to receive paper checks.
+      required:
+        - city
+        - country
+        - line1
+        - postalCode
+        - state
+      properties:
+        city:
+          type: string
+          description: City, district, suburb, town, or village.
+        country:
+          type: string
+          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+        line_1:
+          type: string
+          description: Address line 1 (e.g. street, PO Box, or company name)
+        line_2:
+          type: string
+          description: Address line 2 (e.g. apartment, suite, unit, or building)
+        postal_code:
+          type: string
+          description: ZIP or postal code
+        state:
+          type: string
+          description: State, county, province, or region
+    Disbursement:
+      type: object
+      description: A disbursement moves funds to a verified organization.
+      required:
+        - organization_id
+        - amount
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the disbursement
+          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization that will receive the payment
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
+        amount:
+          type: integer
+          format: int64
+          description: The payment amount in USD cents. Must be a positive amount.
+          example: 10000
+        description:
+          type: string
+          description: |
+            A description of the disbursement that will be displayed to the receiving organization.
+          example: "Disbursement to Nonprofit"
+        status:
+          type: string
+          description: |-
+            The status is a string that captures the lifecycle of a disbursement.
+            For more information on disbursement lifecycle and the flow of funds, see [Flow of Funds](/v2024-10-30/guides/disbursements/flow-of-funds).
+          example: "pending"
+          enum:
+            - open
+            - pending
+            - submitted
+            - completed
+            - canceled
+            - rejected
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        submission:
+          $ref: "#/components/schemas/DisbursementSubmission"
+        transactions:
+          type: array
+          description: The list of transactions for the disbursement
+          items:
+            $ref: "#/components/schemas/Transaction"
+    DisbursementSubmission:
+      type: object
+      description: |-
+        After a disbursement is submitted, this object contains additional details about the disbursement.
+        This is useful if you want to track the disbursement over the specific payment rails.
+      properties:
+        ach:
+          $ref: "#/components/schemas/AchSubmission"
+        check:
+          $ref: "#/components/schemas/CheckSubmission"
+    AchSubmission:
+      type: object
+      description: The ACH submission for the disbursement
+      properties:
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was submitted to the Federal Reserve.
+          example: "2020-07-10 15:00:00.000"
+        effective_date:
+          type: string
+          format: date
+          description: The date the ACH transfer will be effective.
+          example: "2020-07-10"
+        trace_number:
+          type: string
+          description: |
+            A 15 digit number recorded in the Nacha file and available to both the originating and receiving bank.
+            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at either bank.
+            ACH trace numbers are not unique, but are used to correlate returns.
+          example: "386503938889057"
+    CheckSubmission:
+      type: object
+      description: The check submission for the disbursement
+      properties:
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the check was submitted to the carrier.
+          example: "2020-07-10 15:00:00.000"
+        memo:
+          type: string
+          description: The memo for the check
+          example: "Disbursement to Nonprofit"
+        check_number:
+          type: string
+          description: The check number
+          example: "123456789"
+        mailing_address:
+          $ref: "#/components/schemas/PostalAddress"
+    Transaction:
+      type: object
+      description: |
+        A transaction represents an individual line-item or donation for a recipient nonprofit organization.
+      required:
+        - organization_id
+        - amount
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the transaction
+          example: "txn_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The identifier for the organization that will receive the transaction
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
+        amount:
+          type: integer
+          format: int64
+          description: The transaction amount in minor currency units (cents)
+          example: 10000
+        currency:
+          type: string
+          description: The currency code for the transaction
+          example: "USD"
+          default: "USD"
+        description:
+          type: string
+          description: |
+            A description of the transaction.
+            This description is displayed to the receiving organization.
+          example: "Disbursement to Nonprofit"
+        donation:
+          $ref: "#/components/schemas/Donation"
+        donors:
+          type: array
+          description: The list of donors for the transaction
+          items:
+            $ref: "#/components/schemas/Donor"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        metadata:
+          type: object
+          description: Additional metadata for the transaction
+          additionalProperties:
+            type: string
+    Donation:
+      type: object
+      description: |
+        This is an object that allows you to specify the type of the transaction donation.
+        Note that for backwards compatibility reasons, additional undocumented keys may appear in this object.
+        These should be treated as deprecated and will be removed in the future.
+      properties:
+        type:
+          $ref: "#/components/schemas/DonationType"
+        donor_advised_fund_grant:
+          $ref: "#/components/schemas/DonorAdvisedFundGrant"
+        # corporate_match:
+        #   $ref: "#/components/schemas/CorporateMatch"
+        # qualified_charitable_distribution:
+        #   $ref: "#/components/schemas/QualifiedCharitableDistribution"
+    DonationType:
+      type: string
+      description: The type of donation
+      enum:
+        - donor_advised_fund_grant
+        # Can be added back in once we have a use case to disburse corporate matches or qualified charitable distributions
+        # - corporate_match
+        # - qualified_charitable_distribution
+    DonorAdvisedFundGrant:
+      type: object
+      description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
+      properties:
+        organization_name:
+          type: string
+          description: The name of the DAF organization that made the grant
+          example: "Vanguard Charitable"
+        fund_name:
+          type: string
+          description: The name of the DAF fund that made the grant
+          example: "John Doe Fund"
+        purpose:
+          type: string
+          description: The purpose of the grant
+          example: "General Operating Support"
+        note:
+          type: string
+          description: A note about the grant
+          example: "This grant is for the general operating support of the organization."
+    Donor:
+      type: object
+      description: The donor information for the transaction
+      required:
+        - email
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the object.
+          example: donor_1234567890
+        name:
+          type: string
+          description: The name of the donor
+          example: "John Doe"
+        email:
+          type: string
+          description: The email address of the donor
+          example: "bob@me.com"
+        phone:
+          type: string
+          description: The phone number of the donor
+          example: "415-555-1212"
+        address:
+          $ref: "#/components/schemas/PostalAddress"
     EventCategory:
       type: string
       description: |
@@ -1775,6 +2498,16 @@ components:
           example: "https://example.com/webhook"
         category:
           $ref: "#/components/schemas/EventCategory"
+    Paging:
+      type: object
+      description: The paging information
+      properties:
+        next_page_token:
+          type: string
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+        total:
+          type: integer
     Error:
       type: object
       required:
@@ -1983,31 +2716,15 @@ components:
         application/json:
           schema:
             type: object
-            properties:
-              name:
-                type: string
-                description: |-
-                  A human readable name of the Connect, optional.
-              metadata:
-                type: object
-                description: A map of arbitrary string keys and values to store information about the object.
-                additionalProperties:
-                  type: string
-    CreateNonprofitRequest:
-      description: |-
-        The request to create and register a nonprofit organization account.
-        The ein and user.email properties are required.
-        The user.email should be a valid contact email address for the nonprofit organization.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
             required:
-              - ein
-              - user
+              - organization_id
+              - contact
             properties:
-              user:
+              organization_id:
+                type: string
+                description: The unique identifier for the organization
+                example: "org_1234567890"
+              contact:
                 type: object
                 required:
                   - email
@@ -2022,26 +2739,99 @@ components:
                     example: "9127772424"
                   firstName:
                     type: string
-                    description: The first name of the nonprofit account contact
+                    description: The first name of the nonprofit account contact that manages this Connect
                     example: Ben
                   lastName:
                     type: string
-                    description: The last name of the nonprofit account contact
+                    description: The last name of the nonprofit account contact that manages this Connect
                     example: Give
-              ein:
-                type: string
-                description: The US federal employer identification number (Tax ID); unique on the system
-                example: "043567500"
-              preferredName:
+              name:
                 type: string
                 description: |-
-                  The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
-              picture:
+                  A human readable name of the Connect, optional.
+              metadata:
+                type: object
+                description: A map of arbitrary string keys and values to store information about the object.
+                additionalProperties:
+                  type: string
+    CreateDisbursementRequest:
+      description: |-
+        The request to create a disbursement and its corresponding transactions.
+        The organization and amount are required.
+        The transactions array should contain the list of transactions associated with the disbursement. The amounts
+        in the transactions should sum up to the disbursement amount.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - organization_id
+              - amount
+              - transactions
+            properties:
+              organization_id:
                 type: string
-                description: The URI of the nonprofit's logo
-              website:
+                description: The ID of the organization that will receive the disbursement.
+                example: "org_1234567890"
+              amount:
+                type: integer
+                format: int64
+                description: The disbursement amount in USD cents. Must be a positive amount.
+                example: 10000
+              description:
                 type: string
-                description: The URL of the nonprofit's website
+                description: |-
+                  A description of the disbursement that will be displayed to the receiving organization.
+                example: "Disbursement to Nonprofit"
+              transactions:
+                type: array
+                description: |-
+                  The list of transactions associated with the disbursement.
+                  Each transaction is an individual donation to be included in the disbursement.
+                  Must specify at least one transaction.
+                items:
+                  type: object
+                  description: |
+                    An individual donation to be included in the disbursement.
+                  required:
+                    - amount
+                  properties:
+                    amount:
+                      type: integer
+                      format: int64
+                      description: The transaction amount in minor currency units (cents)
+                      example: 10000
+                    currency:
+                      type: string
+                      description: The currency code for the transaction
+                      example: "USD"
+                      default: "USD"
+                    description:
+                      type: string
+                      description: |
+                        A description of the donation.
+                        This description is displayed to the receiving organization.
+                      example: "Donation to Nonprofit"
+                    donation:
+                      $ref: "#/components/schemas/Donation"
+                    donors:
+                      type: array
+                      description: The list of donors for the transaction
+                      items:
+                        $ref: "#/components/schemas/Donor"
+                    # TODO: we don't have the ability to create files yet, so leaving this out for now
+                    # attachment_file_id:
+                    #   type: string
+                    #   description: |-
+                    #     The unique identifier for the file that is attached to the transaction.
+                    #     This is useful if you want to attach a letter or another document to the transaction.
+                    #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                    metadata:
+                      type: object
+                      description: Additional metadata for the transaction
+                      additionalProperties:
+                        type: string
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
@@ -2298,6 +3088,26 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    ListDisbursementsResponse:
+      description: The response for Disbursements.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Disbursement"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
