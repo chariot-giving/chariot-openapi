@@ -3,11 +3,11 @@ x-fern-pagination:
   next_cursor: $response.nextPageToken
   results: $response.results
 paths:
-  /v1/organizations:
+  /v1/organizations/search:
     get:
       x-fern-sdk-group-name:
         - organizations
-      x-fern-sdk-method-name: list
+      x-fern-sdk-method-name: search
   /v1/organizations/{id}:
     get:
       x-fern-sdk-group-name:

@@ -111,9 +111,6 @@ navigation:
           - section: Core Resources
             skip-slug: true
             contents:
-              - donorAdvisedFunds:
-                  title: Donor Advised Funds
-              - entities
               - organizations
               - events
               - eventSubscriptions:
@@ -127,6 +124,8 @@ navigation:
                   title: Recurring Grants
               - unintegratedGrants:
                   title: Unintegrated Grants
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
           - section: Payments
             skip-slug: true
             contents:
