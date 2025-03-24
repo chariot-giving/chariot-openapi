@@ -13,6 +13,11 @@ paths:
       x-fern-sdk-group-name:
         - organizations
       x-fern-sdk-method-name: get
+  /v1/connects:
+    post:
+      x-fern-sdk-group-name:
+        - connects
+      x-fern-sdk-method-name: create
   /v1/connects/{id}:
     get:
       x-fern-sdk-group-name:

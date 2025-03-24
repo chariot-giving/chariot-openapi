@@ -32,6 +32,8 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
   - `grant.updated`: This event is triggered when a grant is updated. This can happen when the status changes for example.
   - `unintegrated_grant.created`: This event is triggered when an unintegrated grant is created.
   - `unintegrated_grant.updated`: This event is triggered when an unintegrated grant is updated.
+  - `disbursement.created`: This event is triggered when a disbursement is created.
+  - `disbursement.updated`: This event is triggered when a disbursement is updated. This can happen when the status of the payment changes and when tracking updates are created for mailed checks.
 </Aside>
 
 Note that you can create Event Subscriptions in Production and Sandbox. Sandbox Event Subscriptions will receive events for Sandbox events and vice versa.

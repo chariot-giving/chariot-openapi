@@ -1052,7 +1052,13 @@ paths:
     post:
       summary: Stop a disbursement
       description: |
-        Stop a disbursement by its unique identifier.
+        Stop or cancel a disbursement by its unique identifier.
+        This will stop the disbursement from being processed and will return the funds to the grantmaker's account.
+        This will return a 400 error if the disbursement payment is already in a terminal state.
+        For example:
+        - If the Book transfer has already been created.
+        - If the ACH transfer has already been submitted to the Federal Reserve.
+        - If the issued check has already been deposited by the receiving organization.
       operationId: stopDisbursement
       tags:
         - disbursements
@@ -1157,7 +1163,7 @@ components:
             This value is `null` or empty if the organization is not sponsored or not a child of a parent organization.
           example: org_01j8rs605a4gctmbm58d87mvsk
         physical_address:
-          $ref: "#/components/schemas/PostalAddress"
+          $ref: "#/components/schemas/Address"
         classification:
           $ref: "#/components/schemas/NonprofitClassification"
         compliance:
@@ -1221,8 +1227,6 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
-        southern_poverty_law_center:
-          $ref: "#/components/schemas/ComplianceRequirement"
     Person:
       type: object
       description: |-
@@ -1250,7 +1254,7 @@ components:
           description: The email address of the person
           example: johndoe@example.com
         physical_address:
-          $ref: "#/components/schemas/PostalAddress"
+          $ref: "#/components/schemas/Address"
         created_at:
           type: string
           readOnly: true
@@ -1881,7 +1885,7 @@ components:
         - city
         - country
         - line1
-        - postalCode
+        - postal_code
         - state
       properties:
         city:
@@ -1896,7 +1900,7 @@ components:
         line2:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
-        postalCode:
+        postal_code:
           type: string
           description: ZIP or postal code
         state:
@@ -1929,7 +1933,7 @@ components:
         - city
         - country
         - line1
-        - postalCode
+        - postal_code
         - state
       properties:
         city:
@@ -1954,6 +1958,7 @@ components:
       type: object
       description: A disbursement moves funds to a verified organization.
       required:
+        - id
         - organization_id
         - amount
       properties:
@@ -1976,19 +1981,6 @@ components:
           description: |
             A description of the disbursement that will be displayed to the receiving organization.
           example: "Disbursement to Nonprofit"
-        status:
-          type: string
-          description: |-
-            The status is a string that captures the lifecycle of a disbursement.
-            For more information on disbursement lifecycle and the flow of funds, see [Flow of Funds](/v2024-10-30/guides/disbursements/flow-of-funds).
-          example: "pending"
-          enum:
-            - open
-            - pending
-            - submitted
-            - completed
-            - canceled
-            - rejected
         created_at:
           type: string
           format: date-time
@@ -2012,7 +2004,7 @@ components:
       type: object
       description: |-
         After a disbursement is submitted, this object contains additional details about the disbursement.
-        This is useful if you want to track the disbursement over the specific payment rails.
+        This is useful if you want to track the disbursement over the specific payment rails/networks.
       properties:
         book:
           $ref: "#/components/schemas/BookSubmission"
@@ -2022,7 +2014,9 @@ components:
           $ref: "#/components/schemas/CheckSubmission"
     BookSubmission:
       type: object
-      description: The book submission for the disbursement
+      description: |-
+        A book submission represents an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        This is the preferred submission method when the receiving organization has a Chariot account at the same bank as the grantmaker.
       properties:
         submitted_at:
           type: string
@@ -2031,7 +2025,9 @@ components:
           example: "2020-07-10 15:00:00.000"
     AchSubmission:
       type: object
-      description: The ACH submission for the disbursement
+      description: |-
+        An ACH submission represents a transfer of funds to the receiving organization via the Automated Clearing House (ACH) network.
+        This is the preferred submission method when the receiving organization has a Chariot account at a different bank than the grantmaker.
       properties:
         submitted_at:
           type: string
@@ -2040,14 +2036,22 @@ components:
           example: "2020-07-10 15:00:00.000"
         status:
           type: string
-          description: The status of the ACH transfer
+          description: |-
+            The lifecycle status of the ACH transfer.
+            The set of statuses include:
+              - `initiated`: The ACH transfer has been initiated and pending review by Chariot.
+              - `pending_submission`: The ACH transfer is pending submission to the Federal Reserve.
+              - `rejected`: The ACH transfer was rejected by Chariot.
+              - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
+              - `returned`: The ACH transfer has been returned by the receiving organization.
+            To see a more detailed description of each status and the overall lifecycle of ACH transfer disbursements, 
+            see the "Transfer Statuses" section of the Chariot documentation.
           example: "submitted"
           enum:
             - initiated
             - pending_submission
             - rejected
             - submitted
-            - completed
             - returned
         effective_date:
           type: string
@@ -2063,7 +2067,9 @@ components:
           example: "386503938889057"
     CheckSubmission:
       type: object
-      description: The check submission for the disbursement
+      description: |-
+        A check submission represents a paper check that is sent to the receiving organization.
+        This is the submission method used when the receiving organization does not have a Chariot account.
       properties:
         submitted_at:
           type: string
@@ -2072,7 +2078,18 @@ components:
           example: "2020-07-10 15:00:00.000"
         status:
           type: string
-          description: The status of the check
+          description: |-
+            The lifecycle status of the check.
+            The set of statuses include:
+              - `pending`: The check is pending review by Chariot.
+              - `canceled`: The check has been canceled.
+              - `issued`: The check has been mailed and is pending delivery.
+              - `rejected`: The check was rejected by Chariot.
+              - `deposited`: The check has been deposited by the receiving organization.
+              - `stopped`: A stop payment was requested on the check.
+              - `returned`: The check has been returned by the receiving organization.
+            To see a more detailed description of each status and the overall lifecycle of check disbursements, 
+            see the "Transfer Statuses" section of the Chariot documentation.
           example: "issued"
           enum:
             - pending
@@ -2084,7 +2101,7 @@ components:
             - returned
         memo:
           type: string
-          description: The memo for the check
+          description: The memo on the check
           example: "Disbursement to Nonprofit"
         check_number:
           type: string
@@ -2106,8 +2123,14 @@ components:
       properties:
         category:
           type: string
-          description: The category of the tracking update
-          example: "delivered"
+          description: |-
+            The category of the tracking update.
+            The set of categories include:
+              - `in_transit`: The check has been processed by the origin facility.
+              - `processed_for_delivery`: The check has been greenlit for delivery at the recipient's nearest postal facility. The check should reach the mailbox within 1-2 business days of this tracking update.
+              - `delivered`: The check has been delivered to the recipient's address.
+              - `returned_to_sender`: The check has been returned to the sender due to barcode, ID tag area, or address errors.
+          example: "in_transit"
           enum:
             - in_transit
             - processed_for_delivery
@@ -2222,7 +2245,7 @@ components:
           description: The phone number of the donor
           example: "415-555-1212"
         address:
-          $ref: "#/components/schemas/PostalAddress"
+          $ref: "#/components/schemas/Address"
     EventCategory:
       type: string
       description: |
@@ -2232,6 +2255,8 @@ components:
         - "grant.updated"
         - "unintegrated_grant.created"
         - "unintegrated_grant.updated"
+        - "disbursement.created"
+        - "disbursement.updated"
     Event:
       type: object
       description: |
