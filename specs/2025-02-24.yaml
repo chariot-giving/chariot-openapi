@@ -2916,6 +2916,49 @@ components:
                       description: Additional metadata for the transaction
                       additionalProperties:
                         type: string
+          examples:
+            MultipleTransactions:
+              summary: Disbursement with multiple transactions
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 25000
+                description: "February 2025 Disbursement"
+                transactions: [
+                  {
+                    amount: 15000,
+                    description: "Grant from Doe Family Fund",
+                    type: "donor_advised_fund_grant",
+                    donor_advised_fund_grant: {
+                      organization_name: "Miami Charitable",
+                      fund_name: "Doe Family Charitable Fund",
+                      purpose: "General Operating Support",
+                      donors: [
+                        {
+                          first_name: "Jane",
+                          last_name: "Doe",
+                          email: "jane.doe@example.com"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    amount: 10000,
+                    description: "Grant from Smith Family Fund",
+                    type: "donor_advised_fund_grant",
+                    donor_advised_fund_grant: {
+                      organization_name: "LA Charitable",
+                      fund_name: "Smith Family Legacy Fund",
+                      purpose: "Program Support",
+                      donors: [
+                        {
+                          first_name: "John",
+                          last_name: "Smith",
+                          email: "john.smith@example.com"
+                        }
+                      ]
+                    }
+                  }
+                ]
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
