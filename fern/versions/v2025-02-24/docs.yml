@@ -115,7 +115,7 @@ navigation:
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
-          - section: Fundraising
+          - section: DAFpay
             skip-slug: true
             contents:
               - connects
@@ -126,7 +126,7 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
-          - section: Payments
+          - section: Disbursements
             skip-slug: true
             contents:
               - disbursements

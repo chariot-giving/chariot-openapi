@@ -1014,7 +1014,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}:
     get:
-      summary: Retrieve a disbursement
+      summary: Get a disbursement
       description: |
         Get a disbursement by its unique identifier.
       operationId: getDisbursement
@@ -1046,6 +1046,40 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}/stop:
+    post:
+      summary: Stop a disbursement
+      description: |
+        Stop a disbursement by its unique identifier.
+      operationId: stopDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The disbursement was stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
 components:
@@ -1980,10 +2014,21 @@ components:
         After a disbursement is submitted, this object contains additional details about the disbursement.
         This is useful if you want to track the disbursement over the specific payment rails.
       properties:
+        book:
+          $ref: "#/components/schemas/BookSubmission"
         ach:
           $ref: "#/components/schemas/AchSubmission"
         check:
           $ref: "#/components/schemas/CheckSubmission"
+    BookSubmission:
+      type: object
+      description: The book submission for the disbursement
+      properties:
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the book was submitted to the Federal Reserve.
+          example: "2020-07-10 15:00:00.000"
     AchSubmission:
       type: object
       description: The ACH submission for the disbursement
@@ -1993,6 +2038,17 @@ components:
           format: date-time
           description: The date and time the ACH transfer was submitted to the Federal Reserve.
           example: "2020-07-10 15:00:00.000"
+        status:
+          type: string
+          description: The status of the ACH transfer
+          example: "submitted"
+          enum:
+            - initiated
+            - pending_submission
+            - rejected
+            - submitted
+            - completed
+            - returned
         effective_date:
           type: string
           format: date
@@ -2014,6 +2070,18 @@ components:
           format: date-time
           description: The date and time the check was submitted to the carrier.
           example: "2020-07-10 15:00:00.000"
+        status:
+          type: string
+          description: The status of the check
+          example: "issued"
+          enum:
+            - pending
+            - canceled
+            - issued
+            - rejected
+            - deposited
+            - stopped
+            - returned
         memo:
           type: string
           description: The memo for the check
@@ -2024,6 +2092,32 @@ components:
           example: "123456789"
         mailing_address:
           $ref: "#/components/schemas/PostalAddress"
+        tracking_updates:
+          type: array
+          description: The list of tracking updates for the check
+          items:
+            $ref: "#/components/schemas/TrackingUpdate"
+    TrackingUpdate:
+      type: object
+      description: The tracking update for the check
+      required:
+        - category
+        - created_at
+      properties:
+        category:
+          type: string
+          description: The category of the tracking update
+          example: "delivered"
+          enum:
+            - in_transit
+            - processed_for_delivery
+            - delivered
+            - returned_to_sender
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the tracking update was created
+          example: "2020-07-10 15:00:00.000"
     Transaction:
       type: object
       description: |
@@ -2031,6 +2125,7 @@ components:
       required:
         - organization_id
         - amount
+        - type
       properties:
         id:
           type: string
@@ -2046,24 +2141,16 @@ components:
           format: int64
           description: The transaction amount in minor currency units (cents)
           example: 10000
-        currency:
-          type: string
-          description: The currency code for the transaction
-          example: "USD"
-          default: "USD"
         description:
           type: string
           description: |
             A description of the transaction.
             This description is displayed to the receiving organization.
           example: "Disbursement to Nonprofit"
-        donation:
-          $ref: "#/components/schemas/Donation"
-        donors:
-          type: array
-          description: The list of donors for the transaction
-          items:
-            $ref: "#/components/schemas/Donor"
+        type:
+          $ref: "#/components/schemas/DonationType"
+        donor_advised_fund_grant:
+          $ref: "#/components/schemas/DonorAdvisedFundGrant"
         created_at:
           type: string
           format: date-time
@@ -2081,21 +2168,6 @@ components:
           description: Additional metadata for the transaction
           additionalProperties:
             type: string
-    Donation:
-      type: object
-      description: |
-        This is an object that allows you to specify the type of the transaction donation.
-        Note that for backwards compatibility reasons, additional undocumented keys may appear in this object.
-        These should be treated as deprecated and will be removed in the future.
-      properties:
-        type:
-          $ref: "#/components/schemas/DonationType"
-        donor_advised_fund_grant:
-          $ref: "#/components/schemas/DonorAdvisedFundGrant"
-        # corporate_match:
-        #   $ref: "#/components/schemas/CorporateMatch"
-        # qualified_charitable_distribution:
-        #   $ref: "#/components/schemas/QualifiedCharitableDistribution"
     DonationType:
       type: string
       description: The type of donation
@@ -2124,21 +2196,23 @@ components:
           type: string
           description: A note about the grant
           example: "This grant is for the general operating support of the organization."
+        donors:
+          type: array
+          description: The list of donors for the transaction
+          items:
+            $ref: "#/components/schemas/Donor"
     Donor:
       type: object
       description: The donor information for the transaction
-      required:
-        - email
       properties:
-        id:
+        first_name:
           type: string
-          readOnly: true
-          description: The unique identifier for the object.
-          example: donor_1234567890
-        name:
+          description: The first name of the donor
+          example: "John"
+        last_name:
           type: string
-          description: The name of the donor
-          example: "John Doe"
+          description: The last name of the donor
+          example: "Doe"
         email:
           type: string
           description: The email address of the donor
@@ -2525,30 +2599,23 @@ components:
                     An individual donation to be included in the disbursement.
                   required:
                     - amount
+                    - type
                   properties:
                     amount:
                       type: integer
                       format: int64
                       description: The transaction amount in minor currency units (cents)
                       example: 10000
-                    currency:
-                      type: string
-                      description: The currency code for the transaction
-                      example: "USD"
-                      default: "USD"
                     description:
                       type: string
                       description: |
                         A description of the donation.
                         This description is displayed to the receiving organization.
                       example: "Donation to Nonprofit"
-                    donation:
-                      $ref: "#/components/schemas/Donation"
-                    donors:
-                      type: array
-                      description: The list of donors for the transaction
-                      items:
-                        $ref: "#/components/schemas/Donor"
+                    type:
+                      $ref: "#/components/schemas/DonationType"
+                    donor_advised_fund_grant:
+                      $ref: "#/components/schemas/DonorAdvisedFundGrant"
                     # TODO: we don't have the ability to create files yet, so leaving this out for now
                     # attachment_file_id:
                     #   type: string
