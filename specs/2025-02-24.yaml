@@ -985,14 +985,14 @@ paths:
           schema:
             type: string
           example: "org_01j8rs605a4gctmbm58d87mvsj"
-        - name: pageLimit
+        - name: page_limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
           required: false
           schema:
             type: integer
             format: int32
-        - name: pageToken
+        - name: page_token
           in: query
           description: |-
             A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
@@ -2937,7 +2937,7 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Disbursement"
-              nextPageToken:
+              next_page_token:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call
