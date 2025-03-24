@@ -64,12 +64,12 @@ navigation:
           - page: How It Works
             slug: how-it-works
             path: ./pages/disbursements/how-it-works.mdx
-          - page: Compliance
-            slug: compliance
-            path: ./pages/disbursements/compliance.mdx
           - page: Disbursement Lifecycle
             slug: disbursement-lifecycle
             path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/disbursements/compliance.mdx
           - page: How Chariot Compares
             slug: comparisons
             path: ./pages/disbursements/how-chariot-compares.mdx

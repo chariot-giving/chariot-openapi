@@ -1,25 +1,33 @@
 ---
 title: "Frequently Asked Questions"
-subtitle: "Answers to common questions about Chariot Payments"
+subtitle: "Answers to common questions about Chariot Disbursements"
 hidden: false
 createdAt: "Sun May 21 2023 20:36:07 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
 ---
 
+### Nonprofit
 <AccordionGroup>
     <Accordion title="What if a nonprofit isn't listed on Chariot?">
 
-        In the rare case that a nonprofit is not listed on Chariot, Chariot supports the ability to add new nonprofit organizations to the system.
+        In the rare case that a nonprofit organization is not listed on Chariot, Chariot supports the ability to add new nonprofit organizations to the system.
         Please reach out to [Support](mailto:support@givechariot.com) to submit a request for an organization to be reviewed for addition.
 
-        The request should include the following information at a minimum:
+        The request should include the following information:
         - Name
         - EIN
         - Mailing Address
         - Website
         - Fiscal sponsor information
         - Contact information for an officer or director including name, title, email, and phone number
-        - IRS determination letter
+        - IRS determination letter (if applicable)
+    </Accordion>
+    <Accordion title="What if a nonprofit is ineligible for disbursements?">
+
+        If a nonprofit is ineligible for disbursements, the organization's `organization.compliance.daf_eligible` field will be `false`.
+        The organization will not be able to receive disbursements from grantmakers.
+
+        If you believe that the organization should be eligible for disbursements, please reach out to [Compliance](mailto:compliance@givechariot.com).
 
     </Accordion>
     <Accordion title="What are nonprofits charged for using Chariot Disbursements?">
@@ -28,7 +36,35 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
         For nonprofits that want additional services to support their gift processing needs, Chariot has subscriptions plans available.
 
     </Accordion>
-    <Accordion title="How does Chariot send payments?">
+    <Accordion title="What does the onboarding process look like for nonprofits?">
+
+        The onboarding process for nonprofits is as follows:
+
+        <Steps>
+            Nonprofit creates an account on Chariot
+            <Frame caption="Nonprofit account registration">
+                <img src='../../images/nonprofit_signup.png' />
+            </Frame>
+
+            Nonprofit provides verifying information to Chariot
+
+            <Frame caption="Nonprofit KYC and verification">
+                <img src='../../images/nonprofit_compliance_verification.png' />
+            </Frame>
+
+            Chariot approves Nonprofit to receive electronic payments from grantmakers
+
+            <Frame caption="Nonprofits can manage payments from all their grantmaking platforms">
+                <img src='../../images/nonprofit_transfers.png' />
+            </Frame>
+        </Steps>
+    </Accordion>
+</AccordionGroup>
+
+### Disbursements
+
+<AccordionGroup>
+    <Accordion title="How does Chariot route payments?">
 
     ## Payment Rails
 
@@ -47,30 +83,9 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Frame>
 
     </Accordion>
-    <Accordion title="What does the onboarding process look like for nonprofits?">
 
-        The onboarding process for nonprofits is as follows:
-
-        <Steps>
-            ### Nonprofit creates an account on Chariot
-
-            {/* TODO: Add updated screenshots of the nonprofit onboarding process */}
-            {/* <Frame caption="Nonprofit account registration">
-                <img src='../../images/np_dashboard_1.png' />
-            </Frame>
-
-            ### Nonprofit provides verifying information to Chariot
-
-            <Frame caption="Nonprofit KYC and verification">
-                <img src='../../images/np_dashboard_2.png' />
-            </Frame>
-
-            ### Chariot approves Nonprofit to receive electronic payments from over 50+ Grantmakers
-
-            <Frame caption="Nonprofits can manage payments from all their grantmaking platforms">
-                <img src='../../images/np_dashboard_3.png' />
-            </Frame> */}
-        </Steps>
+     <Accordion title="How to handle returned checks?">
+       If a check is returned, the Disbursement's check submission status will be `returned`. If the check was returned because the mailing address was outdated,
+       the grantmaker can let Chairot's compliance team know in order to update the most recent mailing address. Afterwards, a disbursement can be resubmitted.
     </Accordion>
-
 </AccordionGroup>
