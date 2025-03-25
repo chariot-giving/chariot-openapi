@@ -70,9 +70,6 @@ navigation:
           - page: Compliance
             slug: compliance
             path: ./pages/disbursements/compliance.mdx
-          - page: Disbursement Lifecycle
-            slug: disbursement-lifecycle
-            path: ./pages/disbursements/disbursement-lifecycle.mdx
           - page: How Chariot Compares
             slug: comparisons
             path: ./pages/disbursements/how-chariot-compares.mdx
