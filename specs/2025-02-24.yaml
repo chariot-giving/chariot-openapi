@@ -1122,7 +1122,7 @@ paths:
     post:
       summary: Stop a submitted check disbursement
       description: |
-        Stop a submitted check disbursement in a submitted state.
+        Stop a submitted check disbursement payment.
         If the disbursement is in a different state or is not a check disbursement, this will return a 400 error.
       operationId: stopDisbursementPayment
       tags:
