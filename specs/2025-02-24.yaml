@@ -1048,18 +1048,13 @@ paths:
           $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/disbursements/{id}/stop:
+  /v1/disbursements/{id}/approve:
     post:
-      summary: Stop a disbursement
+      summary: Approve a disbursement
       description: |
-        Stop or cancel a disbursement by its unique identifier.
-        This will stop the disbursement from being processed and will return the funds to the grantmaker's account.
-        This will return a 400 error if the disbursement payment is already in a terminal state.
-        For example:
-        - If the Book transfer has already been created.
-        - If the ACH transfer has already been submitted to the Federal Reserve.
-        - If the issued check has already been deposited by the receiving organization.
-      operationId: stopDisbursement
+        Approve a disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: approveDisbursement
       tags:
         - disbursements
       security:
@@ -1073,7 +1068,77 @@ paths:
             type: string
       responses:
         "200":
-          description: The disbursement was stopped
+          description: The disbursement was approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}/cancel:
+    post:
+      summary: Cancel a pending disbursement
+      description: |
+        Cancel a pending disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: cancelDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The disbursement was canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}/stop_payment:
+    post:
+      summary: Stop a submitted check disbursement
+      description: |
+        Stop a submitted check disbursement in a submitted state.
+        If the disbursement is in a different state or is not a check disbursement, this will return a 400 error.
+      operationId: stopDisbursementPayment
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The disbursement check payment was stopped
           content:
             application/json:
               schema:
@@ -1993,6 +2058,14 @@ components:
           description: The date and time the disbursement was last updated
           example: "2020-07-10 15:00:00.000"
           readOnly: true
+        status:
+          $ref: "#/components/schemas/DisbursementStatus"
+        cancelation:
+          $ref: "#/components/schemas/DisbursementCancelation"
+        approval:
+          $ref: "#/components/schemas/DisbursementApproval"
+        rejection:
+          $ref: "#/components/schemas/DisbursementRejection"
         submission:
           $ref: "#/components/schemas/DisbursementSubmission"
         transactions:
@@ -2000,6 +2073,91 @@ components:
           description: The list of transactions for the disbursement
           items:
             $ref: "#/components/schemas/Transaction"
+    DisbursementStatus:
+      type: string
+      description: |-
+        The lifecycle status of the disbursement.
+        Possible values include:
+          - `pending_approval`: The disbursement is awaiting approval from the grantmaker.
+          - `canceled`: The disbursement was canceled by the grantmaker.
+          - `awaiting_verification`: The disbursement is awaiting verification from Chariot.
+          - `pending_submission`: The disbursement is awaiting submission to the payment network.
+          - `rejected`: The disbursement was rejected by Chariot.
+          - `submitted`: The disbursement has been submitted to the payment network.
+          - `stopped`: The disbursement payment was stopped. Only applicable for disbursements which are submitted via check.
+          - `returned`: The disbursement has been returned to the grantmaker.
+        To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
+      example: "pending_approval"
+      enum:
+        - pending_approval
+        - canceled
+        - awaiting_verification
+        - pending_submission
+        - rejected
+        - submitted
+        - returned
+    DisbursementCancelation:
+      type: object
+      description: |-
+        If your account requires approvals for disbursements and the disbursement was not approved, this will contain the details of the cancelation.
+      properties:
+        canceled_by:
+          type: string
+          description: If the disbursement was canceled by a user in the dashboard, the email address of that user.
+          example: "user@example.com"
+        canceled_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was canceled.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    DisbursementApproval:
+      type: object
+      description: |-
+        If your account requires approvals for disbursements and the disbursement was approved, this will contain the details of the approval.
+      properties:
+        approved_by:
+          type: string
+          description: If the disbursement was approved by a user in the dashboard, the email address of that user.
+          example: "user@example.com"
+        approved_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was approved.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    DisbursementRejection:
+      type: object
+      description: |-
+        If the disbursement was rejected by Chariot, this will contain details as to why the disbursement was rejected.
+      properties:
+        reason:
+          type: string
+          description: |-
+            Why the disbursement was rejected.
+            Possible values include:
+              - `insufficient_funds`: The disbursement was rejected because the grantmaker does not have enough funds in their account.
+              - `incorrect_recipient`: The disbursement was rejected because the recipient or address was incorrect.
+              - `suspected_fraud`: The disbursement was suspected to be fraudulent.
+              - `requested_by_user`: The disbursement was rejected at the request of the grantmaker.
+              - `acceptance_criteria_failed`: The disbursement was rejected because the disbursement did not meet the acceptance criteria for the receiving organization.
+              - `duplicate`: The disbursement was rejected because the disbursement was a duplicate.
+              - `unknown`: The disbursement was rejected for an unknown reason.
+          example: "insufficient_funds"
+          enum:
+            - insufficient_funds
+            - incorrect_recipient
+            - suspected_fraud
+            - requested_by_user
+            - acceptance_criteria_failed
+            - duplicate
+            - unknown
+        rejected_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was rejected.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
     DisbursementSubmission:
       type: object
       description: |-
