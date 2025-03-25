@@ -2086,6 +2086,7 @@ components:
           - `submitted`: The disbursement has been submitted to the payment network.
           - `stopped`: The disbursement payment was stopped. Only applicable for disbursements which are submitted via check.
           - `returned`: The disbursement has been returned to the grantmaker.
+        
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
       example: "pending_approval"
       enum:
@@ -2202,6 +2203,7 @@ components:
               - `rejected`: The ACH transfer was rejected by Chariot.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
               - `returned`: The ACH transfer has been returned by the receiving organization.
+            
             To see a more detailed description of each status and the overall lifecycle of ACH transfer disbursements, 
             see the "Transfer Statuses" section of the Chariot documentation.
           example: "submitted"
@@ -2246,6 +2248,7 @@ components:
               - `deposited`: The check has been deposited by the receiving organization.
               - `stopped`: A stop payment was requested on the check.
               - `returned`: The check has been returned by the receiving organization.
+            
             To see a more detailed description of each status and the overall lifecycle of check disbursements, 
             see the "Transfer Statuses" section of the Chariot documentation.
           example: "issued"
