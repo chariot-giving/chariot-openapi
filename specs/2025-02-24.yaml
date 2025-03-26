@@ -2267,7 +2267,6 @@ components:
       required:
         - id
         - amount
-        - disbursement_id
         - created_at
       properties:
         id:
@@ -2280,11 +2279,6 @@ components:
           format: int64
           description: The amount of the account transfer in minor currency units (cents)
           example: 10000
-        disbursement_id:
-          type: string
-          description: The identifier for the disbursement that this account transfer is associated with.
-          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
-          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -2299,7 +2293,6 @@ components:
       required:
         - id
         - amount
-        - disbursement_id
         - status
         - mailing_address
         - memo
@@ -2315,11 +2308,6 @@ components:
           format: int64
           description: The amount of the check transfer in minor currency units (cents)
           example: 10000
-        disbursement_id:
-          type: string
-          description: The identifier for the disbursement that this check transfer is associated with.
-          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
-          readOnly: true
         status:
           type: string
           description: |-
