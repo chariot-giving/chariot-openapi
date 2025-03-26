@@ -2143,9 +2143,6 @@ components:
           - `pending_submission`: The disbursement is awaiting submission to the payment network.
           - `rejected`: The disbursement was rejected by Chariot.
           - `submitted`: The disbursement has been submitted to the payment network.
-
-          - `stopped`: The disbursement payment was stopped. Only applicable for disbursements which are submitted via check.
-          - `returned`: The disbursement has been returned to the grantmaker.
         
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
       example: "pending_approval"
