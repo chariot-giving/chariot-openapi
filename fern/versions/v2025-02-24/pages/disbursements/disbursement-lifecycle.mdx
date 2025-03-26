@@ -1,0 +1,56 @@
+---
+title: "Disbursement Lifecycle"
+subtitle: ""
+hidden: false
+createdAt: "Sun May 21 2023 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+## Disbursement `status` lifecycle
+A Disbursement's `status` represents a workflow lifecycle.
+
+It tracks whether a Disbursement has been approved or canceled by your organization based on your organization's configured approval rules.
+Additionally, it tracks if the Disbursement has been verified by the Chariot team.
+
+Once a Disbursement's status is `submitted`, a request will be made to the preferred payment rail to initiate the payment.
+A Disbursement with a `submitted` status will have a `submission` object.
+
+Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depending on the payment rail the submission may be able to be stopped or reversed.
+<Frame>
+    <img src='../../images/disbursement_status_lifecycle.png' />
+</Frame>
+
+ Status | Description |
+|--------|-------------|
+| `pending_approval` | The disbursement is awaiting approval from the grantmaker |
+| `canceled` | The disbursement was canceled by the grantmaker |
+| `pending_verification` | The disbursement is awaiting verification from Chariot |
+| `rejected` | The disbursement was rejected by Chariot before being submitted|
+| `pending_submission` | The disbursement is awaiting submission to the payment rail|
+| `submitted` | The disbursement has been submitted to the payment rail |
+
+## Payment Rail Lifecycle
+Once a Disbursement contains a `submission`, a payment has been initiated through a specific payment rail. Each payment rail follows its own distinct payment lifecycle.
+
+<AccordionGroup>
+    <Accordion title="Account Transfer">
+        A Account Transfer happens instantly and can be sent 24 hours a day, 7 days a week. If a nonprofit has an account with Chariot, Chariot will send funds using this payment rail.
+
+        Since Account Transfers are instant, they don't have a payment lifecycle and funds are available to the nonprofit immediately.
+    </Accordion>
+    <Accordion title="Mailed Check">
+    A check submission represents a paper check that is sent to the receiving organization by mail. This is the submission method used when the receiving organization does not have a Chariot account.
+<Frame>
+    <img src='../../images/check_lifecycle.png' />
+</Frame>
+
+| Status | Description |
+|--------|-------------|
+| `issued` | The check has been mailed and is pending delivery |
+| `stopped` | A stop payment was requested on the check |
+| `deposited` | The check has been deposited by the receiving organization |
+| `returned` | The check has been returned by the receiving organization |
+    </Accordion>
+</AccordionGroup>
+
+
+

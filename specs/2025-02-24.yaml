@@ -104,7 +104,7 @@ paths:
         The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
 
         <Note>
-        Only one Connect object can be created per Nonprofit.
+        Only one Connect object can be created per organization.
         If one already exists, this will return a `200 OK` status with the existing object.
         </Note>
       operationId: create-connect
@@ -1508,7 +1508,7 @@ components:
     Connect:
       type: object
       description: |-
-        A Connect represents an instance of Chariot Connect for a particular Nonprofit. A nonprofit organization will create Connect objects in order to integrate Chariot Connect into their websites or fundraising platforms to start accepting donations directly from Donor Advised Funds. Each Nonprofit can have multiple Connect objects where each one represents a logical separation for how the organization wants to organize their sources of donations. For example, they might have 2 Connect instances, one that they use to integrate Chariot Connect directly on their website and the other that they provide to a 3rd party fundraising platform. On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`. A connect object also contains an `apiKey`. This is useful for nonprofits to provide to fundraising platforms on their behalf to programatically integrate Chariot Connect and access resources and information created from the Connect instance through various Chariot API endpoints. More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
+        A Connect represents an instance of Chariot Connect for a particular nonprofit. A nonprofit organization will create Connect objects in order to integrate Chariot Connect into their websites or fundraising platforms to start accepting donations directly from Donor Advised Funds. Each nonprofit can have multiple Connect objects where each one represents a logical separation for how the organization wants to organize their sources of donations. For example, they might have 2 Connect instances, one that they use to integrate Chariot Connect directly on their website and the other that they provide to a 3rd party fundraising platform. On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`. A connect object also contains an `apiKey`. This is useful for nonprofits to provide to fundraising platforms on their behalf to programatically integrate Chariot Connect and access resources and information created from the Connect instance through various Chariot API endpoints. More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
       required:
         - id
         - apiKey
@@ -1631,7 +1631,7 @@ components:
     Grant:
       type: object
       description: |-
-        A Grant represents a successfully initiated grant request with a Donor Advised Fund. Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
+        A Grant represents a successfully initiated grant request with a Donor Advised Fund. Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a nonprofit.
       required:
         - id
         - workflowSessionId
@@ -1742,7 +1742,7 @@ components:
           description: |-
             The payment channel for the grant. This is useful to know how the grant will be sent.
             The payment channel will be one of the following:
-            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
+            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) nonprofit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
             - direct: Grant will be sent directly to the intended recipient.
           enum:
             - dafpay_network
@@ -2104,7 +2104,7 @@ components:
           type: string
           description: |
             A description of the disbursement that will be displayed to the receiving organization.
-          example: "Disbursement to Nonprofit"
+          example: "Disbursement to nonprofit"
         created_at:
           type: string
           format: date-time
@@ -2137,13 +2137,13 @@ components:
       description: |-
         The lifecycle status of the disbursement.
         Possible values include:
-          - `pending_approval`: The disbursement is awaiting approval from the grantmaker.
-          - `canceled`: The disbursement was canceled by the grantmaker.
-          - `awaiting_verification`: The disbursement is awaiting verification from Chariot.
-          - `pending_submission`: The disbursement is awaiting submission to the payment network.
-          - `rejected`: The disbursement was rejected by Chariot.
-          - `submitted`: The disbursement has been submitted to the payment network.
-        
+          - `pending_approval`: The disbursement is awaiting approval from the grantmaker
+          - `canceled`: The disbursement was canceled by the grantmaker
+          - `pending_verification`: The disbursement is awaiting verification from Chariot
+          - `rejected`: The disbursement was rejected by Chariot before being submitted
+          - `pending_submission`: The disbursement is awaiting submission to the payment rail
+          - `submitted`: The disbursement has been submitted to the payment rail
+
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
       example: "pending_approval"
       enum:
@@ -2221,16 +2221,14 @@ components:
         After a disbursement is submitted, this object contains additional details about the disbursement payment.
         This is useful if you want to track the disbursement over the specific payment rails/networks.
       properties:
-        book:
-          $ref: "#/components/schemas/BookSubmission"
-        ach:
-          $ref: "#/components/schemas/AchSubmission"
+        account_transfer:
+          $ref: "#/components/schemas/AccountTransferSubmission"
         check:
           $ref: "#/components/schemas/CheckSubmission"
-    BookSubmission:
+    AccountTransferSubmission:
       type: object
       description: |-
-        A book submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        A account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
         This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
       properties:
         id:
@@ -2320,8 +2318,8 @@ components:
               - `deposited`: The check has been deposited by the receiving organization.
               - `stopped`: A stop payment was requested on the check.
               - `returned`: The check has been returned by the receiving organization.
-            
-            To see a more detailed description of each status and the overall lifecycle of check transfers, 
+
+            To see a more detailed description of each status and the overall lifecycle of check disbursements,
             see the "Transfer Statuses" section of the Chariot documentation.
           example: "issued"
           enum:
@@ -2335,7 +2333,7 @@ components:
         memo:
           type: string
           description: The memo on the check
-          example: "Disbursement to Nonprofit"
+          example: "Disbursement to nonprofit"
         check_number:
           type: string
           description: The check number
@@ -2432,7 +2430,7 @@ components:
           description: |
             A description of the transaction.
             This description is displayed to the receiving organization.
-          example: "Disbursement to Nonprofit"
+          example: "Disbursement to nonprofit"
         type:
           $ref: "#/components/schemas/DonationType"
         donor_advised_fund_grant:
@@ -2665,7 +2663,7 @@ components:
                   This parameter specifies the fee your platform plans to take from the grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
-                  Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
+                  Please note that platform fees are only taken when the grant is successfully received by the nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
                   If the fee limit is exceeded, a `400 Bad Request` error will be returned.
               donor:
@@ -2769,7 +2767,7 @@ components:
                   This parameter specifies the fee your platform plans to take from the first grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
-                  Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
+                  Please note that platform fees are only taken when the grant is successfully received by the nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
                   If the 5% limit is exceeded, a 400 error will be returned.
               donor:
@@ -2801,7 +2799,7 @@ components:
                   Designations over 100 characters will be truncated.
     CreateConnectRequest:
       description: |-
-        The request to create a new Connect object for a Nonprofit.
+        The request to create a new Connect object for a nonprofit.
       required: true
       content:
         application/json:
@@ -2874,7 +2872,7 @@ components:
                 type: string
                 description: |-
                   A description of the disbursement that will be displayed to the receiving organization.
-                example: "Disbursement to Nonprofit"
+                example: "Disbursement to nonprofit"
               transactions:
                 type: array
                 description: |-
@@ -2899,7 +2897,7 @@ components:
                       description: |
                         A description of the donation.
                         This description is displayed to the receiving organization.
-                      example: "Donation to Nonprofit"
+                      example: "Donation to nonprofit"
                     type:
                       $ref: "#/components/schemas/DonationType"
                     donor_advised_fund_grant:
@@ -2916,6 +2914,49 @@ components:
                       description: Additional metadata for the transaction
                       additionalProperties:
                         type: string
+          examples:
+            MultipleTransactions:
+              summary: Disbursement with multiple transactions
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 25000
+                description: "February 2025 Disbursement"
+                transactions: [
+                  {
+                    amount: 15000,
+                    description: "Grant from Doe Family Fund",
+                    type: "donor_advised_fund_grant",
+                    donor_advised_fund_grant: {
+                      organization_name: "Miami Charitable",
+                      fund_name: "Doe Family Charitable Fund",
+                      purpose: "General Operating Support",
+                      donors: [
+                        {
+                          first_name: "Jane",
+                          last_name: "Doe",
+                          email: "jane.doe@example.com"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    amount: 10000,
+                    description: "Grant from Smith Family Fund",
+                    type: "donor_advised_fund_grant",
+                    donor_advised_fund_grant: {
+                      organization_name: "LA Charitable",
+                      fund_name: "Smith Family Legacy Fund",
+                      purpose: "Program Support",
+                      donors: [
+                        {
+                          first_name: "John",
+                          last_name: "Smith",
+                          email: "john.smith@example.com"
+                        }
+                      ]
+                    }
+                  }
+                ]
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
