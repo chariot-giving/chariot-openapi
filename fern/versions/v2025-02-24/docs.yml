@@ -130,4 +130,8 @@ navigation:
             skip-slug: true
             contents:
               - disbursements
+              - checkTransfers:
+                  title: Check Transfers
+              - accountTransfers:
+                  title: Account Transfers
   - tab: changelog

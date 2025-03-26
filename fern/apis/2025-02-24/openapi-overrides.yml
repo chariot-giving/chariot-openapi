@@ -133,3 +133,18 @@ paths:
       x-fern-sdk-group-name:
         - disbursements
       x-fern-sdk-method-name: get
+  /v1/check_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - check_transfers
+      x-fern-sdk-method-name: get
+  /v1/check_transfers/{id}/stop:
+    post:
+      x-fern-sdk-group-name:
+        - check_transfers
+      x-fern-sdk-method-name: stop
+  /v1/account_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - account_transfers
+      x-fern-sdk-method-name: get

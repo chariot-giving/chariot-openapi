@@ -1118,13 +1118,12 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/disbursements/{id}/stop_payment:
-    post:
-      summary: Stop a submitted check disbursement
+  /v1/account_transfers/{id}:
+    get:
+      summary: Get an account transfer
       description: |
-        Stop a submitted check disbursement payment.
-        If the disbursement is in a different state or is not a check disbursement, this will return a 400 error.
-      operationId: stopDisbursementPayment
+        Get an account transfer by its unique identifier.
+      operationId: getAccountTransfer
       tags:
         - disbursements
       security:
@@ -1132,17 +1131,85 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the disbursement
+          description: The unique identifier for the account transfer
           required: true
           schema:
             type: string
       responses:
         "200":
-          description: The disbursement check payment was stopped
+          description: The account transfer was retrieved
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Disbursement"
+                $ref: "#/components/schemas/AccountTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/check_transfers/{id}:
+    get:
+      summary: Get a check transfer
+      description: |
+        Get a check transfer by its unique identifier.
+      operationId: getCheckTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The check transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/check_transfers/{id}/stop:
+    post:
+      summary: Stop a check transfer
+      description: |
+        Stop a check transfer.
+      operationId: stopCheckTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The check transfer was stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckTransfer"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1297,19 +1364,11 @@ components:
       description: |-
         A person is an individual who is an officer of a nonprofit.
       required:
-        - id
         - name
-        - email
-        - physical_address
       properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the object.
-          example: psn_1234567890
         name:
           type: string
-          description: The name of the person
+          description: The full name of the person
         title:
           type: string
           description: The title or role of the person with respect to the nonprofit entity
@@ -2007,10 +2066,10 @@ components:
         country:
           type: string
           description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-        line_1:
+        line1:
           type: string
           description: Address line 1 (e.g. street, PO Box, or company name)
-        line_2:
+        line2:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
         postal_code:
@@ -2084,6 +2143,7 @@ components:
           - `pending_submission`: The disbursement is awaiting submission to the payment network.
           - `rejected`: The disbursement was rejected by Chariot.
           - `submitted`: The disbursement has been submitted to the payment network.
+
           - `stopped`: The disbursement payment was stopped. Only applicable for disbursements which are submitted via check.
           - `returned`: The disbursement has been returned to the grantmaker.
         
@@ -2096,7 +2156,6 @@ components:
         - pending_submission
         - rejected
         - submitted
-        - returned
     DisbursementCancelation:
       type: object
       description: |-
@@ -2162,7 +2221,7 @@ components:
     DisbursementSubmission:
       type: object
       description: |-
-        After a disbursement is submitted, this object contains additional details about the disbursement.
+        After a disbursement is submitted, this object contains additional details about the disbursement payment.
         This is useful if you want to track the disbursement over the specific payment rails/networks.
       properties:
         book:
@@ -2174,68 +2233,96 @@ components:
     BookSubmission:
       type: object
       description: |-
-        A book submission represents an account transfer which is an instant, electronic transfer of funds to the receiving organization.
-        This is the preferred submission method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+        A book submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
       properties:
-        submitted_at:
+        id:
+          type: string
+          description: The unique identifier for the account transfer
+          example: "book_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
           type: string
           format: date-time
-          description: The date and time the book was submitted to the Federal Reserve.
+          description: The date and time the account transfer was created.
           example: "2020-07-10 15:00:00.000"
-    AchSubmission:
-      type: object
-      description: |-
-        An ACH submission represents a transfer of funds to the receiving organization via the Automated Clearing House (ACH) network.
-        This is the preferred submission method when the receiving organization has a Chariot account at a different bank than the grantmaker.
-      properties:
-        submitted_at:
-          type: string
-          format: date-time
-          description: The date and time the ACH transfer was submitted to the Federal Reserve.
-          example: "2020-07-10 15:00:00.000"
-        status:
-          type: string
-          description: |-
-            The lifecycle status of the ACH transfer.
-            The set of statuses include:
-              - `initiated`: The ACH transfer has been initiated and pending review by Chariot.
-              - `pending_submission`: The ACH transfer is pending submission to the Federal Reserve.
-              - `rejected`: The ACH transfer was rejected by Chariot.
-              - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
-              - `returned`: The ACH transfer has been returned by the receiving organization.
-            
-            To see a more detailed description of each status and the overall lifecycle of ACH transfer disbursements, 
-            see the "Transfer Statuses" section of the Chariot documentation.
-          example: "submitted"
-          enum:
-            - initiated
-            - pending_submission
-            - rejected
-            - submitted
-            - returned
-        effective_date:
-          type: string
-          format: date
-          description: The date the ACH transfer will be effective.
-          example: "2020-07-10"
-        trace_number:
-          type: string
-          description: |
-            A 15 digit number recorded in the Nacha file and available to both the originating and receiving bank.
-            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at either bank.
-            ACH trace numbers are not unique, but are used to correlate returns.
-          example: "386503938889057"
     CheckSubmission:
       type: object
       description: |-
         A check submission represents a paper check that is sent to the receiving organization.
         This is the submission method used when the receiving organization does not have a Chariot account.
       properties:
-        submitted_at:
+        id:
+          type: string
+          description: The unique identifier for the check
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
           type: string
           format: date-time
-          description: The date and time the check was submitted to the carrier.
+          description: The date and time the check transfer was created.
           example: "2020-07-10 15:00:00.000"
+    AccountTransfer:
+      type: object
+      description: |-
+        An account transfer represents an instant, electronic transfer of funds to the receiving organization.
+        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+      required:
+        - id
+        - amount
+        - disbursement_id
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account transfer
+          example: "book_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the account transfer in minor currency units (cents)
+          example: 10000
+        disbursement_id:
+          type: string
+          description: The identifier for the disbursement that this account transfer is associated with.
+          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    CheckTransfer:
+      type: object
+      description: |-
+        A check transfer represents a paper check that is sent to the receiving organization.
+        This is the transfer method used when the receiving organization does not have a Chariot account.
+      required:
+        - id
+        - amount
+        - disbursement_id
+        - status
+        - mailing_address
+        - memo
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the check transfer
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the check transfer in minor currency units (cents)
+          example: 10000
+        disbursement_id:
+          type: string
+          description: The identifier for the disbursement that this check transfer is associated with.
+          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
         status:
           type: string
           description: |-
@@ -2249,7 +2336,7 @@ components:
               - `stopped`: A stop payment was requested on the check.
               - `returned`: The check has been returned by the receiving organization.
             
-            To see a more detailed description of each status and the overall lifecycle of check disbursements, 
+            To see a more detailed description of each status and the overall lifecycle of check transfers, 
             see the "Transfer Statuses" section of the Chariot documentation.
           example: "issued"
           enum:
@@ -2275,6 +2362,36 @@ components:
           description: The list of tracking updates for the check
           items:
             $ref: "#/components/schemas/TrackingUpdate"
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the check was submitted to the carrier.
+          example: "2020-07-10 15:00:00.000"
+        canceled_at:
+          type: string
+          format: date-time
+          description: The date and time the check was canceled.
+          example: "2020-07-10 15:00:00.000"
+        stopped_at:
+          type: string
+          format: date-time
+          description: The date and time the check was stopped.
+          example: "2020-07-10 15:00:00.000"
+        deposited_at:
+          type: string
+          format: date-time
+          description: The date and time the check was deposited.
+          example: "2020-07-10 15:00:00.000"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the check transfer was created
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the check transfer was last updated
+          example: "2020-07-10 15:00:00.000"
     TrackingUpdate:
       type: object
       description: The tracking update for the check
