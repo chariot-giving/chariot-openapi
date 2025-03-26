@@ -1,6 +1,6 @@
 ---
 title: "How It Works"
-subtitle: "An overview of how Chariot Payments works"
+subtitle: "An overview of how Chariot Disbursements works"
 hidden: false
 createdAt: "Sun May 21 2023 20:36:07 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
@@ -19,7 +19,7 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
         title='2. Add your bank'
         icon='bank'
     >
-    Add your bank account to fund payments
+    Add your bank account to fund disbursements
     </Card>
         <Card
         title='3. Send a payment'
@@ -60,7 +60,7 @@ and then creating a `Transaction` with the `attachment_file_id` field populated.
 
 <EndpointRequestSnippet endpoint="POST /v1/disbursements"  example="MultipleTransactions"/>
 
-Once, you receive a successful response, Chariot will use the funds in your FBO to push a payment to the organization.
+Once you receive a successful response, Chariot will use the funds in your FBO to push a payment to the organization.
 After Chariot processes and submits the payment, you can call the [GET Disbursement](/v2025-02-24/api/disbursements/get-disbursement) endpoint to see the status of the submission.
 
 To learn more about how to handle errors, see the Error Handling section in [FAQ](/v2025-02-24/guides/disbursements/faq).
@@ -72,11 +72,11 @@ To learn more about how to handle errors, see the Error Handling section in [FAQ
 
 Chariot provides a service to nonprofits to facilitate receiving disbursements from grantmakers and other platforms.
 
-If a Nonprofit has an account with Chariot, they can receive payments electronically to their verified bank account.
+If a nonprofit has an account with Chariot, they can receive payments electronically to their verified bank account.
 Chariot is able to present a consolidated view of all payments received by the nonprofit in their dashboard across all grantmakers.
 In this case, a payment may settle almost instantly.
 
-If a Nonprofit does not have an account with Chariot, they can still receive payments via Chariot's Disbursements.
+If a nonprofit does not have an account with Chariot, they can still receive payments via Chariot's Disbursements.
 In this case, Chariot will mail a paper check to the nonprofit's verified postal address.
 We strongly recommend that nonprofits sign up for a free account with Chariot to receive future disbursements electronically.
 
