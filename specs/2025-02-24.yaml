@@ -104,7 +104,7 @@ paths:
         The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
 
         <Note>
-        Only one Connect object can be created per nonprofit.
+        Only one Connect object can be created per organization.
         If one already exists, this will return a `200 OK` status with the existing object.
         </Note>
       operationId: create-connect
@@ -2221,16 +2221,14 @@ components:
         After a disbursement is submitted, this object contains additional details about the disbursement payment.
         This is useful if you want to track the disbursement over the specific payment rails/networks.
       properties:
-        book:
-          $ref: "#/components/schemas/BookSubmission"
-        ach:
-          $ref: "#/components/schemas/AchSubmission"
+        account_transfer:
+          $ref: "#/components/schemas/AccountTransferSubmission"
         check:
           $ref: "#/components/schemas/CheckSubmission"
-    BookSubmission:
+    AccountTransferSubmission:
       type: object
       description: |-
-        A book submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        A account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
         This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
       properties:
         id:
@@ -2243,49 +2241,6 @@ components:
           format: date-time
           description: The date and time the account transfer was created.
           example: "2020-07-10 15:00:00.000"
-    AchSubmission:
-      type: object
-      description: |-
-        An ACH submission represents a transfer of funds to the receiving organization via the Automated Clearing House (ACH) network.
-        This is the preferred submission method when the receiving organization has a Chariot account at a different bank than the grantmaker.
-      properties:
-        submitted_at:
-          type: string
-          format: date-time
-          description: The date and time the ACH transfer was submitted to the Federal Reserve.
-          example: "2020-07-10 15:00:00.000"
-        status:
-          type: string
-          description: |-
-            The lifecycle status of the ACH transfer.
-            The set of statuses include:
-              - `initiated`: The ACH transfer has been initiated and pending review by Chariot.
-              - `pending_submission`: The ACH transfer is pending submission to the Federal Reserve.
-              - `rejected`: The ACH transfer was rejected by Chariot.
-              - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
-              - `returned`: The ACH transfer has been returned by the receiving organization.
-
-            To see a more detailed description of each status and the overall lifecycle of ACH transfer disbursements,
-            see the "Transfer Statuses" section of the Chariot documentation.
-          example: "submitted"
-          enum:
-            - initiated
-            - pending_submission
-            - rejected
-            - submitted
-            - returned
-        effective_date:
-          type: string
-          format: date
-          description: The date the ACH transfer will be effective.
-          example: "2020-07-10"
-        trace_number:
-          type: string
-          description: |
-            A 15 digit number recorded in the Nacha file and available to both the originating and receiving bank.
-            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at either bank.
-            ACH trace numbers are not unique, but are used to correlate returns.
-          example: "386503938889057"
     CheckSubmission:
       type: object
       description: |-
