@@ -148,3 +148,8 @@ paths:
       x-fern-sdk-group-name:
         - account_transfers
       x-fern-sdk-method-name: get
+  /v1/ach_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - ach_transfers
+      x-fern-sdk-method-name: get

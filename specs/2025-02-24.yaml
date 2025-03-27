@@ -1152,6 +1152,40 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/ach_transfers/{id}:
+    get:
+      summary: Get an ACH transfer
+      description: |
+        Get an ACH transfer by its unique identifier.
+      operationId: getAchTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The ACH transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AchTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/check_transfers/{id}:
     get:
       summary: Get a check transfer
@@ -2221,6 +2255,8 @@ components:
       properties:
         account_transfer:
           $ref: "#/components/schemas/AccountTransferSubmission"
+        ach_transfer:
+          $ref: "#/components/schemas/AchTransferSubmission"
         check_transfer:
           $ref: "#/components/schemas/CheckTransferSubmission"
     AccountTransferSubmission:
@@ -2238,6 +2274,22 @@ components:
           type: string
           format: date-time
           description: The date and time the account transfer was created.
+          example: "2020-07-10 15:00:00.000"
+    AchTransferSubmission:
+      type: object
+      description: |-
+        An ACH transfer submission references an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
+        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the ACH transfer
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was created.
           example: "2020-07-10 15:00:00.000"
     CheckTransferSubmission:
       type: object
@@ -2279,6 +2331,64 @@ components:
           type: string
           format: date-time
           description: The date and time the account transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    AchTransfer:
+      type: object
+      description: |-
+        An ACH transfer represents an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
+        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
+      required:
+        - id
+        - amount
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the ACH transfer
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the ACH transfer in minor currency units (cents)
+          example: 10000
+        status:
+          type: string
+          description: |-
+            The lifecycle status of the ACH transfer.
+            Possible values include:
+              - `initiated`: The ACH transfer has been initiated.
+              - `pending`: The ACH transfer is pending review by Chariot.
+              - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
+              - `rejected`: The ACH transfer was canceled by the grantmaker or rejected by Chariot.
+              - `returned`: The ACH transfer was returned by the receiving organization.
+          example: "pending"
+          enum:
+            - initiated
+            - pending
+            - submitted
+            - rejected
+            - returned
+        trace_number:
+          type: string
+          description: |-
+            A 15 digit number recorded in the Nacha file and transmitted to the receiving bank.
+            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at the receiving bank.
+            ACH trace numbers are not unique, but are used to correlate returns.
+          example: "012345678901234"
+        effective_date:
+          type: string
+          format: date-time
+          description: |-
+            The ACH transfer's effective date as sent to the Federal Reserve.
+            This is the date the funds will be available to the receiving organization.
+          example: "2020-07-10 15:00:00.000"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was created
           example: "2020-07-10 15:00:00.000"
           readOnly: true
     CheckTransfer:

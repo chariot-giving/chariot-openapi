@@ -129,8 +129,10 @@ navigation:
             skip-slug: true
             contents:
               - disbursements
-              - checkTransfers:
-                  title: Check Transfers
               - accountTransfers:
                   title: Account Transfers
+              - achTransfers:
+                  title: ACH Transfers
+              - checkTransfers:
+                  title: Check Transfers
   - tab: changelog
