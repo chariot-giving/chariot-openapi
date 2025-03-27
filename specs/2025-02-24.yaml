@@ -1203,13 +1203,11 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        $ref: "#/components/requestBodies/StopCheckTransferRequest"
       responses:
-        "200":
-          description: The check transfer was stopped
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CheckTransfer"
+        "202":
+          description: The check transfer stop payment request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2223,29 +2221,29 @@ components:
       properties:
         account_transfer:
           $ref: "#/components/schemas/AccountTransferSubmission"
-        check:
-          $ref: "#/components/schemas/CheckSubmission"
+        check_transfer:
+          $ref: "#/components/schemas/CheckTransferSubmission"
     AccountTransferSubmission:
       type: object
       description: |-
-        A account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        An account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
         This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
       properties:
         id:
           type: string
           description: The unique identifier for the account transfer
-          example: "book_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
           readOnly: true
         created_at:
           type: string
           format: date-time
           description: The date and time the account transfer was created.
           example: "2020-07-10 15:00:00.000"
-    CheckSubmission:
+    CheckTransferSubmission:
       type: object
       description: |-
-        A check submission represents a paper check that is sent to the receiving organization.
-        This is the submission method used when the receiving organization does not have a Chariot account.
+        A check transfer submission references a physical check that is will be mailed to the receiving organization.
+        This is the transfer method used when the receiving organization does not have a Chariot account.
       properties:
         id:
           type: string
@@ -2270,7 +2268,7 @@ components:
         id:
           type: string
           description: The unique identifier for the account transfer
-          example: "book_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
           readOnly: true
         amount:
           type: integer
@@ -2402,6 +2400,21 @@ components:
           format: date-time
           description: The date and time the tracking update was created
           example: "2020-07-10 15:00:00.000"
+    StopCheckTransferPaymentReason:
+      type: string
+      description: |-
+        The reason for stopping a check transfer payment.
+        Possible values include:
+          - `mail_delivery_failure`: The check could not be delivered.
+          - `not_authorized`: The check was not authorized.
+          - `voided`: The check was stopped and voided.
+          - `unknown`: The reason for stopping the check transfer is unknown.
+      example: "mail_delivery_failure"
+      enum:
+        - mail_delivery_failure
+        - not_authorized
+        - voided
+        - unknown
     Transaction:
       type: object
       description: |
@@ -2957,6 +2970,18 @@ components:
                     }
                   }
                 ]
+    StopCheckTransferRequest:
+      description: The request body for stopping a check transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - reason
+            properties:
+              reason:
+                $ref: "#/components/schemas/StopCheckTransferPaymentReason"
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
