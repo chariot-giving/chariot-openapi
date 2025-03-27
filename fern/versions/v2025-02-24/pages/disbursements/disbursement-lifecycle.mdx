@@ -40,11 +40,9 @@ Once a Disbursement contains a `submission`, a payment has been initiated throug
     </Accordion>
     <Accordion title="ACH">
         ACH submission represents an credit (push) payment using the Automated Clearing House (ACH) network.
-        This submission method is used if the receiving organization is not avaiable for Account Transfers.
+        This transfer method is used if the receiving organization is not avaiable for Account Transfers.
         Funds availability is typically 1-2 days.
 
-        A common frustration with ACH is that there’s no transfer receipt notification method.
-        As a transfer originator, you have no way to definitely know if or when a transfer has arrived to a recipient’s account.
         <Frame>
             <img src='../../images/ach_lifecycle.png' />
         </Frame>
@@ -56,8 +54,8 @@ Once a Disbursement contains a `submission`, a payment has been initiated throug
         | `returned` | The ACH transfer was returned by the receiving organization |
     </Accordion>
     <Accordion title="Mailed Check">
-        A check submission represents a paper check that is sent to the receiving organization by mail.
-        This is the submission method used when the receiving organization does not have a Chariot account.
+        A check submission represents a physical check that is mailed to the receiving organization.
+        This is the transfer method used when the receiving organization does not have a Chariot account.
         <Frame>
             <img src='../../images/check_lifecycle.png' />
         </Frame>
