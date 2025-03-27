@@ -2359,10 +2359,9 @@ components:
           description: |-
             The lifecycle status of the ACH transfer.
             Possible values include:
-              - `initiated`: The ACH transfer has been initiated.
-              - `pending`: The ACH transfer is pending review by Chariot.
+              - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
-              - `rejected`: The ACH transfer was canceled by the grantmaker or rejected by Chariot.
+              - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
           example: "pending"
           enum:
