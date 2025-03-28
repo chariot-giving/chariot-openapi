@@ -134,8 +134,8 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
   To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
 </Accordion>
 <Accordion title="Async operations in onDonationRequest callback">
-  Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup. 
-  
+  Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup.
+
   However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
   - fetching user donation history
   - verifying donor eligibility via API calls
@@ -257,7 +257,7 @@ const App = () => {
 | `ZERO_AMOUNT`              | Grant amount is zero.                                                                                                                                                                                                         |
 | `SERVICE_DEACTIVATED`      | Nonprofit's Connect is deactivated (active = false).                                                                                                                                                                          |
 | `ACCESS_RESTRICTED`        | User's DAF sponsor account electronic access is restricted.                                                                                                                                                                    |
-| `EIN_NOT_FOUND`            | DAF sponsor does not support grants to the Nonprofit.                                                                                                                                                                          |
+| `EIN_NOT_FOUND`            | DAF sponsor does not support grants to the nonprofit.                                                                                                                                                                          |
 | `CONNECTION_FAILED`        | Connection to the DAF sponsor failed.                                                                                                                                                                                          |
 | `SESSION_NOT_FOUND`        | User session is not found and may have expired.                                                                                                                                                                                |
 | `CUSTOM_ERROR`             | Custom error.                                                                                                                                                                                                                 |

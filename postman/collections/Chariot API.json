@@ -1035,7 +1035,7 @@
 								}
 							]
 						},
-						"description": "Get or create a Connect object. Only one Connect object can be created per Nonprofit for a given Fundraising Application. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property."
+						"description": "Get or create a Connect object. Only one Connect object can be created per nonprofit for a given Fundraising Application. If one already exists, this will return a 200 status with the existing object. The returned Connect can be used to integrate the client-side Chariot Connect component using the id property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the apiKey property."
 					},
 					"response": [
 						{

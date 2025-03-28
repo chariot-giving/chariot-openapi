@@ -1,6 +1,6 @@
 # chariot-openapi
 
-Chariot uses the `OpenAPI 3.0.0` specification to schematize our [docs](https://givechariot.readme.io)
+Chariot uses the `OpenAPI 3.0.0` specification to schematize our [docs](https://docs.givechariot.com)
 and to generate our supported client libraries.
 This provides for a consistent typing experience across our external interfaces.
 
