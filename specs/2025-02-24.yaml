@@ -2390,6 +2390,12 @@ components:
           description: The date and time the ACH transfer was created
           example: "2020-07-10 15:00:00.000"
           readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
     CheckTransfer:
       type: object
       description: |-
