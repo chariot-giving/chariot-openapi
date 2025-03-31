@@ -78,7 +78,7 @@ navigation:
             path: ./pages/disbursements/faq.mdx
           - page: Disclaimer
             hidden: true
-            path: ./pages/disclaimer.mdx
+            path: ./pages/disbursements/disclaimer.mdx
   - tab: api
     layout:
       - api: API Reference
