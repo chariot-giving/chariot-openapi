@@ -22,11 +22,12 @@ hidden: false
         </Frame>
     </Accordion>
     <Accordion title="Why did Create Nonprofit return an error?">
-    `This organization is ineligible to receive DAF gifts because they are not in good standing with the IRS. If you have a concern or disagree with this statement, then please reach out to contact@givechariot.com`
+    If the Create Nonprofit API returns an error, it means the nonprofit is not yes eligible to receive donations from DAFpay. 
+    
+    This could be because the nonprofit was not found in Chariot's verified database or because they are not eligible for Donor Advised Fund gifts. The error code in the response will indicate the specific reason the route failed for the given nonprofit.
 
-    If you received the above error when calling the Create Nonprofit route, it means that this organization is not eligible for Donor Advised Fund gifts and cannot add DAFpay to their form.
+    Please reach out to contact@givechariot.com if you have any questions or concerns about this evaluation.
 
-    Typically, this error means that the organization is no longer in good standing with the IRS or that they are a religious organization that is not registered with the IRS directly.
     </Accordion>
 </AccordionGroup>
 
