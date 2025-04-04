@@ -938,6 +938,101 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/accounts:
+    get:
+      summary: List accounts
+      description: |
+        Returns a list of accounts.
+      operationId: listAccounts
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ListAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/accounts/{id}:
+    get:
+      summary: Get an account
+      description: |
+        Get an account by its unique identifier.
+      operationId: getAccount
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/accounts/{id}/balance:
+    get:
+      summary: Get an account balance
+      description: |
+        Get an account balance by its unique identifier.
+      operationId: getAccountBalance
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountBalance"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
     post:
       summary: Create a disbursement
@@ -2035,6 +2130,66 @@ components:
           enum:
             - offline
           example: offline
+    Account:
+      type: object
+      required:
+        - id
+        - name
+        - account_type
+        - bank_provider
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account
+          example: "acc_01jpjenf5q6cawy43yxfcrxhct"
+        account_type:
+          type: string
+          description: The type of account
+          enum:
+            - disbursements
+            - processing
+          example: "disbursements"
+        bank_provider:
+          type: string
+          description: The bank provider for the account
+          enum:
+            - alpha
+            - bravo
+            - column
+            - increase
+          example: "alpha"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account was created
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the account was last updated
+          example: "2020-07-10 15:00:00.000"
+    AccountBalance:
+      type: object
+      required:
+        - current_balance
+        - available_balance
+        - timestamp
+      properties:
+        current_balance:
+          type: number
+          description: The current balance of the account in USD cents
+          example: 10000
+        available_balance:
+          type: number
+          description: The available balance of the account in USD cents
+          example: 10000
+        timestamp:
+          type: string
+          format: date-time
+          description: The time the balance was retrieved
+          example: "2020-07-10 15:00:00.000"
     Address:
       type: object
       required:
@@ -3142,6 +3297,20 @@ components:
                   - "disabled"
                   - "deleted"
   responses:
+    ListAccountsResponse:
+      description: The response for Accounts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
     ListDafsResponse:
       description: The response for Dafs.list
       headers:
