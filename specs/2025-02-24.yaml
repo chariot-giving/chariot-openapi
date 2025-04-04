@@ -957,8 +957,6 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/accounts/{id}:
@@ -993,8 +991,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/accounts/{id}/balance:
@@ -1029,8 +1025,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
@@ -1103,8 +1097,6 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}:
@@ -1139,8 +1131,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}/approve:
@@ -2132,6 +2122,11 @@ components:
           example: offline
     Account:
       type: object
+      description: |-
+        An account represents a financial, depository (bank) account managed by Chariot.
+        Chariot maintains a ledger and balances for the account.
+        This account should be funded and have a sufficient available balance before disbursements can be created.
+        Chariot is a financial technology company, not a bank. Chariot Deposit Accounts come through our banking services partner, Column, N.A.
       required:
         - id
         - name
@@ -2154,12 +2149,7 @@ components:
         bank_provider:
           type: string
           description: The bank provider for the account
-          enum:
-            - alpha
-            - bravo
-            - column
-            - increase
-          example: "alpha"
+          example: "column"
         created_at:
           type: string
           format: date-time
@@ -2179,11 +2169,11 @@ components:
       properties:
         current_balance:
           type: number
-          description: The current balance of the account in USD cents
+          description: The current balance is the amount of money in the account. This value is in minor currency units (USD cents).
           example: 10000
         available_balance:
           type: number
-          description: The available balance of the account in USD cents
+          description: The available balance is the amount of money in the account that is available to be spent or transferred. This value is in minor currency units (USD cents).
           example: 10000
         timestamp:
           type: string
@@ -3204,42 +3194,47 @@ components:
                 organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
                 amount: 25000
                 description: "February 2025 Disbursement"
-                transactions: [
-                  {
-                    amount: 15000,
-                    description: "Grant from Doe Family Fund",
-                    type: "donor_advised_fund_grant",
-                    donor_advised_fund_grant: {
-                      organization_name: "Miami Charitable",
-                      fund_name: "Doe Family Charitable Fund",
-                      purpose: "General Operating Support",
-                      donors: [
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      description: "Grant from Doe Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
                         {
-                          first_name: "Jane",
-                          last_name: "Doe",
-                          email: "jane.doe@example.com"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    amount: 10000,
-                    description: "Grant from Smith Family Fund",
-                    type: "donor_advised_fund_grant",
-                    donor_advised_fund_grant: {
-                      organization_name: "LA Charitable",
-                      fund_name: "Smith Family Legacy Fund",
-                      purpose: "Program Support",
-                      donors: [
+                          organization_name: "Miami Charitable",
+                          fund_name: "Doe Family Charitable Fund",
+                          purpose: "General Operating Support",
+                          donors:
+                            [
+                              {
+                                first_name: "Jane",
+                                last_name: "Doe",
+                                email: "jane.doe@example.com",
+                              },
+                            ],
+                        },
+                    },
+                    {
+                      amount: 10000,
+                      description: "Grant from Smith Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
                         {
-                          first_name: "John",
-                          last_name: "Smith",
-                          email: "john.smith@example.com"
-                        }
-                      ]
-                    }
-                  }
-                ]
+                          organization_name: "LA Charitable",
+                          fund_name: "Smith Family Legacy Fund",
+                          purpose: "Program Support",
+                          donors:
+                            [
+                              {
+                                first_name: "John",
+                                last_name: "Smith",
+                                email: "john.smith@example.com",
+                              },
+                            ],
+                        },
+                    },
+                  ]
     StopCheckTransferRequest:
       description: The request body for stopping a check transfer
       required: true
