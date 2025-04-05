@@ -10,7 +10,7 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
 
         In the [Create Grant](/api/grants/create) endpoint, there is a parameter named `applicationFeeAmount`.
         This will allow the caller to pass in a processing fee for the grant.
-        Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the Nonprofit and send the fees in a cadence according to an agreed-upon contract.
+        Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the nonprofit and send the fees in a cadence according to an agreed-upon contract.
 
     </Accordion>
     <Accordion title="How can I run form validations before the DAFpay button launches?">
@@ -22,10 +22,10 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
     <Accordion title="How can donors cover fees?">
 
         If a donor wishes to cover the fees, increase the final amount sent to the [Create Grant](/api/grants/create) route to compensate for the processing fees.
-        Take into consideration that increasing the final amount also raises the processing fee 
+        Take into consideration that increasing the final amount also raises the processing fee
         and **don't forget to round the final amount to a whole dollar (nearest 100) as DAFs only allow grants in dollar increments**.
 
-        To calculate the final amount you can use the following formula: 
+        To calculate the final amount you can use the following formula:
 
         <Frame caption="Covered fee calculation">
             <img src='../../images/68157f8-lagrida_latex_editor.png' />
@@ -33,7 +33,7 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
     </Accordion>
     <Accordion title="What is the DAFpay Network?">
 
-        For nonprofits that haven't completed onboarding and verification with Chariot, 
+        For nonprofits that haven't completed onboarding and verification with Chariot,
         DAFpay routes payments through a 501(c)(3) nonprofit entity named [DAFpay Network](https://www.dafpaynetwork.org/).
         The DAFpay Network then sends the funds to the nonprofit minus processing fees.
         This enables DAFpay to accommodate payments to all eligible 501(c)(3) nonprofits for receiving DAF (Donor-Advised Fund) donations.
@@ -68,7 +68,7 @@ updatedAt: "Wed Mar 27 2024 18:04:44 GMT+0000 (Coordinated Universal Time)"
         <Frame caption="Schwab Grant Letter & Check with Tracking ID in letter and External Grant ID in Check memo">
             <img src='../../images/SchwabGrantLetter.png' />
         </Frame>
-        
+
         <Frame caption="PayPal Grant Payments Dashboard with External Grant ID">
             <img src='../../images/paypal_grant_dashboard.png' />
         </Frame>
