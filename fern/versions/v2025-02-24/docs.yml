@@ -91,6 +91,7 @@ navigation:
         layout:
           - section: Introduction
             skip-slug: true
+            icon: book-open-cover
             contents:
               - page: Overview
                 slug: /
@@ -107,8 +108,12 @@ navigation:
               - page: Webhooks and Events
                 slug: webhooks
                 path: ./pages/api/webhooks-and-events.mdx
+              - page: Sandbox Simulations
+                slug: sandbox-simulations
+                path: ./pages/api/sandbox-simulations.mdx
           - section: Core Resources
             skip-slug: true
+            icon: network-wired
             contents:
               - organizations
               - events
@@ -116,6 +121,7 @@ navigation:
                   title: Event Subscriptions
           - section: DAFpay
             skip-slug: true
+            icon: box-heart
             contents:
               - connects
               - grants
@@ -127,6 +133,7 @@ navigation:
                   title: Donor Advised Funds
           - section: Disbursements
             skip-slug: true
+            icon: money-check
             contents:
               - accounts
               - disbursements
@@ -136,4 +143,6 @@ navigation:
                   title: ACH Transfers
               - checkTransfers:
                   title: Check Transfers
+              - inboundAchTransfers:
+                  title: Inbound ACH Transfers
   - tab: changelog
