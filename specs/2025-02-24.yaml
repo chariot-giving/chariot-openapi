@@ -1337,6 +1337,174 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_ach_transfers:
+    post:
+      summary: "Sandbox: Create an inbound ACH transfer"
+      description: |
+        Simulates an inbound ACH transfer to your account.
+        This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
+        
+        <Note title="Sandbox Only" icon="atom-simple">
+        Only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundAchTransfer
+      tags:
+        - inboundAchTransfers
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSimulatedInboundAchTransferRequest"
+      responses:
+        "202":
+          description: The simulated inbound ACH transfer was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/check_transfers/{id}/mail:
+    post:
+      summary: "Sandbox: Mail a check transfer"
+      description: |
+        Simulates mailing a check transfer.
+        This transfer must be have a status of `pending`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateCheckTransferMail
+      tags:
+        - checkTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The check transfer mail request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/submit:
+    post:
+      summary: "Sandbox: Submit an ACH transfer"
+      description: |
+        Simulates submitting an ACH transfer.
+        This transfer must be have a status of `pending_submission`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSubmit
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer submission request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/settle:
+    post:
+      summary: "Sandbox: Settle an ACH transfer"
+      description: |
+        Simulates settling an ACH transfer.
+        This transfer must be have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSettlement
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer settlement request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/return:
+    post:
+      summary: "Sandbox: Return an ACH transfer"
+      description: |
+        Simulates returning an ACH transfer.
+        This transfer must be have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferReturn
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer return request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
@@ -3291,6 +3459,23 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
+    CreateSimulatedInboundAchTransferRequest:
+      description: The request body for creating a simulated inbound ACH transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount
+              - account_id
+            properties:
+              amount:
+                type: number
+                description: The amount of the transfer in cents. Only positive values are allowed.
+              account_id:
+                type: string
+                description: The identifier of the account that will receive the transfer
   responses:
     ListAccountsResponse:
       description: The response for Accounts.list
