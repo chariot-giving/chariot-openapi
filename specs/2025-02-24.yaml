@@ -3267,11 +3267,11 @@ components:
                     type: string
                     description: The phone number for the nonprofit account contact
                     example: "9127772424"
-                  firstName:
+                  first_name:
                     type: string
                     description: The first name of the nonprofit account contact that manages this Connect
                     example: Ben
-                  lastName:
+                  last_name:
                     type: string
                     description: The last name of the nonprofit account contact that manages this Connect
                     example: Give
