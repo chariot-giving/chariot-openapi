@@ -938,6 +938,95 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/accounts:
+    get:
+      summary: List accounts
+      description: |
+        Returns a list of accounts.
+      operationId: listAccounts
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ListAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/accounts/{id}:
+    get:
+      summary: Get an account
+      description: |
+        Get an account by its unique identifier.
+      operationId: getAccount
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/accounts/{id}/balance:
+    get:
+      summary: Get an account balance
+      description: |
+        Get an account balance by its unique identifier.
+      operationId: getAccountBalance
+      tags:
+        - accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountBalance"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
     post:
       summary: Create a disbursement
@@ -1008,8 +1097,6 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}:
@@ -1044,8 +1131,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}/approve:
@@ -1242,6 +1327,174 @@ paths:
       responses:
         "202":
           description: The check transfer stop payment request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_ach_transfers:
+    post:
+      summary: "Sandbox: Create an inbound ACH transfer"
+      description: |
+        Simulates an inbound ACH transfer to your account.
+        This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
+        
+        <Note title="Sandbox Only" icon="atom-simple">
+        Only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundAchTransfer
+      tags:
+        - inboundAchTransfers
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSimulatedInboundAchTransferRequest"
+      responses:
+        "202":
+          description: The simulated inbound ACH transfer was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/check_transfers/{id}/mail:
+    post:
+      summary: "Sandbox: Mail a check transfer"
+      description: |
+        Simulates mailing a check transfer.
+        This transfer must be have a status of `pending`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateCheckTransferMail
+      tags:
+        - checkTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The check transfer mail request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/submit:
+    post:
+      summary: "Sandbox: Submit an ACH transfer"
+      description: |
+        Simulates submitting an ACH transfer.
+        This transfer must be have a status of `pending_submission`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSubmit
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer submission request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/settle:
+    post:
+      summary: "Sandbox: Settle an ACH transfer"
+      description: |
+        Simulates settling an ACH transfer.
+        This transfer must be have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSettlement
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer settlement request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/return:
+    post:
+      summary: "Sandbox: Return an ACH transfer"
+      description: |
+        Simulates returning an ACH transfer.
+        This transfer must be have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferReturn
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: The ACH transfer return request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2035,6 +2288,66 @@ components:
           enum:
             - offline
           example: offline
+    Account:
+      type: object
+      description: |-
+        An account represents a financial, depository (bank) account managed by Chariot.
+        Chariot maintains a ledger and balances for the account.
+        This account should be funded and have a sufficient available balance before disbursements can be created.
+        Chariot is a financial technology company, not a bank. Chariot Deposit Accounts come through our banking services partner, Column, N.A.
+      required:
+        - id
+        - name
+        - account_type
+        - bank_provider
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account
+          example: "acc_01jpjenf5q6cawy43yxfcrxhct"
+        account_type:
+          type: string
+          description: The type of account
+          enum:
+            - disbursements
+            - processing
+          example: "disbursements"
+        bank_provider:
+          type: string
+          description: The bank provider for the account
+          example: "column"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account was created
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the account was last updated
+          example: "2020-07-10 15:00:00.000"
+    AccountBalance:
+      type: object
+      required:
+        - current_balance
+        - available_balance
+        - timestamp
+      properties:
+        current_balance:
+          type: number
+          description: The current balance is the amount of money in the account. This value is in minor currency units (USD cents).
+          example: 10000
+        available_balance:
+          type: number
+          description: The available balance is the amount of money in the account that is available to be spent or transferred. This value is in minor currency units (USD cents).
+          example: 10000
+        timestamp:
+          type: string
+          format: date-time
+          description: The time the balance was retrieved
+          example: "2020-07-10 15:00:00.000"
     Address:
       type: object
       required:
@@ -2954,11 +3267,11 @@ components:
                     type: string
                     description: The phone number for the nonprofit account contact
                     example: "9127772424"
-                  firstName:
+                  first_name:
                     type: string
                     description: The first name of the nonprofit account contact that manages this Connect
                     example: Ben
-                  lastName:
+                  last_name:
                     type: string
                     description: The last name of the nonprofit account contact that manages this Connect
                     example: Give
@@ -3049,42 +3362,47 @@ components:
                 organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
                 amount: 25000
                 description: "February 2025 Disbursement"
-                transactions: [
-                  {
-                    amount: 15000,
-                    description: "Grant from Doe Family Fund",
-                    type: "donor_advised_fund_grant",
-                    donor_advised_fund_grant: {
-                      organization_name: "Miami Charitable",
-                      fund_name: "Doe Family Charitable Fund",
-                      purpose: "General Operating Support",
-                      donors: [
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      description: "Grant from Doe Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
                         {
-                          first_name: "Jane",
-                          last_name: "Doe",
-                          email: "jane.doe@example.com"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    amount: 10000,
-                    description: "Grant from Smith Family Fund",
-                    type: "donor_advised_fund_grant",
-                    donor_advised_fund_grant: {
-                      organization_name: "LA Charitable",
-                      fund_name: "Smith Family Legacy Fund",
-                      purpose: "Program Support",
-                      donors: [
+                          organization_name: "Miami Charitable",
+                          fund_name: "Doe Family Charitable Fund",
+                          purpose: "General Operating Support",
+                          donors:
+                            [
+                              {
+                                first_name: "Jane",
+                                last_name: "Doe",
+                                email: "jane.doe@example.com",
+                              },
+                            ],
+                        },
+                    },
+                    {
+                      amount: 10000,
+                      description: "Grant from Smith Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
                         {
-                          first_name: "John",
-                          last_name: "Smith",
-                          email: "john.smith@example.com"
-                        }
-                      ]
-                    }
-                  }
-                ]
+                          organization_name: "LA Charitable",
+                          fund_name: "Smith Family Legacy Fund",
+                          purpose: "Program Support",
+                          donors:
+                            [
+                              {
+                                first_name: "John",
+                                last_name: "Smith",
+                                email: "john.smith@example.com",
+                              },
+                            ],
+                        },
+                    },
+                  ]
     StopCheckTransferRequest:
       description: The request body for stopping a check transfer
       required: true
@@ -3141,7 +3459,38 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
+    CreateSimulatedInboundAchTransferRequest:
+      description: The request body for creating a simulated inbound ACH transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount
+              - account_id
+            properties:
+              amount:
+                type: number
+                description: The amount of the transfer in cents. Only positive values are allowed.
+              account_id:
+                type: string
+                description: The identifier of the account that will receive the transfer
   responses:
+    ListAccountsResponse:
+      description: The response for Accounts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
     ListDafsResponse:
       description: The response for Dafs.list
       headers:
