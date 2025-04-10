@@ -938,19 +938,19 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/accounts:
+  /v1/financial_accounts:
     get:
-      summary: List accounts
+      summary: List financial accounts
       description: |
-        Returns a list of accounts.
-      operationId: listAccounts
+        Returns a list of financial accounts.
+      operationId: listFinancialAccounts
       tags:
-        - accounts
+        - financial_accounts
       security:
         - bearerAuth: []
       responses:
         "200":
-          $ref: "#/components/responses/ListAccountsResponse"
+          $ref: "#/components/responses/ListFinancialAccountsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -959,31 +959,31 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/accounts/{id}:
+  /v1/financial_accounts/{id}:
     get:
-      summary: Get an account
+      summary: Get a financial account
       description: |
-        Get an account by its unique identifier.
-      operationId: getAccount
+        Get a financial account by its unique identifier.
+      operationId: getFinancialAccount
       tags:
-        - accounts
+        - financial_accounts
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the account
+          description: The unique identifier for the financial account
           required: true
           schema:
             type: string
           example: "account_01jpjenf5q6cawy43yxfcrxhct"
       responses:
         "200":
-          description: The account was retrieved
+          description: The financial account was retrieved
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Account"
+                $ref: "#/components/schemas/FinancialAccount"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -994,31 +994,31 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/accounts/{id}/balance:
+  /v1/financial_accounts/{id}/balance:
     get:
-      summary: Get an account balance
+      summary: Get a financial account balance
       description: |
-        Get an account balance by its unique identifier.
-      operationId: getAccountBalance
+        Get a financial account balance by its unique identifier.
+      operationId: getFinancialAccountBalance
       tags:
-        - accounts
+        - financial_accounts
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the account
+          description: The unique identifier for the financial account
           required: true
           schema:
             type: string
           example: "account_01jpjenf5q6cawy43yxfcrxhct"
       responses:
         "200":
-          description: The account was retrieved
+          description: The financial account was retrieved
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountBalance"
+                $ref: "#/components/schemas/FinancialAccountBalance"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2301,10 +2301,10 @@ components:
           enum:
             - offline
           example: offline
-    Account:
+    FinancialAccount:
       type: object
       description: |-
-        An account represents a financial, depository (bank) account managed by Chariot.
+        A financial account represents a financial, depository (bank) account managed by Chariot.
         Chariot maintains a ledger and balances for the account.
         This account should be funded and have a sufficient available balance before disbursements can be created.
         Chariot is a financial technology company, not a bank. Chariot Deposit Accounts come through our banking services partner, Column, N.A.
@@ -2341,7 +2341,7 @@ components:
           format: date-time
           description: The date and time the account was last updated
           example: "2020-07-10 15:00:00.000"
-    AccountBalance:
+    FinancialAccountBalance:
       type: object
       required:
         - current_balance
@@ -3495,11 +3495,11 @@ components:
                 example: 10000
               account_id:
                 type: string
-                description: The identifier of the account that will receive the transfer
+                description: The identifier of the financial account that will receive the transfer
                 example: "account_01jpjenf5q6cawy43yxfcrxhct"
   responses:
-    ListAccountsResponse:
-      description: The response for Accounts.list
+    ListFinancialAccountsResponse:
+      description: The response for FinancialAccounts.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -3511,7 +3511,7 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Account"
+                  $ref: "#/components/schemas/FinancialAccount"
     ListDafsResponse:
       description: The response for Dafs.list
       headers:

@@ -138,7 +138,8 @@ navigation:
             skip-slug: true
             icon: money-check
             contents:
-              - accounts
+              - financialAccounts:
+                  title: Financial Accounts
               - disbursements
               - accountTransfers:
                   title: Account Transfers
