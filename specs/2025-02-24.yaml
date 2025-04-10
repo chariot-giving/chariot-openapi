@@ -1370,7 +1370,7 @@ paths:
       summary: "Sandbox: Mail a check transfer"
       description: |
         Simulates mailing a check transfer.
-        This transfer must be have a status of `pending`.
+        This transfer must have a status of `pending`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1405,7 +1405,7 @@ paths:
       summary: "Sandbox: Submit an ACH transfer"
       description: |
         Simulates submitting an ACH transfer.
-        This transfer must be have a status of `pending_submission`.
+        This transfer must have a status of `pending_submission`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1440,7 +1440,7 @@ paths:
       summary: "Sandbox: Settle an ACH transfer"
       description: |
         Simulates settling an ACH transfer.
-        This transfer must be have a status of `submitted`.
+        This transfer must have a status of `submitted`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1475,7 +1475,7 @@ paths:
       summary: "Sandbox: Return an ACH transfer"
       description: |
         Simulates returning an ACH transfer.
-        This transfer must be have a status of `submitted`.
+        This transfer must have a status of `submitted`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
