@@ -976,6 +976,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
       responses:
         "200":
           description: The account was retrieved
@@ -1010,6 +1011,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
       responses:
         "200":
           description: The account was retrieved
@@ -1116,6 +1118,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "200":
           description: The disbursement was retrieved
@@ -1151,6 +1154,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "200":
           description: The disbursement was approved
@@ -1186,6 +1190,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "200":
           description: The disbursement was canceled
@@ -1220,6 +1225,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: The account transfer was retrieved
@@ -1254,6 +1260,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: The ACH transfer was retrieved
@@ -1288,6 +1295,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: The check transfer was retrieved
@@ -1322,6 +1330,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
         $ref: "#/components/requestBodies/StopCheckTransferRequest"
       responses:
@@ -1370,7 +1379,7 @@ paths:
       summary: "Sandbox: Mail a check transfer"
       description: |
         Simulates mailing a check transfer.
-        This transfer must be have a status of `pending`.
+        This transfer must have a status of `pending`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1387,6 +1396,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
           description: The check transfer mail request was accepted
@@ -1405,7 +1415,7 @@ paths:
       summary: "Sandbox: Submit an ACH transfer"
       description: |
         Simulates submitting an ACH transfer.
-        This transfer must be have a status of `pending_submission`.
+        This transfer must have a status of `pending_submission`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1422,6 +1432,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
           description: The ACH transfer submission request was accepted
@@ -1440,7 +1451,7 @@ paths:
       summary: "Sandbox: Settle an ACH transfer"
       description: |
         Simulates settling an ACH transfer.
-        This transfer must be have a status of `submitted`.
+        This transfer must have a status of `submitted`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1457,6 +1468,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
           description: The ACH transfer settlement request was accepted
@@ -1475,7 +1487,7 @@ paths:
       summary: "Sandbox: Return an ACH transfer"
       description: |
         Simulates returning an ACH transfer.
-        This transfer must be have a status of `submitted`.
+        This transfer must have a status of `submitted`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1492,6 +1504,7 @@ paths:
           required: true
           schema:
             type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
           description: The ACH transfer return request was accepted
@@ -2306,7 +2319,7 @@ components:
         id:
           type: string
           description: The unique identifier for the account
-          example: "acc_01jpjenf5q6cawy43yxfcrxhct"
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
         account_type:
           type: string
           description: The type of account
@@ -2317,7 +2330,7 @@ components:
         bank_provider:
           type: string
           description: The bank provider for the account
-          example: "column"
+          example: "mock_alpha"
         created_at:
           type: string
           format: date-time
@@ -2434,7 +2447,7 @@ components:
         id:
           type: string
           description: The unique identifier for the disbursement
-          example: "dsbmt_01jpjen1s23s29kkmnjsb6fzga"
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
           readOnly: true
         organization_id:
           type: string
@@ -2959,6 +2972,12 @@ components:
         - "unintegrated_grant.updated"
         - "disbursement.created"
         - "disbursement.updated"
+        - "account_transfer.created"
+        - "account_transfer.updated"
+        - "ach_transfer.created"
+        - "ach_transfer.updated"
+        - "check_transfer.created"
+        - "check_transfer.updated"
     Event:
       type: object
       description: |
@@ -3473,9 +3492,11 @@ components:
               amount:
                 type: number
                 description: The amount of the transfer in cents. Only positive values are allowed.
+                example: 10000
               account_id:
                 type: string
                 description: The identifier of the account that will receive the transfer
+                example: "account_01jpjenf5q6cawy43yxfcrxhct"
   responses:
     ListAccountsResponse:
       description: The response for Accounts.list
