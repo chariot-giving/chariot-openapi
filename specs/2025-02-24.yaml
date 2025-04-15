@@ -2861,7 +2861,6 @@ components:
       description: |
         A transaction represents an individual line-item or donation for a recipient nonprofit organization.
       required:
-        - organization_id
         - amount
         - type
       properties:
@@ -2870,10 +2869,6 @@ components:
           description: The unique identifier for the transaction
           example: "txn_1LaXpKGUcADgqoEMl0Cx0Ygg"
           readOnly: true
-        organization_id:
-          type: string
-          description: The identifier for the organization that will receive the transaction
-          example: "org_01j8rs605a4gctmbm58d87mvsj"
         amount:
           type: integer
           format: int64
