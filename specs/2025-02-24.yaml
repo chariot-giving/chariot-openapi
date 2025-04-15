@@ -1352,7 +1352,7 @@ paths:
       description: |
         Simulates an inbound ACH transfer to your account.
         This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
-        
+
         <Note title="Sandbox Only" icon="atom-simple">
         Only available in the sandbox environment.
         </Note>
@@ -2497,7 +2497,7 @@ components:
         Possible values include:
           - `pending_approval`: The disbursement is awaiting approval from the grantmaker
           - `canceled`: The disbursement was canceled by the grantmaker
-          - `pending_verification`: The disbursement is awaiting verification from Chariot
+          - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
           - `pending_submission`: The disbursement is awaiting submission to the payment rail
           - `submitted`: The disbursement has been submitted to the payment rail
