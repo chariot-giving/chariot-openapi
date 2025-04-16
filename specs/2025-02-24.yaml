@@ -1540,7 +1540,7 @@ components:
             - Completed
             - Canceled
           description: |
-            The status of the grant. To see a description of each status, see the "Grant Statuses" section of the Chariot documentation.
+            The status of the grant.
           example: Initiated
         comment:
           type: string
@@ -1552,7 +1552,7 @@ components:
         An Unintegrated Grant represents a grant requested through a provider that Chariot does not support.
         Unintegrated grants should be treated as donation intents as Chariot can not guarantee that the grant was submitted or will be fulfilled.
         Nonprofits should use the information provided in the unintegrated grant to follow up with the donor and/or the provider to check the status of the grant.
-        These are sometimes refered to as "Manual Grants".
+        These are sometimes referred to as "Manual Grants".
       required:
         - id
         - workflowSessionId
@@ -1568,7 +1568,7 @@ components:
         userFriendlyId:
           type: string
           readOnly: true
-          description: Often refered to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
+          description: Often referred to as the "Chariot ID", this is the ID that will be included in the payment from the DAF provider.
           example: "1234455"
           deprecated: true
         trackingId:
@@ -1608,13 +1608,11 @@ components:
           type: string
           description: |-
             The status of the unintegrated grant.
-            To see a description of each status, see the "Unintegrated Grant Statuses" section of the Chariot documentation.
           enum:
             - Unknown
-            - Initiated
             - Completed
             - Canceled
-          example: Initiated
+          example: Unknown
         metadata:
           type: object
           description: A map of arbitrary string keys and values to store information about the object
