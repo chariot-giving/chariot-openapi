@@ -1352,7 +1352,7 @@ paths:
       description: |
         Simulates an inbound ACH transfer to your account.
         This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
-        
+
         <Note title="Sandbox Only" icon="atom-simple">
         Only available in the sandbox environment.
         </Note>
@@ -2497,7 +2497,7 @@ components:
         Possible values include:
           - `pending_approval`: The disbursement is awaiting approval from the grantmaker
           - `canceled`: The disbursement was canceled by the grantmaker
-          - `pending_verification`: The disbursement is awaiting verification from Chariot
+          - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
           - `pending_submission`: The disbursement is awaiting submission to the payment rail
           - `submitted`: The disbursement has been submitted to the payment rail
@@ -2861,7 +2861,6 @@ components:
       description: |
         A transaction represents an individual line-item or donation for a recipient nonprofit organization.
       required:
-        - organization_id
         - amount
         - type
       properties:
@@ -2870,10 +2869,6 @@ components:
           description: The unique identifier for the transaction
           example: "txn_1LaXpKGUcADgqoEMl0Cx0Ygg"
           readOnly: true
-        organization_id:
-          type: string
-          description: The identifier for the organization that will receive the transaction
-          example: "org_01j8rs605a4gctmbm58d87mvsj"
         amount:
           type: integer
           format: int64
