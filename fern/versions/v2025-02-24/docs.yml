@@ -19,7 +19,13 @@ landing-page:
 navigation:
   - tab: guides
     layout:
-      - section: Implementation Guide
+      - section: Getting Started
+        skip-slug: true
+        contents:
+          - page: Navigating the Docs
+            slug: getting-started/navigating-the-docs
+            path: ./pages/getting-started/navigating-the-docs.mdx
+      - section: DAFpay
         slug: dafpay
         contents:
           - page: Overview
@@ -49,6 +55,30 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
+      - section: Disbursements
+        slug: disbursements
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/disbursements/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/disbursements/how-it-works.mdx
+          - page: Disbursement Lifecycle
+            slug: disbursement-lifecycle
+            path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/disbursements/compliance.mdx
+          - page: Sandbox
+            slug: sandbox
+            path: ./pages/disbursements/sandbox.mdx
+          - page: How Chariot Compares
+            slug: comparisons
+            path: ./pages/disbursements/how-chariot-compares.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/disbursements/faq.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -64,6 +94,7 @@ navigation:
         layout:
           - section: Introduction
             skip-slug: true
+            icon: book-open-cover
             contents:
               - page: Overview
                 slug: /
@@ -80,17 +111,20 @@ navigation:
               - page: Webhooks and Events
                 slug: webhooks
                 path: ./pages/api/webhooks-and-events.mdx
+              - page: Sandbox Simulations
+                slug: sandbox-simulations
+                path: ./pages/api/sandbox-simulations.mdx
           - section: Core Resources
             skip-slug: true
+            icon: network-wired
             contents:
-              - donorAdvisedFunds:
-                  title: Donor Advised Funds
-              - nonprofits
+              - organizations
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
-          - section: Fundraising
+          - section: DAFpay
             skip-slug: true
+            icon: box-heart
             contents:
               - connects
               - grants
@@ -98,4 +132,21 @@ navigation:
                   title: Recurring Grants
               - unintegratedGrants:
                   title: Unintegrated Grants
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
+          - section: Disbursements
+            skip-slug: true
+            icon: money-check
+            contents:
+              - financialAccounts:
+                  title: Financial Accounts
+              - disbursements
+              - accountTransfers:
+                  title: Account Transfers
+              - achTransfers:
+                  title: ACH Transfers
+              - checkTransfers:
+                  title: Check Transfers
+              - inboundAchTransfers:
+                  title: Inbound ACH Transfers
   - tab: changelog
