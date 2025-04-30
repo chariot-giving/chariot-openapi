@@ -1124,7 +1124,7 @@ components:
           readOnly: true
           description: |-
             A flag to indicate if the nonprofit will receive grants through the DAFPay Network.
-            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175).
+            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) nonprofit organization (EIN: 93-1372175).
             The DAFPay Network will then review and process the grant and send the funds to the nonprofit.
             Grants processed outside the DAFPay Network will be sent directly to the nonprofit.
           example: false
@@ -1427,7 +1427,7 @@ components:
           description: |-
             The payment channel for the grant. This is useful to know how the grant will be sent.
             The payment channel will be one of the following:
-            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
+            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) nonprofit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
             - direct: Grant will be sent directly to the intended recipient.
           enum:
             - dafpay_network

@@ -2,140 +2,79 @@ openapi: 3.0.0
 info:
   title: Chariot API
   version: "v1"
-  description: The Chariot REST API. Please see https://givechariot.readme.io/reference/overview for more details.
+  description: The Chariot REST API. Please see https://docs.givechariot.com/api for more details.
   contact:
     name: Chariot Development Team
-    url: https://www.givechariot.com/contact
-    email: partners@givechariot.com
-  termsOfService: https://www.givechariot.com/legal-nonprofit
+    url: https://givechariot.com/contact
+    email: developers@givechariot.com
+  termsOfService: https://givechariot.com/legal-nonprofit
 servers:
   - url: https://sandboxapi.givechariot.com
     description: Sandbox
   - url: https://api.givechariot.com
     description: Production
 paths:
-  /v1/nonprofit/{ein}:
+  /v1/organizations/search:
     get:
-      summary: Get nonprofit by EIN
+      summary: Search organizations
       description: |-
-        Retrieves a nonprofit organization by an [Employee Identification Number](https://www.irs.gov/charities-non-profits/employer-identification-number) (EIN).
-        The EIN is a unique number that identifies the organization to the Internal Revenue Service (IRS).
-
-        In the case that the organization does not exist within Chariot's system, you can create one by calling the [Create Nonprofit](/api/nonprofits/create) API endpoint.
-      operationId: get-nonprofit-by-ein
+        Search for organizations by name or EIN.
+        This endpoint exists to support a typeahead search or quick lookup by nonprofit EIN or name.
+        The Get Organization API should be used to retrieve detailed information about an organization.
+      operationId: searchOrganizations
       tags:
-        - Nonprofits
+        - Organizations
       security:
         - bearerAuth: []
       parameters:
         - name: ein
-          in: path
+          in: query
           description: |-
-            The unique federal employer identification number (EIN) of the nonprofit.
-            This value should be exactly 9 digits and should not contain any special characters such as dashes.
+            The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
           schema:
             type: string
-          required: true
-          example: "530196605"
+        - name: name
+          in: query
+          description: |-
+            The name of the organization.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
-          description: "OK"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Nonprofit"
-              examples:
-                RedCross:
-                  $ref: "#/components/examples/NonprofitRedCross"
+          $ref: "#/components/responses/SearchOrganizationsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/nonprofits:
-    post:
-      summary: Create nonprofit
-      description: |-
-        Create a nonprofit organization.
-
-        This is useful for integration partners to use after a nonprofit consents to use the Chariot payment option on their donation forms.
-
-        <Tip>
-        If a nonprofit does not already exist for the EIN, this will return a `201 Created` status.
-        If a nonprofit already exists for the given EIN on the system, this will return a `200 OK` status.
-        </Tip>
-
-        <Warning>
-        Handling errors:
-        - If the nonprofit does not exist within Chariot's database, a `404 Not Found` status is returned.
-        - If the nonprofit exists but does not pass Chariot's compliance checks, a `412 Precondition Failed` status is returned with a reason.
-        </Warning>
-      operationId: create-nonprofit
-      tags:
-        - Nonprofits
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CreateNonprofitRequest"
-      responses:
-        "200":
-          description: "OK"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Nonprofit"
-        "201":
-          description: "Created"
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-            Location:
-              $ref: "#/components/headers/Location"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Nonprofit"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "412":
-          $ref: "#/components/responses/PreconditionFailedError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/nonprofits/{id}:
+  /v1/organizations/{id}:
     get:
-      summary: Get nonprofit
+      summary: Get organization
       description: |-
-        Retrieves the nonprofit organization with the given ID.
-      operationId: get-nonprofit-by-id
+        Retrieves the organization with the given ID.
+      operationId: getOrganization
       tags:
-        - Nonprofits
+        - Organizations
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the nonprofit
+          description: The unique identifier for the organization
           schema:
             type: string
           required: true
-          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
       responses:
         "200":
           description: "OK"
@@ -145,10 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Nonprofit"
-              examples:
-                RedCross:
-                  $ref: "#/components/examples/NonprofitRedCross"
+                $ref: "#/components/schemas/Organization"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -168,7 +104,7 @@ paths:
         The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
 
         <Note>
-        Only one Connect object can be created per Nonprofit.
+        Only one Connect object can be created per organization.
         If one already exists, this will return a `200 OK` status with the existing object.
         </Note>
       operationId: create-connect
@@ -176,27 +112,6 @@ paths:
         - Connects
       security:
         - bearerAuth: []
-      parameters:
-        - name: nonprofit
-          in: query
-          description: |-
-            The unique id of the nonprofit.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: true
-          example: 6af3f58e-7a80-4997-8259-770c033d7d3a
-        - name: suborganization
-          in: query
-          description: |-
-            The unique id for the suborganization within the nonprofit.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: false
-          example: c00d1aa2-09ab-4e76-8461-7ac34578a70c
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -1023,141 +938,875 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/financial_accounts:
+    get:
+      summary: List financial accounts
+      description: |
+        Returns a list of financial accounts.
+      operationId: listFinancialAccounts
+      tags:
+        - financial_accounts
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFinancialAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/financial_accounts/{id}:
+    get:
+      summary: Get a financial account
+      description: |
+        Get a financial account by its unique identifier.
+      operationId: getFinancialAccount
+      tags:
+        - financial_accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the financial account
+          required: true
+          schema:
+            type: string
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: The financial account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinancialAccount"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/financial_accounts/{id}/balance:
+    get:
+      summary: Get a financial account balance
+      description: |
+        Get a financial account balance by its unique identifier.
+      operationId: getFinancialAccountBalance
+      tags:
+        - financial_accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the financial account
+          required: true
+          schema:
+            type: string
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: The financial account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinancialAccountBalance"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements:
+    post:
+      summary: Create a disbursement
+      description: |
+        Create a disbursement to send money to an organization.
+      operationId: createDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDisbursementRequest"
+      responses:
+        "201":
+          description: The disbursement was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+    get:
+      summary: List disbursements
+      description: |
+        Returns a list of disbursements.
+      operationId: listDisbursements
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: The unique identifier for the organization
+          required: false
+          schema:
+            type: string
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDisbursementsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}:
+    get:
+      summary: Get a disbursement
+      description: |
+        Get a disbursement by its unique identifier.
+      operationId: getDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}/approve:
+    post:
+      summary: Approve a disbursement
+      description: |
+        Approve a disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: approveDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/{id}/cancel:
+    post:
+      summary: Cancel a pending disbursement
+      description: |
+        Cancel a pending disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: cancelDisbursement
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/account_transfers/{id}:
+    get:
+      summary: Get an account transfer
+      description: |
+        Get an account transfer by its unique identifier.
+      operationId: getAccountTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account transfer
+          required: true
+          schema:
+            type: string
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The account transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/ach_transfers/{id}:
+    get:
+      summary: Get an ACH transfer
+      description: |
+        Get an ACH transfer by its unique identifier.
+      operationId: getAchTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The ACH transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AchTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/check_transfers/{id}:
+    get:
+      summary: Get a check transfer
+      description: |
+        Get a check transfer by its unique identifier.
+      operationId: getCheckTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The check transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/check_transfers/{id}/stop:
+    post:
+      summary: Stop a check transfer
+      description: |
+        Stop a check transfer.
+      operationId: stopCheckTransfer
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/StopCheckTransferRequest"
+      responses:
+        "202":
+          description: The check transfer stop payment request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_ach_transfers:
+    post:
+      summary: "Sandbox: Create an inbound ACH transfer"
+      description: |
+        Simulates an inbound ACH transfer to your account.
+        This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
+
+        <Note title="Sandbox Only" icon="atom-simple">
+        Only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundAchTransfer
+      tags:
+        - inboundAchTransfers
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSimulatedInboundAchTransferRequest"
+      responses:
+        "202":
+          description: The simulated inbound ACH transfer was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/check_transfers/{id}/mail:
+    post:
+      summary: "Sandbox: Mail a check transfer"
+      description: |
+        Simulates mailing a check transfer.
+        This transfer must have a status of `pending`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateCheckTransferMail
+      tags:
+        - checkTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the check transfer
+          required: true
+          schema:
+            type: string
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The check transfer mail request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/submit:
+    post:
+      summary: "Sandbox: Submit an ACH transfer"
+      description: |
+        Simulates submitting an ACH transfer.
+        This transfer must have a status of `pending_submission`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSubmit
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The ACH transfer submission request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/settle:
+    post:
+      summary: "Sandbox: Settle an ACH transfer"
+      description: |
+        Simulates settling an ACH transfer.
+        This transfer must have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferSettlement
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The ACH transfer settlement request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/ach_transfers/{id}/return:
+    post:
+      summary: "Sandbox: Return an ACH transfer"
+      description: |
+        Simulates returning an ACH transfer.
+        This transfer must have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateAchTransferReturn
+      tags:
+        - achTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the ACH transfer
+          required: true
+          schema:
+            type: string
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The ACH transfer return request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
   schemas:
-    Nonprofit:
+    OrganizationSummary:
       type: object
       description: |-
-        A Nonprofit represents a registered 501(c)(3) charitable organization in good standing with the IRS.
+        A summary of an organization.
       required:
         - id
-        - name
         - ein
+        - name
       properties:
         id:
           type: string
-          readOnly: true
-          description: The unique identifier for the object.
-          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
-        name:
-          type: string
-          description: The IRS registered name of the nonprofit organization
-          example: Leading for Children
-        preferredName:
-          type: string
-          description: |-
-            The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
-          example: LfC
+          description: The unique identifier for the organization.
+          example: org_01j8rs605a4gctmbm58d87mvsj
         ein:
           type: string
-          description: The US federal employer identification number (Tax ID); unique on the system. This value should be exactly 9 digits and should not contain any special characters such as dashes.
-          example: "043567500"
-        suborganizations:
-          type: array
-          items:
-            $ref: "#/components/schemas/Suborganization"
-          description: |-
-            The list of suborganizations associated with this nonprofit.
-            Suborganizations are useful for nonprofits that have multiple chapters or locations.
-        address:
-          $ref: "#/components/schemas/Address"
-        picture:
+          description: The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
+          example: "123456789"
+        name:
           type: string
-          description: The URI of the nonprofit's logo
-        website:
-          type: string
-          description: The URL of the nonprofit's website
-        createdAt:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
-        updatedAt:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
-          example: "2021-07-11 15:34:00.000"
-        isDafPayNetwork:
+          description: The name of the organization.
+          example: American Red Cross
+        daf_eligible:
           type: boolean
-          readOnly: true
-          description: |-
-            A flag to indicate if the nonprofit will receive grants through the DAFPay Network.
-            Grants processing through the DAFPay Network will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175).
-            The DAFPay Network will then review and process the grant and send the funds to the nonprofit.
-            Grants processed outside the DAFPay Network will be sent directly to the nonprofit.
-          example: false
-        inGoodStanding:
-          type: boolean
-          readOnly: true
-          description: |-
-            A flag to indicate if the nonprofit is in good standing with the IRS.
-            If the nonprofit is a tax-exempt 501(c)(3) Public Charity in good standing with the IRS, this field should be true.
-            This status can change over time and is kept up-to-date by Chariot.
-            Regardless of the value of this field, Connects can still be created for the nonprofit,
-            however the nonprofit will not be able to receive grants through Chariot if this field is false.
-            If you believe the value of this field is incorrect for a Nonprofit, please contact the Chariot team.
+          description: Whether the organization is eligible to receive donations from a Donor Advised Fund.
           example: true
-        claimed:
-          type: boolean
-          readOnly: true
-          description: |-
-            A flag to indicate if the nonprofit has been claimed by a user.
-            A nonprofit is claimed if a user signs up for a Chariot account with
-            this nonprofit and is verified by the Chariot team.
-    Suborganization:
+        city:
+          type: string
+          description: The city of the organization.
+          example: New York
+        state:
+          type: string
+          description: The state of the organization.
+          example: NY
+    Organization:
       type: object
       description: |-
-        A suborganization represents an organization that is under the umbrella of a parent EIN.
-        This is common for nonprofits that have multiple chapters or locations or operate as a fiscal sponsor.
+        An `Organization` represents an operating nonprofit or an operating sub-organization of a parent or sponsoring nonprofit.
+        The generally accepted identifier for an organization is its domain. This domain provides proof of identity, ownership and relationship to an entity.
+        Organizations can receive payments from payers on the network.
       required:
         - id
-        - name
         - ein
+        - name
+        - classification
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for the object.
-          example: g33ee4ee-f881-42a0-85e3-1dde7118w9k2
+          example: org_01j8rs605a4gctmbm58d87mvsj
+        ein:
+          type: string
+          description: The EIN of the organization.
+          example: "123456789"
         name:
           type: string
-          description: The registered name of the suborganization
-          example: Leading for Children
-        preferredName:
+          description: |-
+            The name of the organization.
+            For organizations that operate under a different name than the one tied to the legal entity,
+            this name will differ from the name of the linked entity.
+            This is also known as the "DBA" or "Doing Business As" name of the organization.
+          example: American Red Cross
+        parent_organization_id:
           type: string
           description: |-
-            The preferred name of the suborganization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
-          example: LfC
-        address:
+            The unique identifier of the parent organization, if this is a sponsored organization.
+            This value is `null` or empty if the organization is not sponsored or not a child of a parent organization.
+          example: org_01j8rs605a4gctmbm58d87mvsk
+        physical_address:
           $ref: "#/components/schemas/Address"
-        picture:
+        classification:
+          $ref: "#/components/schemas/NonprofitClassification"
+        compliance:
+          $ref: "#/components/schemas/NonprofitCompliance"
+        mission_statement:
           type: string
-          description: The URI of the nonprofit's logo
-        website:
+          description: The mission statement of the organization
+          example: To provide relief to those in need
+        web:
+          $ref: "#/components/schemas/WebDomain"
+        brand:
+          $ref: "#/components/schemas/Brand"
+        officers:
+          type: array
+          description: The list of officers of the organization
+          items:
+            $ref: "#/components/schemas/Person"
+    NonprofitClassification:
+      type: object
+      description: |-
+        A classification of the nonprofit entity as defined by the IRS.
+      properties:
+        group_exemption_number:
           type: string
-          description: The URL of the nonprofit's website
-        createdAt:
+          description: This is a four-digit internal IRS number assigned to central/parent entity holding group exemption letters.
+        subsection_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        filing_requirement_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        foundation_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        affiliation_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        organization_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        exempt_status_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        deductibility_code:
+          $ref: "#/components/schemas/TaxExemptCode"
+        ntee_code:
+          $ref: "#/components/schemas/NteeCode"
+        naics_code:
+          $ref: "#/components/schemas/NaicsCode"
+    NonprofitCompliance:
+      type: object
+      description: |-
+        An object that contains legal information about the nonprofit entity and its tax-exemption status.
+        This information is used to comply with regulations and ensure the legitimacy of the nonprofit for purposes of donations and disbursements.
+      properties:
+        daf_eligible:
+          type: boolean
+          description: Whether the entity is eligible to receive donations from a Donor Advised Fund
+          example: true
+        irs_pub_78:
+          $ref: "#/components/schemas/ComplianceRequirement"
+        ofac:
+          $ref: "#/components/schemas/ComplianceRequirement"
+        foundation_code:
+          $ref: "#/components/schemas/ComplianceRequirement"
+        california_attorney_general_registry:
+          $ref: "#/components/schemas/ComplianceRequirement"
+        california_franchise_tax_board:
+          $ref: "#/components/schemas/ComplianceRequirement"
+    Person:
+      type: object
+      description: |-
+        A person is an individual who is an officer of a nonprofit.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The full name of the person
+        title:
+          type: string
+          description: The title or role of the person with respect to the nonprofit entity
+          example: Executive Director
+        email:
+          type: string
+          description: The email address of the person
+          example: johndoe@example.com
+        physical_address:
+          $ref: "#/components/schemas/Address"
+        created_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was created. Expressed in ISO 8601 format.
           example: "2020-07-10 15:00:00.000"
-        updatedAt:
+        updated_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was last updated. Expressed in ISO 8601 format.
           example: "2021-07-11 15:34:00.000"
+    TaxExemptCode:
+      type: object
+      description: |-
+        A tax exempt code is a code that is used to classify the tax-exempt status of a nonprofit entity.
+      required:
+        - name
+        - code
+      properties:
+        code:
+          type: integer
+          description: The code of the tax exempt code
+          example: 1
+        name:
+          type: string
+          description: The name of the tax exempt code
+          example: "UNCONDITIONAL"
+        description:
+          type: string
+          description: The description of the tax exempt code
+          example: "Unconditional Exemption"
+    NteeCode:
+      type: object
+      description: |-
+        A code that is used to classify the nonprofit entity as defined by the IRS.
+      required:
+        - code
+        - description
+      properties:
+        code:
+          type: string
+          description: The code of the NTEE code
+          example: "A"
+        description:
+          type: string
+          description: The description of the NTEE code
+          example: "Animal Welfare"
+        parent_code:
+          type: string
+          description: The parent code of the NTEE code
+          example: "A"
+        parent_description:
+          type: string
+          description: The description of the parent NTEE code
+          example: "Animal Welfare"
+    NaicsCode:
+      type: object
+      description: |-
+        A code that is used to classify the nonprofit entity as defined by the NAICS.
+      properties:
+        naics2:
+          type: string
+          description: The code of the NAICS code
+          example: "31"
+        naics2_description:
+          type: string
+          description: The description of the NAICS code
+          example: "Manufacturing"
+        naics4:
+          type: string
+          description: The code of the NAICS code
+          example: "3112"
+        naics4_description:
+          type: string
+          description: The description of the NAICS code
+          example: "Grain and Oilseed Milling"
+        naics6:
+          type: string
+          description: The code of the NAICS code
+          example: "311221"
+        naics6_description:
+          type: string
+          description: The description of the NAICS code
+          example: "Wet Corn Milling and Starch Manufacturing"
+    ComplianceRequirement:
+      type: object
+      description: |-
+        A compliance requirement is a requirement that a nonprofit entity must meet in order to be eligible for Chariot services.
+      properties:
+        compliant:
+          type: boolean
+          description: Whether the entity is compliant with the requirement
+          example: true
+        reason:
+          type: string
+          description: The reason for the compliance requirement
+        last_found_at:
+          type: string
+          format: date-time
+          description: The date and time when the compliance requirement was last found
+          example: "2020-07-10 15:00:00.000"
+    WebDomain:
+      type: object
+      description: |-
+        A web domain is a unique identifier for a website or web application that is associated with an organization.
+        Domains are important identity constructs that underpin the web and online interactions.
+        The domain can be used as an identifier and its validity can be asserted via DNS.
+      required:
+        - domain
+      properties:
+        domain:
+          type: string
+          description: The DNS domain name
+          example: "redcross.org"
+    Brand:
+      type: object
+      description: |-
+        Fair use brand assets that are associated with an organization and can be used for identification and informational purposes.
+      properties:
+        icon_url:
+          type: string
+          description: The URL of the organization's icon
+        logo_url:
+          type: string
+          description: The URL of the organization's logo
     Connect:
       type: object
       description: |-
-        A Connect represents an instance of Chariot Connect for a particular Nonprofit. A nonprofit organization will create Connect objects in order to integrate Chariot Connect into their websites or fundraising platforms to start accepting donations directly from Donor Advised Funds. Each Nonprofit can have multiple Connect objects where each one represents a logical separation for how the organization wants to organize their sources of donations. For example, they might have 2 Connect instances, one that they use to integrate Chariot Connect directly on their website and the other that they provide to a 3rd party fundraising platform. On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`. A connect object also contains an `apiKey`. This is useful for nonprofits to provide to fundraising platforms on their behalf to programatically integrate Chariot Connect and access resources and information created from the Connect instance through various Chariot API endpoints. More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
+        A Connect represents an instance of Chariot Connect for a particular nonprofit. A nonprofit organization will create Connect objects in order to integrate Chariot Connect into their websites or fundraising platforms to start accepting donations directly from Donor Advised Funds. Each nonprofit can have multiple Connect objects where each one represents a logical separation for how the organization wants to organize their sources of donations. For example, they might have 2 Connect instances, one that they use to integrate Chariot Connect directly on their website and the other that they provide to a 3rd party fundraising platform. On the client side, Chariot Connect is instantiated with the `id` of the Connect object, also called the `cid`. A connect object also contains an `apiKey`. This is useful for nonprofits to provide to fundraising platforms on their behalf to programatically integrate Chariot Connect and access resources and information created from the Connect instance through various Chariot API endpoints. More information on integrating Chariot Connect into a client-side application can be found here: https://givechariot.readme.io
       required:
         - id
         - apiKey
@@ -1280,7 +1929,7 @@ components:
     Grant:
       type: object
       description: |-
-        A Grant represents a successfully initiated grant request with a Donor Advised Fund. Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a Nonprofit.
+        A Grant represents a successfully initiated grant request with a Donor Advised Fund. Grants are created when a person interacts with an instance of Chariot Connect and successfully submits a grant and completes the workflow. There can be many grants associated with a Connect object and therefore a nonprofit.
       required:
         - id
         - workflowSessionId
@@ -1391,7 +2040,7 @@ components:
           description: |-
             The payment channel for the grant. This is useful to know how the grant will be sent.
             The payment channel will be one of the following:
-            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) non-profit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
+            - dafpay_network: Grant will be sent to the DAFPay Network 501(c)(3) nonprofit organization (EIN: 93-1372175). The DAFPay Network will then review and process the grant and send the funds to the intended recipient.
             - direct: Grant will be sent directly to the intended recipient.
           enum:
             - dafpay_network
@@ -1650,13 +2299,73 @@ components:
           enum:
             - offline
           example: offline
+    FinancialAccount:
+      type: object
+      description: |-
+        A financial account represents a financial, depository (bank) account managed by Chariot.
+        Chariot maintains a ledger and balances for the account.
+        This account should be funded and have a sufficient available balance before disbursements can be created.
+        Chariot is a financial technology company, not a bank. Chariot Deposit Accounts come through our banking services partner, Column, N.A.
+      required:
+        - id
+        - name
+        - account_type
+        - bank_provider
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account
+          example: "account_01jpjenf5q6cawy43yxfcrxhct"
+        account_type:
+          type: string
+          description: The type of account
+          enum:
+            - disbursements
+            - processing
+          example: "disbursements"
+        bank_provider:
+          type: string
+          description: The bank provider for the account
+          example: "mock_alpha"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account was created
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the account was last updated
+          example: "2020-07-10 15:00:00.000"
+    FinancialAccountBalance:
+      type: object
+      required:
+        - current_balance
+        - available_balance
+        - timestamp
+      properties:
+        current_balance:
+          type: number
+          description: The current balance is the amount of money in the account. This value is in minor currency units (USD cents).
+          example: 10000
+        available_balance:
+          type: number
+          description: The available balance is the amount of money in the account that is available to be spent or transferred. This value is in minor currency units (USD cents).
+          example: 10000
+        timestamp:
+          type: string
+          format: date-time
+          description: The time the balance was retrieved
+          example: "2020-07-10 15:00:00.000"
     Address:
       type: object
       required:
         - city
         - country
         - line1
-        - postalCode
+        - postal_code
         - state
       properties:
         city:
@@ -1671,7 +2380,7 @@ components:
         line2:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
-        postalCode:
+        postal_code:
           type: string
           description: ZIP or postal code
         state:
@@ -1695,6 +2404,556 @@ components:
         postalCode:
           type: string
           description: "ZIP or postal code. Maximum length: 255 characters."
+    PostalAddress:
+      type: object
+      description: |-
+        A postal address is a mailing address where physical mail can be received.
+        Postal addresses can be used to receive paper checks.
+      required:
+        - city
+        - country
+        - line1
+        - postal_code
+        - state
+      properties:
+        city:
+          type: string
+          description: City, district, suburb, town, or village.
+        country:
+          type: string
+          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+        line1:
+          type: string
+          description: Address line 1 (e.g. street, PO Box, or company name)
+        line2:
+          type: string
+          description: Address line 2 (e.g. apartment, suite, unit, or building)
+        postal_code:
+          type: string
+          description: ZIP or postal code
+        state:
+          type: string
+          description: State, county, province, or region
+    Disbursement:
+      type: object
+      description: A disbursement moves funds to a verified organization.
+      required:
+        - id
+        - organization_id
+        - amount
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the disbursement
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization that will receive the payment
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
+        amount:
+          type: integer
+          format: int64
+          description: The payment amount in USD cents. Must be a positive amount.
+          example: 10000
+        description:
+          type: string
+          description: |
+            A description of the disbursement that will be displayed to the receiving organization.
+          example: "Disbursement to nonprofit"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/DisbursementStatus"
+        cancelation:
+          $ref: "#/components/schemas/DisbursementCancelation"
+        approval:
+          $ref: "#/components/schemas/DisbursementApproval"
+        rejection:
+          $ref: "#/components/schemas/DisbursementRejection"
+        submission:
+          $ref: "#/components/schemas/DisbursementSubmission"
+        transactions:
+          type: array
+          description: The list of transactions for the disbursement
+          items:
+            $ref: "#/components/schemas/Transaction"
+    DisbursementStatus:
+      type: string
+      description: |-
+        The lifecycle status of the disbursement.
+        Possible values include:
+          - `pending_approval`: The disbursement is awaiting approval from the grantmaker
+          - `canceled`: The disbursement was canceled by the grantmaker
+          - `awaiting_verification`: The disbursement is awaiting verification from Chariot
+          - `rejected`: The disbursement was rejected by Chariot before being submitted
+          - `pending_submission`: The disbursement is awaiting submission to the payment rail
+          - `submitted`: The disbursement has been submitted to the payment rail
+
+        To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
+      example: "pending_approval"
+      enum:
+        - pending_approval
+        - canceled
+        - awaiting_verification
+        - pending_submission
+        - rejected
+        - submitted
+    DisbursementCancelation:
+      type: object
+      description: |-
+        If your account requires approvals for disbursements and the disbursement was not approved, this will contain the details of the cancelation.
+      properties:
+        canceled_by:
+          type: string
+          description: If the disbursement was canceled by a user in the dashboard, the email address of that user.
+          example: "user@example.com"
+        canceled_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was canceled.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    DisbursementApproval:
+      type: object
+      description: |-
+        If your account requires approvals for disbursements and the disbursement was approved, this will contain the details of the approval.
+      properties:
+        approved_by:
+          type: string
+          description: If the disbursement was approved by a user in the dashboard, the email address of that user.
+          example: "user@example.com"
+        approved_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was approved.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    DisbursementRejection:
+      type: object
+      description: |-
+        If the disbursement was rejected by Chariot, this will contain details as to why the disbursement was rejected.
+      properties:
+        reason:
+          type: string
+          description: |-
+            Why the disbursement was rejected.
+            Possible values include:
+              - `insufficient_funds`: The disbursement was rejected because the grantmaker does not have enough funds in their account.
+              - `incorrect_recipient`: The disbursement was rejected because the recipient or address was incorrect.
+              - `suspected_fraud`: The disbursement was suspected to be fraudulent.
+              - `requested_by_user`: The disbursement was rejected at the request of the grantmaker.
+              - `acceptance_criteria_failed`: The disbursement was rejected because the disbursement did not meet the acceptance criteria for the receiving organization.
+              - `duplicate`: The disbursement was rejected because the disbursement was a duplicate.
+              - `unknown`: The disbursement was rejected for an unknown reason.
+          example: "insufficient_funds"
+          enum:
+            - insufficient_funds
+            - incorrect_recipient
+            - suspected_fraud
+            - requested_by_user
+            - acceptance_criteria_failed
+            - duplicate
+            - unknown
+        rejected_at:
+          type: string
+          format: date-time
+          description: The ISO 8601 date and time at which the Disbursement was rejected.
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    DisbursementSubmission:
+      type: object
+      description: |-
+        After a disbursement is submitted, this object contains additional details about the disbursement payment.
+        This is useful if you want to track the disbursement over the specific payment rails/networks.
+      properties:
+        account_transfer:
+          $ref: "#/components/schemas/AccountTransferSubmission"
+        ach_transfer:
+          $ref: "#/components/schemas/AchTransferSubmission"
+        check_transfer:
+          $ref: "#/components/schemas/CheckTransferSubmission"
+    AccountTransferSubmission:
+      type: object
+      description: |-
+        An account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
+        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account transfer
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account transfer was created.
+          example: "2020-07-10 15:00:00.000"
+    AchTransferSubmission:
+      type: object
+      description: |-
+        An ACH transfer submission references an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
+        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the ACH transfer
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was created.
+          example: "2020-07-10 15:00:00.000"
+    CheckTransferSubmission:
+      type: object
+      description: |-
+        A check transfer submission references a physical check that is will be mailed to the receiving organization.
+        This is the transfer method used when the receiving organization does not have a Chariot account.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the check
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the check transfer was created.
+          example: "2020-07-10 15:00:00.000"
+    AccountTransfer:
+      type: object
+      description: |-
+        An account transfer represents an instant, electronic transfer of funds to the receiving organization.
+        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+      required:
+        - id
+        - amount
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the account transfer
+          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the account transfer in minor currency units (cents)
+          example: 10000
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    AchTransfer:
+      type: object
+      description: |-
+        An ACH transfer represents an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
+        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
+      required:
+        - id
+        - amount
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the ACH transfer
+          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the ACH transfer in minor currency units (cents)
+          example: 10000
+        status:
+          type: string
+          description: |-
+            The lifecycle status of the ACH transfer.
+            Possible values include:
+              - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
+              - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
+              - `rejected`: The ACH transfer was rejected.
+              - `returned`: The ACH transfer was returned by the receiving organization.
+          example: "pending"
+          enum:
+            - initiated
+            - pending
+            - submitted
+            - rejected
+            - returned
+        trace_number:
+          type: string
+          description: |-
+            A 15 digit number recorded in the Nacha file and transmitted to the receiving bank.
+            Along with the amount, date, and originating routing number, this can be used to identify the ACH transfer at the receiving bank.
+            ACH trace numbers are not unique, but are used to correlate returns.
+          example: "012345678901234"
+        effective_date:
+          type: string
+          format: date-time
+          description: |-
+            The ACH transfer's effective date as sent to the Federal Reserve.
+            This is the date the funds will be available to the receiving organization.
+          example: "2020-07-10 15:00:00.000"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the ACH transfer was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+    CheckTransfer:
+      type: object
+      description: |-
+        A check transfer represents a paper check that is sent to the receiving organization.
+        This is the transfer method used when the receiving organization does not have a Chariot account.
+      required:
+        - id
+        - amount
+        - status
+        - mailing_address
+        - memo
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the check transfer
+          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the check transfer in minor currency units (cents)
+          example: 10000
+        status:
+          type: string
+          description: |-
+            The lifecycle status of the check.
+            The set of statuses include:
+              - `pending`: The check is pending review by Chariot.
+              - `canceled`: The check has been canceled.
+              - `issued`: The check has been mailed and is pending delivery.
+              - `rejected`: The check was rejected by Chariot.
+              - `deposited`: The check has been deposited by the receiving organization.
+              - `stopped`: A stop payment was requested on the check.
+              - `returned`: The check has been returned by the receiving organization.
+
+            To see a more detailed description of each status and the overall lifecycle of check disbursements,
+            see the "Transfer Statuses" section of the Chariot documentation.
+          example: "issued"
+          enum:
+            - pending
+            - canceled
+            - issued
+            - rejected
+            - deposited
+            - stopped
+            - returned
+        memo:
+          type: string
+          description: The memo on the check
+          example: "Disbursement to nonprofit"
+        check_number:
+          type: string
+          description: The check number
+          example: "123456789"
+        mailing_address:
+          $ref: "#/components/schemas/PostalAddress"
+        tracking_updates:
+          type: array
+          description: The list of tracking updates for the check
+          items:
+            $ref: "#/components/schemas/TrackingUpdate"
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the check was submitted to the carrier.
+          example: "2020-07-10 15:00:00.000"
+        canceled_at:
+          type: string
+          format: date-time
+          description: The date and time the check was canceled.
+          example: "2020-07-10 15:00:00.000"
+        stopped_at:
+          type: string
+          format: date-time
+          description: The date and time the check was stopped.
+          example: "2020-07-10 15:00:00.000"
+        deposited_at:
+          type: string
+          format: date-time
+          description: The date and time the check was deposited.
+          example: "2020-07-10 15:00:00.000"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the check transfer was created
+          example: "2020-07-10 15:00:00.000"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the check transfer was last updated
+          example: "2020-07-10 15:00:00.000"
+    TrackingUpdate:
+      type: object
+      description: The tracking update for the check
+      required:
+        - category
+        - created_at
+      properties:
+        category:
+          type: string
+          description: |-
+            The category of the tracking update.
+            The set of categories include:
+              - `in_transit`: The check has been processed by the origin facility.
+              - `processed_for_delivery`: The check has been greenlit for delivery at the recipient's nearest postal facility. The check should reach the mailbox within 1-2 business days of this tracking update.
+              - `delivered`: The check has been delivered to the recipient's address.
+              - `returned_to_sender`: The check has been returned to the sender due to barcode, ID tag area, or address errors.
+          example: "in_transit"
+          enum:
+            - in_transit
+            - processed_for_delivery
+            - delivered
+            - returned_to_sender
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the tracking update was created
+          example: "2020-07-10 15:00:00.000"
+    StopCheckTransferPaymentReason:
+      type: string
+      description: |-
+        The reason for stopping a check transfer payment.
+        Possible values include:
+          - `mail_delivery_failure`: The check could not be delivered.
+          - `not_authorized`: The check was not authorized.
+          - `voided`: The check was stopped and voided.
+          - `unknown`: The reason for stopping the check transfer is unknown.
+      example: "mail_delivery_failure"
+      enum:
+        - mail_delivery_failure
+        - not_authorized
+        - voided
+        - unknown
+    Transaction:
+      type: object
+      description: |
+        A transaction represents an individual line-item or donation for a recipient nonprofit organization.
+      required:
+        - amount
+        - type
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the transaction
+          example: "txn_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The transaction amount in minor currency units (cents)
+          example: 10000
+        description:
+          type: string
+          description: |
+            A description of the transaction.
+            This description is displayed to the receiving organization.
+          example: "Disbursement to nonprofit"
+        type:
+          $ref: "#/components/schemas/DonationType"
+        donor_advised_fund_grant:
+          $ref: "#/components/schemas/DonorAdvisedFundGrant"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        metadata:
+          type: object
+          description: Additional metadata for the transaction
+          additionalProperties:
+            type: string
+    DonationType:
+      type: string
+      description: The type of donation
+      enum:
+        - donor_advised_fund_grant
+        # Can be added back in once we have a use case to disburse corporate matches or qualified charitable distributions
+        # - corporate_match
+        # - qualified_charitable_distribution
+    DonorAdvisedFundGrant:
+      type: object
+      description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
+      properties:
+        organization_name:
+          type: string
+          description: The name of the DAF organization that made the grant
+          example: "Vanguard Charitable"
+        fund_name:
+          type: string
+          description: The name of the DAF fund that made the grant
+          example: "John Doe Fund"
+        purpose:
+          type: string
+          description: The purpose of the grant
+          example: "General Operating Support"
+        note:
+          type: string
+          description: A note about the grant
+          example: "This grant is for the general operating support of the organization."
+        donors:
+          type: array
+          description: The list of donors for the transaction
+          items:
+            $ref: "#/components/schemas/Donor"
+    Donor:
+      type: object
+      description: The donor information for the transaction
+      properties:
+        first_name:
+          type: string
+          description: The first name of the donor
+          example: "John"
+        last_name:
+          type: string
+          description: The last name of the donor
+          example: "Doe"
+        email:
+          type: string
+          description: The email address of the donor
+          example: "bob@me.com"
+        phone:
+          type: string
+          description: The phone number of the donor
+          example: "415-555-1212"
+        address:
+          $ref: "#/components/schemas/Address"
     EventCategory:
       type: string
       description: |
@@ -1704,6 +2963,14 @@ components:
         - "grant.updated"
         - "unintegrated_grant.created"
         - "unintegrated_grant.updated"
+        - "disbursement.created"
+        - "disbursement.updated"
+        - "account_transfer.created"
+        - "account_transfer.updated"
+        - "ach_transfer.created"
+        - "ach_transfer.updated"
+        - "check_transfer.created"
+        - "check_transfer.updated"
     Event:
       type: object
       description: |
@@ -1773,6 +3040,16 @@ components:
           example: "https://example.com/webhook"
         category:
           $ref: "#/components/schemas/EventCategory"
+    Paging:
+      type: object
+      description: The paging information
+      properties:
+        next_page_token:
+          type: string
+          description: The token to use for pagination. If not set, the first page of results will be returned.
+          example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
+        total:
+          type: integer
     Error:
       type: object
       required:
@@ -1839,7 +3116,7 @@ components:
                   This parameter specifies the fee your platform plans to take from the grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
-                  Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
+                  Please note that platform fees are only taken when the grant is successfully received by the nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
                   If the fee limit is exceeded, a `400 Bad Request` error will be returned.
               donor:
@@ -1943,7 +3220,7 @@ components:
                   This parameter specifies the fee your platform plans to take from the first grant in cents.
                   This is a fee in addition to Chariot's processing fee. With application fees,
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
-                  Please note that platform fees are only taken when the grant is successfully received by the Nonprofit.
+                  Please note that platform fees are only taken when the grant is successfully received by the nonprofit.
                   The sum of Chariot's fee and the applicationFeeAmount cannot exceed 5% of the grant's amount.
                   If the 5% limit is exceeded, a 400 error will be returned.
               donor:
@@ -1975,37 +3252,21 @@ components:
                   Designations over 100 characters will be truncated.
     CreateConnectRequest:
       description: |-
-        The request to create a new Connect object for a Nonprofit.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: |-
-                  A human readable name of the Connect, optional.
-              metadata:
-                type: object
-                description: A map of arbitrary string keys and values to store information about the object.
-                additionalProperties:
-                  type: string
-    CreateNonprofitRequest:
-      description: |-
-        The request to create and register a nonprofit organization account.
-        The ein and user.email properties are required.
-        The user.email should be a valid contact email address for the nonprofit organization.
+        The request to create a new Connect object for a nonprofit.
       required: true
       content:
         application/json:
           schema:
             type: object
             required:
-              - ein
-              - user
+              - organization_id
+              - contact
             properties:
-              user:
+              organization_id:
+                type: string
+                description: The unique identifier for the organization
+                example: "org_1234567890"
+              contact:
                 type: object
                 required:
                   - email
@@ -2018,28 +3279,154 @@ components:
                     type: string
                     description: The phone number for the nonprofit account contact
                     example: "9127772424"
-                  firstName:
+                  first_name:
                     type: string
-                    description: The first name of the nonprofit account contact
+                    description: The first name of the nonprofit account contact that manages this Connect
                     example: Ben
-                  lastName:
+                  last_name:
                     type: string
-                    description: The last name of the nonprofit account contact
+                    description: The last name of the nonprofit account contact that manages this Connect
                     example: Give
-              ein:
-                type: string
-                description: The US federal employer identification number (Tax ID); unique on the system
-                example: "043567500"
-              preferredName:
+              name:
                 type: string
                 description: |-
-                  The preferred name of the nonprofit organization. This is the name that shows up on the nonprofit's dashboard and Connect modal. This is useful for nonprofits that are known by a different name to donors and don't use their IRS registered name publicly.
-              picture:
+                  A human readable name of the Connect, optional.
+              metadata:
+                type: object
+                description: A map of arbitrary string keys and values to store information about the object.
+                additionalProperties:
+                  type: string
+    CreateDisbursementRequest:
+      description: |-
+        The request to create a disbursement and its corresponding transactions.
+        The organization and amount are required.
+        The transactions array should contain the list of transactions associated with the disbursement. The amounts
+        in the transactions should sum up to the disbursement amount.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - organization_id
+              - amount
+              - transactions
+            properties:
+              organization_id:
                 type: string
-                description: The URI of the nonprofit's logo
-              website:
+                description: The ID of the organization that will receive the disbursement.
+                example: "org_1234567890"
+              amount:
+                type: integer
+                format: int64
+                description: The disbursement amount in USD cents. Must be a positive amount.
+                example: 10000
+              description:
                 type: string
-                description: The URL of the nonprofit's website
+                description: |-
+                  A description of the disbursement that will be displayed to the receiving organization.
+                example: "Disbursement to nonprofit"
+              transactions:
+                type: array
+                description: |-
+                  The list of transactions associated with the disbursement.
+                  Each transaction is an individual donation to be included in the disbursement.
+                  Must specify at least one transaction.
+                items:
+                  type: object
+                  description: |
+                    An individual donation to be included in the disbursement.
+                  required:
+                    - amount
+                    - type
+                  properties:
+                    amount:
+                      type: integer
+                      format: int64
+                      description: The transaction amount in minor currency units (cents)
+                      example: 10000
+                    description:
+                      type: string
+                      description: |
+                        A description of the donation.
+                        This description is displayed to the receiving organization.
+                      example: "Donation to nonprofit"
+                    type:
+                      $ref: "#/components/schemas/DonationType"
+                    donor_advised_fund_grant:
+                      $ref: "#/components/schemas/DonorAdvisedFundGrant"
+                    # TODO: we don't have the ability to create files yet, so leaving this out for now
+                    # attachment_file_id:
+                    #   type: string
+                    #   description: |-
+                    #     The unique identifier for the file that is attached to the transaction.
+                    #     This is useful if you want to attach a letter or another document to the transaction.
+                    #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                    metadata:
+                      type: object
+                      description: Additional metadata for the transaction
+                      additionalProperties:
+                        type: string
+          examples:
+            MultipleTransactions:
+              summary: Disbursement with multiple transactions
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 25000
+                description: "February 2025 Disbursement"
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      description: "Grant from Doe Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          organization_name: "Miami Charitable",
+                          fund_name: "Doe Family Charitable Fund",
+                          purpose: "General Operating Support",
+                          donors:
+                            [
+                              {
+                                first_name: "Jane",
+                                last_name: "Doe",
+                                email: "jane.doe@example.com",
+                              },
+                            ],
+                        },
+                    },
+                    {
+                      amount: 10000,
+                      description: "Grant from Smith Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          organization_name: "LA Charitable",
+                          fund_name: "Smith Family Legacy Fund",
+                          purpose: "Program Support",
+                          donors:
+                            [
+                              {
+                                first_name: "John",
+                                last_name: "Smith",
+                                email: "john.smith@example.com",
+                              },
+                            ],
+                        },
+                    },
+                  ]
+    StopCheckTransferRequest:
+      description: The request body for stopping a check transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - reason
+            properties:
+              reason:
+                $ref: "#/components/schemas/StopCheckTransferPaymentReason"
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
@@ -2084,7 +3471,40 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
+    CreateSimulatedInboundAchTransferRequest:
+      description: The request body for creating a simulated inbound ACH transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount
+              - account_id
+            properties:
+              amount:
+                type: number
+                description: The amount of the transfer in cents. Only positive values are allowed.
+                example: 10000
+              account_id:
+                type: string
+                description: The identifier of the financial account that will receive the transfer
+                example: "account_01jpjenf5q6cawy43yxfcrxhct"
   responses:
+    ListFinancialAccountsResponse:
+      description: The response for FinancialAccounts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FinancialAccount"
     ListDafsResponse:
       description: The response for Dafs.list
       headers:
@@ -2296,6 +3716,40 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    SearchOrganizationsResponse:
+      description: The response for Organizations.search
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganizationSummary"
+    ListDisbursementsResponse:
+      description: The response for Disbursements.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Disbursement"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
