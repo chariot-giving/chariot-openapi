@@ -5,12 +5,13 @@ hidden: false
 ---
 ### Nonprofit Onboarding
 <AccordionGroup>
-    <Accordion title="What information is needed to register a nonprofit?">
-    To register a nonprofit using the [Create nonprofit](/api/nonprofits/create) endpoint you need:
-     1. The nonprofit's EIN
-     2. Contact Information (only used to reach out to the nonprofit to claim their account)
-
-    Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com). This email will be used for important messaging related to the nonprofit’s Chariot account and can be updated later.
+    <Accordion title="What information is needed to register a nonprofit for DAFpay?">
+    To register a nonprofit, you will first [Search for the Organization](/api/organizations/search) using the nonprofit's EIN or legal name.
+    Once, you have found the Organization, you should [Create a Connect](/api/connects/create) and provide contact information for 
+    the organization.
+    
+    Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com).
+    This email will be used for important messaging related to the nonprofit’s Chariot account and can be updated later.
 
     </Accordion>
     <Accordion title="How do nonprofits claim their accounts?">
