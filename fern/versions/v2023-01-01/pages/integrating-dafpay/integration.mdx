@@ -135,10 +135,10 @@ Most workflows proceed as follows:
 1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
    - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
 2. Submit your own donation form before converting the grant intent into a completed grant.
-3. Have your backend call Chariot's [Create Grant](/api/grants/create) API to complete the grant (and capture the grant intent).
+3. Have your backend call Chariot's [Create Grant](/v2023-01-01/api/grants/create) API to complete the grant (and capture the grant intent).
 
 <Error>
-  Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
+  Submitting your own donation form before calling Chariot’s [Create Grant](/v2023-01-01/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
 </Error>
 
 <CodeBlocks>
@@ -267,7 +267,7 @@ This loading screen should be displayed between the time you receive the `CHARIO
 Unintegrated Grants represent a donors intention to donate from a DAF provider that DAFpay is not yet integrated with.
 
 Unintegrated grants will be marked with an `unknown` status.
-    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
+    - Use the [List Unintegrated Grants](/v2023-01-01/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
     - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting The Boston Foundation.
 
 <Note title="Opting Out of Unintegrated Grants">
@@ -331,7 +331,7 @@ When a user completes a Chariot Connect session for a recurring donation, instea
 
 </CodeBlocks>
 
-After you submit your own donation form, don't forget to call the [Create Recurring Grant](/api/recurring-grants/create) API to complete the transaction.
+After you submit your own donation form, don't forget to call the [Create Recurring Grant](/v2023-01-01/api/recurring-grants/create) API to complete the transaction.
 
 <Note title="Create Recurring Grant API">
 If your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
