@@ -1090,6 +1090,17 @@ paths:
           required: false
           schema:
             type: string
+        - name: includes
+          in: query
+          description: |-
+            A comma separated list of fields to include in the response.
+            Possible values include:
+              - `organization`: Include the organization object in the response.
+              - `submission`: Include the submission object in the response.
+          required: false
+          schema:
+            type: string
+            example: "organization,submission"
       responses:
         "200":
           $ref: "#/components/responses/ListDisbursementsResponse"
@@ -1631,7 +1642,6 @@ components:
         - id
         - ein
         - name
-        - classification
       properties:
         id:
           type: string
@@ -2515,6 +2525,8 @@ components:
           type: string
           description: The unique identifier for the organization that will receive the payment
           example: "org_01jpjenf5q6cawy43yxfcrxhct"
+        organization:
+          $ref: "#/components/schemas/Organization"
         amount:
           type: integer
           format: int64
