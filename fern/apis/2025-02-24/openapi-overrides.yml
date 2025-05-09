@@ -133,18 +133,23 @@ paths:
       x-fern-sdk-group-name:
         - disbursements
       x-fern-sdk-method-name: get
-  /v1/ach_transfers:
+  /v1/inbound_transfers:
     get:
       x-fern-pagination: true
       x-fern-sdk-group-name:
-        - achTransfers
+        - inboundTransfers
       x-fern-sdk-method-name: list
     post:
       x-fern-sdk-group-name:
-        - achTransfers
+        - inboundTransfers
       x-fern-sdk-method-name: create
-  /v1/ach_transfers/{id}:
+  /v1/inbound_transfers/{id}:
     get:
       x-fern-sdk-group-name:
-        - ach_transfers
+        - inboundTransfers
       x-fern-sdk-method-name: get
+  /v1/inbound_transfers/{id}/cancel:
+    post:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: cancel

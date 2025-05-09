@@ -1210,10 +1210,12 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}/stop_payment:
     post:
-      summary: Stop a check transfer disbursement
+      summary: Stop payment for a disbursement
       description: |
-        Stop a check transfer disbursement after it was mailed.
-      operationId: stopCheckTransferDisbursement
+        Stop payment for a disbursement.
+        This only applies for disbursements that are submitted as check transfers.
+        If the disbursement is not in a `submitted` state, this will return a 412 Precondition Failed error.
+      operationId: stopDisbursementPayment
       tags:
         - disbursements
       security:
@@ -1227,7 +1229,7 @@ paths:
             type: string
           example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       requestBody:
-        $ref: "#/components/requestBodies/StopCheckTransferDisbursementRequest"
+        $ref: "#/components/requestBodies/StopDisbursementPaymentRequest"
       responses:
         "202":
           description: The stop payment request was accepted
@@ -1239,123 +1241,8 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/ach_transfers:
-    post:
-      summary: Create an ACH transfer
-      description: |-
-        Create an ACH transfer to move money between your financial account
-        and an externally linked bank account.
-        In Production, this requires that an external bank account has been setup
-        and verified for your account through the Chariot Dashboard.
-        A positive amount corresponds to an ACH credit (funds will be pushed from the financial account to the external account).
-        A negative amount corresponds to an ACH debit (funds will be pulled from the external account into the financial account).
-        This will return a 412 Precondition Failed error if you attempt to transfer an amount out of your financial account
-        that would otherwise cause your account balance to go negative (overdraw).
-      operationId: createAchTransfer
-      tags:
-        - achTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          description: The idempotency key for the request
-          required: false
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/CreateAchTransferRequest"
-      responses:
-        "201":
-          description: The ACH transfer was created
-          headers:
-            Location:
-              $ref: "#/components/headers/Location"
-            Idempotency-Key:
-              $ref: "#/components/headers/Idempotency-Key"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AchTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    get:
-      summary: List ACH transfers
-      description: |-
-        List ACH transfers for your account.
-      operationId: listAchTransfers
-      tags:
-        - achTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: pageToken
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/ListAchTransfersResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/ach_transfers/{id}:
-    get:
-      summary: Get an ACH transfer
-      description: |
-        Get an ACH transfer by its unique identifier.
-      operationId: getAchTransfer
-      tags:
-        - disbursements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the ACH transfer
-          required: true
-          schema:
-            type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: The ACH transfer was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AchTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/simulations/disbursements/{id}/submit:
@@ -1396,32 +1283,32 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/submit:
+  /v1/simulations/disbursements/{id}/complete:
     post:
-      summary: "Sandbox: Submit an ACH transfer"
+      summary: "Sandbox: Complete a disbursement"
       description: |
-        Simulates submitting an ACH transfer to the Federal Reserve.
-        This transfer must have a status of `initiated`.
+        Simulates disbursement completion.
+        The disbursement must have a status of `submitted`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
-      operationId: simulateAchTransferSubmit
+      operationId: simulateDisbursementCompletion
       tags:
-        - achTransfers
+        - disbursements
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the ACH transfer
+          description: The unique identifier for the disbursement
           required: true
           schema:
             type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "202":
-          description: The ACH transfer submission request was accepted
+          description: The disbursement completion request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1432,32 +1319,33 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/settle:
+  /v1/simulations/disbursements/{id}/return:
     post:
-      summary: "Sandbox: Settle an ACH transfer"
+      summary: "Sandbox: Return a disbursement"
       description: |
-        Simulates settling an ACH transfer.
-        This transfer must have a status of `submitted`.
+        Simulates returning a disbursement.
+        This disbursement must have a status of `submitted`.
+        This only applies for disbursements that are submitted as ACH or check transfers.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
-      operationId: simulateAchTransferSettlement
+      operationId: simulateDisbursementReturn
       tags:
-        - achTransfers
+        - disbursements
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the ACH transfer
+          description: The unique identifier for the disbursement
           required: true
           schema:
             type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "202":
-          description: The ACH transfer settlement request was accepted
+          description: The disbursement return request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1468,32 +1356,222 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/return:
+  /v1/inbound_transfers:
     post:
-      summary: "Sandbox: Return an ACH transfer"
-      description: |
-        Simulates returning an ACH transfer.
-        This transfer must have a status of `submitted`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateAchTransferReturn
+      summary: Create an Inbound transfer
+      description: |-
+        Create an inbound transfer to fund your financial account
+        from an externally linked bank account.
+        In Production, this requires that an external bank account has been setup
+        and verified for your account through the Chariot Dashboard.
+      operationId: createInboundTransfer
       tags:
-        - achTransfers
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateInboundTransferRequest"
+      responses:
+        "201":
+          description: The inbound transfer was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List Inbound Transfers
+      description: |-
+        List inbound transfers for your account.
+      operationId: listInboundTransfers
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListInboundTransfersResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/inbound_transfers/{id}:
+    get:
+      summary: Get an Inbound Transfer
+      description: |-
+        Get an inbound transfer by its unique identifier.
+      operationId: getInboundTransfer
+      tags:
+        - inboundTransfers
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the ACH transfer
+          description: The unique identifier for the inbound transfer
           required: true
           schema:
             type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The inbound transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/inbound_transfers/{id}/cancel:
+    post:
+      summary: Cancel an Inbound Transfer
+      description: |-
+        Cancel an inbound transfer.
+        Returns the Inbound Transfer object if the cancelation succeeded.
+        Returns a 412 Precondition Failed if the Inbound Transfer has already been canceled or cannot be canceled.
+      operationId: cancelInboundTransfer
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the inbound transfer
+          required: true
+          schema:
+            type: string
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The inbound transfer was canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_transfers/{id}/fail:
+    post:
+      summary: "Sandbox: Fail an Inbound Transfer"
+      description: |-
+        Simulate an inbound transfer failure.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundTransferFailure
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the inbound transfer
+          required: true
+          schema:
+            type: string
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
-          description: The ACH transfer return request was accepted
+          description: The inbound transfer failure request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_transfers/{id}/complete:
+    post:
+      summary: "Sandbox: Complete an Inbound Transfer"
+      description: |-
+        Simulate an inbound transfer completion.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundTransferCompletion
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the inbound transfer
+          required: true
+          schema:
+            type: string
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The inbound transfer completion request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2483,8 +2561,11 @@ components:
           - `canceled`: The disbursement was canceled by the grantmaker
           - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
-          - `pending_submission`: The disbursement is awaiting submission to the payment rail
-          - `submitted`: The disbursement has been submitted to the payment rail
+          - `pending_submission`: The disbursement is awaiting submission to the payment network
+          - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
+          - `completed`: The disbursement payment has been completed and funds have been received by the receiving organization
+          - `returned`: The disbursement payment was returned by the receiving organization
+          - `failed`: The disbursement payment failed or the receiving organization did not receive the payment
 
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
       example: "pending_approval"
@@ -2495,6 +2576,9 @@ components:
         - pending_submission
         - rejected
         - submitted
+        - completed
+        - returned
+        - failed
     DisbursementCancelation:
       type: object
       description: |-
@@ -2817,21 +2901,79 @@ components:
           format: date-time
           description: The date and time the tracking update was created
           example: "2020-07-10 15:00:00.000"
-    StopCheckTransferDisbursementPaymentReason:
+    StopDisbursementPaymentReason:
       type: string
       description: |-
-        The reason for stopping a check transfer disbursement payment.
+        The reason for stopping a disbursement payment.
         Possible values include:
           - `mail_delivery_failure`: The check could not be delivered.
           - `not_authorized`: The check was not authorized.
           - `voided`: The check was stopped and voided.
-          - `unknown`: The reason for stopping the check transfer is unknown.
+          - `unknown`: The reason for stopping the disbursement payment is unknown.
       example: "mail_delivery_failure"
       enum:
         - mail_delivery_failure
         - not_authorized
         - voided
         - unknown
+    InboundTransfer:
+      type: object
+      description: |-
+        An inbound transfer represents a transfer of funds from an external bank account to a financial account.
+      required:
+        - id
+        - amount
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the inbound transfer
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount of the inbound transfer in minor currency units (cents).
+            This amount must be positive.
+          example: 10000
+        description:
+          type: string
+          description: |-
+            An arbitrary string attached to the object. Often useful for displaying to users.
+          example: "InboundTransfer from my bank account"
+        statement_descriptor:
+          type: string
+          description: |-
+            The statement descriptor for the inbound transfer.
+            This is the description that will be shown on the recipient's bank statement.
+          example: "Funding"
+        status:
+          type: string
+          description: |-
+            The status of the inbound transfer.
+            An Inbound Transfer is `pending` if it created and the funds haven't been received yet.
+            The status changes to `completed` when the funds have been received and the balance of the financial account has been updated.
+            The status changes to `canceled` if the transfer is canceled.
+            The status changes to `failed` if the transfer fails.
+          example: "pending"
+          enum:
+            - pending
+            - completed
+            - canceled
+            - failed
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
     Transaction:
       type: object
       description: |
@@ -3397,8 +3539,8 @@ components:
                         },
                     },
                   ]
-    CreateAchTransferRequest:
-      description: The request body for originating an ACH transfer from a financial account
+    CreateInboundTransferRequest:
+      description: The request body for originating an inbound transfer from an external bank account
       required: true
       content:
         application/json:
@@ -3412,21 +3554,19 @@ components:
                 type: number
                 description: |-
                   The amount of the transfer in cents.
-                  Positive amount corresponds to an ACH credit while negative corresponds to ACH debit.
+                  This amount must be positive.
                 example: 10000
               account_id:
                 type: string
                 description: |-
-                  The identifier of the financial account that originates the transfer.
-                  For an ACH credit, this account will be the source of the funds.
-                  For an ACH debit, this account will receive the funds.
+                  The identifier of the financial account that will receive the transfer.
                 example: "account_01jpjenf5q6cawy43yxfcrxhct"
               description:
                 type: string
                 description: An arbitrary string attached to the object. Often useful for displaying to users.
                 example: "Inbound ACH Transfer from my bank account"
-    StopCheckTransferDisbursementRequest:
-      description: The request body for stopping a check transfer disbursement
+    StopDisbursementPaymentRequest:
+      description: The request body for stopping a disbursement payment
       required: true
       content:
         application/json:
@@ -3436,7 +3576,7 @@ components:
               - reason
             properties:
               reason:
-                $ref: "#/components/schemas/StopCheckTransferDisbursementPaymentReason"
+                $ref: "#/components/schemas/StopDisbursementPaymentReason"
     SimulateDisbursementSubmissionRequest:
       description: The request body for simulating disbursement submission
       required: true
@@ -3760,8 +3900,8 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-    ListAchTransfersResponse:
-      description: The response for AchTransfers.list
+    ListInboundTransfersResponse:
+      description: The response for InboundTransfers.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -3773,7 +3913,7 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AchTransfer"
+                  $ref: "#/components/schemas/InboundTransfer"
               nextPageToken:
                 type: string
                 description: |-

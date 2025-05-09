@@ -140,7 +140,7 @@ navigation:
             contents:
               - financialAccounts:
                   title: Financial Accounts
+              - inboundTransfers:
+                  title: Inbound Transfers
               - disbursements
-              - achTransfers:
-                  title: ACH Transfers
   - tab: changelog
