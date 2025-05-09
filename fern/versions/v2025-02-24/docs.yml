@@ -141,12 +141,6 @@ navigation:
               - financialAccounts:
                   title: Financial Accounts
               - disbursements
-              - accountTransfers:
-                  title: Account Transfers
               - achTransfers:
                   title: ACH Transfers
-              - checkTransfers:
-                  title: Check Transfers
-              - inboundAchTransfers:
-                  title: Inbound ACH Transfers
   - tab: changelog
