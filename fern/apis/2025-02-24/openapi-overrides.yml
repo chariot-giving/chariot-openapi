@@ -119,6 +119,21 @@ paths:
       x-fern-sdk-group-name:
         - eventSubscriptions
       x-fern-sdk-method-name: update
+  /v1/financial_accounts:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: list
+  /v1/financial_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: get
+  /v1/financial_accounts/{id}/balance:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: getBalance
   /v1/disbursements:
     post:
       x-fern-sdk-group-name:

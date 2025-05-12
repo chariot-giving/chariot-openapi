@@ -2581,7 +2581,7 @@ components:
           - `rejected`: The disbursement was rejected by Chariot before being submitted
           - `pending_submission`: The disbursement is awaiting submission to the payment network
           - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
-          - `retry_pending`: The disbursement payment was returned or stopped and the disbursement is awaiting re-submission
+          - `stopped`: The disbursement payment was stopped after it was submitted
           - `completed`: The disbursement payment has been completed and funds have been received by the receiving organization
           - `failed`: The disbursement payment failed or the receiving organization did not receive the payment
 
@@ -2594,7 +2594,7 @@ components:
         - pending_submission
         - rejected
         - submitted
-        - retry_pending
+        - stopped
         - completed
         - failed
     DisbursementCancelation:

@@ -12,9 +12,9 @@ It tracks whether a Disbursement has been approved or canceled by your organizat
 Additionally, it tracks if the Disbursement has been verified by the Chariot team.
 
 Once a Disbursement's status is `submitted`, a request will be made to the preferred payment rail to initiate the payment.
-A Disbursement with a `submitted` status will have a `submission` object.
+A Disbursement with a `submitted` status will have at least one item in the `submissions` array.
 
-Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depending on the payment rail the submission may be able to be stopped or reversed.
+Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depending on the payment rail the disbursement may be able to be stopped.
 <Frame>
     <img src='../../images/disbursement_status_lifecycle.png' />
 </Frame>
@@ -27,8 +27,12 @@ Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depen
 | `rejected` | The disbursement was rejected by Chariot before being submitted|
 | `pending_submission` | The disbursement is awaiting submission to the payment rail|
 | `submitted` | The disbursement has been submitted to the payment rail |
+| `stopped` | The disbursement payment was stopped after it was submitted |
+| `completed` | The disbursement payment has been completed and funds have been received by the receiving organization |
+| `failed` | The disbursement payment failed or the receiving organization did not receive the payment |
 
 ## Payment Rail Lifecycle
+
 Once a Disbursement contains a `submission`, a payment has been initiated through a specific payment rail. Each payment rail follows its own distinct payment lifecycle.
 
 <AccordionGroup>

@@ -12,10 +12,10 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Card>
 
     <Card
-        title='2. Link your bank'
+        title='2. Fund your account'
         icon='bank'
     >
-    Link your bank account to fund disbursements
+    Add funds to your Chariot Deposit Account<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>
     </Card>
         <Card
         title='3. Send a payment'
@@ -29,26 +29,31 @@ To get started with Chariot Disbursements<span title="Chariot is a financial tec
 
 After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`.
 
-You'll also need to fund your Chariot Deposit Account with the amount of money you'd like to send in disbursements.
-
-
 ## Send a Disbursement
 
 This section provides the steps required to send a disbursement via API. Note, you can also initiate and send disbursements directly from your dashboard.
 
 <Steps>
 
+### Fund your account
+
+First, you'll need to fund your Chariot Deposit Account with the amount of money you'd like to send in disbursements.
+
+You can do this by creating an [Inbound Transfer](/api/inbound-transfers/create).
+Note that the funds will need to be available in your Chariot Deposit Account before you can create and send disbursements.
+You can use the [GET Financial Account Balance](/api/financial-accounts/get-balance) endpoint to check the balance of the account.
+
+<EndpointRequestSnippet endpoint="POST /v1/inbound_transfers" example="CreateInboundTransfer" />
+
 ### Find an Organization
 
-Search for the nonprofit organization using their name or EIN:
+Next, search for the nonprofit organization using their name or EIN:
 
 <EndpointRequestSnippet endpoint="GET /v1/organizations/search" />
 
-
-
 ### Create a Disbursement
 
-Next, create a `Disbursement` to the Organization with the amount that you want to send.
+Finally, create a `Disbursement` to the Organization with the amount that you want to send.
 
 You can create multiple `Transactions` for a single `Disbursement` to attribute multiple individual donations to the same `Disbursement`.
 
