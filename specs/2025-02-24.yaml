@@ -2557,8 +2557,14 @@ components:
           $ref: "#/components/schemas/DisbursementApproval"
         rejection:
           $ref: "#/components/schemas/DisbursementRejection"
-        submission:
-          $ref: "#/components/schemas/DisbursementSubmission"
+        submissions:
+          type: array
+          description: |-
+            The list of submissions for the disbursement.
+            This can have multiple items if the disbursement's underlying payment was retried multiple times.
+            For example, if a check was returned or stopped and the disbursement was retried as an ACH transfer.
+          items:
+            $ref: "#/components/schemas/DisbursementSubmission"
         transactions:
           type: array
           description: The list of transactions for the disbursement
@@ -2575,8 +2581,8 @@ components:
           - `rejected`: The disbursement was rejected by Chariot before being submitted
           - `pending_submission`: The disbursement is awaiting submission to the payment network
           - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
+          - `retry_pending`: The disbursement payment was returned or stopped and the disbursement is awaiting re-submission
           - `completed`: The disbursement payment has been completed and funds have been received by the receiving organization
-          - `returned`: The disbursement payment was returned by the receiving organization
           - `failed`: The disbursement payment failed or the receiving organization did not receive the payment
 
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
@@ -2588,8 +2594,8 @@ components:
         - pending_submission
         - rejected
         - submitted
+        - retry_pending
         - completed
-        - returned
         - failed
     DisbursementCancelation:
       type: object
