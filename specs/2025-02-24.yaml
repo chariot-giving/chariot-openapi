@@ -2960,12 +2960,6 @@ components:
           description: |-
             An arbitrary string attached to the object. Often useful for displaying to users.
           example: "InboundTransfer from my bank account"
-        statement_descriptor:
-          type: string
-          description: |-
-            The statement descriptor for the inbound transfer.
-            This is the description that will be shown on the recipient's bank statement.
-          example: "Funding"
         status:
           type: string
           description: |-
