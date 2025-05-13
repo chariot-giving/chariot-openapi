@@ -1,0 +1,7 @@
+## Summary
+
+Header API Key In List Grant APIs
+
+### What's new?
+
+We've remove the `x-chariot-api-key` header from the List Grants API as a requirement. In the past, this header was used to filter the list of grants by a specific Connect. This is no longer necessary as the `connect_id` query parameter can be used for this purpose instead. Additionally, for those who have multiple Connects, omitting the `connect_id` query parameter will return the grants for all of your Connects.
