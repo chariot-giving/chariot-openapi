@@ -1096,11 +1096,10 @@ paths:
             A comma separated list of fields to include in the response.
             Possible values include:
               - `organization`: Include the organization object in the response.
-              - `submission`: Include the submission object in the response.
           required: false
           schema:
             type: string
-            example: "organization,submission"
+            example: "organization"
       responses:
         "200":
           $ref: "#/components/responses/ListDisbursementsResponse"
@@ -2557,14 +2556,15 @@ components:
           $ref: "#/components/schemas/DisbursementApproval"
         rejection:
           $ref: "#/components/schemas/DisbursementRejection"
-        submissions:
+        transfers:
           type: array
           description: |-
-            The list of submissions for the disbursement.
+            The list of transfers for the disbursement.
             This can have multiple items if the disbursement's underlying payment was retried multiple times.
             For example, if a check was returned or stopped and the disbursement was retried as an ACH transfer.
+            If the disbursement was not retried, this will have a single item.
           items:
-            $ref: "#/components/schemas/DisbursementSubmission"
+            $ref: "#/components/schemas/DisbursementTransfer"
         transactions:
           type: array
           description: The list of transactions for the disbursement
@@ -2659,10 +2659,10 @@ components:
           description: The ISO 8601 date and time at which the Disbursement was rejected.
           example: "2020-07-10 15:00:00.000"
           readOnly: true
-    DisbursementSubmission:
+    DisbursementTransfer:
       type: object
       description: |-
-        After a disbursement is submitted, this object contains additional details about the disbursement payment.
+        After a disbursement is submitted, this object contains additional details about the transfer.
         This is useful if you want to track the disbursement over the specific payment rails/networks.
         An account transfer is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
         An ACH transfer is used when the receiving organization has a Chariot account at a different bank than the grantmaker.
