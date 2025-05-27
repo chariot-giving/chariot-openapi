@@ -3522,6 +3522,7 @@ components:
                       type: "donor_advised_fund_grant",
                       donor_advised_fund_grant:
                         {
+                          grant_id: "grant_1234567890",
                           organization_name: "Miami Charitable",
                           fund_name: "Doe Family Charitable Fund",
                           purpose: "General Operating Support",
