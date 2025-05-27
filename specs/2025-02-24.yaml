@@ -2731,7 +2731,7 @@ components:
               - `completed`: The ACH transfer has been completed. Funds should be settled.
               - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
-          example: "pending"
+          example: "initiated"
           enum:
             - initiated
             - submitted
