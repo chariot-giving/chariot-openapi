@@ -119,6 +119,21 @@ paths:
       x-fern-sdk-group-name:
         - eventSubscriptions
       x-fern-sdk-method-name: update
+  /v1/financial_accounts:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: list
+  /v1/financial_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: get
+  /v1/financial_accounts/{id}/balance:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: getBalance
   /v1/disbursements:
     post:
       x-fern-sdk-group-name:
@@ -133,23 +148,23 @@ paths:
       x-fern-sdk-group-name:
         - disbursements
       x-fern-sdk-method-name: get
-  /v1/check_transfers/{id}:
+  /v1/inbound_transfers:
     get:
+      x-fern-pagination: true
       x-fern-sdk-group-name:
-        - check_transfers
-      x-fern-sdk-method-name: get
-  /v1/check_transfers/{id}/stop:
+        - inboundTransfers
+      x-fern-sdk-method-name: list
     post:
       x-fern-sdk-group-name:
-        - check_transfers
-      x-fern-sdk-method-name: stop
-  /v1/account_transfers/{id}:
+        - inboundTransfers
+      x-fern-sdk-method-name: create
+  /v1/inbound_transfers/{id}:
     get:
       x-fern-sdk-group-name:
-        - account_transfers
+        - inboundTransfers
       x-fern-sdk-method-name: get
-  /v1/ach_transfers/{id}:
-    get:
+  /v1/inbound_transfers/{id}/cancel:
+    post:
       x-fern-sdk-group-name:
-        - ach_transfers
-      x-fern-sdk-method-name: get
+        - inboundTransfers
+      x-fern-sdk-method-name: cancel
