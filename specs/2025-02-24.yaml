@@ -3043,6 +3043,10 @@ components:
       type: object
       description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
       properties:
+        grant_id:
+          type: string
+          description: A unique identifier for the grant within the DAF provider's internal system.
+          example: "grant_1234567890"
         organization_name:
           type: string
           description: The name of the DAF organization that made the grant
