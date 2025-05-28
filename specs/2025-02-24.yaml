@@ -1255,44 +1255,6 @@ paths:
           $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/disbursements/{id}/submit:
-    post:
-      summary: "Sandbox: Submit a disbursement"
-      description: |-
-        Simulates disbursement submission to the underlying payment network.
-        The disbursement must have a status of `pending_submission`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateDisbursementSubmission
-      tags:
-        - disbursements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the disbursement
-          required: true
-          schema:
-            type: string
-          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
-      requestBody:
-        $ref: "#/components/requestBodies/SimulateDisbursementSubmissionRequest"
-      responses:
-        "202":
-          description: The disbursement submission request was accepted
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/simulations/disbursements/{id}/complete:
     post:
       summary: "Sandbox: Complete a disbursement"
@@ -3594,24 +3556,6 @@ components:
             properties:
               reason:
                 $ref: "#/components/schemas/StopDisbursementPaymentReason"
-    SimulateDisbursementSubmissionRequest:
-      description: The request body for simulating disbursement submission
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - payment_network
-            properties:
-              payment_network:
-                type: string
-                description: |-
-                  The payment network to use to submit the disbursement.
-                enum:
-                  - "account"
-                  - "ach"
-                  - "check"
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
