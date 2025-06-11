@@ -1646,6 +1646,13 @@ components:
           description: The list of officers of the organization
           items:
             $ref: "#/components/schemas/Person"
+        claimed:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the nonprofit has been claimed by a user.
+            A nonprofit is claimed if a user signs up for a Chariot account with
+            this nonprofit and is verified by the Chariot team.
     NonprofitClassification:
       type: object
       description: |-
