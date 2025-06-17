@@ -12,11 +12,11 @@ It tracks whether a Disbursement has been approved or canceled by your organizat
 Additionally, it tracks if the Disbursement has been verified by the Chariot team.
 
 Once a Disbursement's status is `submitted`, a request will be made to the preferred payment rail to initiate the payment.
-A Disbursement with a `submitted` status will have a `submission` object.
+A Disbursement with a `submitted` status will have at least one item in the `transfers` array.
 
-Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depending on the payment rail the submission may be able to be stopped or reversed.
+Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depending on the payment rail the disbursement may be able to be stopped.
 <Frame>
-    <img src='../../images/disbursement_status_lifecycle.png' />
+    <img src='../../images/disbursement_lifecycle.png' />
 </Frame>
 
  Status | Description |
@@ -27,17 +27,21 @@ Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depen
 | `rejected` | The disbursement was rejected by Chariot before being submitted|
 | `pending_submission` | The disbursement is awaiting submission to the payment rail|
 | `submitted` | The disbursement has been submitted to the payment rail |
+| `stopped` | The disbursement payment was stopped after it was submitted |
+| `completed` | The disbursement payment has been completed and funds have been received by the receiving organization |
+| `failed` | The disbursement payment failed or the receiving organization did not receive the payment |
 
 ## Payment Rail Lifecycle
-Once a Disbursement contains a `submission`, a payment has been initiated through a specific payment rail. Each payment rail follows its own distinct payment lifecycle.
+
+Once a Disbursement is `submitted`, a payment is initiated through a specific payment rail. Each payment rail follows its own distinct payment lifecycle.
 
 <AccordionGroup>
     <Accordion title="In-Network Payments">
         Payments sent from one Chariot Deposit Account<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span> to another Chariot Deposit Account can be made 24 hours a day, 7 days a week and, once approved, will settle instantly.
     </Accordion>
     <Accordion title="ACH">
-        ACH submission represents a credit (push) payment using the Automated Clearing House (ACH) network.
-        This transfer method is used if the receiving organization is not available for Account Transfers.
+        ACH transfer represents a credit (push) payment using the Automated Clearing House (ACH) network.
+        This transfer method is used if the receiving organization is not available for In-Network Account Transfers.
         Funds availability is typically 1-2 days.
 
         <Frame>
@@ -48,10 +52,11 @@ Once a Disbursement contains a `submission`, a payment has been initiated throug
         | `initiated`    | The ACH transfer has been initiated and is pending submission to the Federal Reserve |
         | `rejected`     | The ACH transfer was rejected |
         | `submitted`    | The ACH transfer has been submitted to the Federal Reserve |
+        | `completed`    | The ACH transfer has settled |
         | `returned`     | The ACH transfer was returned by the receiving organization |
     </Accordion>
     <Accordion title="Mailed Check">
-        A check submission represents a physical check that is mailed to the receiving organization.
+        A check transfer represents a physical check that is mailed to the receiving organization.
         This is the transfer method used when the receiving organization does not have a Chariot account.
         <Frame>
             <img src='../../images/check_lifecycle.png' />

@@ -1090,6 +1090,16 @@ paths:
           required: false
           schema:
             type: string
+        - name: includes
+          in: query
+          description: |-
+            A comma separated list of fields to include in the response.
+            Possible values include:
+              - `organization`: Include the organization object in the response.
+          required: false
+          schema:
+            type: string
+            example: "organization"
       responses:
         "200":
           $ref: "#/components/responses/ListDisbursementsResponse"
@@ -1208,117 +1218,14 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/account_transfers/{id}:
-    get:
-      summary: Get an account transfer
-      description: |
-        Get an account transfer by its unique identifier.
-      operationId: getAccountTransfer
-      tags:
-        - disbursements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the account transfer
-          required: true
-          schema:
-            type: string
-          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: The account transfer was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AccountTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/ach_transfers/{id}:
-    get:
-      summary: Get an ACH transfer
-      description: |
-        Get an ACH transfer by its unique identifier.
-      operationId: getAchTransfer
-      tags:
-        - disbursements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the ACH transfer
-          required: true
-          schema:
-            type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: The ACH transfer was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AchTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/check_transfers/{id}:
-    get:
-      summary: Get a check transfer
-      description: |
-        Get a check transfer by its unique identifier.
-      operationId: getCheckTransfer
-      tags:
-        - disbursements
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the check transfer
-          required: true
-          schema:
-            type: string
-          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: The check transfer was retrieved
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CheckTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/check_transfers/{id}/stop:
+  /v1/disbursements/{id}/stop_payment:
     post:
-      summary: Stop a check transfer
+      summary: Stop payment for a disbursement
       description: |
-        Stop a check transfer.
-      operationId: stopCheckTransfer
+        Stop payment for a disbursement.
+        This only applies for disbursements that are submitted as check transfers.
+        If the disbursement is not in a `submitted` state, this will return a 412 Precondition Failed error.
+      operationId: stopDisbursementPayment
       tags:
         - disbursements
       security:
@@ -1326,16 +1233,54 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the check transfer
+          description: The unique identifier for the disbursement
           required: true
           schema:
             type: string
-          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       requestBody:
-        $ref: "#/components/requestBodies/StopCheckTransferRequest"
+        $ref: "#/components/requestBodies/StopDisbursementPaymentRequest"
       responses:
         "202":
-          description: The check transfer stop payment request was accepted
+          description: The stop payment request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/disbursements/{id}/complete:
+    post:
+      summary: "Sandbox: Complete a disbursement"
+      description: |
+        Simulates disbursement completion.
+        The disbursement must have a status of `submitted`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDisbursementCompletion
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "202":
+          description: The disbursement completion request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1346,96 +1291,113 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/inbound_ach_transfers:
+  /v1/simulations/disbursements/{id}/return:
     post:
-      summary: "Sandbox: Create an inbound ACH transfer"
+      summary: "Sandbox: Return a disbursement"
       description: |
-        Simulates an inbound ACH transfer to your account.
-        This is useful for testing account funding via externally originated ACH credit transfers into your Chariot Disbursement Account.
+        Simulates returning a disbursement.
+        This disbursement must have a status of `submitted`.
+        This only applies for disbursements that are submitted as ACH or check transfers.
 
-        <Note title="Sandbox Only" icon="atom-simple">
-        Only available in the sandbox environment.
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
         </Note>
-      operationId: simulateInboundAchTransfer
+      operationId: simulateDisbursementReturn
       tags:
-        - inboundAchTransfers
+        - disbursements
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "202":
+          description: The disbursement return request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/inbound_transfers:
+    post:
+      summary: Create an Inbound transfer
+      description: |-
+        Create an inbound transfer to fund your financial account
+        from an externally linked bank account.
+        In Production, this requires that an external bank account has been setup
+        and verified for your account through the Chariot Dashboard.
+      operationId: createInboundTransfer
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
       requestBody:
-        $ref: "#/components/requestBodies/CreateSimulatedInboundAchTransferRequest"
+        $ref: "#/components/requestBodies/CreateInboundTransferRequest"
       responses:
-        "202":
-          description: The simulated inbound ACH transfer was accepted
+        "201":
+          description: The inbound transfer was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/check_transfers/{id}/mail:
-    post:
-      summary: "Sandbox: Mail a check transfer"
-      description: |
-        Simulates mailing a check transfer.
-        This transfer must have a status of `pending`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateCheckTransferMail
+    get:
+      summary: List Inbound Transfers
+      description: |-
+        List inbound transfers for your account.
+      operationId: listInboundTransfers
       tags:
-        - checkTransfers
+        - inboundTransfers
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the check transfer
-          required: true
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageToken
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
           schema:
             type: string
-          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
-        "202":
-          description: The check transfer mail request was accepted
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/submit:
-    post:
-      summary: "Sandbox: Submit an ACH transfer"
-      description: |
-        Simulates submitting an ACH transfer.
-        This transfer must have a status of `pending_submission`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateAchTransferSubmit
-      tags:
-        - achTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the ACH transfer
-          required: true
-          schema:
-            type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "202":
-          description: The ACH transfer submission request was accepted
+        "200":
+          $ref: "#/components/responses/ListInboundTransfersResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1446,32 +1408,31 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/settle:
-    post:
-      summary: "Sandbox: Settle an ACH transfer"
-      description: |
-        Simulates settling an ACH transfer.
-        This transfer must have a status of `submitted`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateAchTransferSettlement
+  /v1/inbound_transfers/{id}:
+    get:
+      summary: Get an Inbound Transfer
+      description: |-
+        Get an inbound transfer by its unique identifier.
+      operationId: getInboundTransfer
       tags:
-        - achTransfers
+        - inboundTransfers
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the ACH transfer
+          description: The unique identifier for the inbound transfer
           required: true
           schema:
             type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
-        "202":
-          description: The ACH transfer settlement request was accepted
+        "200":
+          description: The inbound transfer was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1482,32 +1443,107 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/ach_transfers/{id}/return:
+  /v1/inbound_transfers/{id}/cancel:
     post:
-      summary: "Sandbox: Return an ACH transfer"
-      description: |
-        Simulates returning an ACH transfer.
-        This transfer must have a status of `submitted`.
-
-        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-        This API is only available in the sandbox environment.
-        </Note>
-      operationId: simulateAchTransferReturn
+      summary: Cancel an Inbound Transfer
+      description: |-
+        Cancel an inbound transfer.
+        Returns the Inbound Transfer object if the cancelation succeeded.
+        Returns a 412 Precondition Failed if the Inbound Transfer has already been canceled or cannot be canceled.
+      operationId: cancelInboundTransfer
       tags:
-        - achTransfers
+        - inboundTransfers
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the ACH transfer
+          description: The unique identifier for the inbound transfer
           required: true
           schema:
             type: string
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The inbound transfer was canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_transfers/{id}/fail:
+    post:
+      summary: "Sandbox: Fail an Inbound Transfer"
+      description: |-
+        Simulate an inbound transfer failure.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundTransferFailure
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the inbound transfer
+          required: true
+          schema:
+            type: string
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "202":
-          description: The ACH transfer return request was accepted
+          description: The inbound transfer failure request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/inbound_transfers/{id}/complete:
+    post:
+      summary: "Sandbox: Complete an Inbound Transfer"
+      description: |-
+        Simulate an inbound transfer completion.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateInboundTransferCompletion
+      tags:
+        - inboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the inbound transfer
+          required: true
+          schema:
+            type: string
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The inbound transfer completion request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1567,7 +1603,6 @@ components:
         - id
         - ein
         - name
-        - classification
       properties:
         id:
           type: string
@@ -1611,6 +1646,13 @@ components:
           description: The list of officers of the organization
           items:
             $ref: "#/components/schemas/Person"
+        claimed:
+          type: boolean
+          readOnly: true
+          description: |-
+            A flag to indicate if the nonprofit has been claimed by a user.
+            A nonprofit is claimed if a user signs up for a Chariot account with
+            this nonprofit and is verified by the Chariot team.
     NonprofitClassification:
       type: object
       description: |-
@@ -2451,6 +2493,8 @@ components:
           type: string
           description: The unique identifier for the organization that will receive the payment
           example: "org_01jpjenf5q6cawy43yxfcrxhct"
+        organization:
+          $ref: "#/components/schemas/Organization"
         amount:
           type: integer
           format: int64
@@ -2481,8 +2525,15 @@ components:
           $ref: "#/components/schemas/DisbursementApproval"
         rejection:
           $ref: "#/components/schemas/DisbursementRejection"
-        submission:
-          $ref: "#/components/schemas/DisbursementSubmission"
+        transfers:
+          type: array
+          description: |-
+            The list of transfers for the disbursement.
+            This can have multiple items if the disbursement's underlying payment was retried multiple times.
+            For example, if a check was returned or stopped and the disbursement was retried as an ACH transfer.
+            If the disbursement was not retried, this will have a single item.
+          items:
+            $ref: "#/components/schemas/DisbursementTransfer"
         transactions:
           type: array
           description: The list of transactions for the disbursement
@@ -2497,8 +2548,11 @@ components:
           - `canceled`: The disbursement was canceled by the grantmaker
           - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
-          - `pending_submission`: The disbursement is awaiting submission to the payment rail
-          - `submitted`: The disbursement has been submitted to the payment rail
+          - `pending_submission`: The disbursement is awaiting submission to the payment network
+          - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
+          - `stopped`: The disbursement payment was stopped after it was submitted
+          - `completed`: The disbursement payment has been completed and funds have been received by the receiving organization
+          - `failed`: The disbursement payment failed or the receiving organization did not receive the payment
 
         To see a description of each status, see the "Disbursement Lifecycle" section of the Chariot documentation.
       example: "pending_approval"
@@ -2509,6 +2563,9 @@ components:
         - pending_submission
         - rejected
         - submitted
+        - stopped
+        - completed
+        - failed
     DisbursementCancelation:
       type: object
       description: |-
@@ -2571,71 +2628,25 @@ components:
           description: The ISO 8601 date and time at which the Disbursement was rejected.
           example: "2020-07-10 15:00:00.000"
           readOnly: true
-    DisbursementSubmission:
+    DisbursementTransfer:
       type: object
       description: |-
-        After a disbursement is submitted, this object contains additional details about the disbursement payment.
+        After a disbursement is submitted, this object contains additional details about the transfer.
         This is useful if you want to track the disbursement over the specific payment rails/networks.
+        An account transfer is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+        An ACH transfer is used when the receiving organization has a Chariot account at a different bank than the grantmaker.
+        A check transfer is used when the receiving organization does not have a Chariot account.
       properties:
         account_transfer:
-          $ref: "#/components/schemas/AccountTransferSubmission"
+          $ref: "#/components/schemas/AccountTransfer"
         ach_transfer:
-          $ref: "#/components/schemas/AchTransferSubmission"
+          $ref: "#/components/schemas/AchTransfer"
         check_transfer:
-          $ref: "#/components/schemas/CheckTransferSubmission"
-    AccountTransferSubmission:
-      type: object
-      description: |-
-        An account transfer submission references an account transfer which is an instant, electronic transfer of funds to the receiving organization.
-        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the account transfer
-          example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          description: The date and time the account transfer was created.
-          example: "2020-07-10 15:00:00.000"
-    AchTransferSubmission:
-      type: object
-      description: |-
-        An ACH transfer submission references an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
-        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the ACH transfer
-          example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          description: The date and time the ACH transfer was created.
-          example: "2020-07-10 15:00:00.000"
-    CheckTransferSubmission:
-      type: object
-      description: |-
-        A check transfer submission references a physical check that is will be mailed to the receiving organization.
-        This is the transfer method used when the receiving organization does not have a Chariot account.
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the check
-          example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          description: The date and time the check transfer was created.
-          example: "2020-07-10 15:00:00.000"
+          $ref: "#/components/schemas/CheckTransfer"
     AccountTransfer:
       type: object
       description: |-
-        An account transfer represents an instant, electronic transfer of funds to the receiving organization.
-        This is the preferred transfer method when the receiving organization has a Chariot account at the same bank as the grantmaker.
+        An account transfer represents an instant, electronic transfer of funds.
       required:
         - id
         - amount
@@ -2661,7 +2672,6 @@ components:
       type: object
       description: |-
         An ACH transfer represents an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
-        This is the transfer method used when the receiving organization has a Chariot account at a different bank than the grantmaker.
       required:
         - id
         - amount
@@ -2676,7 +2686,9 @@ components:
         amount:
           type: integer
           format: int64
-          description: The amount of the ACH transfer in minor currency units (cents)
+          description: |-
+            The amount of the ACH transfer in minor currency units (cents).
+            For ACH debits, this is a negative number.
           example: 10000
         status:
           type: string
@@ -2685,15 +2697,22 @@ components:
             Possible values include:
               - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
+              - `completed`: The ACH transfer has been completed. Funds should be settled.
               - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
-          example: "pending"
+          example: "initiated"
           enum:
             - initiated
-            - pending
             - submitted
+            - completed
             - rejected
             - returned
+        company_entry_description:
+          type: string
+          description: |-
+            The company entry description for the ACH transfer.
+            This is included in the transfer data sent to the receiving bank.
+          example: "Disbursement to nonprofit"
         trace_number:
           type: string
           description: |-
@@ -2708,6 +2727,33 @@ components:
             The ACH transfer's effective date as sent to the Federal Reserve.
             This is the date the funds will be available to the receiving organization.
           example: "2020-07-10 15:00:00.000"
+        submitted_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time the ACH transfer was submitted to the Federal Reserve.
+          example: "2020-07-10 15:00:00.000"
+        settled_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time at which the ACH transfer was settled.
+            If the transfer is not settled, this will be null.
+          example: "2020-07-12 15:00:00.000"
+        rejected_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time at which the ACH transfer was rejected.
+            If the transfer is not rejected, this will be null.
+          example: "2020-07-12 15:00:00.000"
+        returned_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time at which the ACH transfer was returned.
+            If the transfer is not returned, this will be null.
+          example: "2020-07-12 15:00:00.000"
         created_at:
           type: string
           format: date-time
@@ -2723,8 +2769,7 @@ components:
     CheckTransfer:
       type: object
       description: |-
-        A check transfer represents a paper check that is sent to the receiving organization.
-        This is the transfer method used when the receiving organization does not have a Chariot account.
+        A check transfer represents a paper check that is mailed to the receiving organization.
       required:
         - id
         - amount
@@ -2769,12 +2814,16 @@ components:
             - returned
         memo:
           type: string
-          description: The memo on the check
+          description: The memo on the check. Maximum of 72 characters.
           example: "Disbursement to nonprofit"
         check_number:
           type: string
           description: The check number
           example: "123456789"
+        recipient_name:
+          type: string
+          description: The name that will be printed on the check.
+          example: "Charity Good"
         mailing_address:
           $ref: "#/components/schemas/PostalAddress"
         tracking_updates:
@@ -2839,21 +2888,73 @@ components:
           format: date-time
           description: The date and time the tracking update was created
           example: "2020-07-10 15:00:00.000"
-    StopCheckTransferPaymentReason:
+    StopDisbursementPaymentReason:
       type: string
       description: |-
-        The reason for stopping a check transfer payment.
+        The reason for stopping a disbursement payment.
         Possible values include:
           - `mail_delivery_failure`: The check could not be delivered.
           - `not_authorized`: The check was not authorized.
           - `voided`: The check was stopped and voided.
-          - `unknown`: The reason for stopping the check transfer is unknown.
+          - `unknown`: The reason for stopping the disbursement payment is unknown.
       example: "mail_delivery_failure"
       enum:
         - mail_delivery_failure
         - not_authorized
         - voided
         - unknown
+    InboundTransfer:
+      type: object
+      description: |-
+        An inbound transfer represents a transfer of funds from an external bank account to a financial account.
+      required:
+        - id
+        - amount
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the inbound transfer
+          example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount of the inbound transfer in minor currency units (cents).
+            This amount must be positive.
+          example: 10000
+        description:
+          type: string
+          description: |-
+            An arbitrary string attached to the object. Often useful for displaying to users.
+          example: "InboundTransfer from my bank account"
+        status:
+          type: string
+          description: |-
+            The status of the inbound transfer.
+            An Inbound Transfer is `pending` if it created and the funds haven't been received yet.
+            The status changes to `completed` when the funds have been received and the balance of the financial account has been updated.
+            The status changes to `canceled` if the transfer is canceled.
+            The status changes to `failed` if the transfer fails.
+          example: "pending"
+          enum:
+            - pending
+            - completed
+            - canceled
+            - failed
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was created
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was last updated
+          example: "2020-07-10 15:00:00.000"
+          readOnly: true
     Transaction:
       type: object
       description: |
@@ -2911,6 +3012,10 @@ components:
       type: object
       description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
       properties:
+        grant_id:
+          type: string
+          description: A unique identifier for the grant within the DAF provider's internal system.
+          example: "grant_1234567890"
         organization_name:
           type: string
           description: The name of the DAF organization that made the grant
@@ -3081,6 +3186,10 @@ components:
         type: string
     Location:
       description: The URI of the created object
+      schema:
+        type: string
+    Idempotency-Key:
+      description: Idempotency key for the request
       schema:
         type: string
   requestBodies:
@@ -3382,6 +3491,7 @@ components:
                       type: "donor_advised_fund_grant",
                       donor_advised_fund_grant:
                         {
+                          grant_id: "grant_1234567890",
                           organization_name: "Miami Charitable",
                           fund_name: "Doe Family Charitable Fund",
                           purpose: "General Operating Support",
@@ -3415,8 +3525,34 @@ components:
                         },
                     },
                   ]
-    StopCheckTransferRequest:
-      description: The request body for stopping a check transfer
+    CreateInboundTransferRequest:
+      description: The request body for originating an inbound transfer from an external bank account
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount
+              - account_id
+            properties:
+              amount:
+                type: number
+                description: |-
+                  The amount of the transfer in cents.
+                  This amount must be positive.
+                example: 10000
+              account_id:
+                type: string
+                description: |-
+                  The identifier of the financial account that will receive the transfer.
+                example: "account_01jpjenf5q6cawy43yxfcrxhct"
+              description:
+                type: string
+                description: An arbitrary string attached to the object. Often useful for displaying to users.
+                example: "Inbound ACH Transfer from my bank account"
+    StopDisbursementPaymentRequest:
+      description: The request body for stopping a disbursement payment
       required: true
       content:
         application/json:
@@ -3426,7 +3562,7 @@ components:
               - reason
             properties:
               reason:
-                $ref: "#/components/schemas/StopCheckTransferPaymentReason"
+                $ref: "#/components/schemas/StopDisbursementPaymentReason"
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
@@ -3471,25 +3607,6 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
-    CreateSimulatedInboundAchTransferRequest:
-      description: The request body for creating a simulated inbound ACH transfer
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - amount
-              - account_id
-            properties:
-              amount:
-                type: number
-                description: The amount of the transfer in cents. Only positive values are allowed.
-                example: 10000
-              account_id:
-                type: string
-                description: The identifier of the financial account that will receive the transfer
-                example: "account_01jpjenf5q6cawy43yxfcrxhct"
   responses:
     ListFinancialAccountsResponse:
       description: The response for FinancialAccounts.list
@@ -3750,6 +3867,28 @@ components:
                   A cursor token to use to retrieve the next page of results by making another API call
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListInboundTransfersResponse:
+      description: The response for InboundTransfers.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InboundTransfer"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
