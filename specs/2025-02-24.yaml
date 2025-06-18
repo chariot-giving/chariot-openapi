@@ -3026,11 +3026,11 @@ components:
           example: "John Doe Fund"
         purpose:
           type: string
-          description: "The purpose of the grant. Maximum length: 255 characters."
+          description: "The purpose of the grant. Maximum length: 400 characters."
           example: "General Operating Support"
         note:
           type: string
-          description: "A note about the grant. Maximum length: 255 characters."
+          description: "A note about the grant. Maximum length: 400 characters."
           example: "This grant is for the general operating support of the organization."
         donors:
           type: array
