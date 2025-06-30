@@ -2,7 +2,7 @@ navigation:
   - section: Overview
     contents:
       - page: Integrating DafPay
-        path: ./pages/integrating-dafpay.mdx
+        path: ./pages/overview.mdx
 
 versions:
   - display-name: v2025-02-24
