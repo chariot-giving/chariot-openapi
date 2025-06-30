@@ -1,0 +1,10 @@
+navigation:
+  - section: Overview
+    contents:
+      - page: Overview  # Changed from "Integrating DafPay"
+        path: ./pages/overview.mdx  # You'll need to create this
+
+versions:
+  - display-name: v2025-02-24
+    path: ./v2025-02-24/docs.yml
+    slug: v2025-02-24
