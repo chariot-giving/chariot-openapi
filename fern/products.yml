@@ -1,0 +1,7 @@
+projects:
+  disbursements:
+    display-name: Disbursements
+    docs-yml: ./disbursements/docs.yml
+  dafpay:
+    display-name: DafPay
+    docs-yml: ./dafpay/docs.yml

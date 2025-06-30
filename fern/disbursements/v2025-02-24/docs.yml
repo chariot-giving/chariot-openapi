@@ -1,0 +1,74 @@
+tabs:
+  guides:
+    display-name: Guides
+    slug: guides
+    icon: light book-open
+  api:
+    display-name: API Reference
+    slug: api
+    icon: light code
+  changelog:
+    display-name: Changelog
+    icon: light clock-rotate-left
+    changelog: ../../changelog
+
+landing-page:
+  page: Chariot Documentation
+  path: pages/index.mdx
+
+navigation:
+  - tab: guides
+    layout:
+      - section: Getting Started
+        skip-slug: true
+        contents:
+          - page: Navigating the Docs
+            slug: getting-started/navigating-the-docs
+            path: ./pages/getting-started/navigating-the-docs.mdx
+      - section: Disbursements
+        slug: disbursements
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/disbursements/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/disbursements/how-it-works.mdx
+          - page: Disbursement Lifecycle
+            slug: disbursement-lifecycle
+            path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/disbursements/compliance.mdx
+          - page: Sandbox
+            slug: sandbox
+            path: ./pages/disbursements/sandbox.mdx
+          - page: How Chariot Compares
+            slug: comparisons
+            path: ./pages/disbursements/how-chariot-compares.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/disbursements/faq.mdx
+  - tab: api
+    layout:
+      - api: API Reference
+        api-name: "2025-02-24"
+        flattened: true
+        skip-slug: true
+        display-errors: true
+        snippets:
+          typescript: "@chariot-giving/typescript-sdk"
+        playground:
+          environments:
+            - Sandbox
+        layout:
+          - section: Disbursements
+            skip-slug: true
+            icon: money-check
+            contents:
+              - financialAccounts:
+                  title: Financial Accounts
+              - inboundTransfers:
+                  title: Inbound Transfers
+              - disbursements
+  - tab: changelog

@@ -1,0 +1,13 @@
+navigation:
+  - section: Overview
+    contents:
+      - page: Integrating DafPay
+        path: ./pages/integrating-dafpay.mdx
+
+versions:
+  - display-name: v2025-02-24
+    path: ./versions/v2025-02-24/docs.yml
+    slug: v2025-02-24
+  - display-name: v2023-01-01
+    path: ./versions/v2023-01-01/docs.yml
+    slug: v2023-01-01
