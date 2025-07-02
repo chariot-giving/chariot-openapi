@@ -5,15 +5,21 @@ instances:
 title: Chariot
 
 products:
-  - display-name: Chariot
-    path: ./products/chariot/chariot.yml
+  - display-name: DAFpay
+    path: ./products/dafpay/dafpay.yml
     versions:
       - display-name: v2025-02-24
-        path: ./products/chariot/versions/v2025-02-24/docs.yml
+        path: ./products/dafpay/versions/v2025-02-24/docs.yml
         slug: v2025-02-24
       - display-name: v2023-01-01
-        path: ./products/chariot/versions/v2023-01-01/docs.yml
+        path: ./products/dafpay/versions/v2023-01-01/docs.yml
         slug: v2023-01-01
+  - display-name: Disbursements
+    path: ./products/disbursements/disbursements.yml
+    versions:
+      - display-name: v2025-02-24
+        path: ./products/disbursements/versions/v2025-02-24/docs.yml
+        slug: v2025-02-24
 
 logo:
   href: /
