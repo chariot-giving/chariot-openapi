@@ -329,52 +329,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update Grant
-      description: |-
-        Update a grant object with the given ID.
-        This can be used to update the status or acknowledgement of the grant.
-      operationId: update-grant
-      tags:
-        - Grants
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: |-
-            The unique id of the grant.
-            The format should be a v4 UUID according to RFC 4122.
-          schema:
-            type: string
-            format: uuid
-          required: true
-          example: 10229488-08d2-4629-b70c-a2f4f4d25344
-      requestBody:
-        $ref: "#/components/requestBodies/UpdateGrantRequest"
-      responses:
-        "200":
-          description: OK
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Grant"
-              examples:
-                Simple:
-                  $ref: "#/components/examples/GrantOutput"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+
   /v1/recurring_grants:
     get:
       summary: List Recurring Grants
