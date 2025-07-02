@@ -17,12 +17,6 @@ tabs:
 navigation:
   - tab: guides
     layout:
-      - section: Getting Started
-        skip-slug: true
-        contents:
-          - page: Navigating the Docs
-            slug: getting-started/navigating-the-docs
-            path: ./pages/getting-started/navigating-the-docs.mdx
       - section: Disbursements
         slug: disbursements
         contents:

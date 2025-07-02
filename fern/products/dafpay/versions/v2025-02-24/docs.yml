@@ -15,14 +15,6 @@ tabs:
     icon: light clock-rotate-left
     changelog: ../../changelog
 navigation:
-  - tab: guides
-    layout:
-      - section: Getting Started
-        skip-slug: true
-        contents:
-          - page: Navigating the Docs
-            slug: getting-started/navigating-the-docs
-            path: ./pages/getting-started/navigating-the-docs.mdx
   - tab: api
     layout:
       - api: API Reference
