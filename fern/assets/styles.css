@@ -13,3 +13,16 @@
 :is(.dark) .prose {
     color: #ffffff !important;
 } */
+
+/* Styling the version selector button */
+.fern-version-selector {
+    transform: translateY(1px);
+    border-radius: 1000px;
+    border: 1px solid var(--border);
+  }
+
+/* Styling the version selector dropdown */
+.fern-version-selector-radio-group {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
