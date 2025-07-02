@@ -14,7 +14,40 @@ tabs:
     display-name: Changelog
     icon: light clock-rotate-left
     changelog: ../../changelog
+
 navigation:
+  - tab: guides
+    layout:
+      - section: Implementation Guide
+        slug: dafpay
+        contents:
+          - page: Overview
+            slug: overview
+            path: ./pages/integrating-dafpay/overview.mdx
+          - section: Integrating DAFpay
+            slug: integrating-dafpay
+            contents:
+              - page: Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/integrating-dafpay/set-up.mdx
+              - page: Installing Connect
+                slug: installation
+                path: ./pages/integrating-dafpay/installation.mdx
+              - page: Integrating Connect
+                slug: integration
+                path: ./pages/integrating-dafpay/integration.mdx
+              - page: Transaction Management
+                slug: transactions
+                path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/integrating-dafpay/prod-keys.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
   - tab: api
     layout:
       - api: API Reference
