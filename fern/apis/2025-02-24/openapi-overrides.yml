@@ -38,10 +38,6 @@ paths:
       x-fern-sdk-group-name:
         - grants
       x-fern-sdk-method-name: get
-    patch:
-      x-fern-sdk-group-name:
-        - grants
-      x-fern-sdk-method-name: update
   /v1/recurring_grants:
     get:
       x-fern-pagination: true
@@ -68,10 +64,6 @@ paths:
       x-fern-sdk-group-name:
         - unintegrated_grants
       x-fern-sdk-method-name: get
-    patch:
-      x-fern-sdk-group-name:
-        - unintegrated_grants
-      x-fern-sdk-method-name: update
   /v1/dafs:
     get:
       x-fern-pagination: true

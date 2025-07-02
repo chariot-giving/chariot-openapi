@@ -32,8 +32,6 @@ All DAFpay grants from integrated providers will be marked with the `Initiated` 
 indicating that a grant was successfully submitted (but the DAF provider is still processing the gift).
 
 Once a nonprofit receives the funds from the DAF provider and identifies the specific grant line item using the trackingId/externalId, they should be able to manually update the status from `Initiated` to `Received` directly in your platform’s dashboard or on the Chariot dashboard.
-    
-If a grant status is updated in your fundraising platform’s dashboard, make sure to use the [Update Grant](/v2023-01-01/api/grants/update) API so we can reflect those changes on our end.
 
 If a grant status is updated directly on the Chariot dashboard, subscribe to the `grant.updated` [Webhook Event](https://docs.givechariot.com/api/webhooks) to receive notifications.
 
