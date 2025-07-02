@@ -42,22 +42,22 @@ navigation:
             contents:
               - page: Overview
                 slug: /
-                path: ./pages/api/overview.mdx
+                path: ../../../../pages/api/overview.mdx
               - page: Authentication
                 slug: authentication
-                path: ./pages/api/authentication-1.mdx
+                path: ../../../../pages/api/authentication-1.mdx
               - page: Errors
                 slug: errors
-                path: ./pages/api/errors-1.mdx
+                path: ../../../../pages/api/errors-1.mdx
               - page: Software Development Kits
                 slug: sdks
-                path: ./pages/api/sdk-1.mdx
+                path: ../../../../pages/api/sdk-1.mdx
               - page: Webhooks and Events
                 slug: webhooks
-                path: ./pages/api/webhooks-and-events.mdx
+                path: ../../../../pages/api/webhooks-and-events.mdx
               - page: Sandbox Simulations
                 slug: sandbox-simulations
-                path: ./pages/api/sandbox-simulations.mdx
+                path: ../../../../pages/api/sandbox-simulations.mdx
           - section: Core Resources
             skip-slug: true
             icon: network-wired
@@ -78,13 +78,4 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
-          - section: Disbursements
-            skip-slug: true
-            icon: money-check
-            contents:
-              - financialAccounts:
-                  title: Financial Accounts
-              - inboundTransfers:
-                  title: Inbound Transfers
-              - disbursements
   - tab: changelog
