@@ -19,7 +19,7 @@ api:
         login: https://chariot-sandbox.us.auth0.com
   specs:
     - openapi: ../../../specs/2023-01-01.yaml
-      overrides: ./openapi-overrides.yml
+      overrides: ../../products/dafpay/versions/2023-01-01/openapi-overrides.yml
 groups:
   ts-sdk:
     generators:
