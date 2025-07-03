@@ -101,7 +101,7 @@ paths:
       description: |-
         Get an existing connect or create a new connect for an existing nonprofit organization.
 
-        The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance from the Chariot API using the `x-chariot-api-key` header parameter.
+        The returned Connect can be used to integrate the client-side Chariot Connect component using the `id` property (CID) and also query for data generated from the Chariot Connect instance using the connect_id query parameter in any of the List Grants API endpoints.
 
         <Note>
         Only one Connect object can be created per organization.
@@ -202,13 +202,13 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: x-chariot-api-key
-          in: header
-          description: the `apiKey` of the Connect object
+        - name: connect_id
+          in: query
+          description: the `id` of the Connect object. This can be used to filter the grants by a specific Connect if you have more than one.
           schema:
             type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
+          required: false
+          example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -340,13 +340,13 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: x-chariot-api-key
-          in: header
-          description: the `apiKey` of the Connect object
+        - name: connect_id
+          in: query
+          description: the `id` of the Connect object. This can be used to filter the recurring grants by a specific Connect if you have more than one.
           schema:
             type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
+          required: false
+          example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -478,13 +478,13 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: x-chariot-api-key
-          in: header
-          description: the `apiKey` of the Connect object
+        - name: connect_id
+          in: query
+          description: the `id` of the Connect object. This can be used to filter the unintegrated grants by a specific Connect if you have more than one.
           schema:
             type: string
-          required: true
-          example: "live_xJd0lUrvpDkzeGBWZbuI2wbvEdM"
+          required: false
+          example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
