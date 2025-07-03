@@ -9,7 +9,7 @@ api:
       urls:
         api: https://sandboxapi.givechariot.com
   specs:
-    - openapi: ../../../specs/2025-02-24.yaml
+    - openapi: ../../../../../../specs/2025-02-24.yaml
       overrides: ./openapi-overrides.yml
 groups:
   ts-sdk:
