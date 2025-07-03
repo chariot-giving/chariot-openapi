@@ -80,9 +80,6 @@ navigation:
               - page: Webhooks and Events
                 slug: webhooks
                 path: ../../../../pages/api/webhooks-and-events.mdx
-              - page: Sandbox Simulations
-                slug: sandbox-simulations
-                path: ../../../../pages/api/sandbox-simulations.mdx
           - section: Core Resources
             skip-slug: true
             icon: network-wired

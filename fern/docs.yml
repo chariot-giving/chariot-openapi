@@ -7,6 +7,7 @@ title: Chariot
 products:
   - display-name: DAFpay
     path: ./products/dafpay/dafpay.yml
+    image: ./assets/favicon.png
     versions:
       - display-name: v2025-02-24
         path: ./products/dafpay/versions/v2025-02-24/docs.yml
@@ -16,6 +17,7 @@ products:
         slug: v2023-01-01
   - display-name: Disbursements
     path: ./products/disbursements/disbursements.yml
+    image: ./assets/favicon.png
     versions:
       - display-name: v2025-02-24
         path: ./products/disbursements/versions/v2025-02-24/docs.yml

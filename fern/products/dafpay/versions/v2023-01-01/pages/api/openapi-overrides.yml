@@ -3,16 +3,21 @@ x-fern-pagination:
   next_cursor: $response.nextPageToken
   results: $response.results
 paths:
-  /v1/organizations/search:
+  /v1/nonprofit/{ein}:
     get:
       x-fern-sdk-group-name:
-        - organizations
-      x-fern-sdk-method-name: search
-  /v1/organizations/{id}:
+        - nonprofits
+      x-fern-sdk-method-name: getByEin
+  /v1/nonprofits:
+    post:
+      x-fern-sdk-group-name:
+        - nonprofits
+      x-fern-sdk-method-name: create
+  /v1/nonprofits/{id}:
     get:
       x-fern-sdk-group-name:
-        - organizations
-      x-fern-sdk-method-name: get
+        - nonprofits
+      x-fern-sdk-method-name: getById
   /v1/connects:
     post:
       x-fern-sdk-group-name:
@@ -38,6 +43,10 @@ paths:
       x-fern-sdk-group-name:
         - grants
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: update
   /v1/recurring_grants:
     get:
       x-fern-pagination: true
@@ -64,6 +73,10 @@ paths:
       x-fern-sdk-group-name:
         - unintegrated_grants
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - unintegrated_grants
+      x-fern-sdk-method-name: update
   /v1/dafs:
     get:
       x-fern-pagination: true
@@ -111,52 +124,55 @@ paths:
       x-fern-sdk-group-name:
         - eventSubscriptions
       x-fern-sdk-method-name: update
-  /v1/financial_accounts:
-    get:
-      x-fern-sdk-group-name:
-        - financialAccounts
-      x-fern-sdk-method-name: list
-  /v1/financial_accounts/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - financialAccounts
-      x-fern-sdk-method-name: get
-  /v1/financial_accounts/{id}/balance:
-    get:
-      x-fern-sdk-group-name:
-        - financialAccounts
-      x-fern-sdk-method-name: getBalance
-  /v1/disbursements:
+  /oauth/token:
     post:
+      summary: Request an access token
+      description: Obtain an OAuth2 access token using client credentials
+      tags:
+        - Authentication
       x-fern-sdk-group-name:
-        - disbursements
-      x-fern-sdk-method-name: create
-    get:
-      x-fern-sdk-group-name:
-        - disbursements
-      x-fern-sdk-method-name: list
-  /v1/disbursements/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - disbursements
-      x-fern-sdk-method-name: get
-  /v1/inbound_transfers:
-    get:
-      x-fern-pagination: true
-      x-fern-sdk-group-name:
-        - inboundTransfers
-      x-fern-sdk-method-name: list
-    post:
-      x-fern-sdk-group-name:
-        - inboundTransfers
-      x-fern-sdk-method-name: create
-  /v1/inbound_transfers/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - inboundTransfers
-      x-fern-sdk-method-name: get
-  /v1/inbound_transfers/{id}/cancel:
-    post:
-      x-fern-sdk-group-name:
-        - inboundTransfers
-      x-fern-sdk-method-name: cancel
+        - auth
+      x-fern-sdk-method-name: getToken
+      x-fern-server-name: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                  description: The client ID of the application
+                client_secret:
+                  type: string
+                  description: The client secret of the application
+                audience:
+                  description: The API identifier
+                  x-fern-type: literal<"https://api.givechariot.com">
+                grant_type:
+                  x-fern-type: literal<"client_credentials">
+              required:
+                - client_id
+                - client_secret
+                - audience
+                - grant_type
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                x-fern-type-name: GetTokenResponse
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                  expires_in:
+                    type: integer
+                required:
+                  - access_token
+                  - token_type
+                  - expires_in
