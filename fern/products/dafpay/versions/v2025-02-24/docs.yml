@@ -1,6 +1,3 @@
-landing-page:
-  page: Chariot Documentation
-  path: pages/index.mdx
 tabs:
   guides:
     display-name: Guides
@@ -14,6 +11,10 @@ tabs:
     display-name: Changelog
     icon: light clock-rotate-left
     changelog: ../../changelog
+
+landing-page:
+  page: Chariot Documentation
+  path: pages/index.mdx
 
 navigation:
   - tab: guides
