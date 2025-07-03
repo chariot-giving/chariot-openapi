@@ -1,0 +1,28 @@
+tabs:
+  guides:
+    display-name: Guides
+    slug: guides
+    icon: light book-open
+  api:
+    display-name: API Reference
+    slug: api
+    icon: light code
+  changelog:
+    display-name: Changelog
+    icon: light clock-rotate-left
+    changelog: ../../changelog
+
+navigation:
+  - tab: guides
+    layout:
+      - section: Documentation
+        contents:
+          - page: Overview
+            path: ./versions/v2025-02-24/pages/index.mdx
+  - tab: api
+    layout:
+      - section: API Reference
+        contents:
+          - page: Overview
+            path: ../../pages/api/overview.mdx
+  - tab: changelog

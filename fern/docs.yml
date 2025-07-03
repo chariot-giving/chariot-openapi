@@ -1,15 +1,27 @@
 instances:
   - url: https://chariot.docs.buildwithfern.com
     custom-domain: docs.givechariot.com
+
 title: Chariot
 
-versions:
-  - display-name: v2025-02-24
-    path: versions/v2025-02-24/docs.yml
-    slug: v2025-02-24
-  - display-name: v2023-01-01
-    path: versions/v2023-01-01/docs.yml
-    slug: v2023-01-01
+products:
+  - display-name: DAFpay
+    path: ./products/dafpay/dafpay.yml
+    image: ./assets/favicon.png
+    versions:
+      - display-name: v2025-02-24
+        path: ./products/dafpay/versions/v2025-02-24/docs.yml
+        slug: v2025-02-24
+      - display-name: v2023-01-01
+        path: ./products/dafpay/versions/v2023-01-01/docs.yml
+        slug: v2023-01-01
+  - display-name: Disbursements
+    path: ./products/disbursements/disbursements.yml
+    image: ./assets/favicon.png
+    versions:
+      - display-name: v2025-02-24
+        path: ./products/disbursements/versions/v2025-02-24/docs.yml
+        slug: v2025-02-24
 
 logo:
   href: /

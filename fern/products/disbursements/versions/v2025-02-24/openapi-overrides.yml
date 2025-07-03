@@ -1,0 +1,100 @@
+x-fern-pagination:
+  cursor: $request.pageToken
+  next_cursor: $response.nextPageToken
+  results: $response.results
+paths:
+  /v1/organizations/search:
+    get:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: search
+  /v1/organizations/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: get
+  /v1/financial_accounts:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: list
+  /v1/financial_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: get
+  /v1/financial_accounts/{id}/balance:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: getBalance
+  /v1/disbursements:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: list
+  /v1/disbursements/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: get
+  /v1/inbound_transfers:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: create
+  /v1/inbound_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: get
+  /v1/inbound_transfers/{id}/cancel:
+    post:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: cancel
+  /v1/events:
+    get:
+      x-fern-pagination:
+        cursor: $request.cursor
+        next_cursor: $response.nextPageToken
+        results: $response.results
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: list
+  /v1/events/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: get
+  /v1/event_subscriptions:
+    get:
+      x-fern-pagination:
+        cursor: $request.cursor
+        next_cursor: $response.nextPageToken
+        results: $response.results
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: create
+  /v1/event_subscriptions/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: update

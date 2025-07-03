@@ -13,3 +13,26 @@
 :is(.dark) .prose {
     color: #ffffff !important;
 } */
+
+.fern-product-selector {
+    transform: translateY(2px);
+    border-radius: 1000px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .fern-version-selector {
+    transform: translateY(1px);
+    border-radius: 1000px;
+    border: 1px solid var(--border);
+  }
+
+  .fern-product-selector img,
+  .fern-product-selector-radio-group img {
+    width: 30px;
+    height: 30px;
+  }
+  .fern-product-selector-radio-group {
+    font-size: 12px;
+    font-weight: 400;
+  }
