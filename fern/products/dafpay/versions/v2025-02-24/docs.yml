@@ -52,7 +52,7 @@ navigation:
   - tab: api
     layout:
       - api: API Reference
-        api-name: "2025-02-24"
+        api-name: ./products/dafpay/versions/v2025-02-24/generators.yml
         flattened: true
         skip-slug: true
         display-errors: true
