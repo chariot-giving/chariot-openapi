@@ -1,0 +1,104 @@
+tabs:
+  guides:
+    display-name: Guides
+    slug: guides
+    icon: light book-open
+  api:
+    display-name: API Reference
+    slug: api
+    icon: light code
+  changelog:
+    display-name: Changelog
+    icon: light clock-rotate-left
+    changelog: ../../changelog
+
+landing-page:
+  page: Chariot Documentation
+  path: pages/index.mdx
+
+navigation:
+  - tab: guides
+    layout:
+      - section: Implementation Guide
+        slug: dafpay
+        contents:
+          - page: Overview
+            slug: overview
+            path: ./pages/integrating-dafpay/overview.mdx
+          - section: Integrating DAFpay
+            slug: integrating-dafpay
+            contents:
+              - page: Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/integrating-dafpay/set-up.mdx
+              - page: Installing Connect
+                slug: installation
+                path: ./pages/integrating-dafpay/installation.mdx
+              - page: Integrating Connect
+                slug: integration
+                path: ./pages/integrating-dafpay/integration.mdx
+              - page: Transaction Management
+                slug: transactions
+                path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/integrating-dafpay/prod-keys.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
+  - tab: api
+    layout:
+      - api: API Reference
+        api-name: ./products/dafpay/versions/v2025-02-24/generators.yml
+        flattened: true
+        skip-slug: true
+        display-errors: true
+        snippets:
+          typescript: "@chariot-giving/typescript-sdk"
+        playground:
+          environments:
+            - Sandbox
+        layout:
+          - section: Introduction
+            skip-slug: true
+            icon: book-open-cover
+            contents:
+              - page: Overview
+                slug: /
+                path: ../../../../pages/api/overview.mdx
+              - page: Authentication
+                slug: authentication
+                path: ../../../../pages/api/authentication-1.mdx
+              - page: Errors
+                slug: errors
+                path: ../../../../pages/api/errors-1.mdx
+              - page: Software Development Kits
+                slug: sdks
+                path: ../../../../pages/api/sdk-1.mdx
+              - page: Webhooks and Events
+                slug: webhooks
+                path: ../../../../pages/api/webhooks-and-events.mdx
+          - section: Core Resources
+            skip-slug: true
+            icon: network-wired
+            contents:
+              - organizations
+              - events
+              - eventSubscriptions:
+                  title: Event Subscriptions
+          - section: DAFpay
+            skip-slug: true
+            icon: box-heart
+            contents:
+              - connects
+              - grants
+              - recurringGrants:
+                  title: Recurring Grants
+              - unintegratedGrants:
+                  title: Unintegrated Grants
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
+  - tab: changelog
