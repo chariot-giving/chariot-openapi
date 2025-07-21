@@ -2041,7 +2041,7 @@ components:
           enum:
             - MONTHLY
           example: MONTHLY
-        externalGrantId:
+        externalRecurringGrantId:
           type: string
           description: ID of the grant associated with the donor advised fund
           example: 897823sdjf8sfjs
