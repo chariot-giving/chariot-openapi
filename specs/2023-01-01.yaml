@@ -1927,6 +1927,7 @@ components:
                   - "Initiated"
                   - "Completed"
                 example: "Completed"
+                required: true
               acknowledgedAt:
                 type: string
                 format: date-time
