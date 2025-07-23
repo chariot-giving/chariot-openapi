@@ -2456,6 +2456,7 @@ components:
           - `canceled`: The disbursement was canceled by the grantmaker
           - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
+          - `validating_organization`: Validating recipient organization’s payment and contact information before submission.
           - `pending_submission`: The disbursement is awaiting submission to the payment network
           - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
           - `stopped`: The disbursement payment was stopped after it was submitted
