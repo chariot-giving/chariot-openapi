@@ -2469,8 +2469,9 @@ components:
         - pending_approval
         - canceled
         - awaiting_verification
-        - pending_submission
         - rejected
+        - validating_organization
+        - pending_submission
         - submitted
         - stopped
         - completed
