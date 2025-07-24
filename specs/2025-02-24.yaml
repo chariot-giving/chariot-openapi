@@ -2978,12 +2978,8 @@ components:
         - "unintegrated_grant.updated"
         - "disbursement.created"
         - "disbursement.updated"
-        - "account_transfer.created"
-        - "account_transfer.updated"
-        - "ach_transfer.created"
-        - "ach_transfer.updated"
-        - "check_transfer.created"
-        - "check_transfer.updated"
+        - "inbound_transfer.created"
+        - "inbound_transfer.updated"
     Event:
       type: object
       description: |
