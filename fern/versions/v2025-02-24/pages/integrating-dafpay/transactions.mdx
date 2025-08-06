@@ -30,6 +30,9 @@ DAFpay provides unique identifiers to help nonprofits reconcile donations once t
 If you would like to include the name of the DAF provider on each grant in your dashboard (i.e., Fidelity Charitable),
 you can use the `fundId` from the Grant object to call the [Get DAF](/api/donor-advised-funds/get) API.
 
+<Warning>
+Some DAF providers do not send DAFpay Tracking IDs. If the Tracking ID and DAFpay note are not available, first check for an External Grant ID. If you cannot find one, use the donor’s fund name, gift amount, and other grant details to match the inbound gift to the correct DAFpay donation line item.
+</Warning>
 
 ## Grant Statuses
 
@@ -40,9 +43,6 @@ Once a nonprofit receives the funds from the DAF provider and identifies the spe
 
 Please subscribe to the `grant.updated` [Webhook Event](https://docs.givechariot.com/api/webhooks) to receive notifications when a grant status is updated on the Chariot dashboard so you can display the updated status on the fundraising platform dashboard.
 
-<Warning>
-Some DAF providers do not send DAFpay Tracking IDs. If the Tracking ID and DAFpay note are not available, first check for an External Grant ID. If you cannot find one, use the donor’s fund name, gift amount, and other grant details to match the inbound gift to the correct DAFpay donation line item.
-</Warning>
 
 ## Cancellations & Refunds
 
