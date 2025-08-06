@@ -1111,13 +1111,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
+          description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         isDafPayNetwork:
           type: boolean
@@ -1182,13 +1182,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
+          description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
     Connect:
       type: object
@@ -1222,13 +1222,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
+          description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         createdBy:
           type: string
@@ -1359,13 +1359,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -1486,13 +1486,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -1567,7 +1567,7 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         status:
           type: string
@@ -1627,13 +1627,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -1821,7 +1821,7 @@ components:
       properties:
         timestamp:
           type: string
-          description: time when the error was reported. Expressed in ISO 8601 format.
+          description: time when the error was reported. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         code:
           type: number
@@ -1935,7 +1935,7 @@ components:
                 description: |-
                   The date and time the grant was acknowledged by the nonprofit.
                   This is useful for nonprofits to indicate when they have received and processed the grant.
-                  Expressed in ISO 8601 format.
+                  Expressed in RFC 3339 format.
                 example: "2020-01-31T23:00:00Z"
     RecurringGrantCaptureRequest:
       description: |-

@@ -1631,13 +1631,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
+          description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         updated_at:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
     TaxExemptCode:
       type: object
@@ -1785,13 +1785,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
+          description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         createdBy:
           type: string
@@ -1922,13 +1922,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -2049,13 +2049,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -2130,7 +2130,7 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         status:
           type: string
@@ -2190,13 +2190,13 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
+          description: Time when this object was created; expressed in RFC 3339 format
           example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
+          description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
           type: number
@@ -2488,7 +2488,7 @@ components:
         canceled_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was canceled.
+          description: The RFC 3339 date and time at which the Disbursement was canceled.
           example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementApproval:
@@ -2503,7 +2503,7 @@ components:
         approved_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was approved.
+          description: The RFC 3339 date and time at which the Disbursement was approved.
           example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementRejection:
@@ -2535,7 +2535,7 @@ components:
         rejected_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was rejected.
+          description: The RFC 3339 date and time at which the Disbursement was rejected.
           example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementTransfer:
@@ -3071,7 +3071,7 @@ components:
       properties:
         timestamp:
           type: string
-          description: time when the error was reported. Expressed in ISO 8601 format.
+          description: time when the error was reported. Expressed in RFC 3339 format.
           example: "2020-01-31T23:00:00Z"
         code:
           type: number
