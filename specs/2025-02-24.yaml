@@ -1631,14 +1631,14 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:00:00Z"
         updated_at:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
-          example: "2021-07-11 15:34:00.000"
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
     TaxExemptCode:
       type: object
       description: |-
@@ -1728,7 +1728,7 @@ components:
           type: string
           format: date-time
           description: The date and time when the compliance requirement was last found
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
     WebDomain:
       type: object
       description: |-
@@ -1785,14 +1785,14 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated. Expressed in ISO 8601 format.
-          example: "2021-07-11 15:34:00.000"
+          description: Time when this object was last updated. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
         createdBy:
           type: string
           readOnly: true
@@ -1922,14 +1922,14 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created; expressed in RFC 3339 format
+          example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
-          example: "2021-07-11 15:34:00.000"
+          description: Time when this object was last updated; expressed in RFC 3339 format
+          example: "2020-01-31T23:59:59Z"
         amount:
           type: number
           format: integer
@@ -2049,14 +2049,14 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created; expressed in RFC 3339 format
+          example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
-          example: "2021-07-11 15:34:00.000"
+          description: Time when this object was last updated; expressed in RFC 3339 format
+          example: "2020-01-31T23:59:59Z"
         amount:
           type: number
           format: integer
@@ -2130,8 +2130,8 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created; expressed in RFC 3339 format
+          example: "2020-01-31T23:00:00Z"
         status:
           type: string
           enum:
@@ -2190,14 +2190,14 @@ components:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was created; expressed in ISO 8601 format
-          example: "2020-07-10 15:00:00.000"
+          description: Time when this object was created; expressed in RFC 3339 format
+          example: "2020-01-31T23:00:00Z"
         updatedAt:
           type: string
           readOnly: true
           format: date-time
-          description: Time when this object was last updated; expressed in ISO 8601 format
-          example: "2021-07-11 15:34:00.000"
+          description: Time when this object was last updated; expressed in RFC 3339 format
+          example: "2020-01-31T23:59:59Z"
         amount:
           type: number
           format: integer
@@ -2283,12 +2283,12 @@ components:
           type: string
           format: date-time
           description: The date and time the account was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         updated_at:
           type: string
           format: date-time
           description: The date and time the account was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
     FinancialAccountBalance:
       type: object
       required:
@@ -2308,7 +2308,7 @@ components:
           type: string
           format: date-time
           description: The time the balance was retrieved
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
     Address:
       type: object
       required:
@@ -2417,13 +2417,13 @@ components:
           type: string
           format: date-time
           description: The date and time the disbursement was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         updated_at:
           type: string
           format: date-time
           description: The date and time the disbursement was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         status:
           $ref: "#/components/schemas/DisbursementStatus"
@@ -2488,8 +2488,8 @@ components:
         canceled_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was canceled.
-          example: "2020-07-10 15:00:00.000"
+          description: The RFC 3339 date and time at which the Disbursement was canceled.
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementApproval:
       type: object
@@ -2503,8 +2503,8 @@ components:
         approved_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was approved.
-          example: "2020-07-10 15:00:00.000"
+          description: The RFC 3339 date and time at which the Disbursement was approved.
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementRejection:
       type: object
@@ -2535,8 +2535,8 @@ components:
         rejected_at:
           type: string
           format: date-time
-          description: The ISO 8601 date and time at which the Disbursement was rejected.
-          example: "2020-07-10 15:00:00.000"
+          description: The RFC 3339 date and time at which the Disbursement was rejected.
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     DisbursementTransfer:
       type: object
@@ -2576,7 +2576,7 @@ components:
           type: string
           format: date-time
           description: The date and time the account transfer was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     AchTransfer:
       type: object
@@ -2636,13 +2636,13 @@ components:
           description: |-
             The ACH transfer's effective date as sent to the Federal Reserve.
             This is the date the funds will be available to the receiving organization.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         submitted_at:
           type: string
           format: date-time
           description: |-
             The date and time the ACH transfer was submitted to the Federal Reserve.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         settled_at:
           type: string
           format: date-time
@@ -2668,13 +2668,13 @@ components:
           type: string
           format: date-time
           description: The date and time the ACH transfer was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         updated_at:
           type: string
           format: date-time
           description: The date and time the ACH transfer was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     CheckTransfer:
       type: object
@@ -2745,32 +2745,32 @@ components:
           type: string
           format: date-time
           description: The date and time the check was submitted to the carrier.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         canceled_at:
           type: string
           format: date-time
           description: The date and time the check was canceled.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         stopped_at:
           type: string
           format: date-time
           description: The date and time the check was stopped.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         deposited_at:
           type: string
           format: date-time
           description: The date and time the check was deposited.
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         created_at:
           type: string
           format: date-time
           description: The date and time the check transfer was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
         updated_at:
           type: string
           format: date-time
           description: The date and time the check transfer was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
     TrackingUpdate:
       type: object
       description: The tracking update for the check
@@ -2797,7 +2797,7 @@ components:
           type: string
           format: date-time
           description: The date and time the tracking update was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
     StopDisbursementPaymentReason:
       type: string
       description: |-
@@ -2857,13 +2857,13 @@ components:
           type: string
           format: date-time
           description: The date and time the inbound transfer was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         updated_at:
           type: string
           format: date-time
           description: The date and time the inbound transfer was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
     Transaction:
       type: object
@@ -2897,13 +2897,13 @@ components:
           type: string
           format: date-time
           description: The date and time the transaction was created
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         updated_at:
           type: string
           format: date-time
           description: The date and time the transaction was last updated
-          example: "2020-07-10 15:00:00.000"
+          example: "2020-01-31T23:00:00Z"
           readOnly: true
         metadata:
           type: object
@@ -3071,8 +3071,8 @@ components:
       properties:
         timestamp:
           type: string
-          description: time when the error was reported. Expressed in ISO 8601 format.
-          example: "2020-07-10 15:00:00.000"
+          description: time when the error was reported. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:00:00Z"
         code:
           type: number
           description: HTTP status code of the error
@@ -3777,7 +3777,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 400
             error: "Bad Request"
             message: "Expected an API key to be provided in the header `x-chariot-api-key`"
@@ -3791,7 +3791,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 401
             error: "Unauthorized"
             message: "Unauthorized"
@@ -3805,7 +3805,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 403
             error: "Forbidden"
             message: "User is not allowed to access this resource"
@@ -3819,7 +3819,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 404
             error: "Not Found"
             message: "Resource is not found"
@@ -3833,7 +3833,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 409
             error: "Conflict"
             message: "Request conflicts with an already existing resource"
@@ -3847,7 +3847,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 410
             error: "Gone"
             message: "The resource has expired"
@@ -3861,7 +3861,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 412
             error: "Precondition Failed"
             message: "The requested action has a failed precondition"
@@ -3875,7 +3875,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            timestamp: "2020-07-10 15:00:00.000"
+            timestamp: "2020-01-31T23:00:00Z"
             code: 500
             error: "Internal server error"
             message: "The server encountered an error processing your request"
@@ -3887,7 +3887,7 @@ components:
         name: "American Red Cross"
         ein: "530196605"
         createdAt: "2021-07-10 15:00:00.000"
-        updatedAt: "2021-07-11 15:34:00.000"
+        updatedAt: "2020-01-31T23:59:59Z"
         isDafPayNetwork: false
         inGoodStanding: true
     ConnectOutput:
@@ -3898,7 +3898,7 @@ components:
         apiKey: "test_98235982835"
         active: true
         createdAt: "2021-07-10 15:00:00.000"
-        updatedAt: "2021-07-11 15:34:00.000"
+        updatedAt: "2020-01-31T23:59:59Z"
         createdBy: "user123"
         metadata:
           tag1: "value1"
