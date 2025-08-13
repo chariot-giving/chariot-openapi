@@ -103,7 +103,6 @@ The given donation data must match the following schema to be accepted by Chario
 | metadata    | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                   | object (optional) |
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
 | frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [section below](/guides/dafpay/integrating-dafpay/integration#recurring-donations) | string (optional) |
-| lockedAmount| Indicates if the donation amount should be locked in the modal (not recommend)                                                                                                                                                                        | boolean (optional)|
 
 <Warning title="Data Validation">
 To prevent request failures, any inputs exceeding the maximum allowed length will be automatically truncated.
