@@ -1621,24 +1621,6 @@ components:
           type: string
           description: The title or role of the person with respect to the nonprofit entity
           example: Executive Director
-        email:
-          type: string
-          description: The email address of the person
-          example: johndoe@example.com
-        physical_address:
-          $ref: "#/components/schemas/Address"
-        created_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was created. Expressed in RFC 3339 format.
-          example: "2020-01-31T23:00:00Z"
-        updated_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: Time when this object was last updated. Expressed in RFC 3339 format.
-          example: "2020-01-31T23:59:59Z"
     TaxExemptCode:
       type: object
       description: |-
