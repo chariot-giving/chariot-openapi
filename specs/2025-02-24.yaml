@@ -564,6 +564,8 @@ paths:
       operationId: list-dafs
       tags:
         - Donor Advised Funds
+      security:
+        - bearerAuth: []
       parameters:
         - name: supportedOnly
           in: query
@@ -595,6 +597,8 @@ paths:
           $ref: "#/components/responses/ListDafsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
@@ -605,6 +609,8 @@ paths:
       operationId: get-daf
       tags:
         - Donor Advised Funds
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -631,6 +637,8 @@ paths:
                   $ref: "#/components/examples/DafOutput"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
         "404":
           $ref: "#/components/responses/NotFoundError"
         "500":
