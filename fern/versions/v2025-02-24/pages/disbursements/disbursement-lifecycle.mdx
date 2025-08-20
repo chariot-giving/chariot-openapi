@@ -34,18 +34,17 @@ Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depen
 
 ## Just-In-Time (JIT) Disbursements
 
-Just-In-Time disbursements enable grantmakers to create and send disbursements without needing to pre-fund their Chariot Deposit Account. When a disbursement with auto-funding enabled is approved, Chariot automatically creates an inbound transfer for the exact disbursement amount, funding the payment in real-time.
+Just-In-Time disbursements enable grantmakers to create and send disbursements without needing to pre-fund their Chariot Deposit Account. When a disbursement with auto-funding enabled is approved, Chariot automatically creates an inbound transfer for the exact disbursement amount by immediately initiating an ACH debit.
 
 <Note>
-JIT disbursements is an optional feature that must be enabled on a per-grantmaker basis. Contact Chariot to enable this feature for your account.
+JIT disbursements is an optional feature that must be enabled on a per-account basis. Contact Chariot to enable this feature for your account.
 </Note>
 
 ### How JIT Disbursements Work
 
 1. **Create Disbursement**: Create a disbursement with `auto_fund` set to `true`
-2. **Approval**: When the disbursement is approved (either manually or via auto-approval)
-3. **Auto-Funding**: Chariot automatically creates an inbound transfer for the disbursement amount
-4. **Execution**: The disbursement is not tied to the specific auto-funded transfer. Instead, it executes like any other disbursement when the required funds are available in your account
+2. **Approval & Auto-Funding**: When the disbursement is approved (either manually or via auto-approval), Chariot automatically creates an inbound transfer for the disbursement amount
+3. **Execution**: The disbursement is not tied to the specific auto-funded transfer. Instead, it executes like any other disbursement when the required funds are available in your account
 
 This eliminates the need to manually manage the funding of your account for each disbursement.
 
