@@ -2403,6 +2403,12 @@ components:
           description: |
             A description of the disbursement that will be displayed to the receiving organization.
           example: "Disbursement to nonprofit"
+        auto_fund:
+          type: boolean
+          description: |-
+            Whether just-in-time (JIT) funding is enabled for this disbursement. When true, Chariot automatically creates an inbound transfer for the disbursement amount when it is approved.
+          example: false
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -3303,6 +3309,12 @@ components:
                 description: |-
                   A description of the disbursement that will be displayed to the receiving organization.
                 example: "Disbursement to nonprofit"
+              auto_fund:
+                type: boolean
+                description: |-
+                  Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
+                example: false
+                default: false
               transactions:
                 type: array
                 description: |-
