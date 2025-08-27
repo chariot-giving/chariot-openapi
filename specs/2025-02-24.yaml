@@ -27,18 +27,27 @@ paths:
       security:
         - bearerAuth: []
       parameters:
+        - name: q
+          in: query
+          description: |-
+            The query string to search for. If this is in the format of an EIN, the search will be limited exclusively to the organization with that EIN. Otherwise, this will be a fuzzy search on organization name.
+          schema:
+            type: string
+            required: true
         - name: ein
           in: query
           description: |-
-            The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
+            The Employer Identification Number (EIN) or TaxID for the nonprofit entity. This is deprecated in favor of the `q` parameter.
           schema:
             type: string
+          deprecated: true
         - name: name
           in: query
           description: |-
-            The name of the organization.
+            The name of the organization. This is deprecated in favor of the `q` parameter.
           schema:
             type: string
+          deprecated: true
         - name: limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
