@@ -245,11 +245,12 @@ paths:
       summary: Create Grant
       description: |-
         Create and submit a new grant. This should be used to capture a grant intent from an authorized DAFpay workflow session and submit the grant request to the DAF sponsor.
+        On initial creation of the grant, this request will return a 201 Created status. On subsequent requests, the request will return status 200 OK.
 
         <Warning>
         Error handling:
         - The grant must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
-        - A grant can only be captured once from any given workflow session so any duplicate requests will return status `409 Conflict`.
+        - If this request is submitted while this grant is already being processed, the request will return status `409 Conflict`.
         - The amount must be in whole dollar increments (rounded to the nearest hundred) as currently DAFs only accept whole dollar grants otherwise the request will return status `400 Bad Request`.
         - The amount must be greater than or equal to the minimum grant amount for the DAF otherwise the request will return status `400 Bad Request`.
         - The amount must be less than or equal to the user's DAF account balance otherwise the request will return status `400 Bad Request`.
@@ -273,6 +274,15 @@ paths:
               schema:
                 type: string
                 format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/GrantOutput"
+        "200":
+          description: The grant
           content:
             application/json:
               schema:
