@@ -1046,6 +1046,62 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/bulk:
+    post:
+      summary: Create multiple disbursements
+      description: |
+        Create multiple disbursements in a single request.
+        This is useful for batch operations where you need to create many disbursements at once.
+
+        All disbursements in the request will be created together. If any disbursement fails validation,
+        the entire request will fail and no disbursements will be created.
+      operationId: bulkCreateDisbursements
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - disbursements
+              properties:
+                disbursements:
+                  type: array
+                  description: Array of disbursements to create
+                  minItems: 1
+                  items:
+                    $ref: "#/components/schemas/CreateDisbursementInput"
+      responses:
+        "201":
+          description: The disbursements were created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - disbursements
+                  - count
+                properties:
+                  disbursements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Disbursement"
+                  count:
+                    type: integer
+                    description: The number of disbursements created
+                    example: 5
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
   /v1/disbursements/{id}:
     get:
       summary: Get a disbursement
@@ -1117,6 +1173,65 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/disbursements/approve:
+    post:
+      summary: Approve multiple disbursements
+      description: |
+        Approve multiple disbursements in a single request.
+        This is useful for batch approval operations.
+
+        All disbursements must be in the `pending_approval` state. If any disbursement
+        cannot be approved, the entire request will fail and no disbursements will be approved.
+      operationId: bulkApproveDisbursements
+      tags:
+        - disbursements
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - disbursement_ids
+              properties:
+                disbursement_ids:
+                  type: array
+                  description: Array of disbursement IDs to approve
+                  minItems: 1
+                  items:
+                    type: string
+                    example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursements were approved
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - disbursements
+                  - count
+                properties:
+                  disbursements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Disbursement"
+                  count:
+                    type: integer
+                    description: The number of disbursements approved
+                    example: 5
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements/{id}/cancel:
     post:
       summary: Cancel a pending disbursement
@@ -1153,14 +1268,21 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/disbursements/{id}/stop_payment:
+  /v1/disbursements/{id}/stop:
     post:
       summary: Stop payment for a disbursement
       description: |
-        Stop payment for a disbursement.
-        This only applies for disbursements that are submitted as check transfers.
-        If the disbursement is not in a `submitted` state, this will return a 412 Precondition Failed error.
-      operationId: stopDisbursementPayment
+        Stop payment for a disbursement sent via check.
+
+        This prevents the recipient from depositing the check. If the check has already been deposited, the stop payment request will fail.
+
+        **Requirements:**
+        - Disbursement must be in `submitted` status
+        - Disbursement must be sent via check
+        - Check must not have already been deposited
+
+        After successfully stopping payment, the disbursement status will be updated to `stopped`.
+      operationId: stopDisbursement
       tags:
         - disbursements
       security:
@@ -1174,7 +1296,7 @@ paths:
             type: string
           example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       requestBody:
-        $ref: "#/components/requestBodies/StopDisbursementPaymentRequest"
+        $ref: "#/components/requestBodies/StopDisbursementRequest"
       responses:
         "202":
           description: The stop payment request was accepted
@@ -1194,8 +1316,10 @@ paths:
     post:
       summary: "Sandbox: Complete a disbursement"
       description: |
-        Simulates disbursement completion.
+        Simulates successful disbursement completion for testing purposes.
         The disbursement must have a status of `submitted`.
+
+        After calling this endpoint, the disbursement status will be updated to `completed`.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
@@ -1226,18 +1350,21 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/simulations/disbursements/{id}/return:
+  /v1/simulations/disbursements/{id}/fail:
     post:
-      summary: "Sandbox: Return a disbursement"
+      summary: "Sandbox: Fail a disbursement"
       description: |
-        Simulates returning a disbursement.
-        This disbursement must have a status of `submitted`.
-        This only applies for disbursements that are submitted as ACH or check transfers.
+        Simulates a payment failure or return for testing purposes.
+        The disbursement must have a status of `submitted`.
+        This only applies for disbursements sent via ACH or check.
+
+        - **ACH disbursements**: Status becomes `failed` (payment was returned and cannot be retried)
+        - **Check disbursements**: Status becomes `validating_organization` (check was returned). When this happens, Chariot will investigate why the check failed to reach the organization, update any required recipient information (such as mailing address or organization contact details), and automatically reattempt payout once the issue is resolved.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
-      operationId: simulateDisbursementReturn
+      operationId: simulateDisbursementFailure
       tags:
         - disbursements
       security:
@@ -1252,7 +1379,7 @@ paths:
           example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
       responses:
         "202":
-          description: The disbursement return request was accepted
+          description: The disbursement failure simulation was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1495,6 +1622,72 @@ components:
       type: http
       scheme: bearer
   schemas:
+    CreateDisbursementInput:
+      type: object
+      description: |-
+        The request to create a disbursement and its corresponding transactions.
+        The organization and amount are required.
+        The transactions array should contain the list of transactions associated with the disbursement. The amounts
+        in the transactions should sum up to the disbursement amount.
+      required:
+        - organization_id
+        - amount
+        - transactions
+      properties:
+        organization_id:
+          type: string
+          description: The ID of the organization that will receive the disbursement.
+          example: "org_1234567890"
+        amount:
+          type: integer
+          format: int64
+          description: The disbursement amount in USD cents. Must be a positive amount.
+          example: 10000
+        description:
+          type: string
+          description: |-
+            A description of the disbursement that will be displayed to the receiving organization.
+          example: "Disbursement to nonprofit"
+        auto_fund:
+          type: boolean
+          description: |-
+            Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
+          example: false
+          default: false
+        transactions:
+          type: array
+          description: |-
+            The list of transactions associated with the disbursement.
+            Each transaction is an individual donation to be included in the disbursement.
+            Must specify at least one transaction.
+          items:
+            type: object
+            description: |
+              An individual donation to be included in the disbursement.
+            required:
+              - amount
+              - type
+            properties:
+              amount:
+                type: integer
+                format: int64
+                description: The transaction amount in minor currency units (cents)
+                example: 10000
+              description:
+                type: string
+                description: |
+                  A description of the donation.
+                  This description is displayed to the receiving organization.
+                example: "Donation to nonprofit"
+              type:
+                $ref: "#/components/schemas/DonationType"
+              donor_advised_fund_grant:
+                $ref: "#/components/schemas/DonorAdvisedFundGrant"
+              metadata:
+                type: object
+                description: Additional metadata for the transaction
+                additionalProperties:
+                  type: string
     OrganizationSummary:
       type: object
       description: |-
@@ -3299,82 +3492,11 @@ components:
                 additionalProperties:
                   type: string
     CreateDisbursementRequest:
-      description: |-
-        The request to create a disbursement and its corresponding transactions.
-        The organization and amount are required.
-        The transactions array should contain the list of transactions associated with the disbursement. The amounts
-        in the transactions should sum up to the disbursement amount.
       required: true
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - organization_id
-              - amount
-              - transactions
-            properties:
-              organization_id:
-                type: string
-                description: The ID of the organization that will receive the disbursement.
-                example: "org_1234567890"
-              amount:
-                type: integer
-                format: int64
-                description: The disbursement amount in USD cents. Must be a positive amount.
-                example: 10000
-              description:
-                type: string
-                description: |-
-                  A description of the disbursement that will be displayed to the receiving organization.
-                example: "Disbursement to nonprofit"
-              auto_fund:
-                type: boolean
-                description: |-
-                  Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
-                example: false
-                default: false
-              transactions:
-                type: array
-                description: |-
-                  The list of transactions associated with the disbursement.
-                  Each transaction is an individual donation to be included in the disbursement.
-                  Must specify at least one transaction.
-                items:
-                  type: object
-                  description: |
-                    An individual donation to be included in the disbursement.
-                  required:
-                    - amount
-                    - type
-                  properties:
-                    amount:
-                      type: integer
-                      format: int64
-                      description: The transaction amount in minor currency units (cents)
-                      example: 10000
-                    description:
-                      type: string
-                      description: |
-                        A description of the donation.
-                        This description is displayed to the receiving organization.
-                      example: "Donation to nonprofit"
-                    type:
-                      $ref: "#/components/schemas/DonationType"
-                    donor_advised_fund_grant:
-                      $ref: "#/components/schemas/DonorAdvisedFundGrant"
-                    # TODO: we don't have the ability to create files yet, so leaving this out for now
-                    # attachment_file_id:
-                    #   type: string
-                    #   description: |-
-                    #     The unique identifier for the file that is attached to the transaction.
-                    #     This is useful if you want to attach a letter or another document to the transaction.
-                    #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
-                    metadata:
-                      type: object
-                      description: Additional metadata for the transaction
-                      additionalProperties:
-                        type: string
+            $ref: "#/components/schemas/CreateDisbursementInput"
           examples:
             MultipleTransactions:
               summary: Disbursement with multiple transactions
@@ -3450,7 +3572,7 @@ components:
                 type: string
                 description: An arbitrary string attached to the object. Often useful for displaying to users.
                 example: "Inbound ACH Transfer from my bank account"
-    StopDisbursementPaymentRequest:
+    StopDisbursementRequest:
       description: The request body for stopping a disbursement payment
       required: true
       content:
