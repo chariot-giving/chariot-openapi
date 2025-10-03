@@ -1074,57 +1074,7 @@ paths:
                   description: Array of disbursements to create
                   minItems: 1
                   items:
-                    type: object
-                    required:
-                      - organization_id
-                      - amount
-                      - transactions
-                    properties:
-                      organization_id:
-                        type: string
-                        description: The unique identifier for the recipient organization
-                        example: "org_01j8rs605a4gctmbm58d87mvsj"
-                      amount:
-                        type: integer
-                        format: int64
-                        description: The total amount to disburse in cents
-                        example: 50000
-                      description:
-                        type: string
-                        description: Optional description for the disbursement
-                        example: "Q4 2024 Grant"
-                      auto_fund:
-                        type: boolean
-                        description: If true and auto-funding is enabled for your account, an inbound transfer will be automatically created to fund this disbursement
-                        default: false
-                      transactions:
-                        type: array
-                        description: Array of transactions that make up this disbursement
-                        minItems: 1
-                        items:
-                          type: object
-                          required:
-                            - amount
-                            - type
-                          properties:
-                            amount:
-                              type: integer
-                              format: int64
-                              description: The transaction amount in minor currency units (cents)
-                              example: 10000
-                            description:
-                              type: string
-                              description: A description of the donation
-                              example: "Donation to nonprofit"
-                            type:
-                              $ref: "#/components/schemas/DonationType"
-                            donor_advised_fund_grant:
-                              $ref: "#/components/schemas/DonorAdvisedFundGrant"
-                            metadata:
-                              type: object
-                              description: Additional metadata for the transaction
-                              additionalProperties:
-                                type: string
+                    $ref: "#/components/schemas/CreateDisbursementInput"
       responses:
         "201":
           description: The disbursements were created
@@ -1328,7 +1278,7 @@ paths:
 
         **Requirements:**
         - Disbursement must be in `submitted` status
-        - Disbursement must be sent via check (mailed physical check)
+        - Disbursement must be sent via check
         - Check must not have already been deposited
 
         After successfully stopping payment, the disbursement status will be updated to `stopped`.
@@ -1672,6 +1622,72 @@ components:
       type: http
       scheme: bearer
   schemas:
+    CreateDisbursementInput:
+      type: object
+      description: |-
+        The request to create a disbursement and its corresponding transactions.
+        The organization and amount are required.
+        The transactions array should contain the list of transactions associated with the disbursement. The amounts
+        in the transactions should sum up to the disbursement amount.
+      required:
+        - organization_id
+        - amount
+        - transactions
+      properties:
+        organization_id:
+          type: string
+          description: The ID of the organization that will receive the disbursement.
+          example: "org_1234567890"
+        amount:
+          type: integer
+          format: int64
+          description: The disbursement amount in USD cents. Must be a positive amount.
+          example: 10000
+        description:
+          type: string
+          description: |-
+            A description of the disbursement that will be displayed to the receiving organization.
+          example: "Disbursement to nonprofit"
+        auto_fund:
+          type: boolean
+          description: |-
+            Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
+          example: false
+          default: false
+        transactions:
+          type: array
+          description: |-
+            The list of transactions associated with the disbursement.
+            Each transaction is an individual donation to be included in the disbursement.
+            Must specify at least one transaction.
+          items:
+            type: object
+            description: |
+              An individual donation to be included in the disbursement.
+            required:
+              - amount
+              - type
+            properties:
+              amount:
+                type: integer
+                format: int64
+                description: The transaction amount in minor currency units (cents)
+                example: 10000
+              description:
+                type: string
+                description: |
+                  A description of the donation.
+                  This description is displayed to the receiving organization.
+                example: "Donation to nonprofit"
+              type:
+                $ref: "#/components/schemas/DonationType"
+              donor_advised_fund_grant:
+                $ref: "#/components/schemas/DonorAdvisedFundGrant"
+              metadata:
+                type: object
+                description: Additional metadata for the transaction
+                additionalProperties:
+                  type: string
     OrganizationSummary:
       type: object
       description: |-
@@ -3476,82 +3492,11 @@ components:
                 additionalProperties:
                   type: string
     CreateDisbursementRequest:
-      description: |-
-        The request to create a disbursement and its corresponding transactions.
-        The organization and amount are required.
-        The transactions array should contain the list of transactions associated with the disbursement. The amounts
-        in the transactions should sum up to the disbursement amount.
       required: true
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - organization_id
-              - amount
-              - transactions
-            properties:
-              organization_id:
-                type: string
-                description: The ID of the organization that will receive the disbursement.
-                example: "org_1234567890"
-              amount:
-                type: integer
-                format: int64
-                description: The disbursement amount in USD cents. Must be a positive amount.
-                example: 10000
-              description:
-                type: string
-                description: |-
-                  A description of the disbursement that will be displayed to the receiving organization.
-                example: "Disbursement to nonprofit"
-              auto_fund:
-                type: boolean
-                description: |-
-                  Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
-                example: false
-                default: false
-              transactions:
-                type: array
-                description: |-
-                  The list of transactions associated with the disbursement.
-                  Each transaction is an individual donation to be included in the disbursement.
-                  Must specify at least one transaction.
-                items:
-                  type: object
-                  description: |
-                    An individual donation to be included in the disbursement.
-                  required:
-                    - amount
-                    - type
-                  properties:
-                    amount:
-                      type: integer
-                      format: int64
-                      description: The transaction amount in minor currency units (cents)
-                      example: 10000
-                    description:
-                      type: string
-                      description: |
-                        A description of the donation.
-                        This description is displayed to the receiving organization.
-                      example: "Donation to nonprofit"
-                    type:
-                      $ref: "#/components/schemas/DonationType"
-                    donor_advised_fund_grant:
-                      $ref: "#/components/schemas/DonorAdvisedFundGrant"
-                    # TODO: we don't have the ability to create files yet, so leaving this out for now
-                    # attachment_file_id:
-                    #   type: string
-                    #   description: |-
-                    #     The unique identifier for the file that is attached to the transaction.
-                    #     This is useful if you want to attach a letter or another document to the transaction.
-                    #   example: "file_1LaXpKGUcADgqoEMl0Cx0Ygg"
-                    metadata:
-                      type: object
-                      description: Additional metadata for the transaction
-                      additionalProperties:
-                        type: string
+            $ref: "#/components/schemas/CreateDisbursementInput"
           examples:
             MultipleTransactions:
               summary: Disbursement with multiple transactions
