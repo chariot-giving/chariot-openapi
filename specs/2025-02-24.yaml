@@ -1409,7 +1409,7 @@ paths:
         This only applies for disbursements sent via ACH or check.
 
         - **ACH disbursements**: Status becomes `failed` (payment was returned and cannot be retried)
-        - **Check disbursements**: Status becomes `validating_organization` (check was returned, can be reissued after updating recipient information)
+        - **Check disbursements**: Status becomes `validating_organization` (check was returned). When this happens, Chariot will investigate why the check failed to reach the organization, update any required recipient information (such as mailing address or organization contact details), and automatically reattempt payout once the issue is resolved.
 
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
