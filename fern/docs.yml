@@ -20,6 +20,10 @@ logo:
 favicon: assets/favicon.png
 css: assets/styles.css
 
+settings:
+  hide-404-page: true
+  http-snippets: false
+
 layout:
   page-width: full
   disable-header: false
