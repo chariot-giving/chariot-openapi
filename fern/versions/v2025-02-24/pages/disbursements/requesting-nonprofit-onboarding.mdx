@@ -1,0 +1,53 @@
+---
+title: "Requesting Nonprofit Onboarding"
+subtitle: ""
+hidden: false
+createdAt: "Fri Oct 17 2025 12:00:00 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 17 2025 12:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+
+When a nonprofit doesn't exist in Chariot's system, you can request their onboarding using the [Create Request](/api/organizations/create-missing-ein-onboarding-request) endpoint. Once approved, you'll be able to send disbursements to them.
+
+## How It Works
+
+1. Search for a nonprofit using the [Search Organizations](/api/organizations/search-organizations) endpoint
+2. If not found, create an onboarding request with the nonprofit's EIN and contact information
+3. The nonprofit receives an invitation email (if contact email provided)
+4. Track the request status using the [List Requests](/api/organizations/list-missing-ein-onboarding-requests) endpoint
+5. Once approved, the nonprofit appears in organization searches
+
+## Request Status
+
+| Status | Description |
+|--------|-------------|
+| `pending_invite` | Request created but invitation not yet sent to the nonprofit |
+| `request_sent` | Invitation email has been sent to the nonprofit's contact |
+| `started_onboarding` | Nonprofit has begun filling out their onboarding application |
+| `in_review` | Nonprofit completed onboarding, pending Chariot compliance review |
+| `approved` | Nonprofit is fully onboarded and can receive disbursements |
+
+<Note>
+The status automatically updates as the nonprofit progresses through onboarding. You don't need to take any action once the request is created.
+</Note>
+
+## Creating a Request
+
+<EndpointRequestSnippet endpoint="POST /v1/missing_ein_onboarding_requests" />
+
+**Required Fields:**
+- `ein`: The nonprofit's 9-digit Employer Identification Number
+- `organization_name`: The legal name of the nonprofit
+
+**Optional but Recommended:**
+- `contact_email`: Enables automatic invitation email to the nonprofit
+- `website`: Helps verify the organization's legitimacy
+- `address`, `city`, `state`, `zip_code`: Assists with compliance verification
+- `contact_phone`: Provides additional contact method
+
+<Tip>
+Providing a contact email significantly speeds up the onboarding process as the nonprofit receives an immediate invitation.
+</Tip>
+
+## Duplicate Requests
+
+The API returns a `409 Conflict` error if you try to request onboarding for an EIN you've already requested. Use the [List Requests](/api/organizations/list-missing-ein-onboarding-requests) endpoint to check existing requests.
