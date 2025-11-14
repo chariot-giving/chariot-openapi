@@ -1643,11 +1643,6 @@ components:
           format: int64
           description: The disbursement amount in USD cents. Must be a positive amount.
           example: 10000
-        description:
-          type: string
-          description: |-
-            A description of the disbursement that will be displayed to the receiving organization.
-          example: "Disbursement to nonprofit"
         auto_fund:
           type: boolean
           description: |-
@@ -3500,7 +3495,6 @@ components:
               value:
                 organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
                 amount: 25000
-                description: "February 2025 Disbursement"
                 transactions:
                   [
                     {
