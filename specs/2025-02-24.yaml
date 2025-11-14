@@ -2610,11 +2610,6 @@ components:
           format: int64
           description: The payment amount in USD cents. Must be a positive amount.
           example: 10000
-        description:
-          type: string
-          description: |
-            A description of the disbursement that will be displayed to the receiving organization.
-          example: "Disbursement to nonprofit"
         auto_fund:
           type: boolean
           description: |-
