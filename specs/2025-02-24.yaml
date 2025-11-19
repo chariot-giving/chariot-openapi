@@ -1655,6 +1655,8 @@ components:
             The list of transactions associated with the disbursement.
             Each transaction is an individual donation to be included in the disbursement.
             Must specify at least one transaction.
+            
+            The sum of all transaction net amounts (amount - fee_amount) must equal the disbursement amount.
           items:
             type: object
             description: |
@@ -1666,8 +1668,19 @@ components:
               amount:
                 type: integer
                 format: int64
-                description: The transaction amount in minor currency units (cents)
+                description: |
+                  The gross transaction amount in minor currency units (cents) before any fees are deducted.
+                  This represents the total amount of the donation.
                 example: 10000
+              fee_amount:
+                type: integer
+                format: int64
+                description: |
+                  Optional fee amount in minor currency units (cents) to be deducted from the transaction.
+                  If provided, the fee amount must be less than the transaction amount.
+                  The net amount (amount - fee_amount) will be used when calculating the disbursement total.
+                example: 500
+                nullable: true
               description:
                 type: string
                 description: |
@@ -3069,8 +3082,10 @@ components:
       type: object
       description: |
         A transaction represents an individual line-item or donation for a recipient nonprofit organization.
+        The transaction amount represents the gross amount, and an optional fee can be deducted to calculate the net amount that will be disbursed.
       required:
         - amount
+        - net_amount
         - type
       properties:
         id:
@@ -3081,8 +3096,28 @@ components:
         amount:
           type: integer
           format: int64
-          description: The transaction amount in minor currency units (cents)
+          description: |
+            The gross transaction amount in minor currency units (cents) before any fees are deducted.
+            This represents the total amount of the donation.
           example: 10000
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            The fee amount in minor currency units (cents) to be deducted from the transaction amount.
+            This is an optional field. If not provided, no fee will be deducted.
+            The fee amount must be less than the transaction amount.
+          example: 500
+          nullable: true
+        net_amount:
+          type: integer
+          format: int64
+          description: |
+            The net transaction amount in minor currency units (cents) after fees are deducted.
+            This is calculated as: net_amount = amount - fee_amount.
+            This is the actual amount that will be disbursed to the nonprofit.
+          example: 9500
+          readOnly: true
         description:
           type: string
           description: |
@@ -3519,6 +3554,55 @@ components:
                     },
                     {
                       amount: 10000,
+                      description: "Grant from Smith Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          organization_name: "LA Charitable",
+                          fund_name: "Smith Family Legacy Fund",
+                          purpose: "Program Support",
+                          donors:
+                            [
+                              {
+                                first_name: "John",
+                                last_name: "Smith",
+                                email: "john.smith@example.com",
+                              },
+                            ],
+                        },
+                    },
+                  ]
+            MultipleTransactionsWithFees:
+              summary: Disbursement with multiple transactions including fees
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 24000
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      fee_amount: 500,
+                      description: "Grant from Doe Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          grant_id: "grant_1234567890",
+                          organization_name: "Miami Charitable",
+                          fund_name: "Doe Family Charitable Fund",
+                          purpose: "General Operating Support",
+                          donors:
+                            [
+                              {
+                                first_name: "Jane",
+                                last_name: "Doe",
+                                email: "jane.doe@example.com",
+                              },
+                            ],
+                        },
+                    },
+                    {
+                      amount: 10000,
+                      fee_amount: 500,
                       description: "Grant from Smith Family Fund",
                       type: "donor_advised_fund_grant",
                       donor_advised_fund_grant:
