@@ -13,22 +13,22 @@ hidden: false
         Each Donor Account should reference an external account in the grantmaker's system. Therefore, when grant requests are made, the grantmaker should know which account to apply the grant request to in their external system.
     </Accordion>
 
-    <Accordion title="Can a Donor Account be revoked?">
-        Yes, either via the [Donor Account API](/api/donor-accounts/update) or the Chariot Dashboard, the donor's account can be revoked from DAFpay. When revoked, the user won't be able to submit grant requests to this Donor Account via their DAFpay account.
+    <Accordion title="Can a Donor Account be closed?">
+        Yes, either via the [Close Donor Account API](/api/donor-accounts/close) or the Chariot Dashboard, an approved Donor Account can be closed. When closed, the user won't be able to submit grant requests to this Donor Account via their DAFpay account.
 
-        To revoke a Donor Account, update its status to `revoked` using the Update Donor Account endpoint.
+        To close a Donor Account, use the Close Donor Account endpoint. This sets the status to `CLOSED`.
     </Accordion>
 
     <Accordion title="How do I verify that a Donor Account request is legitimate?">
         DAFpay verifies the ownership of the user's email address. If this email address matches the email address in the grantmaker's external system, a grantmaker can contact the donor to confirm the donor wants to link their DAF account to DAFpay.
 
-        If the donor confirms, a reference between the external account and the Donor Account can be made using the `external_account_reference` field when updating the Donor Account.
+        If the donor confirms, a reference between the external account and the Donor Account can be made using the `account_identifier` field when approving the Donor Account.
     </Accordion>
 
     <Accordion title="What happens if a Donor Account request is rejected?">
         The DAFpay user will receive a notification with the rejection reason and instructions on what steps they can take to rectify the issue. For example, the donor might need to verify a different email with DAFpay before the Donor Account can be verified.
 
-        You can provide a rejection reason when updating the Donor Account status to `rejected`.
+        You can provide a rejection reason when rejecting the Donor Account using the Reject Donor Account endpoint.
     </Accordion>
 </AccordionGroup>
 
@@ -38,13 +38,13 @@ hidden: false
     <Accordion title="Can a donor submit a grant request above the donor's balance?">
         Each Donor Account can have an optional limit, which will restrict the donor from submitting requests above the limit. DAFpay also ensures that the donor doesn't submit grant requests below the DAF's minimum.
 
-        You can set a `limit` when creating or updating a Donor Account to control the maximum grant request amount.
+        The limit is set on the Donor Account and controls the maximum grant request amount that can be submitted.
     </Accordion>
 
-    <Accordion title="How do I mark a Grant Request as submitted or rejected?">
-        A Grant Request can be marked as `submitted`, which means that the grant request is in the grantmaker's external system, either via the [Grant Request API](/api/grant-requests/update) or the Chariot Dashboard.
+    <Accordion title="How do I approve or reject a Grant Request?">
+        A Grant Request can be approved via the [Approve Grant Request API](/api/grant-requests/approve) or the Chariot Dashboard. When approved, the grant request status changes to `APPROVED`.
 
-        Use the Update Grant Request endpoint to change the status to `submitted` or `rejected` as needed.
+        A Grant Request can be rejected via the [Reject Grant Request API](/api/grant-requests/reject) with an optional rejection reason. When rejected, the status changes to `REJECTED` and the donor will be notified.
     </Accordion>
 
     <Accordion title="What happens if the Grant Request is rejected?">

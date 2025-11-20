@@ -3,47 +3,33 @@ title: "How It Works"
 hidden: false
 ---
 
-## Creating Donor Accounts
+## Managing Donor Accounts
 
-You can create Donor Accounts through two methods:
-
-### Method 1: Create via API or Dashboard
-
-Create a Donor Account directly and link it to a donor's account in your external system:
-
-<Steps>
-
-### Create a Donor Account
-
-Use the [Create Donor Account](/api/donor-accounts/create) endpoint to create a new Donor Account:
-
-<EndpointRequestSnippet endpoint="POST /v1/donor_accounts" />
-
-The Donor Account will be created in an `active` state, ready to receive grant requests from the donor.
-
-### Link to External Account
-
-When creating the Donor Account, you can specify an `external_account_reference` that links to the donor's account in your external system. This ensures grant requests are properly attributed.
-
-</Steps>
-
-### Method 2: Approve Donor Requests
-
-When a donor uses DAFpay for the first time, they automatically create a Donor Account request:
+Donor Accounts are automatically created when a donor uses DAFpay for the first time. You can then manage them through the API or Dashboard:
 
 <Steps>
 
 ### Donor Initiates Request
 
-When a donor selects their DAF provider and creates their DAFpay account, a Donor Account request is automatically created for your grantmaker.
+When a donor selects their DAF provider and creates their DAFpay account, a Donor Account request is automatically created for your grantmaker with a `PENDING` status.
 
 ### Review the Request
 
-View pending Donor Account requests via the [List Donor Accounts](/api/donor-accounts/list) endpoint with `status=pending`, or in the Chariot Dashboard.
+View pending Donor Account requests via the [List Donor Accounts](/api/donor-accounts/list) endpoint with `status=PENDING`, or in the Chariot Dashboard.
 
-### Approve or Reject
+### Approve the Donor Account
 
-Approve the request using the [Update Donor Account](/api/donor-accounts/update) endpoint to set the status to `active`, or reject it with a reason.
+Approve the request using the [Approve Donor Account](/api/donor-accounts/approve) endpoint. When approving, you can link it to an account in your external system by providing an `account_identifier` and optional `account_name`:
+
+<EndpointRequestSnippet endpoint="POST /v1/donor_accounts/{id}/approve" />
+
+This sets the Donor Account status to `APPROVED` and links it to your external system.
+
+### Reject or Close (if needed)
+
+If the Donor Account doesn't match your records, you can reject it using the [Reject Donor Account](/api/donor-accounts/reject) endpoint with an optional rejection reason.
+
+If you need to close an approved Donor Account, use the [Close Donor Account](/api/donor-accounts/close) endpoint.
 
 </Steps>
 
@@ -55,7 +41,7 @@ Once a Donor Account is active, donors can submit grant requests through DAFpay:
 
 ### Donor Submits Grant Request
 
-The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against grantmaker's minimum grant amount and any Donor Account limits.
+The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against the DAF's minimum grant amount and any Donor Account limits.
 
 ### Grant Request Appears in Your System
 
@@ -65,7 +51,7 @@ The grant request becomes visible via:
 
 ### Process the Grant Request
 
-Mark the grant request as `submitted` when it's been processed in your external system, or `rejected` if it cannot be processed.
+Approve the grant request using the [Approve Grant Request API](/api/grant-requests/approve) when it's been processed in your external system, or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
 
 </Steps>
 

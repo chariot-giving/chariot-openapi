@@ -663,57 +663,27 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/donor_accounts:
-    post:
-      summary: Create Donor Account
-      description: |-
-        Create a new Donor Account for DAFpay. The Donor Account can reference a donor's account in your external system.
-      operationId: create-donor-account
-      tags:
-        - Donor Accounts
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CreateDonorAccountRequest"
-      responses:
-        "201":
-          description: Created
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-            Location:
-              $ref: "#/components/headers/Location"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DonorAccount"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
     get:
       summary: List Donor Accounts
       description: |-
-        Returns a list of all Donor Accounts. This API allows for paginating over many results.
+        Returns a list of donor accounts with pagination and filtering options.
       operationId: list-donor-accounts
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
       parameters:
-        - name: status
+        - name: donor_id
           in: query
-          description: Filter Donor Accounts by status (pending, active, revoked, rejected)
+          description: Filter Donor Accounts by donor ID
           schema:
             type: string
-            enum:
-              - pending
-              - active
-              - revoked
-              - rejected
+          required: false
+        - name: status
+          in: query
+          description: Filter Donor Accounts by status
+          schema:
+            $ref: "#/components/schemas/DonorAccountStatus"
           required: false
         - name: pageLimit
           in: query
@@ -742,7 +712,7 @@ paths:
     get:
       summary: Get Donor Account
       description: |-
-        Retrieve a Donor Account with the given ID.
+        Returns a donor account.
       operationId: get-donor-account
       tags:
         - Donor Accounts
@@ -776,11 +746,12 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update Donor Account
+  /v1/donor_accounts/{id}/approve:
+    post:
+      summary: Approve Donor Account
       description: |-
-        Update a Donor Account. This can be used to approve or reject a pending Donor Account request, or to update account details such as status, limit, or external account reference.
-      operationId: update-donor-account
+        Approves a donor account.
+      operationId: approve-donor-account
       tags:
         - Donor Accounts
       security:
@@ -794,7 +765,85 @@ paths:
           required: true
           example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
-        $ref: "#/components/requestBodies/UpdateDonorAccountRequest"
+        $ref: "#/components/requestBodies/ApproveDonorAccountRequest"
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorAccount"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donor_accounts/{id}/reject:
+    post:
+      summary: Reject Donor Account
+      description: |-
+        Rejects a donor account.
+      operationId: reject-donor-account
+      tags:
+        - Donor Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the Donor Account
+          schema:
+            type: string
+          required: true
+          example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/RejectDonorAccountRequest"
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorAccount"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donor_accounts/{id}/close:
+    post:
+      summary: Close Donor Account
+      description: |-
+        Closes a donor account.
+      operationId: close-donor-account
+      tags:
+        - Donor Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the Donor Account
+          schema:
+            type: string
+          required: true
+          example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: "OK"
@@ -819,28 +868,30 @@ paths:
     get:
       summary: List Grant Requests
       description: |-
-        Returns a list of all Grant Requests. This API allows for paginating over many results.
+        Returns a list of grant requests with pagination and filtering options.
       operationId: list-grant-requests
       tags:
         - Grant Requests
       security:
         - bearerAuth: []
       parameters:
-        - name: donor_account_id
+        - name: donor_giving_account_id
           in: query
-          description: Filter Grant Requests by Donor Account ID
+          description: Filter Grant Requests by Donor Giving Account ID
+          schema:
+            type: string
+          required: false
+        - name: organization_id
+          in: query
+          description: Filter Grant Requests by Organization ID
           schema:
             type: string
           required: false
         - name: status
           in: query
-          description: Filter Grant Requests by status (pending, submitted, rejected)
+          description: Filter Grant Requests by status
           schema:
-            type: string
-            enum:
-              - pending
-              - submitted
-              - rejected
+            $ref: "#/components/schemas/GrantRequestStatus"
           required: false
         - name: pageLimit
           in: query
@@ -869,7 +920,7 @@ paths:
     get:
       summary: Get Grant Request
       description: |-
-        Retrieve a Grant Request with the given ID.
+        Returns a grant request.
       operationId: get-grant-request
       tags:
         - Grant Requests
@@ -903,11 +954,50 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update Grant Request
+  /v1/grant_requests/{id}/approve:
+    post:
+      summary: Approve Grant Request
       description: |-
-        Update a Grant Request. This can be used to mark a Grant Request as submitted or rejected.
-      operationId: update-grant-request
+        Approves a grant request.
+      operationId: approve-grant-request
+      tags:
+        - Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the Grant Request
+          schema:
+            type: string
+          required: true
+          example: "grant_request_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrantRequest"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/grant_requests/{id}/reject:
+    post:
+      summary: Reject Grant Request
+      description: |-
+        Rejects a grant request.
+      operationId: reject-grant-request
       tags:
         - Grant Requests
       security:
@@ -921,7 +1011,7 @@ paths:
           required: true
           example: "grant_request_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
-        $ref: "#/components/requestBodies/UpdateGrantRequestRequest"
+        $ref: "#/components/requestBodies/RejectGrantRequestRequest"
       responses:
         "200":
           description: "OK"
@@ -3429,8 +3519,21 @@ components:
             $ref: "#/components/schemas/Donor"
     Donor:
       type: object
-      description: The donor information for the transaction
+      description: |-
+        A Donor represents a donor who can submit grant requests through DAFpay.
+      required:
+        - id
+        - email
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the donor
+          example: "donor_01j8rs605a4gctmbm58d87mvsj"
+        email:
+          type: string
+          description: The email address of the donor
+          example: "donor@example.com"
         first_name:
           type: string
           description: The first name of the donor
@@ -3439,16 +3542,6 @@ components:
           type: string
           description: The last name of the donor
           example: "Doe"
-        email:
-          type: string
-          description: The email address of the donor
-          example: "bob@me.com"
-        phone:
-          type: string
-          description: The phone number of the donor
-          example: "415-555-1212"
-        address:
-          $ref: "#/components/schemas/Address"
     DonorAccount:
       type: object
       description: |-
@@ -3456,115 +3549,184 @@ components:
         Donor Accounts enable donors to submit grant requests via DAFpay.
       required:
         - id
+        - donor
+        - grantmaker_id
         - status
-        - email
-        - createdAt
+        - created_at
+        - updated_at
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for the Donor Account
           example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
-        email:
+        donor:
+          $ref: "#/components/schemas/Donor"
+        grantmaker_id:
           type: string
-          description: The email address of the donor
-          example: "donor@example.com"
-        status:
-          type: string
-          description: The status of the Donor Account
-          enum:
-            - pending
-            - active
-            - revoked
-            - rejected
-          example: "active"
-        external_account_reference:
+          readOnly: true
+          description: The unique identifier for the grantmaker
+          example: "grantmaker_01j8rs605a4gctmbm58d87mvsj"
+        account_identifier:
           type: string
           description: A reference to the donor's account in the grantmaker's external system
           example: "ext_account_12345"
+        account_name:
+          type: string
+          description: The name of the account in the grantmaker's external system
+          example: "John Doe DAF Account"
         limit:
           type: integer
           format: int64
           description: Optional limit on grant request amounts in USD cents. If set, donors cannot submit grant requests above this limit.
           example: 1000000
-        rejection_reason:
-          type: string
-          description: The reason for rejection if the Donor Account was rejected
-          example: "Email address does not match our records"
-        createdAt:
+        created_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was created; expressed in RFC 3339 format
           example: "2024-01-31T23:00:00Z"
-        updatedAt:
+        updated_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2024-01-31T23:59:59Z"
+        approved_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this Donor Account was approved; expressed in RFC 3339 format
+          example: "2024-01-31T23:00:00Z"
+        rejected_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this Donor Account was rejected; expressed in RFC 3339 format
+          example: "2024-01-31T23:00:00Z"
+        rejection_reason:
+          type: string
+          description: The reason for rejection if the Donor Account was rejected
+          example: "Email address does not match our records"
+        closed_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this Donor Account was closed; expressed in RFC 3339 format
+          example: "2024-01-31T23:00:00Z"
+        status:
+          $ref: "#/components/schemas/DonorAccountStatus"
+    DonorAccountStatus:
+      type: string
+      description: The status of a Donor Account
+      enum:
+        - PENDING
+        - APPROVED
+        - REJECTED
+        - CLOSED
+      example: "PENDING"
     GrantRequest:
       type: object
       description: |-
         A Grant Request represents a grant request submitted by a donor through DAFpay to a Donor Account.
-        Grant Requests can be processed by the grantmaker and marked as submitted or rejected.
+        Grant Requests can be processed by the grantmaker and approved or rejected.
       required:
         - id
-        - donor_account_id
-        - status
+        - donor_giving_account_id
         - amount
-        - createdAt
+        - organization
+        - status
+        - sharing_preference
+        - frequency
+        - created_at
+        - updated_at
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for the Grant Request
           example: "grant_request_01j8rs605a4gctmbm58d87mvsj"
-        donor_account_id:
+        donor_giving_account_id:
           type: string
-          description: The ID of the Donor Account this grant request belongs to
-          example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
-        status:
-          type: string
-          description: The status of the Grant Request
-          enum:
-            - pending
-            - submitted
-            - rejected
-          example: "pending"
+          description: The ID of the Donor Giving Account this grant request belongs to
+          example: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
+        donor_account:
+          $ref: "#/components/schemas/DonorAccount"
         amount:
           type: integer
           format: int64
           description: The grant request amount in USD cents
           example: 50000
-        organization_id:
+        organization:
+          $ref: "#/components/schemas/Organization"
+        purpose:
           type: string
-          description: The ID of the organization the grant request is for
-          example: "org_01j8rs605a4gctmbm58d87mvsj"
-        organization_name:
-          type: string
-          description: The name of the organization the grant request is for
-          example: "American Red Cross"
+          description: The purpose of the grant request
+          example: "General Operating Support"
         note:
           type: string
           description: An optional note from the donor
           example: "Please dedicate in memory of grandma"
-        rejection_reason:
+        sharing_preference:
+          $ref: "#/components/schemas/SharingPreference"
+        form_url:
           type: string
-          description: The reason for rejection if the Grant Request was rejected
-          example: "Grant request amount exceeds account limit"
-        createdAt:
+          description: The URL to the form associated with this grant request
+          example: "https://example.com/form/123"
+        frequency:
+          $ref: "#/components/schemas/GrantFrequency"
+        status:
+          $ref: "#/components/schemas/GrantRequestStatus"
+        created_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was created; expressed in RFC 3339 format
           example: "2024-01-31T23:00:00Z"
-        updatedAt:
+        updated_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2024-01-31T23:59:59Z"
+        approved_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this Grant Request was approved; expressed in RFC 3339 format
+          example: "2024-01-31T23:00:00Z"
+        rejected_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this Grant Request was rejected; expressed in RFC 3339 format
+          example: "2024-01-31T23:00:00Z"
+        rejection_reason:
+          type: string
+          description: The reason for rejection if the Grant Request was rejected
+          example: "Grant request amount exceeds account limit"
+    GrantRequestStatus:
+      type: string
+      description: The status of a Grant Request
+      enum:
+        - PENDING
+        - APPROVED
+        - REJECTED
+      example: "PENDING"
+    SharingPreference:
+      type: string
+      description: The sharing preference for a grant request
+      enum:
+        - ANONYMOUS
+        - FUND_NAME
+      example: "FUND_NAME"
+    GrantFrequency:
+      type: string
+      description: The frequency of a grant request
+      enum:
+        - ONE_TIME
+        - MONTHLY
+      example: "ONE_TIME"
     EventCategory:
       type: string
       description: |
@@ -3971,78 +4133,47 @@ components:
             properties:
               reason:
                 $ref: "#/components/schemas/StopDisbursementPaymentReason"
-    CreateDonorAccountRequest:
-      description: The request body for creating a Donor Account
+    ApproveDonorAccountRequest:
+      description: The request body for approving a Donor Account
       required: true
       content:
         application/json:
           schema:
             type: object
             required:
-              - email
+              - account_identifier
             properties:
-              email:
-                type: string
-                description: The email address of the donor
-                example: "donor@example.com"
-              external_account_reference:
+              account_identifier:
                 type: string
                 description: A reference to the donor's account in the grantmaker's external system
                 example: "ext_account_12345"
-              limit:
-                type: integer
-                format: int64
-                description: Optional limit on grant request amounts in USD cents. If set, donors cannot submit grant requests above this limit.
-                example: 1000000
-    UpdateDonorAccountRequest:
-      description: The request body for updating a Donor Account
+              account_name:
+                type: string
+                description: The name of the account in the grantmaker's external system
+                example: "John Doe DAF Account"
+    RejectDonorAccountRequest:
+      description: The request body for rejecting a Donor Account
       required: true
       content:
         application/json:
           schema:
             type: object
             properties:
-              status:
-                type: string
-                description: The status of the Donor Account
-                enum:
-                  - pending
-                  - active
-                  - revoked
-                  - rejected
-                example: "active"
-              external_account_reference:
-                type: string
-                description: A reference to the donor's account in the grantmaker's external system
-                example: "ext_account_12345"
-              limit:
-                type: integer
-                format: int64
-                description: Optional limit on grant request amounts in USD cents. If set, donors cannot submit grant requests above this limit.
-                example: 1000000
               rejection_reason:
                 type: string
-                description: The reason for rejection if the Donor Account is being rejected
+                description: The reason for rejecting the Donor Account
                 example: "Email address does not match our records"
-    UpdateGrantRequestRequest:
-      description: The request body for updating a Grant Request
+    RejectGrantRequestRequest:
+      description: The request body for rejecting a Grant Request
       required: true
       content:
         application/json:
           schema:
             type: object
             properties:
-              status:
-                type: string
-                description: The status of the Grant Request
-                enum:
-                  - pending
-                  - submitted
-                  - rejected
-                example: "submitted"
               rejection_reason:
                 type: string
-                description: The reason for rejection if the Grant Request is being rejected
+                description: The reason for rejecting the Grant Request
                 example: "Grant request amount exceeds account limit"
     CreateEventSubscriptionRequest:
       description: The request body for creating an event subscription
@@ -4282,11 +4413,11 @@ components:
           schema:
             type: object
             properties:
-              results:
+              items:
                 type: array
                 items:
                   $ref: "#/components/schemas/DonorAccount"
-              nextPageToken:
+              next_page_token:
                 type: string
                 nullable: true
                 description: |-
@@ -4294,15 +4425,22 @@ components:
           examples:
             MoreResults:
               value:
-                results:
+                items:
                   - id: "donor_account_01j8rs605a4gctmbm58d87mvsj"
-                    email: "donor@example.com"
-                    status: "active"
-                    external_account_reference: "ext_account_12345"
+                    donor:
+                      id: "donor_01j8rs605a4gctmbm58d87mvsj"
+                      email: "donor@example.com"
+                      first_name: "John"
+                      last_name: "Doe"
+                    grantmaker_id: "grantmaker_01j8rs605a4gctmbm58d87mvsj"
+                    account_identifier: "ext_account_12345"
+                    account_name: "John Doe DAF Account"
                     limit: 1000000
-                    createdAt: "2024-01-31T23:00:00Z"
-                    updatedAt: "2024-01-31T23:59:59Z"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+                    status: "APPROVED"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:59:59Z"
+                    approved_at: "2024-01-31T23:00:00Z"
+                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListGrantRequestsResponse:
       description: The response for GrantRequests.list
       headers:
@@ -4313,11 +4451,11 @@ components:
           schema:
             type: object
             properties:
-              results:
+              items:
                 type: array
                 items:
                   $ref: "#/components/schemas/GrantRequest"
-              nextPageToken:
+              next_page_token:
                 type: string
                 nullable: true
                 description: |-
@@ -4325,16 +4463,19 @@ components:
           examples:
             MoreResults:
               value:
-                results:
+                items:
                   - id: "grant_request_01j8rs605a4gctmbm58d87mvsj"
-                    donor_account_id: "donor_account_01j8rs605a4gctmbm58d87mvsj"
-                    status: "pending"
+                    donor_giving_account_id: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
                     amount: 50000
-                    organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
-                    organization_name: "American Red Cross"
-                    createdAt: "2024-01-31T23:00:00Z"
-                    updatedAt: "2024-01-31T23:00:00Z"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+                    organization:
+                      id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      name: "American Red Cross"
+                    status: "PENDING"
+                    sharing_preference: "FUND_NAME"
+                    frequency: "ONE_TIME"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:00:00Z"
+                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListEventsResponse:
       description: The response for Events.list
       headers:

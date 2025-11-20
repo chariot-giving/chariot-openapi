@@ -34,10 +34,12 @@ Donor Accounts are the bridge between your grantmaker system and DAFpay. Each Do
 
 ## How Donor Accounts Work
 
-Donor Accounts can be created in two ways:
+Donor Accounts are created when a donor uses DAFpay for the first time. When a donor selects their DAF provider and creates their DAFpay account, a Donor Account request is automatically created for your grantmaker with a `PENDING` status.
 
-1. **Grantmaker-initiated**: You create a Donor Account directly via the [Donor Account API](/api/donor-accounts/create) or the Chariot Dashboard
-2. **Donor-initiated**: When a donor uses DAFpay for the first time, they automatically create a Donor Account request that you can approve
+You can then:
+- **Approve** the Donor Account via the [Approve Donor Account API](/api/donor-accounts/approve) or the Chariot Dashboard, linking it to an account in your external system
+- **Reject** the Donor Account via the [Reject Donor Account API](/api/donor-accounts/reject) if it doesn't match your records
+- **Close** an approved Donor Account via the [Close Donor Account API](/api/donor-accounts/close) if needed
 
-Once a Donor Account is created and approved, donors can submit grant requests through DAFpay, which will be visible in your system for processing.
+Once a Donor Account is approved, donors can submit grant requests through DAFpay, which will be visible in your system for processing.
 
