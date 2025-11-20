@@ -1,0 +1,65 @@
+---
+title: "How It Works"
+hidden: false
+---
+
+## Managing Donor Accounts
+
+Donor Accounts are automatically created when a donor uses DAFpay for the first time. You can then manage them through the API or Dashboard:
+
+<Steps>
+
+### Donor Initiates Request
+
+When a donor selects their DAF provider and creates their DAFpay account, a Donor Account request is automatically created for your grantmaker with a `PENDING` status.
+
+### Review the Request
+
+View pending Donor Account requests via the [List Donor Accounts](/api/donor-accounts/list) endpoint with `status=PENDING`, or in the Chariot Dashboard.
+
+### Approve the Donor Account
+
+Approve the request using the [Approve Donor Account](/api/donor-accounts/approve) endpoint. When approving, you can link it to an account in your system by providing an `account_identifier` and optional `account_name`:
+
+<EndpointRequestSnippet endpoint="POST /v1/donor_accounts/{id}/approve" />
+
+This sets the Donor Account status to `APPROVED` and links it to your system.
+
+### Reject or Close (if needed)
+
+If the Donor Account doesn't match your records, you can reject it using the [Reject Donor Account](/api/donor-accounts/reject) endpoint with an optional rejection reason.
+
+If you need to close an approved Donor Account, use the [Close Donor Account](/api/donor-accounts/close) endpoint.
+
+</Steps>
+
+## Processing Grant Requests
+
+Once a Donor Account is active, donors can submit grant requests through DAFpay:
+
+<Steps>
+
+### Donor Submits Grant Request
+
+The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against the DAF's minimum grant amount and any Donor Account limits. The grant request is created in Chariot's system.
+
+### Retrieve Grant Request from Chariot
+
+The grant request created in Chariot's system can be retrieved via:
+- The Chariot Dashboard
+- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot.
+
+### Submit Grant Request to Your System
+
+Retrieve the grant request details from Chariot and submit them into your grantmaker system. Once the grant request has been successfully submitted to your grantmaker system, update its status to `SUBMITTED` using the [Approve Grant Request API](/api/grant-requests/approve). If the grant request cannot be processed, reject it using the [Reject Grant Request API](/api/grant-requests/reject).
+
+<Note>
+Grant requests are created in Chariot when donors submit them through DAFpay. Retrieve them from Chariot, submit to your grantmaker system, then update the status to `SUBMITTED` using the Approve Grant Request API. You are responsible for processing grant requests in your grantmaker system.
+</Note>
+
+</Steps>
+
+<Tip>
+Set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot's system, allowing you to retrieve and submit them to your grantmaker system in real-time.
+</Tip>
+
