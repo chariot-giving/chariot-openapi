@@ -55,18 +55,7 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
-      - section: Donor Accounts
-        slug: donor-accounts
-        contents:
-          - page: Overview
-            slug: /
-            path: ./pages/donor-accounts/overview.mdx
-          - page: How It Works
-            slug: how-it-works
-            path: ./pages/donor-accounts/how-it-works.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/donor-accounts/faq.mdx
+
       - section: Disbursements
         slug: disbursements
         contents:
@@ -91,6 +80,18 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
+      - section: Donor Accounts
+        slug: donor-accounts
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/donor-accounts/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/donor-accounts/how-it-works.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/donor-accounts/faq.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -146,10 +147,6 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
-              - donorAccounts:
-                  title: Donor Accounts
-              - grantRequests:
-                  title: Grant Requests
           - section: Disbursements
             skip-slug: true
             icon: money-check
@@ -159,4 +156,12 @@ navigation:
               - inboundTransfers:
                   title: Inbound Transfers
               - disbursements
+          - section: Donor Accounts
+            skip-slug: true
+            icon: user-plus
+            contents:
+              - donorAccounts:
+                  title: Donor Accounts
+              - grantRequests:
+                  title: Grant Requests
   - tab: changelog

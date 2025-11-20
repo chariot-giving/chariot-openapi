@@ -55,14 +55,13 @@ Once a Donor Account is active, donors can submit grant requests through DAFpay:
 
 ### Donor Submits Grant Request
 
-The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against the donor's balance and any account limits.
+The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against grantmaker's minimum grant amount and any Donor Account limits.
 
 ### Grant Request Appears in Your System
 
 The grant request becomes visible via:
-- The [Grant Request API](/api/grant-requests/list) endpoints
 - The Chariot Dashboard
-- [Grant Request webhooks](/api/webhooks) (if configured)
+- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically process grant requests within your grantmaker external system.
 
 ### Process the Grant Request
 
