@@ -55,6 +55,18 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
+      - section: Donor Accounts
+        slug: donor-accounts
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/donor-accounts/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/donor-accounts/how-it-works.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/donor-accounts/faq.mdx
       - section: Disbursements
         slug: disbursements
         contents:
@@ -134,6 +146,10 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
+              - donorAccounts:
+                  title: Donor Accounts
+              - grantRequests:
+                  title: Grant Requests
           - section: Disbursements
             skip-slug: true
             icon: money-check

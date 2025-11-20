@@ -160,3 +160,37 @@ paths:
       x-fern-sdk-group-name:
         - inboundTransfers
       x-fern-sdk-method-name: cancel
+  /v1/donor_accounts:
+    post:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: list
+  /v1/donor_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: update
+  /v1/grant_requests:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: list
+  /v1/grant_requests/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: update
