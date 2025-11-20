@@ -19,7 +19,7 @@ Donor Accounts are the bridge between your grantmaker system and DAFpay. Each Do
 
 <CardGroup cols={2}>
     <Card title='Streamlined Workflow' icon='arrow-right-arrow-left'>
-        Donors can submit grant requests directly through DAFpay, which automatically appear in your system via the Grant Request API or Chariot Dashboard.
+        Donors can submit grant requests directly through DAFpay, which are created in Chariot's system and can be retrieved via the Grant Request API or Chariot Dashboard.
     </Card>
     <Card title='Account Linking' icon='link'>
         Each Donor Account can be linked to a specific account in your system, ensuring grant requests are properly attributed.
@@ -41,9 +41,9 @@ You can then:
 - **Reject** the Donor Account via the [Reject Donor Account API](/api/donor-accounts/reject) if it doesn't match your records
 - **Close** an approved Donor Account via the [Close Donor Account API](/api/donor-accounts/close) if needed
 
-Once a Donor Account is approved, donors can submit grant requests through DAFpay, which will be visible in Chariot for processing.
+Once a Donor Account is approved, donors can submit grant requests through DAFpay. These grant requests are created in Chariot's system and can be retrieved via the Grant Request API or Chariot Dashboard.
 
 <Note>
-When you approve a grant request, it's still your responsibility to enter the details of the grant request into your own system. The Grant Request API provides visibility into grant requests submitted through DAFpay, but you must process them in your grantmaker system.
+Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
 </Note>
 

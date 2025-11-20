@@ -41,25 +41,25 @@ Once a Donor Account is active, donors can submit grant requests through DAFpay:
 
 ### Donor Submits Grant Request
 
-The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against the DAF's minimum grant amount and any Donor Account limits.
+The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay validates the request amount against the DAF's minimum grant amount and any Donor Account limits. The grant request is created in Chariot's system.
 
-### Grant Request Appears in Your System
+### Retrieve Grant Request from Chariot
 
-The grant request becomes visible via:
+The grant request created in Chariot's system can be retrieved via:
 - The Chariot Dashboard
-- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically process grant requests within your grantmaker system.
+- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot.
 
-### Process the Grant Request
+### Submit Grant Request to Your System
 
-Approve the grant request using the [Approve Grant Request API](/api/grant-requests/approve) when it's been entered into your system, or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
+Retrieve the grant request details from Chariot and submit them into your grantmaker system. Once the grant request has been entered into your system, you can approve it using the [Approve Grant Request API](/api/grant-requests/approve), or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
 
 <Note>
-When you approve a grant request, it's still your responsibility to enter the details of the grant request into your own system. The Grant Request API provides visibility into grant requests submitted through DAFpay, but you must process them in your grantmaker system.
+Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
 </Note>
 
 </Steps>
 
 <Tip>
-Set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created, allowing you to process them in real-time within your system.
+Set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot's system, allowing you to retrieve and submit them to your grantmaker system in real-time.
 </Tip>
 

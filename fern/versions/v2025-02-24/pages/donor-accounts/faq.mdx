@@ -56,12 +56,12 @@ hidden: false
     </Accordion>
 
     <Accordion title="How do I receive notifications about new Grant Requests?">
-        You can set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created or updated. This allows you to process grant requests in real-time within your system.
+        Grant requests are created in Chariot's system when donors submit them through DAFpay. You can set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot, allowing you to retrieve and submit them to your grantmaker system in real-time.
 
-        Alternatively, you can poll the [List Grant Requests](/api/grant-requests/list) endpoint to check for new grant requests.
+        Alternatively, you can poll the [List Grant Requests](/api/grant-requests/list) endpoint to check for new grant requests created in Chariot.
 
         <Note>
-        When you approve a grant request, it's still your responsibility to enter the details of the grant request into your own system. The Grant Request API provides visibility into grant requests submitted through DAFpay, but you must process them in your grantmaker system.
+        Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot using the Grant Request API and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
         </Note>
     </Accordion>
 </AccordionGroup>
