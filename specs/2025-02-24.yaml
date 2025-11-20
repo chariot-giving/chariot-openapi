@@ -1035,6 +1035,7 @@ paths:
                     amount: 50000
                     organization:
                       id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      ein: "123456789"
                       name: "American Red Cross"
                     status: "APPROVED"
                     sharing_preference: "FUND_NAME"
@@ -1090,6 +1091,7 @@ paths:
                     amount: 50000
                     organization:
                       id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      ein: "123456789"
                       name: "American Red Cross"
                     status: "REJECTED"
                     sharing_preference: "FUND_NAME"
@@ -4138,9 +4140,10 @@ components:
                           donors:
                             [
                               {
+                                id: "donor_01j8rs605a4gctmbm58d87mvsj",
+                                email: "jane.doe@example.com",
                                 first_name: "Jane",
                                 last_name: "Doe",
-                                email: "jane.doe@example.com",
                               },
                             ],
                         },
@@ -4157,9 +4160,10 @@ components:
                           donors:
                             [
                               {
+                                id: "donor_01j8rs605a4gctmbm58d87mvsk",
+                                email: "john.smith@example.com",
                                 first_name: "John",
                                 last_name: "Smith",
-                                email: "john.smith@example.com",
                               },
                             ],
                         },
@@ -4538,6 +4542,7 @@ components:
                     amount: 50000
                     organization:
                       id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      ein: "123456789"
                       name: "American Red Cross"
                     status: "PENDING"
                     sharing_preference: "FUND_NAME"
