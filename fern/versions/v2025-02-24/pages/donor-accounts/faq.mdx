@@ -10,7 +10,7 @@ hidden: false
     <Accordion title="How does a donor request a Donor Account?">
         When a donor uses DAFpay for the first time, they select their DAF provider and create their DAFpay account. This automatically creates a Donor Account request for the grantmaker. Donors can then submit grant requests in DAFpay, which will show up under this Donor Account.
 
-        Each Donor Account should reference an external account in the grantmaker's system. Therefore, when grant requests are made, the grantmaker should know which account to apply the grant request to in their external system.
+        Each Donor Account should reference an account in the grantmaker's system. Therefore, when grant requests are made, the grantmaker should know which account to apply the grant request to in their system.
     </Accordion>
 
     <Accordion title="Can a Donor Account be closed?">
@@ -20,9 +20,9 @@ hidden: false
     </Accordion>
 
     <Accordion title="How do I verify that a Donor Account request is legitimate?">
-        DAFpay verifies the ownership of the user's email address. If this email address matches the email address in the grantmaker's external system, a grantmaker can contact the donor to confirm the donor wants to link their DAF account to DAFpay.
+        DAFpay verifies the ownership of the user's email address. If this email address matches the email address in the grantmaker's system, a grantmaker can contact the donor to confirm the donor wants to link their DAF account to DAFpay.
 
-        If the donor confirms, a reference between the external account and the Donor Account can be made using the `account_identifier` field when approving the Donor Account.
+        If the donor confirms, a reference between the account and the Donor Account can be made using the `account_identifier` field when approving the Donor Account.
     </Accordion>
 
     <Accordion title="What happens if a Donor Account request is rejected?">
@@ -45,6 +45,8 @@ hidden: false
         A Grant Request can be approved via the [Approve Grant Request API](/api/grant-requests/approve) or the Chariot Dashboard. When approved, the grant request status changes to `APPROVED`.
 
         A Grant Request can be rejected via the [Reject Grant Request API](/api/grant-requests/reject) with an optional rejection reason. When rejected, the status changes to `REJECTED` and the donor will be notified.
+
+        Grant requests have three statuses via the API: `PENDING`, `APPROVED`, or `REJECTED`.
     </Accordion>
 
     <Accordion title="What happens if the Grant Request is rejected?">
@@ -54,9 +56,13 @@ hidden: false
     </Accordion>
 
     <Accordion title="How do I receive notifications about new Grant Requests?">
-        You can set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created or updated. This allows you to process grant requests in real-time within your external system.
+        You can set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created or updated. This allows you to process grant requests in real-time within your system.
 
         Alternatively, you can poll the [List Grant Requests](/api/grant-requests/list) endpoint to check for new grant requests.
+
+        <Note>
+        When you approve a grant request, it's still your responsibility to enter the details of the grant request into your own system. The Grant Request API provides visibility into grant requests submitted through DAFpay, but you must process them in your grantmaker system.
+        </Note>
     </Accordion>
 </AccordionGroup>
 

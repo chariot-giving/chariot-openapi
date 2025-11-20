@@ -3550,7 +3550,6 @@ components:
       required:
         - id
         - donor
-        - grantmaker_id
         - status
         - created_at
         - updated_at
@@ -3562,11 +3561,6 @@ components:
           example: "donor_account_01j8rs605a4gctmbm58d87mvsj"
         donor:
           $ref: "#/components/schemas/Donor"
-        grantmaker_id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the grantmaker
-          example: "grantmaker_01j8rs605a4gctmbm58d87mvsj"
         account_identifier:
           type: string
           description: A reference to the donor's account in the grantmaker's external system
@@ -4432,7 +4426,6 @@ components:
                       email: "donor@example.com"
                       first_name: "John"
                       last_name: "Doe"
-                    grantmaker_id: "grantmaker_01j8rs605a4gctmbm58d87mvsj"
                     account_identifier: "ext_account_12345"
                     account_name: "John Doe DAF Account"
                     limit: 1000000

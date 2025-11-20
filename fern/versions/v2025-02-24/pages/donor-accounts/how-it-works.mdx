@@ -19,11 +19,11 @@ View pending Donor Account requests via the [List Donor Accounts](/api/donor-acc
 
 ### Approve the Donor Account
 
-Approve the request using the [Approve Donor Account](/api/donor-accounts/approve) endpoint. When approving, you can link it to an account in your external system by providing an `account_identifier` and optional `account_name`:
+Approve the request using the [Approve Donor Account](/api/donor-accounts/approve) endpoint. When approving, you can link it to an account in your system by providing an `account_identifier` and optional `account_name`:
 
 <EndpointRequestSnippet endpoint="POST /v1/donor_accounts/{id}/approve" />
 
-This sets the Donor Account status to `APPROVED` and links it to your external system.
+This sets the Donor Account status to `APPROVED` and links it to your system.
 
 ### Reject or Close (if needed)
 
@@ -47,15 +47,19 @@ The donor uses DAFpay to submit a grant request to their Donor Account. DAFpay v
 
 The grant request becomes visible via:
 - The Chariot Dashboard
-- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically process grant requests within your grantmaker external system.
+- The [Grant Request API](/api/grant-requests/list) endpoints. You can also listen to [Grant Request webhooks](/api/webhooks) to automatically process grant requests within your grantmaker system.
 
 ### Process the Grant Request
 
-Approve the grant request using the [Approve Grant Request API](/api/grant-requests/approve) when it's been processed in your external system, or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
+Approve the grant request using the [Approve Grant Request API](/api/grant-requests/approve) when it's been entered into your system, or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
+
+<Note>
+When you approve a grant request, it's still your responsibility to enter the details of the grant request into your own system. The Grant Request API provides visibility into grant requests submitted through DAFpay, but you must process them in your grantmaker system.
+</Note>
 
 </Steps>
 
 <Tip>
-Set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created, allowing you to process them in real-time within your external system.
+Set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created, allowing you to process them in real-time within your system.
 </Tip>
 
