@@ -42,11 +42,11 @@ hidden: false
     </Accordion>
 
     <Accordion title="How do I approve or reject a Grant Request?">
-        A Grant Request can be approved via the [Approve Grant Request API](/api/grant-requests/approve) or the Chariot Dashboard. When approved, the grant request status changes to `APPROVED`.
+        After retrieving a grant request from Chariot and submitting it to your grantmaker system, update the Grant Request status to `SUBMITTED` using the [Approve Grant Request API](/api/grant-requests/approve) or the Chariot Dashboard. The `SUBMITTED` status indicates that the grant request has been successfully submitted to your grantmaker system.
 
-        A Grant Request can be rejected via the [Reject Grant Request API](/api/grant-requests/reject) with an optional rejection reason. When rejected, the status changes to `REJECTED` and the donor will be notified.
+        If a grant request cannot be processed, reject it using the [Reject Grant Request API](/api/grant-requests/reject) with an optional rejection reason. When rejected, the status changes to `REJECTED` and the donor will be notified.
 
-        Grant requests have three statuses via the API: `PENDING`, `APPROVED`, or `REJECTED`.
+        Grant requests have three statuses via the API: `PENDING`, `SUBMITTED`, or `REJECTED`.
     </Accordion>
 
     <Accordion title="What happens if the Grant Request is rejected?">
@@ -61,7 +61,7 @@ hidden: false
         Alternatively, you can poll the [List Grant Requests](/api/grant-requests/list) endpoint to check for new grant requests created in Chariot.
 
         <Note>
-        Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot using the Grant Request API and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
+        Grant requests are created in Chariot when donors submit them through DAFpay. Retrieve them from Chariot, submit to your grantmaker system, then update the status to `SUBMITTED` using the Approve Grant Request API. You are responsible for processing grant requests in your grantmaker system.
         </Note>
     </Accordion>
 </AccordionGroup>

@@ -787,7 +787,7 @@ paths:
                       last_name: "Doe"
                     account_identifier: "ext_account_12345"
                     account_name: "John Doe DAF Account"
-                    status: "APPROVED"
+                    status: "SUBMITTED"
                     created_at: "2024-01-31T23:00:00Z"
                     updated_at: "2024-01-31T23:59:59Z"
                     approved_at: "2024-01-31T23:59:59Z"
@@ -1025,24 +1025,24 @@ paths:
               $ref: "#/components/headers/X-Request-Id"
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/GrantRequest"
-              examples:
-                Approved:
-                  value:
-                    id: "grant_request_01j8rs605a4gctmbm58d87mvsj"
-                    donor_giving_account_id: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
-                    amount: 50000
-                    organization:
-                      id: "org_01j8rs605a4gctmbm58d87mvsj"
-                      ein: "123456789"
-                      name: "American Red Cross"
-                    status: "APPROVED"
-                    sharing_preference: "FUND_NAME"
-                    frequency: "ONE_TIME"
-                    created_at: "2024-01-31T23:00:00Z"
-                    updated_at: "2024-01-31T23:59:59Z"
-                    approved_at: "2024-01-31T23:59:59Z"
+                      schema:
+                        $ref: "#/components/schemas/GrantRequest"
+                      examples:
+                        Submitted:
+                          value:
+                            id: "grant_request_01j8rs605a4gctmbm58d87mvsj"
+                            donor_giving_account_id: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
+                            amount: 50000
+                            organization:
+                              id: "org_01j8rs605a4gctmbm58d87mvsj"
+                              ein: "123456789"
+                              name: "American Red Cross"
+                            status: "SUBMITTED"
+                            sharing_preference: "FUND_NAME"
+                            frequency: "ONE_TIME"
+                            created_at: "2024-01-31T23:00:00Z"
+                            updated_at: "2024-01-31T23:59:59Z"
+                            approved_at: "2024-01-31T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3782,7 +3782,7 @@ components:
       description: The status of a Grant Request
       enum:
         - PENDING
-        - APPROVED
+        - SUBMITTED
         - REJECTED
       example: "PENDING"
     SharingPreference:
@@ -4509,7 +4509,7 @@ components:
                     account_identifier: "ext_account_12345"
                     account_name: "John Doe DAF Account"
                     limit: 1000000
-                    status: "APPROVED"
+                    status: "SUBMITTED"
                     created_at: "2024-01-31T23:00:00Z"
                     updated_at: "2024-01-31T23:59:59Z"
                     approved_at: "2024-01-31T23:00:00Z"

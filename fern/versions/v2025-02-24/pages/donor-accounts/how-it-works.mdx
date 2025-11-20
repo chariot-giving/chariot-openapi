@@ -51,10 +51,10 @@ The grant request created in Chariot's system can be retrieved via:
 
 ### Submit Grant Request to Your System
 
-Retrieve the grant request details from Chariot and submit them into your grantmaker system. Once the grant request has been entered into your system, you can approve it using the [Approve Grant Request API](/api/grant-requests/approve), or reject it using the [Reject Grant Request API](/api/grant-requests/reject) if it cannot be processed.
+Retrieve the grant request details from Chariot and submit them into your grantmaker system. Once the grant request has been successfully submitted to your grantmaker system, update its status to `SUBMITTED` using the [Approve Grant Request API](/api/grant-requests/approve). If the grant request cannot be processed, reject it using the [Reject Grant Request API](/api/grant-requests/reject).
 
 <Note>
-Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
+Grant requests are created in Chariot when donors submit them through DAFpay. Retrieve them from Chariot, submit to your grantmaker system, then update the status to `SUBMITTED` using the Approve Grant Request API. You are responsible for processing grant requests in your grantmaker system.
 </Note>
 
 </Steps>
