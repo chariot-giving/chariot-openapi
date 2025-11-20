@@ -85,8 +85,8 @@ navigation:
               - page: FAQ
                 slug: faq
                 path: ./pages/disbursements/faq.mdx
-          - section: DAFpay
-            slug: dafpay-grantmakers
+          - section: Donor Accounts
+            slug: donor-accounts
             contents:
               - page: Overview
                 slug: /
