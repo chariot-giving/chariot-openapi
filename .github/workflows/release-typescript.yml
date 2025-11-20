@@ -19,11 +19,7 @@ jobs:
         uses: actions/setup-node@v3
 
       - name: Download Fern
-        run: |
-          npm install -g fern-api
-          # Fix for Fern v2 missing dependencies - install in fern-api directory
-          FERN_DIR=$(npm root -g)/fern-api
-          cd "$FERN_DIR" && npm install cli-progress
+        run: npm install -g fern-api
 
       - name: Release TypeScript SDK
         env:
