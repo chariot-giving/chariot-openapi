@@ -776,6 +776,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DonorAccount"
+              examples:
+                Approved:
+                  value:
+                    id: "donor_account_01j8rs605a4gctmbm58d87mvsj"
+                    donor:
+                      id: "donor_01j8rs605a4gctmbm58d87mvsj"
+                      email: "donor@example.com"
+                      first_name: "John"
+                      last_name: "Doe"
+                    account_identifier: "ext_account_12345"
+                    account_name: "John Doe DAF Account"
+                    status: "APPROVED"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:59:59Z"
+                    approved_at: "2024-01-31T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -816,6 +831,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DonorAccount"
+              examples:
+                Rejected:
+                  value:
+                    id: "donor_account_01j8rs605a4gctmbm58d87mvsj"
+                    donor:
+                      id: "donor_01j8rs605a4gctmbm58d87mvsj"
+                      email: "donor@example.com"
+                      first_name: "John"
+                      last_name: "Doe"
+                    status: "REJECTED"
+                    rejection_reason: "Email address could not be verified"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:59:59Z"
+                    rejected_at: "2024-01-31T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -854,6 +883,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DonorAccount"
+              examples:
+                Closed:
+                  value:
+                    id: "donor_account_01j8rs605a4gctmbm58d87mvsj"
+                    donor:
+                      id: "donor_01j8rs605a4gctmbm58d87mvsj"
+                      email: "donor@example.com"
+                      first_name: "John"
+                      last_name: "Doe"
+                    account_identifier: "ext_account_12345"
+                    account_name: "John Doe DAF Account"
+                    status: "CLOSED"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-02-01T23:59:59Z"
+                    approved_at: "2024-01-31T23:59:59Z"
+                    closed_at: "2024-02-01T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -982,6 +1027,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GrantRequest"
+              examples:
+                Approved:
+                  value:
+                    id: "grant_request_01j8rs605a4gctmbm58d87mvsj"
+                    donor_giving_account_id: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
+                    amount: 50000
+                    organization:
+                      id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      name: "American Red Cross"
+                    status: "APPROVED"
+                    sharing_preference: "FUND_NAME"
+                    frequency: "ONE_TIME"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:59:59Z"
+                    approved_at: "2024-01-31T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1022,6 +1082,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GrantRequest"
+              examples:
+                Rejected:
+                  value:
+                    id: "grant_request_01j8rs605a4gctmbm58d87mvsj"
+                    donor_giving_account_id: "donor_giving_account_01j8rs605a4gctmbm58d87mvsj"
+                    amount: 50000
+                    organization:
+                      id: "org_01j8rs605a4gctmbm58d87mvsj"
+                      name: "American Red Cross"
+                    status: "REJECTED"
+                    sharing_preference: "FUND_NAME"
+                    frequency: "ONE_TIME"
+                    rejection_reason: "Grant request amount exceeds account limit"
+                    created_at: "2024-01-31T23:00:00Z"
+                    updated_at: "2024-01-31T23:59:59Z"
+                    rejected_at: "2024-01-31T23:59:59Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3601,7 +3677,7 @@ components:
         rejection_reason:
           type: string
           description: The reason for rejection if the Donor Account was rejected
-          example: "Email address does not match our records"
+          example: "Email address could not be verified"
         closed_at:
           type: string
           readOnly: true
@@ -4156,7 +4232,7 @@ components:
               rejection_reason:
                 type: string
                 description: The reason for rejecting the Donor Account
-                example: "Email address does not match our records"
+                example: "Email address could not be verified"
     RejectGrantRequestRequest:
       description: The request body for rejecting a Grant Request
       required: true
