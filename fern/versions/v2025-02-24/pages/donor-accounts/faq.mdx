@@ -1,0 +1,68 @@
+---
+title: "Frequently Asked Questions"
+subtitle: "Answers to common questions about Donor Accounts and Grant Requests"
+hidden: false
+---
+
+### Donor Accounts
+
+<AccordionGroup>
+    <Accordion title="How does a donor request a Donor Account?">
+        When a donor uses DAFpay for the first time, they select their DAF provider and create their DAFpay account. This automatically creates a Donor Account request for the grantmaker. Donors can then submit grant requests in DAFpay, which will show up under this Donor Account.
+
+        Each Donor Account should reference an account in the grantmaker's system. Therefore, when grant requests are made, the grantmaker should know which account to apply the grant request to in their system.
+    </Accordion>
+
+    <Accordion title="Can a Donor Account be closed?">
+        Yes, either via the [Close Donor Account API](/api/donor-accounts/close) or the Chariot Dashboard, an approved Donor Account can be closed. When closed, the user won't be able to submit grant requests to this Donor Account via their DAFpay account.
+
+        To close a Donor Account, use the Close Donor Account endpoint. This sets the status to `CLOSED`.
+    </Accordion>
+
+    <Accordion title="How do I verify that a Donor Account request is legitimate?">
+        DAFpay verifies the ownership of the user's email address. If this email address matches the email address in the grantmaker's system, a grantmaker can contact the donor to confirm the donor wants to link their DAF account to DAFpay.
+
+        If the donor confirms, a reference between the account and the Donor Account can be made using the `account_identifier` field when approving the Donor Account.
+    </Accordion>
+
+    <Accordion title="What happens if a Donor Account request is rejected?">
+        The DAFpay user will receive a notification with the rejection reason and instructions on what steps they can take to rectify the issue. For example, the donor might need to verify a different email with DAFpay before the Donor Account can be verified.
+
+        You can provide a rejection reason when rejecting the Donor Account using the Reject Donor Account endpoint.
+    </Accordion>
+</AccordionGroup>
+
+### Grant Requests
+
+<AccordionGroup>
+    <Accordion title="Can a donor submit a grant request above the donor's balance?">
+        Each Donor Account can have an optional limit, which will restrict the donor from submitting requests above the limit. DAFpay also ensures that the donor doesn't submit grant requests below the DAF's minimum.
+
+        The limit is set on the Donor Account and controls the maximum grant request amount that can be submitted.
+    </Accordion>
+
+    <Accordion title="How do I approve or reject a Grant Request?">
+        A Grant Request can be approved via the [Approve Grant Request API](/api/grant-requests/approve) or the Chariot Dashboard. When approved, the grant request status changes to `APPROVED`.
+
+        A Grant Request can be rejected via the [Reject Grant Request API](/api/grant-requests/reject) with an optional rejection reason. When rejected, the status changes to `REJECTED` and the donor will be notified.
+
+        Grant requests have three statuses via the API: `PENDING`, `APPROVED`, or `REJECTED`.
+    </Accordion>
+
+    <Accordion title="What happens if the Grant Request is rejected?">
+        The DAFpay user will receive a notification with the rejection reason and instructions on what steps they can take to rectify the issue.
+
+        When rejecting a grant request, you can provide a `rejection_reason` that will be communicated to the donor.
+    </Accordion>
+
+    <Accordion title="How do I receive notifications about new Grant Requests?">
+        Grant requests are created in Chariot's system when donors submit them through DAFpay. You can set up [webhook subscriptions](/api/webhooks) to automatically receive notifications when grant requests are created in Chariot, allowing you to retrieve and submit them to your grantmaker system in real-time.
+
+        Alternatively, you can poll the [List Grant Requests](/api/grant-requests/list) endpoint to check for new grant requests created in Chariot.
+
+        <Note>
+        Grant requests are created in Chariot's system when donors submit them through DAFpay. As a grantmaker, you need to retrieve these grant requests from Chariot using the Grant Request API and then submit them into your own grantmaker system. The Grant Request API provides access to grant requests created in Chariot, but you are responsible for entering and processing them in your grantmaker system.
+        </Note>
+    </Accordion>
+</AccordionGroup>
+

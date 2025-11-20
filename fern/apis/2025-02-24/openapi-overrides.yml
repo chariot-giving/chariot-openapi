@@ -160,3 +160,56 @@ paths:
       x-fern-sdk-group-name:
         - inboundTransfers
       x-fern-sdk-method-name: cancel
+  /v1/donor_accounts:
+    get:
+      x-fern-pagination:
+        cursor: $request.pageToken
+        next_cursor: $response.next_page_token
+        results: $response.items
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: list
+  /v1/donor_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: get
+  /v1/donor_accounts/{id}/approve:
+    post:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: approve
+  /v1/donor_accounts/{id}/reject:
+    post:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: reject
+  /v1/donor_accounts/{id}/close:
+    post:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: close
+  /v1/grant_requests:
+    get:
+      x-fern-pagination:
+        cursor: $request.pageToken
+        next_cursor: $response.next_page_token
+        results: $response.items
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: list
+  /v1/grant_requests/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: get
+  /v1/grant_requests/{id}/approve:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: approve
+  /v1/grant_requests/{id}/reject:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: reject
