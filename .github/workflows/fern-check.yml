@@ -12,6 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install fern
-        run: npm install -g fern-api
+        run: |
+          npm install -g fern-api
+          # Fix for Fern v2 missing dependencies - install in fern-api directory
+          FERN_DIR=$(npm root -g)/fern-api
+          cd "$FERN_DIR" && npm install cli-progress
       - name: fern check
         run: fern check
