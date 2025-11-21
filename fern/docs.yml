@@ -2,7 +2,6 @@ instances:
   - url: https://chariot.docs.buildwithfern.com
     custom-domain: docs.givechariot.com
 title: Chariot
-
 versions:
   - display-name: v2025-02-24
     path: versions/v2025-02-24/docs.yml
@@ -10,23 +9,19 @@ versions:
   - display-name: v2023-01-01
     path: versions/v2023-01-01/docs.yml
     slug: v2023-01-01
-
 logo:
   href: /
   light: assets/logo.png
   dark: assets/logo.png
   height: 24
-
 favicon: assets/favicon.png
 css: assets/styles.css
-
 layout:
   page-width: full
   disable-header: false
   header-height: 62px
   searchbar-placement: header
   tabs-placement: header
-
 navbar-links:
   - type: secondary
     text: Contact us
@@ -34,33 +29,37 @@ navbar-links:
   - type: primary
     text: Login
     url: https://dashboard.givechariot.com/login
-
 footer-links:
   github: https://github.com/chariot-giving
   x: https://x.com/chariotgiving
   linkedin: https://www.linkedin.com/company/givechariot
   website: https://givechariot.com
-
 typography:
   bodyFont:
     name: OpenSans
     path: ./assets/matter.woff2
-    weight: "400"
+    weight: '400'
   headingsFont:
     name: OpenSans
     path: ./assets/matter-bold.woff2
-    weight: "600"
-
+    weight: '600'
 colors:
   accentPrimary:
-    light: "#35BBF4"
-    dark: "#35BBF4"
+    light: '#35BBF4'
+    dark: '#35BBF4'
   background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: '#F6F8FA'
+    dark: '#212121'
   sidebar-background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: '#F6F8FA'
+    dark: '#212121'
   header-background:
     light: '#F6F8FA'
-    dark: "#212121"
+    dark: '#212121'
+navigation:
+  - tab: guides
+    layout:
+      - section: For Fundraisers
+        contents:
+          - page: DAFpay
+            path: ./docs/pages/guides/dafpay/dafpay.mdx
