@@ -142,6 +142,6 @@ navigation:
                   title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
-              - disbursements
+              - disbursements:
                   title: Disbursements
   - tab: changelog
