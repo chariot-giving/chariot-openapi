@@ -1018,7 +1018,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: page_token
+        - name: next_page_token
           in: query
           description: |-
             A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
