@@ -143,4 +143,5 @@ navigation:
               - inboundTransfers:
                   title: Inbound Transfers
               - disbursements
+                  title: Disbursements
   - tab: changelog
