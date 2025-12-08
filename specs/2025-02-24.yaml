@@ -964,6 +964,162 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/organization_requests:
+    post:
+      summary: Request nonprofit onboarding
+      description: |-
+        Request that a nonprofit join Chariot when their EIN is not found in the system. This is commonly used when preparing bulk disbursements via CSV upload and encountering nonprofits that don't exist in Chariot's database yet.
+
+        When you create a request:
+        - The nonprofit's contact email (if provided) will receive an invitation to join Chariot
+        - The request will be tracked and you can monitor its status
+        - Once the nonprofit completes onboarding, you'll be able to send disbursements to them
+
+        The request includes organization details to help expedite the onboarding process.
+      operationId: createOrganizationRequest
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ein
+                - organization_name
+              properties:
+                ein:
+                  type: string
+                  description: The Employer Identification Number (EIN) of the nonprofit organization
+                  example: "123456789"
+                organization_name:
+                  type: string
+                  description: The legal name of the nonprofit organization
+                  example: "Example Nonprofit Foundation"
+                website:
+                  type: string
+                  nullable: true
+                  description: The organization's website URL
+                  example: "https://www.example.org"
+                contact_email:
+                  type: string
+                  nullable: true
+                  description: Contact email address for the nonprofit (will receive onboarding invitation)
+                  example: "contact@example.org"
+                contact_phone:
+                  type: string
+                  nullable: true
+                  description: Contact phone number for the nonprofit in E.164 format
+                  example: "+14155550123"
+                line1:
+                  type: string
+                  nullable: true
+                  description: Street address line 1
+                  example: "123 Main Street"
+                line2:
+                  type: string
+                  nullable: true
+                  description: Street address line 2
+                  example: "Suite 100"
+                city:
+                  type: string
+                  nullable: true
+                  description: City name
+                  example: "San Francisco"
+                state:
+                  type: string
+                  nullable: true
+                  description: Two-letter state code
+                  example: "CA"
+                zip_code:
+                  type: string
+                  nullable: true
+                  description: ZIP or postal code
+                  example: "94105"
+      responses:
+        "200":
+          description: "OK - Onboarding request created successfully"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationRequest"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List nonprofit onboarding requests
+      description: |-
+        List all nonprofit onboarding requests made by your organization. This helps you track which nonprofits you've requested to join Chariot and their current onboarding status.
+
+        Requests progress through several statuses:
+        - `pending_invite`: Request created but invitation not yet sent
+        - `request_sent`: Invitation email sent to the nonprofit
+        - `started_onboarding`: Nonprofit has begun the onboarding process
+        - `in_review`: Nonprofit completed onboarding, pending Chariot review
+        - `approved`: Nonprofit is fully onboarded and can receive disbursements
+      operationId: listOrganizationRequests
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page_token
+          in: query
+          description: Token for pagination (from previous response)
+          required: false
+          schema:
+            type: string
+        - name: page_size
+          in: query
+          description: Number of results per page (default 10, max 100)
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requests:
+                    type: array
+                    description: List of nonprofit onboarding requests
+                    items:
+                      $ref: "#/components/schemas/OrganizationRequest"
+                  next_page_token:
+                    type: string
+                    nullable: true
+                    description: Token to fetch the next page of results
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
     post:
       summary: Create a disbursement
@@ -2594,6 +2750,113 @@ components:
         state:
           type: string
           description: State, county, province, or region
+    OrganizationRequest:
+      type: object
+      description: |-
+        Represents a request for a nonprofit organization to join Chariot. Grantmakers create these requests when they want to send disbursements to nonprofits that don't yet exist in Chariot's system.
+      required:
+        - id
+        - ein
+        - organization_name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the onboarding request
+          example: "550e8400-e29b-41d4-a716-446655440000"
+          readOnly: true
+        ein:
+          type: string
+          description: The Employer Identification Number (EIN) of the nonprofit organization
+          example: "123456789"
+        referring_organization_id:
+          type: string
+          nullable: true
+          description: ID of the grantmaker organization that made the request
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        organization_name:
+          type: string
+          description: The legal name of the nonprofit organization
+          example: "Example Nonprofit Foundation"
+        website:
+          type: string
+          nullable: true
+          description: The organization's website URL
+          example: "https://www.example.org"
+        contact_email:
+          type: string
+          nullable: true
+          description: Contact email address for the nonprofit
+          example: "contact@example.org"
+        contact_phone:
+          type: string
+          nullable: true
+          description: Contact phone number for the nonprofit in E.164 format
+          example: "+14155550123"
+        line1:
+          type: string
+          nullable: true
+          description: Street address line 1
+          example: "123 Main Street"
+        line2:
+          type: string
+          nullable: true
+          description: Street address line 2
+          example: "Suite 100"
+        city:
+          type: string
+          nullable: true
+          description: City name
+          example: "San Francisco"
+        state:
+          type: string
+          nullable: true
+          description: Two-letter state code
+          example: "CA"
+        zip_code:
+          type: string
+          nullable: true
+          description: ZIP or postal code
+          example: "94105"
+        notified_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the nonprofit was notified via email
+          example: "2024-01-15T10:30:00Z"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the request was created
+          example: "2024-01-01T12:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the request was last updated
+          example: "2024-01-15T10:30:00Z"
+          readOnly: true
+        status:
+          type: string
+          nullable: true
+          description: Current status of the onboarding request
+          enum:
+            - pending_invite
+            - request_sent
+            - started_onboarding
+            - in_review
+            - approved
+          example: "request_sent"
+          readOnly: true
+        organization_id:
+          type: string
+          nullable: true
+          description: ID of the organization that was created from this request. Populated when status is `started_onboarding` or later.
+          example: "org_2AbCdEfGhIjKlMnOpQrStUvWx"
+          readOnly: true
     Disbursement:
       type: object
       description: A disbursement moves funds to a verified organization.
