@@ -69,7 +69,7 @@ navigation:
             path: ./pages/disbursements/disbursement-lifecycle.mdx
           - page: Requesting Nonprofits
             slug: requesting-nonprofits
-            path: ./pages/disbursements/requesting-nonprofit-onboarding.mdx
+            path: ./pages/disbursements/requesting-nonprofits.mdx
           - page: Compliance
             slug: compliance
             path: ./pages/disbursements/compliance.mdx

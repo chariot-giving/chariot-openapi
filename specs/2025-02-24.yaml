@@ -966,16 +966,16 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/organization_requests:
     post:
-      summary: Request nonprofit onboarding
+      summary: Request nonprofit verification
       description: |-
-        Request that a nonprofit join Chariot when their EIN is not found in the system. This is commonly used when preparing bulk disbursements via CSV upload and encountering nonprofits that don't exist in Chariot's database yet.
+        Request that a nonprofit join Chariot when their EIN is not found in the system. This is used when a grantmaker would like to disburse to a nonprofit that does not yet exist in the Chariot network.
 
         When you create a request:
         - The nonprofit's contact email (if provided) will receive an invitation to join Chariot
         - The request will be tracked and you can monitor its status
-        - Once the nonprofit completes onboarding, you'll be able to send disbursements to them
+        - Once the nonprofit completes verification, you'll be able to send disbursements to them
 
-        The request includes organization details to help expedite the onboarding process.
+        The request includes organization details to help expedite the verification process.
       operationId: createOrganizationRequest
       tags:
         - Organizations
@@ -1007,7 +1007,7 @@ paths:
                 contact_email:
                   type: string
                   nullable: true
-                  description: Contact email address for the nonprofit (will receive onboarding invitation)
+                  description: Contact email address for the nonprofit (will receive verification invitation)
                   example: "contact@example.org"
                 contact_phone:
                   type: string
@@ -1041,7 +1041,7 @@ paths:
                   example: "94105"
       responses:
         "200":
-          description: "OK - Onboarding request created successfully"
+          description: "OK - Verification request created successfully"
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
@@ -1062,16 +1062,16 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     get:
-      summary: List nonprofit onboarding requests
+      summary: List nonprofit verification requests
       description: |-
-        List all nonprofit onboarding requests made by your organization. This helps you track which nonprofits you've requested to join Chariot and their current onboarding status.
+        List all nonprofit verification requests made by your organization. This helps you track which nonprofits you've requested to join Chariot and their current verification status.
 
         Requests progress through several statuses:
         - `pending_invite`: Request created but invitation not yet sent
         - `request_sent`: Invitation email sent to the nonprofit
-        - `started_onboarding`: Nonprofit has begun the onboarding process
-        - `in_review`: Nonprofit completed onboarding, pending Chariot review
-        - `approved`: Nonprofit is fully onboarded and can receive disbursements
+        - `started_verification`: Nonprofit has begun the verification process
+        - `in_review`: Nonprofit completed verification, pending Chariot review
+        - `approved`: Nonprofit is fully verified and can receive disbursements
       operationId: listOrganizationRequests
       tags:
         - Organizations
@@ -1105,7 +1105,7 @@ paths:
                 properties:
                   requests:
                     type: array
-                    description: List of nonprofit onboarding requests
+                    description: List of nonprofit verification requests
                     items:
                       $ref: "#/components/schemas/OrganizationRequest"
                   next_page_token:
@@ -2763,19 +2763,13 @@ components:
       properties:
         id:
           type: string
-          description: Unique identifier for the onboarding request
+          description: Unique identifier for the verification request
           example: "550e8400-e29b-41d4-a716-446655440000"
           readOnly: true
         ein:
           type: string
           description: The Employer Identification Number (EIN) of the nonprofit organization
           example: "123456789"
-        referring_organization_id:
-          type: string
-          nullable: true
-          description: ID of the grantmaker organization that made the request
-          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
-          readOnly: true
         organization_name:
           type: string
           description: The legal name of the nonprofit organization
@@ -2842,19 +2836,19 @@ components:
         status:
           type: string
           nullable: true
-          description: Current status of the onboarding request
+          description: Current status of the verification request
           enum:
             - pending_invite
             - request_sent
-            - started_onboarding
+            - started_verification
             - in_review
             - approved
           example: "request_sent"
           readOnly: true
-        organization_id:
+        nonprofit_organization_id:
           type: string
           nullable: true
-          description: ID of the organization that was created from this request. Populated when status is `started_onboarding` or later.
+          description: The ID of the resulting nonprofit organization within Chariot's system. This field is populated after the nonprofit has created a Chariot account and started the verification process (when status is `started_verification` or later).
           example: "org_2AbCdEfGhIjKlMnOpQrStUvWx"
           readOnly: true
     Disbursement:
