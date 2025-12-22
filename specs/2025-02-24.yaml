@@ -1655,7 +1655,7 @@ components:
             The list of transactions associated with the disbursement.
             Each transaction is an individual donation to be included in the disbursement.
             Must specify at least one transaction.
-            
+
             The sum of all transaction net amounts (amount - fee_amount) must equal the disbursement amount.
           items:
             type: object
@@ -2530,22 +2530,22 @@ components:
       properties:
         city:
           type: string
-          description: City, district, suburb, town, or village.
+          description: "City, district, suburb, town, or village. Maximum length: 255 characters."
         country:
           type: string
-          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          description: "Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Maximum length: 255 characters."
         line1:
           type: string
-          description: Address line 1 (e.g. street, PO Box, or company name)
+          description: "Address line 1 (e.g. street, PO Box, or company name). Maximum length: 255 characters."
         line2:
           type: string
-          description: Address line 2 (e.g. apartment, suite, unit, or building)
+          description: "Address line 2 (e.g. apartment, suite, unit, or building). Maximum length: 255 characters."
         postal_code:
           type: string
-          description: ZIP or postal code
+          description: "ZIP or postal code. Maximum length: 40 characters."
         state:
           type: string
-          description: State, county, province, or region
+          description: "State, county, province, or region. Maximum length: 255 characters."
     GrantAddress:
       type: object
       properties:
@@ -3159,15 +3159,15 @@ components:
       properties:
         grant_id:
           type: string
-          description: A unique identifier for the grant within the DAF provider's internal system.
+          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
           example: "grant_1234567890"
         organization_name:
           type: string
-          description: The name of the DAF organization that made the grant
+          description: "The name of the DAF organization that made the grant. Maximum length: 255 characters."
           example: "Vanguard Charitable"
         fund_name:
           type: string
-          description: The name of the DAF fund that made the grant
+          description: "The name of the DAF fund that made the grant. Maximum length: 255 characters."
           example: "John Doe Fund"
         purpose:
           type: string
@@ -3188,19 +3188,19 @@ components:
       properties:
         first_name:
           type: string
-          description: The first name of the donor
+          description: "The first name of the donor. Maximum length: 255 characters."
           example: "John"
         last_name:
           type: string
-          description: The last name of the donor
+          description: "The last name of the donor. Maximum length: 255 characters."
           example: "Doe"
         email:
           type: string
-          description: The email address of the donor
+          description: "The email address of the donor. Maximum length: 255 characters."
           example: "bob@me.com"
         phone:
           type: string
-          description: The phone number of the donor
+          description: "The phone number of the donor. Maximum length: 20 characters."
           example: "415-555-1212"
         address:
           $ref: "#/components/schemas/Address"
