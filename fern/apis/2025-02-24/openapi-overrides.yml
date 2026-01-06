@@ -13,6 +13,17 @@ paths:
       x-fern-sdk-group-name:
         - organizations
       x-fern-sdk-method-name: get
+  /v1/programs:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - programs
+      x-fern-sdk-method-name: list
+  /v1/programs/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - programs
+      x-fern-sdk-method-name: get
   /v1/connects:
     post:
       x-fern-sdk-group-name:
