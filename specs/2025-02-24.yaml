@@ -3429,6 +3429,8 @@ components:
       required:
         - id
         - name
+        - grant_disbursement_status
+        - gift_processing_status
         - created_at
         - updated_at
       properties:
