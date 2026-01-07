@@ -956,6 +956,13 @@ paths:
       tags:
         - financial_accounts
       parameters:
+        - name: program_id
+          in: query
+          description: The unique identifier for the program
+          required: false
+          schema:
+            type: string
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
         - name: page_limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
@@ -3422,7 +3429,6 @@ components:
       required:
         - id
         - name
-        - capabilities
         - created_at
         - updated_at
       properties:
@@ -3438,23 +3444,24 @@ components:
           type: string
           description: A description of the program
           example: "This program is used to unify and standardize donation processing across all Donor-Advised Fund grants."
-        capabilities:
-          type: array
+        grant_disbursement_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
           description: |-
-            The capabilities of the program.
-            This is a list of the capabilities that the program supports.
-            The set of capabilities are:
-            - "donation_processing": The program can create and setup linked payers to process donations.
-            - "lockboxes": The program can provision lockboxes to receive and process physical mail.
-            - "daf_fundraising": The program can configure and manage DAFpay integrations.
-            - "grant_disbursement": The program can disburse grant payments to other eligible nonprofit recipients.
-          items:
-            type: string
-            enum:
-              - "donation_processing"
-              - "lockboxes"
-              - "daf_fundraising"
-              - "grant_disbursement"
+            The status of the program's ability to disburse grant payments to other eligible nonprofit recipients.
+          example: "enabled"
+          readOnly: true
+        gift_processing_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
+          description: |-
+            The status of the program's ability to connect payment sources to process donations and grants to your organization.
+          example: "enabled"
+          readOnly: true
         created_at:
           type: string
           format: date-time
