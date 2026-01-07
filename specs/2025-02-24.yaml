@@ -1066,8 +1066,10 @@ paths:
       description: |
         Create a disbursement to send money to an organization.
         
-        If the program specified does not have the "grant_disbursement" capability enabled
-        or if no default grantmaking program exists for your account, this will return a 403 Forbidden error.
+        If the program specified does not have grant_disbursement_status enabled
+        or if no grant_disbursement_status enabled program exists for your account, this will return a 403 Forbidden error.
+        If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement
+        otherwise the request will return a 400 Bad Request error.
       operationId: createDisbursement
       tags:
         - disbursements
@@ -1162,8 +1164,10 @@ paths:
         All disbursements in the request will be created together. If any disbursement fails validation,
         the entire request will fail and no disbursements will be created.
 
-        If any of the disbursements in the request have a program specified that does not have the "grant_disbursement"
-        capability enabled or if no default grantmaking program exists for your account, this will return a 403 Forbidden error.
+        If any of the disbursements in the request have a program specified that does not have grant_disbursement_status enabled
+        or if no grant_disbursement_status enabled program exists for your account, the request will return a 403 Forbidden error.
+        If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursements
+        otherwise the request will return a 400 Bad Request error.
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
@@ -1751,8 +1755,9 @@ components:
           type: string
           description: |-
             The identifier for the program that the disbursement is associated with.
-            The program must have the "grant_disbursement" capability enabled.
-            If not provided, your default grantmaking program will be used.
+            The program must have grant_disbursement_status enabled.
+            If not provided, your grant_disbursement_status enabled program will be used.
+            If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement.
           example: "program_01jpjenf5q6cawy43yxfcrxhct"
           nullable: true
         amount:
