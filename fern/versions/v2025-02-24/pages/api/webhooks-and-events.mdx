@@ -36,6 +36,10 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
   - `disbursement.updated`: This event is triggered when a disbursement is updated. This can happen when the lifecycle status of the disbursement changes.
   - `inbound_transfer.created`: This event is triggered when an inbound transfer is created.
   - `inbound_transfer.updated`: This event is triggered when an inbound transfer is updated. This can happen when the status of the inbound transfer changes.
+  - `donation.created`: This event is triggered when a donation is created.
+  - `donation.updated`: This event is triggered when a donation is updated.
+  - `deposit.created`: This event is triggered when a deposit is created.
+  - `deposit.updated`: This event is triggered when a deposit is updated. This can happen when the status of the deposit or underlying transfer changes.
 </Aside>
 
 Note that you can create Event Subscriptions in Production and Sandbox. Sandbox Event Subscriptions will receive events for Sandbox events and vice versa.
