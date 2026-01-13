@@ -145,4 +145,14 @@ navigation:
                   title: Inbound Transfers
               - disbursements:
                   title: Disbursements
+          - section: Processing
+            skip-slug: true
+            icon: gear
+            contents:
+              - donations:
+                  title: Donations
+              - deposits:
+                  title: Deposits
+              - properties:
+                  title: Properties
   - tab: changelog

@@ -171,3 +171,41 @@ paths:
       x-fern-sdk-group-name:
         - inboundTransfers
       x-fern-sdk-method-name: cancel
+  /v1/donations:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: list
+  /v1/donations/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: get
+  /v1/deposits:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: list
+  /v1/deposits/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: get
+  /v1/properties:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: list
+  /v1/properties/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: get
+  /v1/properties/{id}/assign:
+    post:
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: assign
