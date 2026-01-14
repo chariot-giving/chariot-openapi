@@ -208,6 +208,21 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
+  /v1/outbound_transfers:
+    post:
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: list
+  /v1/outbound_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: get
   /v1/properties:
     get:
       x-fern-pagination: true

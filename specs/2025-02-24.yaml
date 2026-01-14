@@ -2039,6 +2039,112 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/outbound_transfers:
+    get:
+      summary: List Outbound Transfers
+      description: |-
+        List outbound transfers for your account.
+      operationId: listOutboundTransfers
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListOutboundTransfersResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create an Outbound Transfer
+      description: |-
+        Create an outbound transfer to transfer funds from a financial account
+        to an external bank account.
+        In Production, this requires that an external bank account has been setup
+        and verified by the account owner through the Chariot Dashboard.
+      operationId: createOutboundTransfer
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateOutboundTransferRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/outbound_transfers/{id}:
+    get:
+      summary: Get an Outbound Transfer
+      description: |-
+        Get an outbound transfer by its unique identifier.
+      operationId: getOutboundTransfer
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the outbound transfer
+          required: true
+          schema:
+            type: string
+          example: "outbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/properties:
     get:
       summary: List Properties
@@ -3885,21 +3991,27 @@ components:
         city:
           type: string
           description: City, district, suburb, town, or village.
+          example: "New York"
         country:
           type: string
           description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          example: "US"
         line1:
           type: string
           description: Address line 1 (e.g. street, PO Box, or company name)
+          example: "123 Main St."
         line2:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
+          example: "Suite 2504"
         postal_code:
           type: string
           description: ZIP or postal code
+          example: "12345"
         state:
           type: string
           description: State, county, province, or region
+          example: "NY"
     Disbursement:
       type: object
       description: A disbursement moves funds to a verified organization.
@@ -4338,6 +4450,68 @@ components:
         - not_authorized
         - voided
         - unknown
+    OutboundTransfer:
+      type: object
+      description: |-
+        An outbound transfer represents a transfer of funds from a financial account to an external bank account.
+      required:
+        - id
+        - amount
+        - currency
+        - status
+        - financial_account_id
+        - description
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the outbound transfer
+          example: "outbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the outbound transfer in minor currency units. For example, for dollars, this is cents.
+          example: 10000
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the transfer's currency.
+          example: USD
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the transfer was made from.
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        description:
+          type: string
+          description: An arbitrary string attached to the object. Often useful for displaying to users.
+          example: "Transfer to external bank account"
+        status:
+          type: string
+          description: |-
+            The status of the outbound transfer.
+            An Outbound Transfer is `processing` if it is created but the payment is not yet submitted. For example, if the transfer is awaiting submission to the FedACH.
+            The status changes to `failed` if the transfer is rejected by Chariot.
+            The status changes to `submitted` once the payment is successfully submitted to the the payment network (e.g. FedACH).
+            The status changes to `returned` if the funds fail to arrive at the external bank account.
+          example: "processing"
+          readOnly: true
+          enum:
+            - processing
+            - submitted
+            - failed
+            - returned
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
     CreateDisbursementInput:
       type: object
       description: |-
@@ -5246,6 +5420,13 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
+    CreateOutboundTransferRequest:
+      description: The request body for creating an outbound transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OutboundTransfer"
   responses:
     UpdateDonationResponse:
       description: The response for Donations.update.
@@ -5534,6 +5715,27 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/InboundTransfer"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListOutboundTransfersResponse:
+      description: The response for OutboundTransfers.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OutboundTransfer"
               nextPageToken:
                 type: string
                 description: |-
