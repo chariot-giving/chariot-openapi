@@ -79,6 +79,12 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
+      - section: Processing
+        slug: processing
+        contents:
+          - page: Overview
+            slug: overview
+            path: ./pages/processing/overview.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -125,6 +131,10 @@ navigation:
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
+              - files:
+                  title: Files
+              - fileLinks:
+                  title: File Links
           - section: DAFpay
             skip-slug: true
             icon: box-heart
@@ -149,6 +159,8 @@ navigation:
             skip-slug: true
             icon: gear
             contents:
+              - virtualAccounts:
+                  title: Virtual Accounts
               - donations:
                   title: Donations
               - deposits:

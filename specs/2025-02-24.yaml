@@ -1729,6 +1729,93 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/virtual_accounts:
+    get:
+      summary: List Virtual Accounts
+      description: |-
+        List virtual accounts for your Chariot account.
+
+        Virtual Accounts represent segregated addresses for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Virtual Accounts make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Virtual Account belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Virtual Accounts are not separately ledgered which means you can't get the balance of a Virtual Account separately from the Financial Account.
+
+        Virtual Accounts should be setup and managed through the Chariot Dashboard.
+      operationId: listVirtualAccounts
+      tags:
+        - virtualAccounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListVirtualAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/virtual_accounts/{id}:
+    get:
+      summary: Get a Virtual Account
+      description: |-
+        Get a virtual account by its unique identifier.
+
+        A Virtual Account represents a segregated address for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Virtual Accounts make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Virtual Account belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Virtual Accounts are not separately ledgered which means you can't get the balance of a Virtual Account separately from the Financial Account.
+
+        Virtual Accounts should be setup and managed through the Chariot Dashboard.
+      operationId: getVirtualAccount
+      tags:
+        - virtualAccounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the virtual account
+          required: true
+          schema:
+            type: string
+          example: "va_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VirtualAccount"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
@@ -1817,6 +1904,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Donation
+      description: |-
+        Update a donation with the given ID.
+        Use this endpoint to update core donation attributes like purpose, note and attribution.
+        To update properties, use the Properties.assign endpoint.
+      operationId: updateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDonationRequest"
+      responses:
+        "202":
+          $ref: "#/components/responses/UpdateDonationResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2029,11 +2150,108 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-components:
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files for your account.
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a File
+      description: |-
+        Get a file by its unique identifier.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/file_links:
+    post:
+      summary: Create a File Link
+      description: |-
+        File Links let you generate a URL that can be used to download a File.
+      operationId: createFileLink
+      tags:
+        - fileLinks
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFileLinkRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+components:
   schemas:
     OrganizationSummary:
       type: object
@@ -2302,6 +2520,87 @@ components:
         logo_url:
           type: string
           description: The URL of the organization's logo
+    VirtualAccount:
+      type: object
+      description: |-
+        A Virtual Account represents a segregated address for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Virtual Accounts make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Virtual Account belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Virtual Accounts are not separately ledgered which means you can't get the balance of a Virtual Account separately from the Financial Account.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the virtual account
+          example: "va_01j8rs605a4gctmbm58d87mvsj"
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the virtual account belongs to
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the virtual account
+          example: "Main Virtual Account"
+        account_type:
+          type: string
+          description: The type of the virtual account
+          example: "connected_account"
+          enum:
+            - manual
+            - connected_account
+            - lockbox
+            - grantmaker
+        financial_address:
+          $ref: "#/components/schemas/FinancialAddress"
+        lockbox:
+          $ref: "#/components/schemas/Lockbox"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the virtual account was created
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the virtual account was last updated
+          example: "2020-01-31T23:59:59Z"
+    Lockbox:
+      type: object
+      description: |-
+        A US mailing address to process incoming physical mail and checks.
+        This is only available for lockbox virtual accounts.
+      properties:
+        address:
+          $ref: "#/components/schemas/PostalAddress"
+    FinancialAddress:
+      type: object
+      description: |-
+        A subhash containing information about the electronic bank address payment rail details.
+        This is only available for manual and connected_account virtual accounts.
+      properties:
+        ach:
+          $ref: "#/components/schemas/AchAddress"
+    AchAddress:
+      type: object
+      description: |-
+        A subhash containing information about the electronic bank address payment rail details.
+      required:
+        - institution_name
+        - account_number
+        - routing_number
+      properties:
+        account_number:
+          type: string
+          description: The account number of that uniquely identifies the account at the institution
+          example: "987654321"
+        routing_number:
+          type: string
+          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
+          example: "101050001"
     Donation:
       type: object
       description: |-
@@ -2404,6 +2703,14 @@ components:
           items:
             type: object
             $ref: "#/components/schemas/PropertyAssignment"
+        artifacts:
+          type: array
+          description: |-
+            A list of source artifacts that were used to create the donation.
+            These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
+          items:
+            type: object
+            $ref: "#/components/schemas/Artifact"
         created_at:
           type: string
           format: date-time
@@ -2415,6 +2722,90 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the donation was last updated in Chariot's system.
+          example: "2020-01-31T23:59:59Z"
+    Artifact:
+      type: object
+      description: |-
+        An artifact is a source file that was used to create the donation.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the artifact.
+          example: "artifact_01j8rs605a4gctmbm58d87mvsj"
+        virtual_account_id:
+          type: string
+          description: The unique identifier for the virtual account that the artifact belongs to.
+          example: "va_01j8rs605a4gctmbm58d87mvsj"
+        file_id:
+          type: string
+          description: The unique identifier for the artifact file.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        content_type:
+          type: string
+          description: The MIME type of the artifact file.
+          example: "application/pdf"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the artifact was created.
+          example: "2020-01-31T23:59:59Z"
+    File:
+      type: object
+      description: |-
+        Files are objects that represent a file hosted on Chariot's servers.
+        If you need to download a File, create a File Link.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the file.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        file_name:
+          type: string
+          description: The name of the file.
+          example: "donation_receipt.pdf"
+        description:
+          type: string
+          description: The description of the file.
+          example: "Donation receipt for donation to the nonprofit"
+        purpose:
+          type: string
+          description: The purpose of the file.
+          enum:
+            - integration_download
+            - inbound_mail_item
+            - inbound_email
+            - grant_letter
+            - manual_upload
+        content_type:
+          type: string
+          description: The MIME type of the file.
+          example: "application/pdf"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the file was created.
+          example: "2020-01-31T23:59:59Z"
+    FileLink:
+      type: object
+      description: |-
+        A file link is a URL that can be used to download a file.
+      properties:
+        file_id:
+          type: string
+          description: The unique identifier for the file.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        unauthenticated_url:
+          type: string
+          description: The unauthenticated URL to download the file.
+          example: "https://cdn.givechariot.com/files/file.pdf"
+        expires_at:
+          type: string
+          format: date-time
+          description: The date and time when the file link will expire.
           example: "2020-01-31T23:59:59Z"
     PropertyAssignment:
       type: object
@@ -2454,10 +2845,10 @@ components:
         text_value:
           type: string
           description: The text value of the property.
-        enum_id:
+        enum_value_id:
           type: string
           description: The unique identifier for the enum value.
-        user_id:
+        user_value_id:
           type: string
           description: The unique identifier for the user.
         boolean_value:
@@ -2562,7 +2953,7 @@ components:
           example: "PayPal Grant Payments"
         platform_grant_id:
           type: string
-          description: The identifier for the grant at the platform.
+          description: The identifier for the grant within the platform's system.
           example: "93492947-7894-4663-a944-f2469d0027ca"
         metadata:
           type: object
@@ -2600,6 +2991,7 @@ components:
         organization_name:
           type: string
           description: The name of the Donor Advised Fund sponsor.
+          readOnly: true
           example: "Daffy Charitable Fund"
         donor_fund_name:
           type: string
@@ -4220,6 +4612,10 @@ components:
         - "disbursement.updated"
         - "inbound_transfer.created"
         - "inbound_transfer.updated"
+        - "donation.created"
+        - "donation.updated"
+        - "deposit.created"
+        - "deposit.updated"
     Event:
       type: object
       description: |
@@ -4392,6 +4788,70 @@ components:
       schema:
         type: string
   requestBodies:
+    CreateFileLinkRequest:
+      description: The request body for the File Links.create endpoint
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - file_id
+            properties:
+              file_id:
+                type: string
+                description: The unique identifier for the file to create a link for.
+                example: "file_01j8rs605a4gctmbm58d87mvsj"
+    UpdateDonationRequest:
+      description: |-
+        The request to update core donation attributes like purpose, note and attribution.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reason:
+                type: string
+                description: |-
+                  A user-friendly reason or comment about the update.
+                  This is useful to understand why the donation was updated.
+                example: "Donor requested a change to the donation purpose"
+              purpose:
+                type: string
+                description: |-
+                  A description of the donor's intent for the donation.
+                  This is useful to understand how the donor intended the donation to be used.
+              note:
+                type: string
+                description: |-
+                  An informational note from the donor to the nonprofit about the donation.
+                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
+              attribution:
+                type: object
+                $ref: "#/components/schemas/DonationAttribution"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The date and time of the donation as listed by the DAF and/or platform.
+                  This is useful to understand when the donation was made.
+              donor_advised_fund_grant:
+                type: object
+                $ref: "#/components/schemas/DafGrant"
+              corporate_match:
+                type: object
+                $ref: "#/components/schemas/CorporateMatch"
+            example:
+              reason: "Donor requested a change to the donation"
+              purpose: "Capital Campaign"
+              note: "Please dedicate in memory of grandma"
+              attribution:
+                primary_donor:
+                  email: "warrenBuffet@example.com"
+              effective_date: "2020-01-31T23:59:59Z"
+              donor_advised_fund_grant:
+                donor_fund_name: "Warren Buffet Fund"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
@@ -4787,6 +5247,15 @@ components:
                   - "disabled"
                   - "deleted"
   responses:
+    UpdateDonationResponse:
+      description: The response for Donations.update.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Donation"
     ListFinancialAccountsResponse:
       description: The response for FinancialAccounts.list
       headers:
@@ -5149,6 +5618,69 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Property"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListVirtualAccountsResponse:
+      description: The response for VirtualAccounts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VirtualAccount"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListArtifactsResponse:
+      description: The response for Artifacts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artifact"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListFilesResponse:
+      description: The response for Files.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
               next_page_token:
                 type: string
                 description: |-
