@@ -79,6 +79,27 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
+      - section: Processing
+        slug: processing
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/processing/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/processing/how-it-works.mdx
+          - page: Getting Started
+            slug: getting-started
+            path: ./pages/processing/getting-started.mdx
+          - page: Donation Lifecycle
+            slug: donation-lifecycle
+            path: ./pages/processing/donation-lifecycle.mdx
+          - page: Flow of Funds
+            slug: flow-of-funds
+            path: ./pages/processing/flow-of-funds.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/processing/faq.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -119,9 +140,18 @@ navigation:
             icon: network-wired
             contents:
               - organizations
+              - programs
+              - financialAccounts:
+                  title: Financial Accounts
+              - outboundTransfers:
+                  title: Outbound Transfers
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
+              - files:
+                  title: Files
+              - fileLinks:
+                  title: File Links
           - section: DAFpay
             skip-slug: true
             icon: box-heart
@@ -138,10 +168,20 @@ navigation:
             skip-slug: true
             icon: money-check
             contents:
-              - financialAccounts:
-                  title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
               - disbursements:
                   title: Disbursements
+          - section: Processing
+            skip-slug: true
+            icon: gear
+            contents:
+              - virtualAccounts:
+                  title: Virtual Accounts
+              - donations:
+                  title: Donations
+              - deposits:
+                  title: Deposits
+              - properties:
+                  title: Properties
   - tab: changelog
