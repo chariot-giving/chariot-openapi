@@ -25,13 +25,13 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Card>
 </CardGroup>
 
-To get started with Chariot Processing<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, you'll need to register for an account with Chariot, open a Chariot Deposit Account, and go through the onboarding process. 
+To get started with Chariot<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, you'll need to register for an account with Chariot, open a Chariot Deposit Account, and go through the onboarding process. 
 
 After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Payment Sources, and view all incoming donations.
 
 ## Understanding the Flow
 
-Chariot Processing enables nonprofits to unify and streamline the processing of offline gifts from multiple sources including Donor-Advised Funds, fundraising platforms, and physical mail. Here's how it works:
+Chariot enables nonprofits to unify and streamline the processing of offline gifts from multiple sources including Donor-Advised Funds, fundraising platforms, and physical mail. Here's how it works:
 
 <Steps>
 
@@ -58,7 +58,7 @@ Deposits can come through different payment rails:
 
 ### Donations are Processed
 
-Each Deposit contains one or more `Donation` records. Donations capture the complete gift information including:
+Chariot automatically attaches donation data to each deposit record, creating a complete audit trail. Each Deposit contains one or more `Donation` records that capture the complete gift information including:
 - Donor attribution (name, email, DAF account)
 - Gift amounts (gross, net, fees)
 - Purpose and notes
@@ -109,18 +109,7 @@ All donations from every source flow into a single unified system where you can:
         3. The donation includes DAF account details, donor information, and any fees
         4. You can reconcile the gift against the bank settlement in your dashboard
 
-        Chariot supports grants from all major DAF sponsors including Fidelity Charitable, Schwab Charitable, and more.
-    </Accordion>
-
-    <Accordion title="Platform Donations">
-        When processing donations from fundraising or grant payment platforms:
-
-        1. The platform sends batch payments to your Payment Source
-        2. Each donation in the batch is captured individually
-        3. Platform fees, corporate matches, and donor details are preserved
-        4. You maintain a complete audit trail of all gifts from that platform
-
-        This eliminates manual reconciliation of platform payment files.
+        Chariot supports grants from all major DAF sponsors including Fidelity Charitable, Schwab Charitable, and grantmaker platforms like PayPal Grant Payments.
     </Accordion>
 
     <Accordion title="Physical Checks">
