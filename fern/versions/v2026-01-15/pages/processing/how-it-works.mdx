@@ -12,10 +12,10 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Card>
 
     <Card
-        title='2. Set up Virtual Accounts'
+        title='2. Set up Payment Sources'
         icon='building-columns'
     >
-    Configure Virtual Accounts for different payment sources (DAFs, platforms, lockboxes)
+    Configure Payment Sources for different payment sources (DAFs, platforms, lockboxes)
     </Card>
         <Card
         title='3. Start receiving gifts'
@@ -27,7 +27,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
 To get started with Chariot Processing<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, you'll need to register for an account with Chariot, open a Chariot Deposit Account, and go through the onboarding process. 
 
-After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Virtual Accounts, and view all incoming donations.
+After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Payment Sources, and view all incoming donations.
 
 ## Understanding the Flow
 
@@ -35,19 +35,19 @@ Chariot Processing enables nonprofits to unify and streamline the processing of 
 
 <Steps>
 
-### Virtual Accounts are Created
+### Payment Sources are Created
 
-Virtual Accounts represent segregated addresses for incoming deposits. These can be:
+Payment Sources represent segregated addresses for incoming deposits. These can be:
 - **Electronic bank addresses** (unique account + routing numbers) for ACH transfers
 - **Physical mailing addresses** (lockboxes) for processing checks and physical mail
 
-Each Virtual Account acts as a gateway for money to flow into your Financial Account while maintaining the source information needed for reconciliation.
+Each Payment Source acts as a gateway for money to flow into your Financial Account while maintaining the source information needed for reconciliation.
 
-<EndpointRequestSnippet endpoint="GET /v1/virtual_accounts" />
+<EndpointRequestSnippet endpoint="GET /v1/payment_sources" />
 
 ### Deposits are Received
 
-When a payment arrives at a Virtual Account, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more charitable donations.
+When a payment arrives at a Payment Source, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more charitable donations.
 
 Deposits can come through different payment rails:
 - **Account transfers** - Instant transfers from other Chariot accounts
@@ -94,7 +94,7 @@ All donations from every source flow into a single unified system where you can:
     </Card>
 
     <Card title='Seamless Integration' icon='plug'>
-    Export data to your existing CRM and accounting systems via API
+    Export data to your existing CRM and accounting systems
     </Card>
 </CardGroup>
 
@@ -104,7 +104,7 @@ All donations from every source flow into a single unified system where you can:
     <Accordion title="DAF Grants">
         When a donor makes a grant from their Donor-Advised Fund:
 
-        1. The DAF sponsor sends funds to your designated Virtual Account
+        1. The DAF sponsor sends funds to your designated Payment Source
         2. Chariot creates a Deposit and Donation with full donor attribution
         3. The donation includes DAF account details, donor information, and any fees
         4. You can reconcile the gift against the bank settlement in your dashboard
@@ -113,9 +113,9 @@ All donations from every source flow into a single unified system where you can:
     </Accordion>
 
     <Accordion title="Platform Donations">
-        When processing donations from fundraising platforms:
+        When processing donations from fundraising or grant payment platforms:
 
-        1. The platform sends batch payments to your Virtual Account
+        1. The platform sends batch payments to your Payment Source
         2. Each donation in the batch is captured individually
         3. Platform fees, corporate matches, and donor details are preserved
         4. You maintain a complete audit trail of all gifts from that platform
@@ -128,8 +128,8 @@ All donations from every source flow into a single unified system where you can:
 
         1. Checks are mailed to your dedicated lockbox address
         2. Chariot's processing partner captures check images and details
-        3. Funds are deposited to your Chariot Deposit Account
-        4. Donation records are created with check metadata
+        3. Funds are automatically deposited to your Chariot Deposit Account
+        4. Donation records are created with check metadata and attached grant letters
 
         This modernizes your check processing while maintaining donor relationships.
     </Accordion>
@@ -137,7 +137,7 @@ All donations from every source flow into a single unified system where you can:
 
 ## Next Steps
 
-Ready to start processing gifts with Chariot? Follow our [Getting Started](/guides/processing/getting-started) guide to set up your account and configure your first Virtual Account.
+Ready to start processing gifts with Chariot? Follow our [Getting Started](/guides/processing/getting-started) guide to set up your account and configure your first Payment Source.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

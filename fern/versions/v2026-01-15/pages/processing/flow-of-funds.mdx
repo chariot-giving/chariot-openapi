@@ -14,9 +14,9 @@ The flow of funds for electronic donations follows these steps:
     <img src='../../images/flow-of-funds-nonprofit.png' />
 </Frame>
 
-1. **Payment Source**: A DAF sponsor or fundraising platform initiates an ACH transfer to your Virtual Account
-2. **Virtual Account Receipt**: Chariot receives the transfer at your designated Virtual Account's routing and account number
-3. **Deposit Creation**: Chariot creates a Deposit record tracking the incoming transfer
+1. **Payment Source**: A DAF sponsor or fundraising platform initiates an ACH transfer to your Payment Source
+2. **Payment Source Receipt**: Chariot receives the transfer at your designated Payment Source's routing and account number
+3. **Deposit Creation**: Chariot creates a Deposit record tracking the incoming transfer to your Financial Account
 4. **Donation Processing**: Individual donations within the deposit are parsed and attributed with donor information
 5. **Settlement**: Funds are settled to your Chariot Deposit Account<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>
 6. **Data Available**: Complete donation data is available via API for reconciliation and CRM integration
@@ -76,7 +76,7 @@ The flow of funds for physical check donations follows these steps:
 3. **Image Capture**: Check images and metadata are captured
 4. **Deposit Creation**: Chariot creates a deposit and initiates check deposit to your account
 5. **Donation Record**: A donation record is created with check details
-6. **Settlement**: Check funds are deposited to your Chariot Deposit Account (3-5 business days)
+6. **Settlement**: Check funds are deposited to your Chariot Deposit Account (5-7 business days)
 7. **Data Available**: Donation data with check images available via API
 
 ### Timeline for Check Processing
@@ -84,7 +84,7 @@ The flow of funds for physical check donations follows these steps:
 - **Day 0**: Check arrives at lockbox
 - **Day 1**: Check is scanned and processed
 - **Day 1**: Donation record created in Chariot
-- **Day 3-5**: Check funds settle to your account
+- **Day 5-7**: Check funds settle to your account
 - **As needed**: Transfer funds to your external bank account
 
 <Warning>
@@ -93,7 +93,7 @@ Check processing times may vary based on mail delivery and banking holidays. Che
 
 ## Fund Segregation by Source
 
-Virtual Accounts enable you to segregate and track donations by source while maintaining a single Financial Account:
+Payment Sources enable you to segregate and track donations by source while maintaining a single Financial Account:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -105,13 +105,13 @@ Virtual Accounts enable you to segregate and track donations by source while mai
         ┌─────────────────────┼─────────────────────┐
         │                     │                     │
 ┌───────────────┐    ┌────────────────┐    ┌───────────────┐
-│Virtual Account│    │Virtual Account │    │Virtual Account│
+│Payment Source │    │Payment Source  │    │Payment Source │
 │   Fidelity    │    │     Schwab     │    │   Direct Mail │
 │  Charitable   │    │   Charitable   │    │    Lockbox    │
 └───────────────┘    └────────────────┘    └───────────────┘
 ```
 
-Each Virtual Account:
+Each Payment Source:
 - Has its own unique routing + account numbers or mailing address
 - Tracks deposits and donations separately for reconciliation
 - Settles to the same underlying Financial Account

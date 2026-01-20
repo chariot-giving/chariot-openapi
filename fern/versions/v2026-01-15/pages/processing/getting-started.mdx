@@ -14,7 +14,6 @@ Before you begin, you'll need:
 
 - A verified 501(c)(3) nonprofit organization
 - EIN (Employer Identification Number)
-- Banking information for settlement
 - Authorized officer or director to complete onboarding
 
 ## Step 1: Create Your Chariot Account
@@ -23,7 +22,7 @@ Before you begin, you'll need:
 
 ### Sign Up
 
-Visit [givechariot.com](https://givechariot.com) and click "Sign Up" to create your nonprofit account.
+Visit [givechariot.com](https://givechariot.com) and click "Get Started" to create your nonprofit account.
 
 You'll need to provide:
 - Organization name and EIN
@@ -32,9 +31,8 @@ You'll need to provide:
 
 ### Complete Verification
 
-Chariot will verify your nonprofit status and collect additional information including:
+Chariot will verify your nonprofit status and collect additional information including but not limited to:
 - IRS determination letter
-- Banking information for settlements
 - Authorized signer identification
 
 This verification process typically takes 1-2 business days.
@@ -47,54 +45,39 @@ Chariot verifies nonprofit eligibility and authorized signers to ensure complian
 
 Once approved, you'll receive access to your Chariot Dashboard where you can:
 - View all incoming donations
-- Manage Virtual Accounts
+- Manage Payment Sources
 - Generate and manage API keys
 - Export data to your systems
 
 </Steps>
 
-## Step 2: Get Your Gift Processing Program
+## Step 2: Set Up Payment Sources
 
-Every Chariot account comes with a default Gift Processing program. You can verify your program is enabled by calling the Programs API:
-
-<EndpointRequestSnippet endpoint="GET /v1/programs" />
-
-Your Gift Processing program should have `gift_processing_status: "enabled"`. This program manages all inbound donation revenue and reconciliation.
-
-<Info>
-Programs encapsulate functional operations and allow for segregation of funds & activity on top of a Financial Account. If you also need to make grant disbursements, Chariot can enable a Grantmaking program for your account.
-</Info>
-
-## Step 3: Set Up Virtual Accounts
-
-Virtual Accounts are the foundation of Chariot Processing. They provide segregated addresses (electronic or physical) for receiving donations from different sources.
+Payment Sources are the foundation of Chariot Processing. They provide segregated addresses (electronic or physical) for receiving donations from different sources.
 
 <AccordionGroup>
-    <Accordion title="Electronic Virtual Accounts">
-        Electronic Virtual Accounts provide unique bank account and routing numbers for receiving ACH transfers.
+    <Accordion title="Electronic Payment Sources">
+        Electronic Payment Sources provide unique bank account and routing numbers for receiving ACH transfers.
 
         **Use cases:**
         - Dedicated account for Fidelity Charitable grants
         - Dedicated account for PayPal Giving Fund distributions
-        - Dedicated account for workplace giving platforms
-        - Dedicated account for each major fundraising platform
+        - Dedicated account for workplace giving platforms, e.g. Benevity
 
         **How to set up:**
 
         1. Log into your Chariot Dashboard
-        2. Navigate to "Virtual Accounts"
-        3. Click "Create Virtual Account"
+        2. Navigate to "Payment Sources"
+        3. Click "Create Payment Source"
         4. Select "Connected Account" as the type
         5. Name it (e.g., "Fidelity Charitable DAF")
-        6. Save to receive your unique account and routing numbers
+        6. Save to receive your unique account and routing numbers and your payment source ID
 
         Share these banking details with your DAF sponsor or platform to start receiving donations.
-
-        <EndpointRequestSnippet endpoint="GET /v1/virtual_accounts" />
     </Accordion>
 
-    <Accordion title="Lockbox Virtual Accounts">
-        Lockbox Virtual Accounts provide physical mailing addresses for processing checks and physical mail.
+    <Accordion title="Lockbox Payment Sources">
+        Lockbox Payment Sources provide physical mailing addresses for processing checks and physical mail.
 
         **Use cases:**
         - Dedicated PO Box for direct mail campaigns
@@ -116,9 +99,9 @@ Virtual Accounts are the foundation of Chariot Processing. They provide segregat
     </Accordion>
 </AccordionGroup>
 
-## Step 4: Configure Your First Payment Source
+## Step 3: Configure Your First Payment Source
 
-Now that you have Virtual Accounts, you can start directing payment sources to use them.
+Now that you have Payment Sources, you can start directing external platforms and grantmakers to use them.
 
 <Tabs>
     <Tab title="DAF Sponsors">
@@ -126,19 +109,12 @@ Now that you have Virtual Accounts, you can start directing payment sources to u
 
         For each major DAF sponsor (Fidelity, Schwab, etc.):
 
-        1. Create a dedicated Virtual Account in your dashboard
+        1. Create a dedicated Payment Source in your dashboard
         2. Contact the DAF sponsor's nonprofit support team
         3. Provide your Chariot banking details (account + routing number)
         4. Request they update your profile for electronic disbursements
 
-        **Example: Fidelity Charitable**
-
-        - Call Fidelity Charitable at 1-800-952-4438
-        - Request to update your banking information for ACH deposits
-        - Provide your Chariot Virtual Account details
-        - Verify the update in their nonprofit portal
-
-        Once configured, all grants from that DAF will flow to your Virtual Account with complete donor attribution.
+        Once configured, all grants from that DAF will flow to your Payment Source with complete donor attribution.
     </Tab>
 
     <Tab title="Fundraising Platforms">
@@ -146,11 +122,11 @@ Now that you have Virtual Accounts, you can start directing payment sources to u
 
         For fundraising platforms that support custom payout accounts:
 
-        1. Create a Virtual Account for the platform
-        2. Log into your platform account (e.g., GoFundMe, Classy)
+        1. Create a Payment Source for the platform
+        2. Log into your platform account (e.g., PayPal Grant Payments)
         3. Navigate to payout or banking settings
-        4. Update your banking information with Chariot Virtual Account details
-        5. Verify the connection with a test payout
+        4. Update your banking information with Chariot Payment Source details
+        5. Verify the connection with the platform
 
         Chariot automatically reconciles batch payouts and attributes individual donations.
     </Tab>
@@ -160,7 +136,7 @@ Now that you have Virtual Accounts, you can start directing payment sources to u
 
         For processing physical checks:
 
-        1. Request a Lockbox Virtual Account from Chariot
+        1. Request a Lockbox Payment Source from Chariot
         2. Update your donation reply cards with the lockbox address
         3. Update your website and donor communications
         4. Configure check processing rules in your dashboard
@@ -169,7 +145,7 @@ Now that you have Virtual Accounts, you can start directing payment sources to u
     </Tab>
 </Tabs>
 
-## Step 5: Retrieve and Reconcile Donations
+## Step 4: Retrieve and Reconcile Donations
 
 Once donations start flowing in, you can retrieve them via API and reconcile with your systems.
 
@@ -177,7 +153,7 @@ Once donations start flowing in, you can retrieve them via API and reconcile wit
 
 ### List Recent Donations
 
-Retrieve donations filtered by Virtual Account, date range, or deposit:
+Retrieve donations filtered by Payment Source, date range, or Deposit:
 
 <EndpointRequestSnippet endpoint="GET /v1/donations" />
 
@@ -189,7 +165,7 @@ Retrieve a specific donation with all attribution and metadata:
 
 ### View Settlement Details
 
-Check which deposits have settled in your account:
+Check which Deposits have settled in your account:
 
 <EndpointRequestSnippet endpoint="GET /v1/deposits" />
 
@@ -203,7 +179,7 @@ Use the donations data to:
 
 </Steps>
 
-## Step 6: Configure Webhooks (Optional)
+## Step 5: Configure Webhooks (Optional)
 
 For real-time notification of new donations:
 
@@ -233,7 +209,7 @@ When you receive a webhook, you can:
 
 </Steps>
 
-## Step 7: Customize with Properties
+## Step 6: Customize with Properties
 
 Use Properties to extend donation data with your own custom fields:
 
@@ -270,7 +246,7 @@ This allows you to:
 If you have questions or need assistance setting up Chariot Processing:
 
 - **Email**: [support@givechariot.com](mailto:support@givechariot.com)
-- **Documentation**: [docs.givechariot.com](https://docs.givechariot.com)
+- **Help Center**: [help.givechariot.com](https://help.givechariot.com/)
 - **Dashboard**: [dashboard.givechariot.com](https://dashboard.givechariot.com)
 
 <Info>

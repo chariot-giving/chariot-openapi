@@ -8,7 +8,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
 ## Deposit Lifecycle
 
-A Deposit represents a transfer of money to your Virtual Account. Understanding the deposit lifecycle helps you know when funds are available and how to handle edge cases.
+A Deposit represents a transfer of money to your Financial Account via a Payment Source. Understanding the deposit lifecycle helps you know when funds are available and how to handle edge cases.
 
 ### Deposit Status Flow
 
@@ -33,14 +33,14 @@ graph LR
 
         **What this means:**
         - Chariot has received notification of the incoming transfer
-        - Individual donation records have been created
+        - Individual donation records have been created or will be created shortly
         - Funds have not yet settled to your account
         - You should not yet disburse these funds
 
         **How long it lasts:**
         - **In-Network transfers**: < 1 second (almost instant)
         - **ACH transfers**: 1-2 business days
-        - **Check deposits**: 3-5 business days
+        - **Check deposits**: 5-7 business days
 
         **What you should do:**
         - Donation data is available for CRM sync
@@ -98,7 +98,7 @@ Donations represent individual gifts from donors. Unlike deposits, donations don
 ### Donation Creation
 
 Donations are created when:
-1. A deposit is received at a Virtual Account
+1. A deposit is received at a Payment Source
 2. The payment source provides donation-level details
 3. Chariot parses and attributes individual gifts
 
@@ -115,13 +115,12 @@ Each donation includes:
     <Tab title="Core Fields">
         **Always present:**
         - `id` - Unique donation identifier
-        - `virtual_account_id` - Which Virtual Account received it
+        - `payment_source_id` - Which Payment Source received it
         - `amount_gross` - Original donation amount
         - `amount_net` - Amount after fees
         - `amount_fee` - Fees deducted
         - `currency` - Currency code (usually USD)
-        - `effective_date` - When the donation occurred
-        - `created_at` - When Chariot recorded it
+        - `created_at` - When the donation was created
     </Tab>
 
     <Tab title="Attribution">
@@ -190,7 +189,6 @@ Different deposit types follow different settlement timelines:
         - Instant settlement
         - Real-time donation data
         - No fees for receiving
-        - Best donor experience
 
         **Webhook events:**
         - `donation.created` (immediate)
@@ -215,7 +213,7 @@ Different deposit types follow different settlement timelines:
         **Webhook events:**
         - `donation.created` (Day 1)
         - `deposit.completed` (Day 1-2)
-        - `deposit.returned` (if failed)
+        - `deposit.updated` (if failed)
     </Accordion>
 
     <Accordion title="Check Deposits">
@@ -226,8 +224,8 @@ Different deposit types follow different settlement timelines:
         - **Day 1**: Check scanned and processed
         - **Day 1**: Deposit created (status: `pending`)
         - **Day 1**: Donations created with check images
-        - **Day 3-5**: Funds settle to account
-        - **Day 3-5**: Deposit status → `complete`
+        - **Day 5-7**: Funds settle to account
+        - **Day 5-7**: Deposit status → `complete`
 
         **Edge cases:**
         - Checks can bounce up to 5 business days after deposit
@@ -237,89 +235,11 @@ Different deposit types follow different settlement timelines:
         **Webhook events:**
         - `donation.created` (Day 1)
         - `deposit.completed` (Day 3-5)
-        - `deposit.returned` (if bounced)
+        - `deposit.updated` (if bounced)
     </Accordion>
 </AccordionGroup>
 
 ## Best Practices
-
-### When to Process Donations
-
-<CardGroup cols={2}>
-    <Card title='Immediate CRM Sync' icon='rotate'>
-    Sync donation data to your CRM immediately when created, even if deposit is pending
-    </Card>
-
-    <Card title='Wait for Settlement' icon='clock'>
-    Wait for deposit to complete before sending acknowledgment letters
-    </Card>
-
-    <Card title='Handle Failures' icon='triangle-exclamation'>
-    Subscribe to `deposit.returned` to update records if deposit fails
-    </Card>
-
-    <Card title='Daily Reconciliation' icon='calendar-check'>
-    Reconcile completed deposits with your bank statements daily
-    </Card>
-</CardGroup>
-
-### Recommended Webhook Flow
-
-```javascript
-// Handle donation.created event
-webhook.on('donation.created', async (event) => {
-  const donation = event.data;
-  
-  // Sync to CRM immediately
-  await crm.createOrUpdateDonor(donation.attribution.donor);
-  await crm.createDonation({
-    ...donation,
-    status: 'pending' // Mark as pending settlement
-  });
-  
-  // Do NOT send thank you letter yet
-});
-
-// Handle deposit.completed event
-webhook.on('deposit.completed', async (event) => {
-  const deposit = event.data;
-  
-  // Get all donations in this deposit
-  const donations = await chariot.donations.list({
-    deposit_id: deposit.id
-  });
-  
-  // Update CRM records to finalized
-  for (const donation of donations.data) {
-    await crm.updateDonation(donation.id, {
-      status: 'completed'
-    });
-    
-    // Now send thank you letter
-    await mail.sendThankYou(donation);
-  }
-});
-
-// Handle deposit.returned event
-webhook.on('deposit.returned', async (event) => {
-  const deposit = event.data;
-  
-  // Get all donations in this deposit
-  const donations = await chariot.donations.list({
-    deposit_id: deposit.id
-  });
-  
-  // Mark donations as failed in CRM
-  for (const donation of donations.data) {
-    await crm.updateDonation(donation.id, {
-      status: 'failed'
-    });
-  }
-  
-  // Alert your finance team
-  await slack.notify(`Deposit ${deposit.id} failed`);
-});
-```
 
 ## Handling Edge Cases
 
@@ -332,7 +252,7 @@ webhook.on('deposit.returned', async (event) => {
         3. Update your CRM to mark the donation as uncollected
         4. Don't include in tax reporting for that year
 
-        **Prevention:** Always wait for `deposit.completed` before sending acknowledgments.
+        **Prevention:** Always wait for `deposit.updated` and ensure the Deposit status is `complete` before sending acknowledgments.
     </Accordion>
 
     <Accordion title="Can I update donation information?">
@@ -351,16 +271,9 @@ webhook.on('deposit.returned', async (event) => {
     <Accordion title="How do I handle partial deposits?">
         Some platforms send partial payments (e.g., weekly payouts from ongoing campaigns).
 
-        Each payout creates a separate deposit with its own set of donations. Use the `virtual_account_id` and effective date to reconcile across deposits.
+        Each payout creates a separate deposit with its own set of donations. Use the `payment_source_id` to reconcile across deposits.
 
-        Consider using custom properties to link related donations across deposits:
-
-        ```javascript
-        await chariot.properties.assign('donation', donation.id, {
-          campaign_id: 'spring-2024',
-          payout_batch: 'week-12'
-        });
-        ```
+        Consider using custom properties to link related donations across deposits.
     </Accordion>
 </AccordionGroup>
 
