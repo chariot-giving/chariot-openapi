@@ -24,21 +24,16 @@ Before you begin, you'll need:
 
 Visit [givechariot.com](https://givechariot.com) and click "Get Started" to create your nonprofit account.
 
-You'll need to provide:
-- Organization name and EIN
-- Contact information
-- Your role at the organization
+You'll need to be a control person for the organization to claim the account.
 
 ### Complete Verification
 
-Chariot will verify your nonprofit status and collect additional information including but not limited to:
-- IRS determination letter
-- Authorized signer identification
+Chariot will verify your nonprofit status and may collect additional information.
 
-This verification process typically takes 1-2 business days.
+This verification process typically takes 3-10 business days.
 
 <Note>
-Chariot verifies nonprofit eligibility and authorized signers to ensure compliance with banking regulations and prevent fraud.
+Chariot verifies nonprofit eligibility and control person identification to ensure compliance with banking regulations and prevent fraud.
 </Note>
 
 ### Access Your Dashboard
@@ -53,27 +48,22 @@ Once approved, you'll receive access to your Chariot Dashboard where you can:
 
 ## Step 2: Set Up Payment Sources
 
-Payment Sources are the foundation of Chariot for Nonprofits. They provide segregated addresses (electronic or physical) for receiving donations from different sources.
+Payment Sources provide segregated addresses (electronic or physical) for receiving donations from different sources.
 
 <AccordionGroup>
     <Accordion title="Electronic Payment Sources">
         Electronic Payment Sources provide unique bank account and routing numbers for receiving ACH transfers.
 
         **Use cases:**
-        - Dedicated account for Fidelity Charitable grants
-        - Dedicated account for PayPal Giving Fund distributions
-        - Dedicated account for workplace giving platforms, e.g. Benevity
+        - Dedicated payment source for Fidelity Charitable grants
+        - Dedicated payment source for PayPal Giving Fund distributions
+        - Dedicated payment source for workplace giving platforms, e.g. Benevity
 
         **How to set up:**
 
         1. Log into your Chariot Dashboard
         2. Navigate to "Payment Sources"
-        3. Click "Create Payment Source"
-        4. Select "Connected Account" as the type
-        5. Name it (e.g., "Fidelity Charitable DAF")
-        6. Save to receive your unique account and routing numbers and your payment source ID
-
-        Share these banking details with your DAF sponsor or platform to start receiving donations.
+        3. Click on a Payment Source and follow the instructions to connect it.
     </Accordion>
 
     <Accordion title="Lockbox Payment Sources">
@@ -88,8 +78,8 @@ Payment Sources are the foundation of Chariot for Nonprofits. They provide segre
 
         1. Contact Chariot support to enable lockbox services
         2. Chariot will provision a dedicated mailing address
-        3. Configure processing rules (endorsement, deposit preferences)
-        4. Update your donor communications with the new address
+        3. Configure processing rules (appeal codes, etc.)
+        4. Update your portal and/or donor communications with the new address
 
         Checks mailed to your lockbox are automatically deposited and the donation data is captured in Chariot.
 
@@ -99,55 +89,10 @@ Payment Sources are the foundation of Chariot for Nonprofits. They provide segre
     </Accordion>
 </AccordionGroup>
 
-## Step 3: Configure Your First Payment Source
 
-Now that you have Payment Sources, you can start directing external platforms and grantmakers to use them.
+## Step 3: Retrieve Donations
 
-<Tabs>
-    <Tab title="DAF Sponsors">
-        ### Setting Up DAF Payment Processing
-
-        For each major DAF sponsor (Fidelity, Schwab, etc.):
-
-        1. Create a dedicated Payment Source in your dashboard
-        2. Contact the DAF sponsor's nonprofit support team
-        3. Provide your Chariot banking details (account + routing number)
-        4. Request they update your profile for electronic disbursements
-
-        Once configured, all grants from that DAF will flow to your Payment Source with complete donor attribution.
-    </Tab>
-
-    <Tab title="Fundraising Platforms">
-        ### Setting Up Platform Payment Processing
-
-        For fundraising platforms that support custom payout accounts:
-
-        1. Create a Payment Source for the platform
-        2. Log into your platform account (e.g., PayPal Grant Payments)
-        3. Navigate to payout or banking settings
-        4. Update your banking information with Chariot Payment Source details
-        5. Verify the connection with the platform
-
-        Chariot automatically reconciles batch payouts and attributes individual donations.
-    </Tab>
-
-    <Tab title="Direct Mail">
-        ### Setting Up Check Processing
-
-        For processing physical checks:
-
-        1. Request a Lockbox Payment Source from Chariot
-        2. Update your donation reply cards with the lockbox address
-        3. Update your website and donor communications
-        4. Configure check processing rules in your dashboard
-
-        Chariot processes checks, captures images, and creates donation records automatically.
-    </Tab>
-</Tabs>
-
-## Step 4: Retrieve Donations
-
-Once donations start flowing in, you can retrieve them via API and sync with your systems.
+Once donations start flowing in, you can retrieve them via API.
 
 <Steps>
 
@@ -163,19 +108,22 @@ Retrieve a specific donation with all attribution and metadata:
 
 <EndpointRequestSnippet endpoint="GET /v1/donations/{id}" example="GetDonation" />
 
-### View Settlement Details
-
-Check which Deposits have settled in your account:
-
-<EndpointRequestSnippet endpoint="GET /v1/deposits" />
-
-### Export to Your CRM
+### Sync data with your systems (CRM, accounting, etc.)
 
 Use the donations data to:
 - Create constituent records in your CRM
 - Update donor acknowledgment systems
 - Reconcile with your accounting system
-- Generate tax receipts
+
+You can also use Properties to extend donation data with your own custom fields:
+
+<EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
+
+This allows you to:
+- Map to your CRM's custom fields
+- Track internal campaign codes
+- Add processing notes
+- Maintain audit trails
 
 </Steps>
 
@@ -209,37 +157,6 @@ When you receive a webhook, you can:
 
 </Steps>
 
-## Step 6: Customize with Properties
-
-Use Properties to extend donation data with your own custom fields:
-
-<EndpointRequestSnippet endpoint="POST /v1/properties/{resource_type}/{resource_id}/assign" />
-
-This allows you to:
-- Map to your CRM's custom fields
-- Track internal campaign codes
-- Add processing notes
-- Maintain audit trails
-
-## Next Steps
-
-<CardGroup cols={2}>
-    <Card title='API Reference' icon='code' href='/api/donations/list'>
-    Explore the full Donations API documentation
-    </Card>
-
-    <Card title='How It Works' icon='circle-info' href='/guides/processing/how-it-works'>
-    Learn more about the processing flow
-    </Card>
-
-    <Card title='Webhooks' icon='webhook' href='/api/webhooks'>
-    Set up real-time event notifications
-    </Card>
-
-    <Card title='FAQ' icon='circle-question' href='/guides/processing/faq'>
-    Find answers to common questions
-    </Card>
-</CardGroup>
 
 ## Need Help?
 

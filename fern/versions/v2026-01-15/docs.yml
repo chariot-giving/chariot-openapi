@@ -79,7 +79,7 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
-      - section: Processing
+      - section: Gift Processing
         slug: processing
         contents:
           - page: Overview
@@ -91,12 +91,6 @@ navigation:
           - page: Getting Started
             slug: getting-started
             path: ./pages/processing/getting-started.mdx
-          - page: Donation Lifecycle
-            slug: donation-lifecycle
-            path: ./pages/processing/donation-lifecycle.mdx
-          - page: Flow of Funds
-            slug: flow-of-funds
-            path: ./pages/processing/flow-of-funds.mdx
           - page: FAQ
             slug: faq
             path: ./pages/processing/faq.mdx
@@ -173,7 +167,7 @@ navigation:
                   title: Inbound Transfers
               - disbursements:
                   title: Disbursements
-          - section: Processing
+          - section: Gift Processing
             skip-slug: true
             icon: gear
             contents:

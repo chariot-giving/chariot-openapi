@@ -9,14 +9,14 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 ## Getting Started
 
 <AccordionGroup>
-    <Accordion title="What is Chariot Processing?">
-        Chariot Processing is a unified platform that enables nonprofits to streamline the processing of offline donations from multiple sources including Donor-Advised Funds, fundraising platforms, and physical checks.
+    <Accordion title="What is Chariot Gift Processing?">
+        Chariot Gift Processing is a unified platform that enables nonprofits to streamline the processing of offline donations from multiple sources including Donor-Advised Funds, fundraising platforms, and physical checks.
 
         Instead of managing separate portals, banking connections, and reconciliation processes for each payment source, Chariot provides a single unified API and dashboard to process all your offline gifts.
     </Accordion>
 
-    <Accordion title="Who is Chariot Processing for?">
-        Chariot Processing is designed for nonprofit organizations that:
+    <Accordion title="Who is Chariot Gift Processing for?">
+        Chariot Gift Processing is designed for nonprofit organizations that:
         - Receive donations from multiple Donor-Advised Fund sponsors
         - Use multiple fundraising platforms
         - Process physical checks from donors
@@ -30,37 +30,35 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     <Accordion title="How is this different from DAFpay?">
         **DAFpay** is a donor-facing checkout solution that enables individual donors to make grants from their Donor-Advised Funds at the point of online donation.
 
-        **Chariot Processing** is a nonprofit-facing backend solution that unifies the processing of all offline donations after they've been initiated.
+        **Chariot Gift Processing** is a nonprofit-facing backend solution that unifies the processing of all offline donations after they've been initiated.
 
         Many nonprofits use both:
         - DAFpay for online donor checkout
-        - Processing for unifying all offline gift data from DAFpay and other sources
+        - Gift Processing for unifying all offline gift data from DAFpay and other sources
     </Accordion>
 
     <Accordion title="What does the onboarding process look like?">
         The onboarding process for nonprofits is as follows:
 
         <Steps>
-            Create a Chariot account and provide your organization's EIN
+            Create a Chariot account and provide your organization's EIN.
 
-            Complete nonprofit verification including IRS determination letter and authorized signer identification
+            Complete nonprofit verification.
 
-            Provide banking information for settlements to your external bank account
+            Provide banking information for settlements to your external bank account.
 
-            Set up Payment Sources for each payment source (DAFs, platforms, lockboxes)
+            Set up Payment Sources for each payment source (DAFs, platforms, lockboxes).
 
-            Share your Chariot banking details with your payment sources
+            Share your Chariot banking details with your payment sources.
 
-            Start receiving donations automatically
+            Start receiving donations automatically.
         </Steps>
 
-        The verification process typically takes 1-2 business days.
+        The verification process typically takes 3-10 business days.
     </Accordion>
 
-    <Accordion title="What are the fees for Chariot Processing?">
-        Chariot Processing fees vary based on your organization's donation volume and specific needs. Contact [sales@givechariot.com](mailto:sales@givechariot.com) for pricing information.
-
-        There are no fees for receiving donations from Chariot-enabled grantmakers using Chariot Disbursements.
+    <Accordion title="What are the fees for Chariot Gift Processing?">
+        Please visit [our pricing page](https://givechariot.com/pricing) for more information.
     </Accordion>
 </AccordionGroup>
 
@@ -70,10 +68,10 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     <Accordion title="What is a Payment Source?">
         A Payment Source is a segregated address for receiving donations from a specific source. Payment Sources can be:
 
-        **Electronic (Connected Account)**
+        **Electronic**
         - Unique routing number and account number
-        - Used for receiving ACH transfers
-        - Examples: Dedicated accounts for each DAF sponsor, fundraising platforms
+        - Used for receiving electronic transfers
+        - Examples: Dedicated accounts for each DAF sponsor, portals, etc.
 
         **Physical (Lockbox)**
         - Dedicated mailing address
@@ -84,21 +82,9 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Accordion>
 
     <Accordion title="How many Payment Sources can I create?">
-        There's no hard limit on the number of Payment Sources you can create. Most nonprofits create:
-
-        - One Payment Source per major DAF sponsor (Fidelity, Schwab, etc.)
-        - One Payment Source per fundraising platform
-        - One or more Lockbox Payment Sources for checks
-        - One general-purpose Payment Source for other sources
-
-        A typical mid-size nonprofit might have 10-20 Payment Sources.
+        There's no hard limit on the number of Payment Sources you can create. Nonprofits can manage their payment sources in their dashboard.
     </Accordion>
 
-    <Accordion title="Can I change which Payment Source a payment source uses?">
-        Yes. Simply update the banking information with your payment source to point to a different Payment Source's routing and account number.
-
-        Historical donations will remain associated with the original Payment Source for accurate record-keeping.
-    </Accordion>
 
     <Accordion title="Can I delete a Payment Source?">
         Payment Sources cannot be deleted if they have historical deposits or donations. This preserves your audit trail and reconciliation history.
@@ -115,21 +101,19 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         **Donation**: An individual charitable gift from a donor. Multiple donations can be included in a single deposit.
 
-        Example: A fundraising platform sends you a weekly ACH payout of $10,000 containing 50 individual donations. This would be:
+        Example: A portal sends you a weekly electronic transfer of $10,000 containing 50 individual donations. This would be:
         - 1 Deposit for $10,000
         - 50 Donations with individual donor attribution
     </Accordion>
 
     <Accordion title="How is donor information captured?">
-        Donor attribution depends on the payment source:
+        Donor attribution is unified across all payment sources:
 
-        **DAF Grants**: Includes DAF account holder name, email, DAF account ID, and message from donor
-
-        **Platform Donations**: Includes donor name, email, donation amount, platform fees, and any donor messages
-
-        **Checks**: Includes check payer information, check number, check amount, and images of the physical check
-
-        All donations include the gross amount, net amount, fees deducted, and the effective date of the donation.
+        - Donor name, email, and contact information
+        - Gift amounts (gross, net, and fees)
+        - DAF account details and grant letters
+        - Platform information and platform fees
+        - Corporate match information
     </Accordion>
 
     <Accordion title="Can I update donation information after it's created?">
@@ -166,6 +150,20 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         Donation data is available via API as soon as Chariot receives the transfer, even before funds have fully settled.
     </Accordion>
+
+    <Accordion title="How do I transfer funds out to my external bank account?">
+        When you're ready to move funds to your external bank account, use the Outbound Transfers API:
+
+        <EndpointRequestSnippet endpoint="POST /v1/outbound_transfers" />
+
+        **Outbound Transfer Timeline:**
+        - **Day 0**: Create outbound transfer via API or dashboard
+        - **Day 2-3**: Funds arrive in your external bank account
+
+        <Note>
+        You must configure and verify an external bank account through the Chariot Dashboard before you can create outbound transfers in production.
+        </Note>
+    </Accordion>
 </AccordionGroup>
 
 ## Integration and API
@@ -186,11 +184,6 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
         Chariot also offers pre-built integrations for popular CRM systems. Contact [support@givechariot.com](mailto:support@givechariot.com) to learn more.
     </Accordion>
 
-    <Accordion title="Can I bulk import historical donations?">
-        For new customers migrating to Chariot, we offer data import services to backfill historical donation records. This ensures complete reporting continuity.
-
-        Contact [support@givechariot.com](mailto:support@givechariot.com) to discuss your historical data import needs.
-    </Accordion>
 
     <Accordion title="How do I handle duplicate donations?">
         Chariot automatically de-duplicates donations based on unique identifiers provided by the payment source.
@@ -201,7 +194,6 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
         3. If truly duplicate, mark one with a property to exclude from reporting
         4. Contact support if you need assistance identifying duplicates
 
-        For DAF grants, Chariot uses the DAF sponsor's grant ID to ensure each grant is only recorded once.
     </Accordion>
 
     <Accordion title="What happens if a deposit fails or is returned?">
@@ -241,31 +233,6 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
     </Accordion>
-
-    <Accordion title="What donor information is included in donations?">
-        Chariot only includes donor information that is provided by the payment source:
-
-        **For DAF Grants**:
-        - DAF account holder name and email
-        - Donor message
-        - DAF sponsor and account ID
-
-        **For Platform Donations**:
-        - Whatever donor information the platform provides (varies by platform)
-        - Typically includes donor name, email, and message
-
-        **For Checks**:
-        - Check payer name and address (from check)
-        - No email addresses (unless included in mail)
-
-        Chariot does not receive or store:
-        - Social Security Numbers
-        - Credit card numbers
-        - Driver's license information
-        - Other sensitive personal information
-
-        All donor data is handled in compliance with data protection regulations.
-    </Accordion>
 </AccordionGroup>
 
 ## Still Have Questions?
@@ -273,7 +240,6 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 If you can't find the answer you're looking for:
 
 - **Email Support**: [support@givechariot.com](mailto:support@givechariot.com)
-- **Schedule a Demo**: [Book a call](https://givechariot.com/demo) with our team
 - **Documentation**: Explore our [API Reference](/api/donations/list)
 - **Dashboard**: Access your account at [dashboard.givechariot.com](https://dashboard.givechariot.com)
 

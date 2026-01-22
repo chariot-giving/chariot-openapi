@@ -15,7 +15,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
         title='2. Set up Payment Sources'
         icon='building-columns'
     >
-    Configure Payment Sources for different payment sources (DAFs, platforms, lockboxes)
+    Configure Payment Sources (DAFs, platforms, lockbox)
     </Card>
         <Card
         title='3. Start receiving gifts'
@@ -25,9 +25,10 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Card>
 </CardGroup>
 
-To get started with Chariot<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, you'll need to register for an account with Chariot, open a Chariot Deposit Account, and go through the onboarding process. 
+To get started with Chariot
+<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span> you'll need to register for an account.
 
-After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Payment Sources, and view all incoming donations.
+After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Payment Sources, and process all incoming donations.
 
 ## Understanding the Flow
 
@@ -41,13 +42,13 @@ Payment Sources represent segregated addresses for incoming deposits. These can 
 - **Electronic bank addresses** (unique account + routing numbers) for ACH transfers
 - **Physical mailing addresses** (lockboxes) for processing checks and physical mail
 
-Each Payment Source acts as a gateway for money to flow into your Financial Account while maintaining the source information needed for reconciliation.
+Each Payment Source acts as a gateway for money to flow into your Chariot Account while maintaining the source information needed for reconciliation.
 
 <EndpointRequestSnippet endpoint="GET /v1/payment_sources" />
 
 ### Deposits are Received
 
-When a payment arrives at a Payment Source, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more charitable donations.
+When a payment arrives at a Payment Source, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more donations.
 
 Deposits can come through different payment rails:
 - **Account transfers** - Instant transfers from other Chariot accounts
@@ -68,13 +69,6 @@ Chariot automatically attaches donation data to each deposit record, creating a 
 
 <EndpointRequestSnippet endpoint="GET /v1/donations" />
 
-### Data is Unified and Reconciled
-
-All donations from every source flow into a single unified system where you can:
-- View consolidated gift data across all DAFs and platforms
-- Export to your CRM or accounting system
-- Track settlement and reconcile against bank deposits
-- Manage custom properties for seamless data integration
 
 </Steps>
 
@@ -82,15 +76,15 @@ All donations from every source flow into a single unified system where you can:
 
 <CardGroup cols={2}>
     <Card title='Unified Gift Processing' icon='layer-group'>
-    Consolidate donations from 50+ DAF sponsors and fundraising platforms into a single stream
+    Consolidate donations from DAF sponsors, portals, and lockboxes into a single stream
     </Card>
 
     <Card title='Automatic Reconciliation' icon='check-double'>
-    Match donations to deposits automatically with complete transaction details
+    Match donations to deposits automatically with complete donation details
     </Card>
 
     <Card title='Rich Donor Data' icon='database'>
-    Capture donor attribution, corporate matches, platform fees, and custom properties
+    Capture donor attribution, corporate matches, platform fees, and more.
     </Card>
 
     <Card title='Seamless Integration' icon='plug'>
@@ -98,35 +92,6 @@ All donations from every source flow into a single unified system where you can:
     </Card>
 </CardGroup>
 
-## Processing for Different Gift Types
-
-<AccordionGroup>
-    <Accordion title="DAF Grants">
-        When a donor makes a grant from their Donor-Advised Fund:
-
-        1. The DAF sponsor sends funds to your designated Payment Source
-        2. Chariot creates a Deposit and Donation with full donor attribution
-        3. The donation includes DAF account details, donor information, and any fees
-        4. You can reconcile the gift against the bank settlement in your dashboard
-
-        Chariot supports grants from all major DAF sponsors including Fidelity Charitable, Schwab Charitable, and grantmaker platforms like PayPal Grant Payments.
-    </Accordion>
-
-    <Accordion title="Physical Checks">
-        When receiving physical check donations:
-
-        1. Checks are mailed to your dedicated lockbox address
-        2. Chariot's processing partner captures check images and details
-        3. Funds are automatically deposited to your Chariot Deposit Account
-        4. Donation records are created with check metadata and attached grant letters
-
-        This modernizes your check processing while maintaining donor relationships.
-    </Accordion>
-</AccordionGroup>
-
-## Next Steps
-
-Ready to start processing gifts with Chariot? Follow our [Getting Started](/guides/processing/getting-started) guide to set up your account and configure your first Payment Source.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

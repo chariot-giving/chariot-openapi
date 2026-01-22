@@ -5,7 +5,7 @@ createdAt: "Wed Jan 14 2026 20:36:07 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 ---
 
-This section provides an introduction to Chariot for Nonprofits<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, a unified platform for nonprofits to streamline offline gift processing.
+This section provides an introduction to Chariot's Gift Proccessing <span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span> solution, a unified platform for nonprofits to streamline offline gift processing.
 
 ## The Problem
 
@@ -24,11 +24,9 @@ This section provides an introduction to Chariot for Nonprofits<span title="Char
 What if you could?
 
 - Receive donations from all sources through a single unified platform
-- Automatically reconcile payments with complete donor attribution
-- Access rich donation data via a single API
-- Seamlessly integrate with your existing CRM, ERP, and accounting systems
-- Process checks, ACH transfers, and in-network payments in one place
-- Eliminate manual data entry and reconciliation work
+- Enrich donation data with complete donor attribution, campaign codes, appeal codes, fund codes, and more.
+- Seamlessly integrate with your existing CRM and accounting systems
+- Eliminate hours of manual data entry and reconciliation work
 
 That's what Chariot does.
 
@@ -38,31 +36,24 @@ Chariot provides **Payment Sources** - segregated addresses for receiving donati
 
 When donations arrive at a Payment Source, Chariot automatically:
 1. **Captures** the payment and creates a Deposit record
-2. **Parses** individual donations with complete donor attribution
-3. **Settles** funds to your Chariot Financial Account
-4. **Provides** unified access via API and dashboard
+2. **Attaches** donation data to the deposit
 
 You get complete donation data including:
 - Donor name, email, and contact information
 - Gift amounts (gross, net, and fees)
 - DAF account details and grant letters
-- Platform information and donation IDs
+- Platform information and platform fees
 - Corporate match information
-- Custom properties for downstream CRM and accounting systems integration
 
 ## Key Benefits
 
 <CardGroup cols={2}>
     <Card title='Unified Gift Processing' icon='layer-group'>
-    Consolidate donations from 50+ DAF sponsors and fundraising platforms into a single stream
+    Consolidate donations from 50+ DAF sponsors and platforms into a single stream
     </Card>
 
     <Card title='Automatic Reconciliation' icon='check-double'>
-    Match donations to deposits automatically with complete transaction details
-    </Card>
-
-    <Card title='Rich Donor Data' icon='database'>
-    Capture donor attribution, corporate matches, platform fees, and custom properties
+    Match donations to deposits automatically with complete donation details
     </Card>
 
     <Card title='Seamless Integration' icon='plug'>
@@ -82,11 +73,9 @@ You get complete donation data including:
 
 Chariot is ideal for nonprofits that:
 
-- Receive grants from multiple Donor-Advised Fund sponsors
-- Receive grants from many platforms (Benevity, CyberGrants, YourCause, etc.)
-- Process physical checks from donors
+- Receive payments from multiple Donor-Advised Fund sponsors and platforms such Benevity, CyberGrants, YourCause, etc.
 - Want to reduce manual reconciliation work
-- Need to integrate donation data with their CRM
+- Need to integrate donation data with their CRM and accounting software
 - Want complete visibility into offline gift processing
 
 ## Core Concepts
@@ -124,25 +113,6 @@ Chariot is ideal for nonprofits that:
     </Accordion>
 </AccordionGroup>
 
-## Additional Resources
-
-<CardGroup cols={3}>
-    <Card title='How It Works' icon='circle-info' href='/guides/processing/how-it-works'>
-    Detailed explanation of the processing flow
-    </Card>
-
-    <Card title='Flow of Funds' icon='money-bill-transfer' href='/guides/processing/flow-of-funds'>
-    How donations flow from sources to your account
-    </Card>
-
-    <Card title='Donation Lifecycle' icon='rotate' href='/guides/processing/donation-lifecycle'>
-    Understanding deposit and donation states
-    </Card>
-
-    <Card title='FAQ' icon='circle-question' href='/guides/processing/faq'>
-    Answers to common questions
-    </Card>
-</CardGroup>
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
