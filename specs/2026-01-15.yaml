@@ -2629,7 +2629,7 @@ components:
           type: integer
           format: int64
           description: |-
-            The amount of the donation that the nonprofit will receive after DAF and/or 
+            The amount of the donation that the nonprofit will receive after DAF and/or
             platform processing fees are deducted in minor units of the currency.
             For dollars, for example, this is cents.
         amount_fee:
@@ -4827,7 +4827,8 @@ components:
                 primary_donor:
                   email: "warrenBuffet@example.com"
               donor_advised_fund_grant:
-                donor_fund_name: "Warren Buffet Fund"
+                organization_name: "Fidelity Charitable"
+                fund_name: "Warren Buffet Fund"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
