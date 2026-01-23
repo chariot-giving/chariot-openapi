@@ -326,6 +326,105 @@ DAFpay will also send an email directly to the donor reiterating the instruction
     <img src='../../images/grant-intent-email.png' />
 </Frame>
 
+## Multi-Organization Grants
+
+Multi-Organization Grants allow donors to submit grant requests to multiple nonprofits within a single authenticated DAFpay session. This is useful for platforms that support cart-based.
+
+<Warning title="No All-or-Nothing Guarantee">
+Chariot cannot guarantee "all or nothing" transactions. Some grants in a batch may succeed while others fail. Your platform should handle partial successes gracefully.
+</Warning>
+
+### Configuring Multi-Organization Donations
+
+Pass a comma-separated list of CIDs to the `<chariot-connect />` component and provide grant information for each organization in the `onDonationRequest` callback:
+
+<CodeBlocks>
+```html HTML
+<chariot-connect
+  id="chariot"
+  cid="live_abc123...,live_def456...,live_ghi789..."
+></chariot-connect>
+```
+```javascript React
+<ChariotConnect
+  cid="live_abc123...,live_def456...,live_ghi789..."
+  onDonationRequest={onDonationRequest}
+/>
+```
+</CodeBlocks>
+
+The `onDonationRequest` callback should return grant information keyed by CID:
+
+<CodeBlocks>
+```javascript JavaScript
+const chariot = document.getElementById("chariot")
+
+chariot.onDonationRequest(async () => {
+  return {
+    // Shared donor information
+    firstName: "Michael",
+    lastName: "Scott",
+    email: "michaelScott@theoffice.com",
+    // Grant details keyed by CID
+    grants: {
+      "live_abc123...": {
+        amount: 10000,
+        designation: "General Fund"
+      },
+      "live_def456...": {
+        amount: 5000,
+        frequency: "MONTHLY"
+      },
+      "live_ghi789...": {
+        amount: 15000,
+        note: "In memory of Jane Doe"
+      }
+    }
+  }
+})
+```
+</CodeBlocks>
+
+Each grant object accepts the same parameters as single grants: `amount`, `designation`, `note`, `anonymous`, `frequency`, and `metadata`.
+
+### Capturing and Submitting Grants
+
+When the donor completes authorization, you'll receive a `CHARIOT_SUCCESS` event with `grantIntents` for each organization. Then call the [Create Grants](/api/grants/create-grants) endpoint with only the `workflowSessionId`:
+
+```bash
+curl -X POST https://api.givechariot.com/v1/grants/bulk \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a"}'
+```
+
+The response indicates which grants succeeded and which failed:
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "results": [
+    {
+      "cid": "live_abc123...",
+      "status": "succeeded",
+      "grant": { "id": "...", "trackingId": "L9E182VBGP", "amount": 10000 }
+    },
+    {
+      "cid": "live_def456...",
+      "status": "succeeded",
+      "recurringGrant": { "id": "...", "trackingId": "M8F293WCHQ", "amount": 5000, "frequency": "MONTHLY" }
+    },
+    {
+      "cid": "live_ghi789...",
+      "status": "failed",
+      "error": { "code": "insufficient_balance", "message": "The requested amount exceeds the available DAF balance." }
+    }
+  ]
+}
+```
+
+Use the [List Grants](/api/grants/list) endpoint with `connect_id` to query grants for a specific nonprofit.
+
 ## Recurring Donations
 
 Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund.

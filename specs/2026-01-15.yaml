@@ -348,6 +348,53 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/grants/bulk:
+    post:
+      summary: Create Grants
+      description: |-
+        Submit all grants from a multi-organization DAFpay workflow session. This captures all grant intents that were authorized when the donor authenticated with their DAF provider.
+
+        The response indicates which grants were successfully submitted and which failed.
+
+        <Warning>
+        **Important Considerations:**
+        - Chariot cannot guarantee "all or nothing" transactions. Some grants may succeed while others fail.
+        - All grants must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
+        </Warning>
+      operationId: create-grants
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/BulkGrantCaptureRequest"
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkGrantResponse"
+              examples:
+                PartialSuccess:
+                  $ref: "#/components/examples/BulkGrantResponsePartialSuccess"
+                AllSuccess:
+                  $ref: "#/components/examples/BulkGrantResponseAllSuccess"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "410":
+          $ref: "#/components/responses/GoneError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/recurring_grants:
     get:
       summary: List Recurring Grants
@@ -3485,6 +3532,66 @@ components:
           example: direct
         address:
           $ref: "#/components/schemas/GrantAddress"
+    BulkGrantResponse:
+      type: object
+      description: |-
+        Response from creating multiple grants in a single request. Each grant result indicates whether it was successfully submitted or failed.
+      required:
+        - workflowSessionId
+        - results
+      properties:
+        workflowSessionId:
+          type: string
+          description: The identifier of the DAFpay Workflow Session
+          format: uuid
+          example: 79e772be-547d-4c9c-8b76-4ac4ed4c441a
+        results:
+          type: array
+          description: Array of results for each grant in the request
+          items:
+            $ref: "#/components/schemas/BulkGrantResult"
+    BulkGrantResult:
+      type: object
+      description: |-
+        Result for an individual grant in a bulk grant request.
+      required:
+        - cid
+        - status
+      properties:
+        cid:
+          type: string
+          description: The Connect ID (CID) of the nonprofit organization for this grant
+          example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+        status:
+          type: string
+          description: |-
+            The status of this grant submission.
+            - `succeeded`: The grant was successfully submitted to the DAF provider.
+            - `failed`: The grant failed to be submitted. See the `error` field for details.
+          enum:
+            - succeeded
+            - failed
+          example: succeeded
+        grant:
+          description: The created grant object. Only present if status is `succeeded`.
+          allOf:
+            - $ref: "#/components/schemas/Grant"
+        recurringGrant:
+          description: The created recurring grant object. Only present if status is `succeeded` and frequency is `MONTHLY`.
+          allOf:
+            - $ref: "#/components/schemas/RecurringGrant"
+        error:
+          type: object
+          description: Error details. Only present if status is `failed`.
+          properties:
+            code:
+              type: string
+              description: A short error code identifying the type of failure
+              example: insufficient_balance
+            message:
+              type: string
+              description: A human-readable error message
+              example: "The requested amount exceeds the available DAF balance."
     RecurringGrant:
       type: object
       description: |-
@@ -4992,6 +5099,23 @@ components:
                   The designation to include on the grant. If this is left blank, "Where needed most" will be used.
                   Note that including a custom designation may cause the grant approval process to take longer.
                   Designations over 100 characters will be truncated.
+    BulkGrantCaptureRequest:
+      description: |-
+        The request to create and submit multiple grants for a single DAFpay workflow session. This captures all grant intents that were authorized during the multi-organization DAFpay session.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - workflowSessionId
+            properties:
+              workflowSessionId:
+                type: string
+                description: |-
+                  The identifier of the donor's DAFpay Workflow Session.
+                  See [Multi-Organization Grants](/guides/dafpay/integrating-dafpay/integration#multi-organization-grants) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                example: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
     CreateConnectRequest:
       description: |-
         The request to create a new Connect object for a nonprofit.
@@ -5824,6 +5948,66 @@ components:
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
         amount: 15000
+    BulkGrantResponsePartialSuccess:
+      summary: Partial success - some grants succeeded, some failed
+      value:
+        workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+        results:
+          - cid: "live_abc123def456..."
+            status: "succeeded"
+            grant:
+              id: "1e60800e-849b-43d1-870e-57afc8d75473"
+              trackingId: "L9E182VBGP"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 10000
+              status: "Initiated"
+          - cid: "live_ghi789jkl012..."
+            status: "succeeded"
+            recurringGrant:
+              id: "2f71911f-95ac-43e2-981f-68bfc127b584"
+              trackingId: "M8F293WCHQ"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 5000
+              frequency: "MONTHLY"
+              status: "Initiated"
+          - cid: "live_mno345pqr678..."
+            status: "failed"
+            error:
+              code: "insufficient_balance"
+              message: "The requested amount exceeds the available DAF balance."
+    BulkGrantResponseAllSuccess:
+      summary: All grants succeeded
+      value:
+        workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+        results:
+          - cid: "live_abc123def456..."
+            status: "succeeded"
+            grant:
+              id: "1e60800e-849b-43d1-870e-57afc8d75473"
+              trackingId: "L9E182VBGP"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 10000
+              status: "Initiated"
+          - cid: "live_ghi789jkl012..."
+            status: "succeeded"
+            grant:
+              id: "2f71911f-95ac-43e2-981f-68bfc127b584"
+              trackingId: "M8F293WCHQ"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 15000
+              status: "Initiated"
     DafOutput:
       summary: NPT DAF
       value:

@@ -7,9 +7,9 @@ hidden: false
 <AccordionGroup>
     <Accordion title="What information is needed to register a nonprofit for DAFpay?">
     To register a nonprofit, you will first [Search for the Organization](/api/organizations/search) using the nonprofit's EIN or legal name.
-    Once, you have found the Organization, you should [Create a Connect](/api/connects/create) and provide contact information for 
+    Once, you have found the Organization, you should [Create a Connect](/api/connects/create) and provide contact information for
     the organization.
-    
+
     Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com).
     This email will be used for important messaging related to the nonprofit’s Chariot account and can be updated later.
 
@@ -23,8 +23,8 @@ hidden: false
         </Frame>
     </Accordion>
     <Accordion title="Why did Create Nonprofit return an error?">
-    If the Create Nonprofit API returns an error, it means the nonprofit is not yes eligible to receive donations from DAFpay. 
-    
+    If the Create Nonprofit API returns an error, it means the nonprofit is not yes eligible to receive donations from DAFpay.
+
     This could be because the nonprofit was not found in Chariot's verified database or because they are not eligible for Donor Advised Fund gifts. The error code in the response will indicate the specific reason the route failed for the given nonprofit.
 
     Please reach out to contact@givechariot.com if you have any questions or concerns about this evaluation.
@@ -147,6 +147,15 @@ hidden: false
     A recurring donation via DAFpay  indicates that the donation was initiated on a monthly recurring basis. We indicate that the initial grant was set up with frequency of monthly but do not create a new grant each month in our system.
 
     The actual recurrence is managed through the DAF provider so if the donor wants to cancel the recurrence they log into their DAF provider portal and cancel it there. As a result, we are not aware when a recurrence is canceled.
+
+    </Accordion>
+    <Accordion title="How do multi-organization grants work?">
+
+    Multi-organization grants allow donors to give to multiple nonprofits in a single DAFpay session. Pass a comma-separated list of CIDs to `<chariot-connect />`, provide grant details in `onDonationRequest`, then call the [Create Grants](/api/grants/create-grants) endpoint with the `workflowSessionId`.
+
+    **Important:** Chariot cannot guarantee "all or nothing" transactions—some grants may succeed while others fail.
+
+    See [Multi-Organization Grants](/guides/dafpay/integrating-dafpay/integration#multi-organization-grants) for details.
 
     </Accordion>
 
