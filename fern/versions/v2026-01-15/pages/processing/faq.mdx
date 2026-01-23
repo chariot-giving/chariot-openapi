@@ -1,0 +1,248 @@
+---
+title: "Frequently Asked Questions"
+subtitle: "Answers to common questions about Chariot for Nonprofits"
+hidden: false
+createdAt: "Wed Jan 14 2026 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+
+## Getting Started
+
+<AccordionGroup>
+    <Accordion title="What is Chariot Gift Processing?">
+        Chariot Gift Processing is a unified platform that enables nonprofits to streamline the processing of offline donations from multiple sources including Donor-Advised Funds, fundraising platforms, and physical checks.
+
+        Instead of managing separate portals, banking connections, and reconciliation processes for each payment source, Chariot provides a single unified API and dashboard to process all your offline gifts.
+    </Accordion>
+
+    <Accordion title="Who is Chariot Gift Processing for?">
+        Chariot Gift Processing is designed for nonprofit organizations that:
+        - Receive donations from multiple Donor-Advised Fund sponsors
+        - Use multiple fundraising platforms
+        - Process physical checks from donors
+        - Want to unify gift data from disparate sources
+        - Need to integrate donation data with their CRM or accounting systems
+        - Want to reduce manual reconciliation work
+
+        Organizations of all sizes can benefit, from small local nonprofits to large national organizations.
+    </Accordion>
+
+    <Accordion title="How is this different from DAFpay?">
+        **DAFpay** is a donor-facing checkout solution that enables individual donors to make grants from their Donor-Advised Funds at the point of online donation.
+
+        **Chariot Gift Processing** is a nonprofit-facing backend solution that unifies the processing of all offline donations after they've been initiated.
+
+        Many nonprofits use both:
+        - DAFpay for online donor checkout
+        - Gift Processing for unifying all offline gift data from DAFpay and other sources
+    </Accordion>
+
+    <Accordion title="What does the onboarding process look like?">
+        The onboarding process for nonprofits is as follows:
+
+        <Steps>
+            Create a Chariot account and provide your organization's EIN.
+
+            Complete nonprofit verification.
+
+            Provide banking information for settlements to your external bank account.
+
+            Set up Payment Sources for each payment source (DAFs, platforms, lockboxes).
+
+            Share your Chariot banking details with your payment sources.
+
+            Start receiving donations automatically.
+        </Steps>
+
+        The verification process typically takes 3-10 business days.
+    </Accordion>
+
+    <Accordion title="What are the fees for Chariot Gift Processing?">
+        Please visit [our pricing page](https://givechariot.com/pricing) for more information.
+    </Accordion>
+</AccordionGroup>
+
+## Payment Sources
+
+<AccordionGroup>
+    <Accordion title="What is a Payment Source?">
+        A Payment Source is a segregated address for receiving donations from a specific source. Payment Sources can be:
+
+        **Electronic**
+        - Unique routing number and account number
+        - Used for receiving electronic transfers
+        - Examples: Dedicated accounts for each DAF sponsor, portals, etc.
+
+        **Physical (Lockbox)**
+        - Dedicated mailing address
+        - Used for processing physical checks
+        - Examples: PO Box for direct mail campaigns
+
+        All Payment Sources deposit to your same Financial Account, but they maintain separate tracking for reconciliation.
+    </Accordion>
+
+    <Accordion title="How many Payment Sources can I create?">
+        There's no hard limit on the number of Payment Sources you can create. Nonprofits can manage their payment sources in their dashboard.
+    </Accordion>
+
+
+    <Accordion title="Can I delete a Payment Source?">
+        Payment Sources cannot be deleted if they have historical deposits or donations. This preserves your audit trail and reconciliation history.
+
+        If you no longer want to use a Payment Source, you can stop directing payment sources to it and it will become inactive over time.
+    </Accordion>
+</AccordionGroup>
+
+## Donations and Deposits
+
+<AccordionGroup>
+    <Accordion title="What's the difference between a Donation and a Deposit?">
+        **Deposit**: A transfer of money that arrives at a Payment Source. One deposit may contain multiple donations.
+
+        **Donation**: An individual charitable gift from a donor. Multiple donations can be included in a single deposit.
+
+        Example: A portal sends you a weekly electronic transfer of $10,000 containing 50 individual donations. This would be:
+        - 1 Deposit for $10,000
+        - 50 Donations with individual donor attribution
+    </Accordion>
+
+    <Accordion title="How is donor information captured?">
+        Donor attribution is unified across all payment sources:
+
+        - Donor name, email, and contact information
+        - Gift amounts (gross, net, and fees)
+        - DAF account details and grant letters
+        - Platform information and platform fees
+        - Corporate match information
+    </Accordion>
+
+    <Accordion title="Can I update donation information after it's created?">
+        Yes. Use the [Update Donation](/api/donations/update) endpoint to update:
+        - Purpose (how the donor intended the gift to be used)
+        - Note (additional information about the donation)
+        - Attribution (donor information)
+
+        You cannot update the amounts or fees as these reflect the actual transaction that occurred.
+
+        <EndpointRequestSnippet endpoint="PATCH /v1/donations/{id}" />
+    </Accordion>
+
+    <Accordion title="How do I add custom fields to donations?">
+        Use the Properties API to assign custom properties to donations:
+
+        <EndpointRequestSnippet endpoint="POST /v1/properties/donation/{donation_id}/assign" />
+
+        This enables you to:
+        - Map to your CRM's custom fields
+        - Track internal campaign codes
+        - Add processing notes
+        - Maintain your own metadata
+
+        Properties are indexed and searchable, making it easy to filter and report on donations with specific property values.
+    </Accordion>
+
+    <Accordion title="How long does it take for donations to appear in Chariot?">
+        **In-Network Donations** (from Chariot Disbursements): Instant - donations appear immediately
+
+        **ACH Transfers**: 1-2 business days from when the payment source initiates the transfer
+
+        **Checks**: 1-3 business days from when the check arrives at the lockbox (deposit to your account takes an additional 3-5 business days)
+
+        Donation data is available via API as soon as Chariot receives the transfer, even before funds have fully settled.
+    </Accordion>
+
+    <Accordion title="How do I transfer funds out to my external bank account?">
+        When you're ready to move funds to your external bank account, use the Outbound Transfers API:
+
+        <EndpointRequestSnippet endpoint="POST /v1/outbound_transfers" />
+
+        **Outbound Transfer Timeline:**
+        - **Day 0**: Create outbound transfer via API or dashboard
+        - **Day 2-3**: Funds arrive in your external bank account
+
+        <Note>
+        You must configure and verify an external bank account through the Chariot Dashboard before you can create outbound transfers in production.
+        </Note>
+    </Accordion>
+</AccordionGroup>
+
+## Integration and API
+
+<AccordionGroup>
+    <Accordion title="How do I integrate Chariot with my CRM?">
+        The typical integration flow:
+
+        1. **Subscribe to webhooks** for `donation.created` events
+        2. **Receive webhook** when a new donation is created
+        3. **Retrieve donation details** via the API
+        4. **Map fields** to your CRM's data model
+        5. **Create or update** constituent records in your CRM
+        6. **Assign properties** back to the Chariot donation for two-way sync
+
+        Many nonprofits build this integration themselves or work with their CRM consultant to set it up.
+
+        Chariot also offers pre-built integrations for popular CRM systems. Contact [support@givechariot.com](mailto:support@givechariot.com) to learn more.
+    </Accordion>
+
+
+    <Accordion title="How do I handle duplicate donations?">
+        Chariot automatically de-duplicates donations based on unique identifiers provided by the payment source.
+
+        If you encounter a suspected duplicate:
+        1. Check the donation's `artifacts` array for source files
+        2. Compare effective dates and amounts
+        3. If truly duplicate, mark one with a property to exclude from reporting
+        4. Contact support if you need assistance identifying duplicates
+
+    </Accordion>
+
+    <Accordion title="What happens if a deposit fails or is returned?">
+        If a deposit is returned (e.g., an ACH transfer is rejected):
+
+        1. The Deposit status changes to `failed`
+        2. The associated Donations remain in your system
+        3. A `deposit.returned` webhook is sent
+        4. Funds are debited from your account if they had settled
+
+        You should:
+        - Review the returned deposit and reason
+        - Contact the payment source to resolve the issue
+        - Update your systems to reflect the failed deposit
+
+        Contact [support@givechariot.com](mailto:support@givechariot.com) if you need help resolving returned deposits.
+    </Accordion>
+</AccordionGroup>
+
+## Compliance and Security
+
+<AccordionGroup>
+    <Accordion title="Is my data secure with Chariot?">
+        Yes. Chariot maintains rigorous security standards:
+
+        - **Bank-level security**: Chariot partners with Column N.A., a nationally chartered bank
+        - **Encryption**: All data is encrypted in transit (TLS) and at rest (AES-256)
+        - **Compliance**: SOC 2 Type II certified
+        - **Access controls**: Role-based permissions and audit logging
+        - **PCI compliance**: For any payment card data handling
+
+        Read more about our [security practices](https://givechariot.com/security).
+    </Accordion>
+
+    <Accordion title="Are my funds FDIC insured?">
+        Yes. Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC.
+
+        Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+    </Accordion>
+</AccordionGroup>
+
+## Still Have Questions?
+
+If you can't find the answer you're looking for:
+
+- **Email Support**: [support@givechariot.com](mailto:support@givechariot.com)
+- **Documentation**: Explore our [API Reference](/api/donations/list)
+- **Dashboard**: Access your account at [dashboard.givechariot.com](https://dashboard.givechariot.com)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
