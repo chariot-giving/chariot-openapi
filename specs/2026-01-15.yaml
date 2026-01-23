@@ -348,6 +348,53 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/grants/bulk:
+    post:
+      summary: Create Grants
+      description: |-
+        Submit all grants from a multi-organization DAFpay workflow session. This captures all grant intents that were authorized when the donor authenticated with their DAF provider.
+
+        The response indicates which grants were successfully submitted and which failed.
+
+        <Warning>
+        **Important Considerations:**
+        - Chariot cannot guarantee "all or nothing" transactions. Some grants may succeed while others fail.
+        - All grants must be captured within 15 minutes of authorization otherwise the request will return status `410 Gone`.
+        </Warning>
+      operationId: create-grants
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/BulkGrantCaptureRequest"
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkGrantResponse"
+              examples:
+                PartialSuccess:
+                  $ref: "#/components/examples/BulkGrantResponsePartialSuccess"
+                AllSuccess:
+                  $ref: "#/components/examples/BulkGrantResponseAllSuccess"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "410":
+          $ref: "#/components/responses/GoneError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/recurring_grants:
     get:
       summary: List Recurring Grants
@@ -1616,6 +1663,630 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/payment_sources:
+    get:
+      summary: List Payment Sources
+      description: |-
+        List payment sources for your Chariot account.
+
+        Payment Sources represent segregated addresses for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+
+        Payment Sources should be setup and managed through the Chariot Dashboard.
+      operationId: listPaymentSources
+      tags:
+        - paymentSources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPaymentSourcesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/payment_sources/{id}:
+    get:
+      summary: Get a Payment Source
+      description: |-
+        Get a payment source by its unique identifier.
+
+        A Payment Source represents a segregated address for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+
+        Payment Sources should be setup and managed through the Chariot Dashboard.
+      operationId: getPaymentSource
+      tags:
+        - paymentSources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the payment source
+          required: true
+          schema:
+            type: string
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSource"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donations:
+    get:
+      summary: List Donations
+      description: |-
+        List donations for your account.
+      operationId: listDonations
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: payment_source_id
+          in: query
+          description: The unique identifier for the payment sources to filter donations by. Comma separated list of payment source IDs.
+          required: false
+          schema:
+            type: string
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: deposit_id
+          in: query
+          description: The unique identifier for the deposit to filter donations by.
+          required: false
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        - name: created_at.after
+          in: query
+          description: Return donations created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return donations created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDonationsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donations/{id}:
+    get:
+      summary: Get a Donation
+      description: |-
+        Get a donation by its unique identifier.
+      operationId: getDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The donation was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Donation
+      description: |-
+        Update a donation with the given ID.
+        Use this endpoint to update core donation attributes like purpose, note and attribution.
+        To update properties, use the Properties.assign endpoint.
+      operationId: updateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDonationRequest"
+      responses:
+        "202":
+          $ref: "#/components/responses/UpdateDonationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits:
+    get:
+      summary: List Deposits
+      description: |-
+        List deposits for your account.
+      operationId: listDeposits
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: payment_source_id
+          in: query
+          description: The unique identifier for the payment sources to filter deposits by. Comma separated list of payment source IDs.
+          required: false
+          schema:
+            type: string
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: settled_at.after
+          in: query
+          description: Return deposits with a settled date and time after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: settled_at.before
+          in: query
+          description: Return deposits with a settled date and time before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDepositsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}:
+    get:
+      summary: Get a Deposit
+      description: |-
+        Get a deposit by its unique identifier.
+      operationId: getDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The deposit was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deposit"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/outbound_transfers:
+    get:
+      summary: List Outbound Transfers
+      description: |-
+        List outbound transfers for your account.
+      operationId: listOutboundTransfers
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListOutboundTransfersResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create an Outbound Transfer
+      description: |-
+        Create an outbound transfer to transfer funds from a financial account
+        to an external bank account.
+        In Production, this requires that an external bank account has been setup
+        and verified by the account owner through the Chariot Dashboard.
+      operationId: createOutboundTransfer
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateOutboundTransferRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/outbound_transfers/{id}:
+    get:
+      summary: Get an Outbound Transfer
+      description: |-
+        Get an outbound transfer by its unique identifier.
+      operationId: getOutboundTransfer
+      tags:
+        - outboundTransfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the outbound transfer
+          required: true
+          schema:
+            type: string
+          example: "outbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboundTransfer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/properties:
+    get:
+      summary: List Properties
+      description: |-
+        List properties for your account.
+      operationId: listProperties
+      tags:
+        - properties
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: resource_type
+          in: query
+          description: The type of the resource that the properties are associated with.
+          required: false
+          schema:
+            $ref: "#/components/schemas/ResourceType"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPropertiesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/properties/{id}:
+    get:
+      summary: Get a Property
+      description: |-
+        Get a property by its unique identifier.
+      operationId: getProperty
+      tags:
+        - properties
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the property
+          required: true
+          schema:
+            type: string
+          example: "property_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The property was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/properties/{id}/assign:
+    post:
+      summary: Assign a Property
+      description: |-
+        Appends a Property to one or more Donations or Deposits.
+        A maximum of 100 resources can be assigned to a property at a time.
+        The resource identifiers must be of the same resource_type as the Property, otherwise a 400 Bad Request error will be returned.
+      operationId: assignProperty
+      tags:
+        - properties
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the property
+          required: true
+          schema:
+            type: string
+          example: "property_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/AssignPropertyRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/AssignPropertyResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files for your account.
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a File
+      description: |-
+        Get a file by its unique identifier.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/file_links:
+    post:
+      summary: Create a File Link
+      description: |-
+        File Links let you generate a URL that can be used to download a File.
+      operationId: createFileLink
+      tags:
+        - fileLinks
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFileLinkRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   securitySchemes:
     bearerAuth:
       type: http
@@ -1889,6 +2560,733 @@ components:
         logo_url:
           type: string
           description: The URL of the organization's logo
+    PaymentSource:
+      type: object
+      description: |-
+        A Payment Source represents a segregated address for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
+        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the payment source
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the payment source belongs to
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the payment source
+          example: "Main Payment Source"
+        source_type:
+          type: string
+          description: The type of the payment source
+          example: "portal"
+          enum:
+            - manual
+            - portal
+            - lockbox
+            - grantmaker
+        financial_address:
+          $ref: "#/components/schemas/FinancialAddress"
+        lockbox:
+          $ref: "#/components/schemas/Lockbox"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the payment source was created
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the payment source was last updated
+          example: "2020-01-31T23:59:59Z"
+    Lockbox:
+      type: object
+      description: |-
+        A US mailing address to process incoming physical mail and checks.
+        This is only available for lockbox payment sources.
+      properties:
+        address:
+          $ref: "#/components/schemas/PostalAddress"
+    FinancialAddress:
+      type: object
+      description: |-
+        A subhash containing information about the electronic bank address payment rail details.
+        This is only available for manual and connected_account payment sources.
+      properties:
+        ach:
+          $ref: "#/components/schemas/AchAddress"
+    AchAddress:
+      type: object
+      description: |-
+        A subhash containing information about the electronic bank address payment rail details.
+      required:
+        - institution_name
+        - account_number
+        - routing_number
+      properties:
+        account_number:
+          type: string
+          description: The account number of that uniquely identifies the account at the institution
+          example: "987654321"
+        routing_number:
+          type: string
+          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
+          example: "101050001"
+    Donation:
+      type: object
+      description: |-
+        A Donation is a gift of money to a nonprofit organization.
+      required:
+        - id
+        - payment_source_id
+        - amount_gross
+        - amount_net
+        - amount_fee
+        - currency
+        - purpose
+        - note
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the donation
+          example: donation_01j8rs605a4gctmbm58d87mvsj
+        payment_source_id:
+          type: string
+          description: |-
+            The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
+          example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
+        amount_gross:
+          type: integer
+          format: int64
+          description: |-
+            The original amount of the donation as intended by the donor in minor units of the currency.
+            For dollars, for example, this is cents.
+        amount_net:
+          type: integer
+          format: int64
+          description: |-
+            The amount of the donation that the nonprofit will receive after DAF and/or
+            platform processing fees are deducted in minor units of the currency.
+            For dollars, for example, this is cents.
+        amount_fee:
+          type: integer
+          format: int64
+          description: |-
+            The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
+            For dollars, for example, this is cents.
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
+          example: USD
+        purpose:
+          type: string
+          description: |-
+            A description of the donor's intent for the donation.
+            This is useful to understand how the donor intended the donation to be used.
+            For example, "Where needed most" or "General Operating Support" or "Specific Campaign".
+          example: "Where needed most"
+        note:
+          type: string
+          description: |-
+            An informational note from the donor to the nonprofit about the donation.
+            This may contain a message or other useful information that the donor wants to share with the nonprofit.
+          example: "Please dedicate in memory of grandma"
+        attribution:
+          type: object
+          description: |-
+            A subhash containing information about how the donation is attributed.
+          $ref: "#/components/schemas/DonationAttribution"
+        initiation:
+          type: object
+          description: A subhash containing information about how the donation was initiated by DAFpay.
+          $ref: "#/components/schemas/DonationInitiation"
+        settlement:
+          type: object
+          description: A subhash containing information about how the donation was settled by Chariot.
+          $ref: "#/components/schemas/DonationSettlement"
+        donor_advised_fund_grant:
+          type: object
+          description: A subhash containing information about the grant from a Donor-Advised Fund sponsor.
+          $ref: "#/components/schemas/DafGrant"
+        platform:
+          type: object
+          description: |-
+            A subhash containing information about the platform that facilitated the donation.
+            If this is empty, then the donation was not facilitated by a platform.
+          $ref: "#/components/schemas/Platform"
+        corporate_match:
+          type: object
+          description: |-
+            A subhash containing information about the corporate match for the donation.
+            If this is empty, then the donation was not matched by a corporate sponsor.
+          $ref: "#/components/schemas/CorporateMatch"
+        properties:
+          type: array
+          description: |-
+            A list of custom properties for the donation.
+          items:
+            type: object
+            $ref: "#/components/schemas/PropertyAssignment"
+        artifacts:
+          type: array
+          description: |-
+            A list of source artifacts that were used to create the donation.
+            These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
+          items:
+            type: object
+            $ref: "#/components/schemas/Artifact"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the donation was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the donation was last updated.
+          example: "2020-01-31T23:59:59Z"
+    Artifact:
+      type: object
+      description: |-
+        An artifact is a source file that was used to create the donation.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the artifact.
+          example: "artifact_01j8rs605a4gctmbm58d87mvsj"
+        file_id:
+          type: string
+          description: The unique identifier for the file that the artifact is associated with.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the artifact was created.
+          example: "2020-01-31T23:59:59Z"
+    File:
+      type: object
+      description: |-
+        Files are objects that represent a file hosted on Chariot's servers.
+        If you need to download a File, create a File Link.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the file.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        file_name:
+          type: string
+          description: The name of the file.
+          example: "donation_receipt.pdf"
+        description:
+          type: string
+          description: The description of the file.
+          example: "Donation receipt for donation to the nonprofit"
+        purpose:
+          type: string
+          description: The purpose of the file.
+          enum:
+            - integration_download
+            - inbound_mail_item
+            - inbound_email
+            - grant_letter
+            - manual_upload
+        content_type:
+          type: string
+          description: The MIME type of the file.
+          example: "application/pdf"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the file was created.
+          example: "2020-01-31T23:59:59Z"
+    FileLink:
+      type: object
+      description: |-
+        A file link is a URL that can be used to download a file.
+      properties:
+        file_id:
+          type: string
+          description: The unique identifier for the file.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        unauthenticated_url:
+          type: string
+          description: The unauthenticated URL to download the file.
+          example: "https://cdn.givechariot.com/files/file.pdf"
+        expires_at:
+          type: string
+          format: date-time
+          description: The date and time when the file link will expire.
+          example: "2020-01-31T23:59:59Z"
+    PropertyAssignment:
+      type: object
+      description: |-
+        A property assignment is a key-value pair that is associated with a donation.
+      properties:
+        property_id:
+          type: string
+          description: The unique identifier for the property.
+          example: "property_01j8rs605a4gctmbm58d87mvsj"
+        value:
+          type: object
+          $ref: "#/components/schemas/PropertyValue"
+    PropertyType:
+      type: string
+      description: The data type of a property.
+      enum:
+        - text
+        - enum
+        - user
+        - boolean
+        - date
+      example: "text"
+    ResourceType:
+      type: string
+      description: The API resource that the property is associated with.
+      enum:
+        - donation
+        - deposit
+    PropertyValue:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "#/components/schemas/PropertyType"
+        text_value:
+          type: string
+          description: The text value of the property.
+        enum_value_id:
+          type: string
+          description: The unique identifier for the enum value.
+        user_value_id:
+          type: string
+          description: The unique identifier for the user.
+        boolean_value:
+          type: boolean
+          description: The boolean value of the property.
+        date_value:
+          type: string
+          format: date-time
+          description: The date value of the property.
+        empty:
+          type: boolean
+          description: |-
+            Whether the property value is empty.
+            Can use this to unset property values when assigning a property.
+    Property:
+      type: object
+      description: |-
+        A custom key-value pair that is associated with a donation.
+      required:
+        - id
+        - name
+        - resource_type
+        - property_type
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the property.
+          example: "property_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the property.
+          example: "Donation Purpose"
+        resource_type:
+          $ref: "#/components/schemas/ResourceType"
+        property_type:
+          $ref: "#/components/schemas/PropertyType"
+        values:
+          type: array
+          description: |-
+            A list of valid values for enum and user properties.
+          items:
+            $ref: "#/components/schemas/PropertyOptionValue"
+    PropertyOptionValue:
+      type: object
+      description: |-
+        A value for an enum or user property.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the property value.
+        name:
+          type: string
+          description: The human readable string for the property value.
+    DonationAttribution:
+      type: object
+      description: |-
+        A subhash containing information about how the donation is attributed.
+      properties:
+        primary_donor:
+          type: object
+          description: |-
+            A subhash containing information about the primary donor of the donation.
+          $ref: "#/components/schemas/Donor"
+        joint_donor:
+          type: object
+          description: |-
+            A subhash containing information about the joint donor of the donation.
+          $ref: "#/components/schemas/Donor"
+    CorporateMatch:
+      type: object
+      description: |-
+        A subhash containing information about the corporate match for the donation.
+      properties:
+        match_amount:
+          type: integer
+          format: int64
+          description: The amount of the corporate match for the donation in minor units of the donation currency.
+        company_name:
+          type: string
+          description: The name of the company that matched the donation.
+          example: "Google"
+        program_name:
+          type: string
+          description: The name of the program that matched the donation.
+          example: "Google Matching Grant Program"
+        source:
+          type: string
+          description: The source of the corporate match.
+          example: "Payroll"
+    Platform:
+      type: object
+      description: |-
+        A subhash containing information about the platform that facilitated the donation.
+      properties:
+        name:
+          type: string
+          description: The name of the platform.
+          example: "PayPal Grant Payments"
+        platform_grant_id:
+          type: string
+          description: The identifier for the grant within the platform's system.
+          example: "93492947-7894-4663-a944-f2469d0027ca"
+        metadata:
+          type: object
+          description: Additional key value pairs that were passed to the platform during the donation initiation.
+          additionalProperties:
+            type: string
+        acceptance:
+          type: object
+          description: |-
+            A subhash containing information about the acceptance of the grant from the platform.
+            This is only present if the platform requires grant acceptance before disbursing funds.
+          $ref: "#/components/schemas/PlatformAcceptance"
+    PlatformAcceptance:
+      type: object
+      description: |-
+        A subhash containing information about the acceptance of the grant from the platform.
+      properties:
+        accepted:
+          type: boolean
+          description: Whether the grant was accepted from the platform.
+          example: true
+        expires_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time when the acceptance of the grant will expire.
+          example: "2020-01-31T23:59:59Z"
+    DafGrant:
+      type: object
+      description: |-
+        A subhash containing information grant details from a Donor-Advised Fund sponsor.
+      required:
+        - organization_name
+      properties:
+        organization_name:
+          type: string
+          description: The name of the Donor Advised Fund sponsor.
+          readOnly: true
+          example: "Daffy Charitable Fund"
+        donor_fund_name:
+          type: string
+          description: The name of the donor's fund at the Donor Advised Fund sponsor.
+          example: "The Smith Family Fund"
+        program_name:
+          type: string
+          description: The name of the program at the Donor Advised Fund sponsor.
+        sponsor_grant_id:
+          type: string
+          description: The identifier for the grant at the Donor Advised Fund sponsor.
+          example: "93492947-7894-4663-a944-f2469d0027ca"
+    DonationSettlement:
+      type: object
+      description: |-
+        If the payment for the donation was received by Chariot, this object will contain additional information
+        about the settlement of the donation.
+      required:
+        - deposit_id
+        - received_at
+      properties:
+        deposit_id:
+          type: string
+          description: The unique identifier for the deposit that contains the money for the donation.
+          example: deposit_01kewb5vgsryzaajza5ynr06kz
+        received_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: |-
+            The date and time when the transfer of money for the donation was received by Chariot.
+            Received at indicates when the data for the transfer was received, which is different from the settled_at timestamp.
+            Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
+        settled_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: |-
+            The date and time when the money for the donation was settled by Chariot.
+            Indicates when the funds become available to the nonprofit.
+            Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
+    DonationInitiation:
+      type: object
+      description: |-
+        If the donation was initiated through a Chariot Connect instance (DAFpay), this object will contain additional information
+        about the initiation of the donation.
+      required:
+        - initiated_at
+        - frequency
+      properties:
+        initiated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when the donation was initiated. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
+        web_location_url:
+          type: string
+          description: The URL of the web location where the donation was initiated.
+          example: "https://www.example.com/donation/1234567890"
+        fundraising_platform_name:
+          type: string
+          description: The name of the fundraising platform that initiated the donation.
+          example: "DAF day"
+        dafpay_tracking_id:
+          type: string
+          description: The tracking ID for the donation as generated by DAFpay.
+          example: L9E182VBGP
+        dafpay_metadata:
+          type: object
+          description: Additional key value pairs that were passed to DAFpay during the donation initiation.
+          additionalProperties:
+            type: string
+          example:
+            {
+              "funding_source": "DAF",
+              "funding_source_id": "daf_01j8rs605a4gctmbm58d87mvsj",
+              "funding_source_name": "DAF day"
+            }
+        frequency:
+          type: string
+          description: The frequency of the donation.
+          example: "ONE_TIME"
+          enum:
+            - ONE_TIME
+            - MONTHLY
+    Deposit:
+      type: object
+      description: |-
+        A Deposit is a transfer of money for a charitable donation or a batch of donations.
+      required:
+        - id
+        - payment_source_id
+        - status
+        - transfer
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this object.
+          example: deposit_01j8rs605a4gctmbm58d87mvsj
+        payment_source_id:
+          type: string
+          description: The unique identifier for the payment source that contains the money for the deposit.
+          example: payment_source_01j8rs605a4gctmbm58d87mvsj
+        settled_at:
+          type: string
+          format: date-time
+          description: The date and time when the deposit was settled.
+          example: "2020-01-31T23:59:59Z"
+        returned_at:
+          type: string
+          format: date-time
+          description: The date and time when the deposit was returned.
+          example: "2020-01-31T23:59:59Z"
+        status:
+          type: string
+          description: The status of the deposit.
+          example: "complete"
+          enum:
+            - pending
+            - complete
+            - failed
+        transfer:
+          type: object
+          description: A subhash containing information about the transfer associated with the deposit.
+          $ref: "#/components/schemas/Transfer"
+        properties:
+          type: array
+          description: |-
+            A list of properties assigned to the deposit.
+          items:
+            $ref: "#/components/schemas/PropertyAssignment"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the deposit was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time when the deposit was last updated.
+          example: "2020-01-31T23:59:59Z"
+    Transfer:
+      type: object
+      description: A subhash containing information about the transfer associated with the deposit.
+      required:
+        - amount
+        - currency
+        - financial_account_id
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the transfer in minor currency units. For example, for dollars, this is cents.
+          example: 10000
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the transfer's currency.
+          example: USD
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the transfer was made to.
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        description:
+          type: string
+          description: A description of the transfer.
+          example: "Disbursement to nonprofit"
+        inbound_account_transfer:
+          type: object
+          description: A subhash containing information about the inbound account transfer associated with the deposit.
+          $ref: "#/components/schemas/InboundAccountTransfer"
+        inbound_ach_transfer:
+          type: object
+          description: A subhash containing information about the inbound ACH transfer associated with the deposit.
+          $ref: "#/components/schemas/InboundAchTransfer"
+        check_deposit:
+          type: object
+          description: A subhash containing information about the check deposit associated with the deposit.
+          $ref: "#/components/schemas/CheckDeposit"
+    InboundAccountTransfer:
+      type: object
+      description: |-
+        An instant transfer of funds between two financial accounts.
+        This is the preferred method of transferring funds for Grantmakers within Chariot's Network.
+      required:
+        - created_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the account transfer was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+    InboundAchTransfer:
+      type: object
+      description: |-
+        An ACH transfer initiated outside of Chariot to your financial account.
+      properties:
+        standard_entry_class_code:
+          type: string
+          description: The Standard Entry Class (SEC) code for the ACH transfer.
+          example: "WEB"
+        company_entry_description:
+          type: string
+          description: The company entry description for the ACH transfer.
+          example: "GRANTPMT"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originator of the ACH transfer.
+          example: "1234567890"
+        originator_company_name:
+          type: string
+          description: The name of the originator of the ACH transfer.
+          example: "Charity Good"
+        trace_number:
+          type: string
+          description: The trace number for the ACH transfer.
+          example: "1234567890"
+        effective_date:
+          type: string
+          format: date-time
+          description: The effective date for the ACH transfer.
+          example: "2020-01-31T23:00:00Z"
+        status:
+          type: string
+          description: The status of the ACH transfer.
+          example: "accepted"
+          enum:
+            - pending
+            - declined
+            - accepted
+            - returned
+    CheckDeposit:
+      type: object
+      description: |-
+        A check deposit represents a physical check that is deposited into a financial account.
+      properties:
+        auxiliary_on_us:
+          type: string
+          description: |-
+            An additional line of metadata printed on the check.
+            This typically includes the check number for business checks.
+          example: "102"
+        routing_number:
+          type: string
+          description: |-
+            The routing number printed on the check.
+            This is a routing number for the bank that issued the check.
+          example: "101050001"
+        submitted_at:
+          type: string
+          format: date-time
+          description: The date and time the check deposit was submitted.
+          example: "2020-01-31T23:00:00Z"
+        status:
+          type: string
+          description: The status of the check deposit.
+          example: "deposited"
+          enum:
+            - pending
+            - deposited
+            - rejected
+            - returned
     Connect:
       type: object
       description: |-
@@ -2134,6 +3532,66 @@ components:
           example: direct
         address:
           $ref: "#/components/schemas/GrantAddress"
+    BulkGrantResponse:
+      type: object
+      description: |-
+        Response from creating multiple grants in a single request. Each grant result indicates whether it was successfully submitted or failed.
+      required:
+        - workflowSessionId
+        - results
+      properties:
+        workflowSessionId:
+          type: string
+          description: The identifier of the DAFpay Workflow Session
+          format: uuid
+          example: 79e772be-547d-4c9c-8b76-4ac4ed4c441a
+        results:
+          type: array
+          description: Array of results for each grant in the request
+          items:
+            $ref: "#/components/schemas/BulkGrantResult"
+    BulkGrantResult:
+      type: object
+      description: |-
+        Result for an individual grant in a bulk grant request.
+      required:
+        - cid
+        - status
+      properties:
+        cid:
+          type: string
+          description: The Connect ID (CID) of the nonprofit organization for this grant
+          example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+        status:
+          type: string
+          description: |-
+            The status of this grant submission.
+            - `succeeded`: The grant was successfully submitted to the DAF provider.
+            - `failed`: The grant failed to be submitted. See the `error` field for details.
+          enum:
+            - succeeded
+            - failed
+          example: succeeded
+        grant:
+          description: The created grant object. Only present if status is `succeeded`.
+          allOf:
+            - $ref: "#/components/schemas/Grant"
+        recurringGrant:
+          description: The created recurring grant object. Only present if status is `succeeded` and frequency is `MONTHLY`.
+          allOf:
+            - $ref: "#/components/schemas/RecurringGrant"
+        error:
+          type: object
+          description: Error details. Only present if status is `failed`.
+          properties:
+            code:
+              type: string
+              description: A short error code identifying the type of failure
+              example: insufficient_balance
+            message:
+              type: string
+              description: A human-readable error message
+              example: "The requested amount exceeds the available DAF balance."
     RecurringGrant:
       type: object
       description: |-
@@ -2963,6 +4421,68 @@ components:
         - not_authorized
         - voided
         - unknown
+    OutboundTransfer:
+      type: object
+      description: |-
+        An outbound transfer represents a transfer of funds from a financial account to an external bank account.
+      required:
+        - id
+        - amount
+        - currency
+        - status
+        - financial_account_id
+        - description
+        - created_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the outbound transfer
+          example: "outbound_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the outbound transfer in minor currency units. For example, for dollars, this is cents.
+          example: 10000
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the transfer's currency.
+          example: USD
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the transfer was made from.
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        description:
+          type: string
+          description: An arbitrary string attached to the object. Often useful for displaying to users.
+          example: "Transfer to external bank account"
+        status:
+          type: string
+          description: |-
+            The status of the outbound transfer.
+            An Outbound Transfer is `processing` if it is created but the payment is not yet submitted. For example, if the transfer is awaiting submission to the FedACH.
+            The status changes to `failed` if the transfer is rejected by Chariot.
+            The status changes to `submitted` once the payment is successfully submitted to the the payment network (e.g. FedACH).
+            The status changes to `returned` if the funds fail to arrive at the external bank account.
+          example: "processing"
+          readOnly: true
+          enum:
+            - processing
+            - submitted
+            - failed
+            - returned
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the inbound transfer was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
     CreateDisbursementInput:
       type: object
       description: |-
@@ -3358,6 +4878,89 @@ components:
       schema:
         type: string
   requestBodies:
+    CreateFileLinkRequest:
+      description: The request body for the File Links.create endpoint
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - file_id
+            properties:
+              file_id:
+                type: string
+                description: The unique identifier for the file to create a link for.
+                example: "file_01j8rs605a4gctmbm58d87mvsj"
+    UpdateDonationRequest:
+      description: |-
+        The request to update core donation attributes like purpose, note and attribution.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reason:
+                type: string
+                description: |-
+                  A user-friendly reason or comment about the update.
+                  This is useful to understand why the donation was updated.
+                example: "Donor requested a change to the donation purpose"
+              purpose:
+                type: string
+                description: |-
+                  A description of the donor's intent for the donation.
+                  This is useful to understand how the donor intended the donation to be used.
+              note:
+                type: string
+                description: |-
+                  An informational note from the donor to the nonprofit about the donation.
+                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
+              attribution:
+                type: object
+                $ref: "#/components/schemas/DonationAttribution"
+              donor_advised_fund_grant:
+                type: object
+                $ref: "#/components/schemas/DafGrant"
+              corporate_match:
+                type: object
+                $ref: "#/components/schemas/CorporateMatch"
+            example:
+              reason: "Donor requested a change to the donation"
+              purpose: "Capital Campaign"
+              note: "Please dedicate in memory of grandma"
+              attribution:
+                primary_donor:
+                  email: "warrenBuffet@example.com"
+              donor_advised_fund_grant:
+                organization_name: "Fidelity Charitable"
+                fund_name: "Warren Buffet Fund"
+    AssignPropertyRequest:
+      description: |-
+        The request to add a property value to a donation or deposit resource.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - value
+              - resources
+            properties:
+              value:
+                $ref: "#/components/schemas/PropertyValue"
+              resources:
+                type: object
+                required:
+                  - ids
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      description: The unique identifier for the resource
+                      example: "donation_01j8rs605a4gctmbm58d87mvsj"
     GrantCaptureRequest:
       description: |-
         The request to create and submit a grant. This is useful to capture a grant intent associated with DAFpay workflow session.
@@ -3496,6 +5099,23 @@ components:
                   The designation to include on the grant. If this is left blank, "Where needed most" will be used.
                   Note that including a custom designation may cause the grant approval process to take longer.
                   Designations over 100 characters will be truncated.
+    BulkGrantCaptureRequest:
+      description: |-
+        The request to create and submit multiple grants for a single DAFpay workflow session. This captures all grant intents that were authorized during the multi-organization DAFpay session.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - workflowSessionId
+            properties:
+              workflowSessionId:
+                type: string
+                description: |-
+                  The identifier of the donor's DAFpay Workflow Session.
+                  See [Multi-Organization Grants](/guides/dafpay/integrating-dafpay/integration#multi-organization-grants) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                example: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
     CreateConnectRequest:
       description: |-
         The request to create a new Connect object for a nonprofit.
@@ -3727,7 +5347,23 @@ components:
                   - "active"
                   - "disabled"
                   - "deleted"
+    CreateOutboundTransferRequest:
+      description: The request body for creating an outbound transfer
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OutboundTransfer"
   responses:
+    UpdateDonationResponse:
+      description: The response for Donations.update.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Donation"
     ListFinancialAccountsResponse:
       description: The response for FinancialAccounts.list
       headers:
@@ -4009,6 +5645,145 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    ListOutboundTransfersResponse:
+      description: The response for OutboundTransfers.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OutboundTransfer"
+              nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListDonationsResponse:
+      description: The response for Donations.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Donation"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListDepositsResponse:
+      description: The response for Deposits.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deposit"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListPropertiesResponse:
+      description: The response for Properties.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListPaymentSourcesResponse:
+      description: The response for PaymentSources.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentSource"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListFilesResponse:
+      description: The response for Files.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/File"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    AssignPropertyResponse:
+      description: The response for Properties.assign
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              num_updated:
+                type: integer
+                description: The number of resources that were updated.
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
@@ -4173,6 +5948,66 @@ components:
         createdAt: "2021-08-10 15:00:00.000"
         updatedAt: "2021-08-11 15:34:00.000"
         amount: 15000
+    BulkGrantResponsePartialSuccess:
+      summary: Partial success - some grants succeeded, some failed
+      value:
+        workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+        results:
+          - cid: "live_abc123def456..."
+            status: "succeeded"
+            grant:
+              id: "1e60800e-849b-43d1-870e-57afc8d75473"
+              trackingId: "L9E182VBGP"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 10000
+              status: "Initiated"
+          - cid: "live_ghi789jkl012..."
+            status: "succeeded"
+            recurringGrant:
+              id: "2f71911f-95ac-43e2-981f-68bfc127b584"
+              trackingId: "M8F293WCHQ"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 5000
+              frequency: "MONTHLY"
+              status: "Initiated"
+          - cid: "live_mno345pqr678..."
+            status: "failed"
+            error:
+              code: "insufficient_balance"
+              message: "The requested amount exceeds the available DAF balance."
+    BulkGrantResponseAllSuccess:
+      summary: All grants succeeded
+      value:
+        workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+        results:
+          - cid: "live_abc123def456..."
+            status: "succeeded"
+            grant:
+              id: "1e60800e-849b-43d1-870e-57afc8d75473"
+              trackingId: "L9E182VBGP"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 10000
+              status: "Initiated"
+          - cid: "live_ghi789jkl012..."
+            status: "succeeded"
+            grant:
+              id: "2f71911f-95ac-43e2-981f-68bfc127b584"
+              trackingId: "M8F293WCHQ"
+              workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a"
+              fundId: "bbf485dd-a056-4a9d-89a8-06e201cdbf7f"
+              createdAt: "2026-01-23T15:00:00.000Z"
+              updatedAt: "2026-01-23T15:00:00.000Z"
+              amount: 15000
+              status: "Initiated"
     DafOutput:
       summary: NPT DAF
       value:

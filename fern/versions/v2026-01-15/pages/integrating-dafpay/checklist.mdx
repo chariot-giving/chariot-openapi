@@ -1,0 +1,38 @@
+---
+title: Implementation Checklist
+subtitle: A comprehensive guide for integrating with Chariot API endpoints
+hidden: false
+---
+
+<Tip title="Sandbox Key Prerequisite">
+Before using this implementation guide, ensure that your organization has been provided with a API Key for our sandbox environment. If you have not yet received your sandbox keys, please reach out to support@givechariot.com for assistance.
+</Tip>
+
+<Warning title="Production Key Requirements">
+All items on this implementation checklist must be completed before your organization can receive production keys. Once everything is complete, please fill out the production keys request form to proceed.
+</Warning>
+
+### Set Up
+* [ ]  [Search Chariot's Database for eligible nonprofit organizations](/guides/dafpay/integrating-dafpay/set-up#search-organization)
+* [ ]  [Create Connects for your organizations](/guides/dafpay/integrating-dafpay/set-up#create-connect)
+* [ ]  [Create Launch Plan (fundraising platforms)](/guides/dafpay/integrating-dafpay/set-up#create-launch-plan)
+
+### Installing Connect
+* [ ]  [Install the Chariot Connect (DAFpay button) JavaScript package](/guides/dafpay/integrating-dafpay/installation#install-javascript-package)
+* [ ]  [Add the Connect ID to the Chariot-Connect component](/guides/dafpay/integrating-dafpay/installation#add-chariot-connect)
+* [ ]  [Determine button placement](/guides/dafpay/integrating-dafpay/installation#button-placement)
+* [ ]  [Style your DAFpay button](/guides/dafpay/integrating-dafpay/installation#button-themes-optional)
+
+### Integrating Connect
+* [ ]  [Pre-load form data into the Connect experience](/guides/dafpay/integrating-dafpay/integration#collecting-donor-data)
+* [ ]  [Completing grant intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents)
+* [ ]  [Determine unintegrated DAF provider preference](/guides/dafpay/integrating-dafpay/integration#unintegrated-daf-providers)
+* [ ]  [Implement Recurring grants (optional)](/guides/dafpay/integrating-dafpay/integration#recurring-donations)
+* [ ]  [Implement Multi-Organization grants (optional)](/guides/dafpay/integrating-dafpay/integration#multi-organization-grants)
+
+### Managing Transactions
+* [ ]  [Display Tracking ID and External ID in your dashboard](/guides/dafpay/integrating-dafpay/transactions#reconciliation--grant-identifiers)
+* [ ]  [Implement grant.status webhook](/guides/dafpay/integrating-dafpay/transactions#grant-statuses)
+
+### Request Production Keys
+* [ ]  [Complete production keys request form](/guides/dafpay/integrating-dafpay/prod-keys)

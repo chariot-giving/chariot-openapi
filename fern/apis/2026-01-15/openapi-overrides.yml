@@ -1,0 +1,246 @@
+x-fern-pagination:
+  cursor: $request.pageToken
+  next_cursor: $response.nextPageToken
+  results: $response.results
+paths:
+  /v1/organizations/search:
+    get:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: search
+  /v1/organizations/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: get
+  /v1/connects:
+    post:
+      x-fern-sdk-group-name:
+        - connects
+      x-fern-sdk-method-name: create
+  /v1/connects/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - connects
+      x-fern-sdk-method-name: get
+  /v1/grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: create
+  /v1/grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grants
+      x-fern-sdk-method-name: get
+  /v1/recurring_grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: create
+  /v1/recurring_grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - recurring_grants
+      x-fern-sdk-method-name: get
+  /v1/unintegrated_grants:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - unintegrated_grants
+      x-fern-sdk-method-name: list
+  /v1/unintegrated_grants/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - unintegrated_grants
+      x-fern-sdk-method-name: get
+  /v1/dafs:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - donorAdvisedFunds
+      x-fern-sdk-method-name: list
+  /v1/dafs/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donorAdvisedFunds
+      x-fern-sdk-method-name: get
+  /v1/events:
+    get:
+      x-fern-pagination:
+        cursor: $request.cursor
+        next_cursor: $response.nextPageToken
+        results: $response.results
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: list
+  /v1/events/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - events
+      x-fern-sdk-method-name: get
+  /v1/event_subscriptions:
+    get:
+      x-fern-pagination:
+        cursor: $request.cursor
+        next_cursor: $response.nextPageToken
+        results: $response.results
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: create
+  /v1/event_subscriptions/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - eventSubscriptions
+      x-fern-sdk-method-name: update
+  /v1/financial_accounts:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: list
+  /v1/financial_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: get
+  /v1/financial_accounts/{id}/balance:
+    get:
+      x-fern-sdk-group-name:
+        - financialAccounts
+      x-fern-sdk-method-name: getBalance
+  /v1/disbursements:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: list
+  /v1/disbursements/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - disbursements
+      x-fern-sdk-method-name: get
+  /v1/inbound_transfers:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: create
+  /v1/inbound_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: get
+  /v1/inbound_transfers/{id}/cancel:
+    post:
+      x-fern-sdk-group-name:
+        - inboundTransfers
+      x-fern-sdk-method-name: cancel
+  /v1/payment_sources:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - paymentSources
+      x-fern-sdk-method-name: list
+  /v1/payment_sources/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - paymentSources
+      x-fern-sdk-method-name: get
+  /v1/donations:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: list
+  /v1/donations/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: update
+  /v1/deposits:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: list
+  /v1/deposits/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: get
+  /v1/outbound_transfers:
+    post:
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: list
+  /v1/outbound_transfers/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - outboundTransfers
+      x-fern-sdk-method-name: get
+  /v1/properties:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: list
+  /v1/properties/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: get
+  /v1/properties/{id}/assign:
+    post:
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: assign
+  /v1/files:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: list
+  /v1/files/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: get
+  /v1/file_links:
+    post:
+      x-fern-sdk-group-name:
+        - fileLinks
+      x-fern-sdk-method-name: create
