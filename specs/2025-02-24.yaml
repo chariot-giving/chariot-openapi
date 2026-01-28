@@ -2124,6 +2124,11 @@ components:
           readOnly: true
           description: ID of the donor advised fund
           example: daf-id
+        donorFundName:
+          type: string
+          readOnly: true
+          description: Name of the donor advised fund
+          example: "Warren Buffet's DAF"
         externalGrantId:
           type: string
           description: ID of the grant associated with the donor advised fund
