@@ -11,11 +11,9 @@ tabs:
     display-name: Changelog
     icon: light clock-rotate-left
     changelog: ../../changelog
-
 landing-page:
   page: Chariot Documentation
   path: pages/index.mdx
-
 navigation:
   - tab: guides
     layout:
@@ -25,7 +23,7 @@ navigation:
           - page: Navigating the Docs
             slug: getting-started/navigating-the-docs
             path: ./pages/getting-started/navigating-the-docs.mdx
-      - section: DAFpay
+      - section: For Fundraisers
         slug: dafpay
         contents:
           - page: Overview
@@ -82,12 +80,12 @@ navigation:
   - tab: api
     layout:
       - api: API Reference
-        api-name: "2025-02-24"
+        api-name: '2025-02-24'
         flattened: true
         skip-slug: true
         display-errors: true
         snippets:
-          typescript: "@chariot-giving/typescript-sdk"
+          typescript: '@chariot-giving/typescript-sdk'
         playground:
           environments:
             - Sandbox
