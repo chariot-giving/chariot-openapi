@@ -15,7 +15,10 @@ paths:
       x-fern-sdk-method-name: get
   /v1/programs:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.cursor
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - programs
       x-fern-sdk-method-name: list

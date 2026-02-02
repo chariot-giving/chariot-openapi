@@ -115,17 +115,17 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: page_limit
+        - name: limit
           in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          description: Number of results per page. The default (and maximum) is 100 objects.
           required: false
           schema:
             type: integer
             format: int32
-        - name: next_page_token
+        - name: cursor
           in: query
           description: |-
-            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+            Cursor token for pagination. Use the next_page_token from the previous response to retrieve the next page of results.
           required: false
           schema:
             type: string
