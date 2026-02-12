@@ -2653,12 +2653,6 @@ components:
           example: "2020-01-31T23:00:00Z"
     Address:
       type: object
-      required:
-        - city
-        - country
-        - line1
-        - postal_code
-        - state
       properties:
         city:
           type: string
