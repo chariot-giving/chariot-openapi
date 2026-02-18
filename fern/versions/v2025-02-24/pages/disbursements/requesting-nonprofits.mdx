@@ -1,0 +1,57 @@
+---
+title: "Requesting Nonprofits"
+subtitle: ""
+hidden: false
+createdAt: "Fri Oct 17 2025 12:00:00 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 17 2025 12:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+
+When a nonprofit doesn't exist in Chariot's system, you can request their verification using the [Create Request](/api/organizations/create-organization-request) endpoint. Once verified, you'll be able to send disbursements to them.
+
+## How It Works
+
+1. Search for a nonprofit using the [Search Organizations](/api/organizations/search-organizations) endpoint
+2. If not found, create a verification request with the nonprofit's EIN and contact information
+3. The nonprofit receives an invitation email (if contact email provided)
+4. Track the request status using the [List Requests](/api/organizations/list-organization-requests) endpoint
+5. Once approved, the nonprofit appears in organization searches and the `nonprofit_organization_id` is populated in the request
+
+## Request Status
+
+| Status | Description |
+|--------|-------------|
+| `pending_invite` | Request created but invitation not yet sent to the nonprofit |
+| `request_sent` | Invitation email has been sent to the nonprofit's contact |
+| `started_verification` | Nonprofit has begun filling out their verification application. The `nonprofit_organization_id` field is now populated. |
+| `in_review` | Nonprofit completed verification, pending Chariot compliance review |
+| `approved` | Nonprofit is fully verified and can receive disbursements |
+
+<Note>
+The status automatically updates as the nonprofit progresses through verification. You don't need to take any action once the request is created. Once the status reaches `started_verification` or later, the `nonprofit_organization_id` field will contain the ID of the nonprofit organization within Chariot's system.
+</Note>
+
+## Creating a Request
+
+<EndpointRequestSnippet endpoint="POST /v1/organization_requests" />
+
+**Required Fields:**
+- `ein`: The nonprofit's 9-digit Employer Identification Number
+- `organization_name`: The legal name of the nonprofit
+
+**Optional but Recommended:**
+- `contact_email`: Enables automatic invitation email to the nonprofit
+- `website`: Helps verify the organization's legitimacy
+- `line1`, `line2`, `city`, `state`, `zip_code`: Assists with compliance verification
+- `contact_phone`: Provides additional contact method (E.164 format)
+
+<Tip>
+Providing a contact email significantly speeds up the verification process as the nonprofit receives an immediate invitation.
+</Tip>
+
+## Duplicate Requests
+
+The API returns a `409 Conflict` error if you try to request verification for an EIN you've already requested. Use the [List Requests](/api/organizations/list-organization-requests) endpoint to check existing requests.
+
+<Warning>
+If the nonprofit with the given EIN already exists and is eligible for disbursements, the API will return a `412 Precondition Failed` error. Use the [Search Organizations](/api/organizations/search-organizations) endpoint to verify eligibility first.
+</Warning>
