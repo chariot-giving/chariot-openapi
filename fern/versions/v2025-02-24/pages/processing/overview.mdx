@@ -1,0 +1,190 @@
+---
+title: "Overview"
+hidden: false
+createdAt: "Wed Jan 14 2026 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+
+This section provides an introduction to Chariot Processing<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>, a unified platform for nonprofits to streamline offline gift processing.
+
+## The Problem
+
+> Most nonprofits receive donations from **multiple sources** - Donor-Advised Funds, fundraising platforms, direct mail checks - each with their own portal, payment method, and data format.
+
+> Nonprofits spend countless hours **manually reconciling** payments across different systems, logging into dozens of portals, downloading CSV files, and matching transactions to bank deposits.
+
+> Donor data is **fragmented and incomplete** across these systems, making it difficult to maintain accurate constituent records and generate proper acknowledgment letters.
+
+> Integration with CRM and accounting systems requires **custom work for each payment source**, creating a maintenance nightmare and data quality issues.
+
+> **It doesn't have to be this way.**
+
+## A New Approach
+
+What if you could?
+
+- Receive donations from all sources through a single unified platform
+- Automatically reconcile payments with complete donor attribution
+- Access rich donation data via a single API
+- Seamlessly integrate with your existing CRM and accounting systems
+- Process checks, ACH transfers, and in-network payments in one place
+- Eliminate manual data entry and reconciliation work
+
+That's what Chariot Processing does.
+
+## How It Works
+
+Chariot Processing provides **Virtual Accounts** - segregated addresses for receiving donations from different sources. These can be electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+
+When donations arrive at a Virtual Account, Chariot automatically:
+1. **Captures** the payment and creates a Deposit record
+2. **Parses** individual donations with complete donor attribution
+3. **Settles** funds to your Chariot Deposit Account
+4. **Provides** unified access via API and dashboard
+
+You get complete donation data including:
+- Donor name, email, and contact information
+- Gift amounts (gross, net, and fees)
+- DAF account details and grant letters
+- Platform information and transaction IDs
+- Corporate match information
+- Custom properties for CRM integration
+
+## Key Benefits
+
+<CardGroup cols={2}>
+    <Card title='Unified Gift Processing' icon='layer-group'>
+    Consolidate donations from 50+ DAF sponsors and fundraising platforms into a single stream
+    </Card>
+
+    <Card title='Automatic Reconciliation' icon='check-double'>
+    Match donations to deposits automatically with complete transaction details
+    </Card>
+
+    <Card title='Rich Donor Data' icon='database'>
+    Capture donor attribution, corporate matches, platform fees, and custom properties
+    </Card>
+
+    <Card title='Seamless Integration' icon='plug'>
+    Export data to your existing CRM and accounting systems via API
+    </Card>
+
+    <Card title='Reduce Manual Work' icon='robot'>
+    Eliminate hours of manual reconciliation and data entry each month
+    </Card>
+
+    <Card title='Single Source of Truth' icon='bullseye'>
+    Maintain one unified view of all offline donations across all sources
+    </Card>
+</CardGroup>
+
+## Who Is This For?
+
+Chariot Processing is ideal for nonprofits that:
+
+- Receive grants from multiple Donor-Advised Fund sponsors
+- Use multiple fundraising platforms (GoFundMe, Classy, etc.)
+- Process physical checks from donors
+- Want to reduce manual reconciliation work
+- Need to integrate donation data with their CRM
+- Want complete visibility into offline gift processing
+
+## Core Concepts
+
+<AccordionGroup>
+    <Accordion title="Virtual Accounts">
+        Virtual Accounts are segregated addresses for receiving donations. Think of them as different "doors" into your Financial Account.
+
+        - **Electronic Virtual Accounts**: Unique routing + account numbers for ACH transfers
+        - **Lockbox Virtual Accounts**: Physical mailing addresses for check processing
+
+        Each Virtual Account can be dedicated to a specific source (e.g., one for Fidelity Charitable, one for PayPal Giving Fund) making reconciliation seamless.
+    </Accordion>
+
+    <Accordion title="Deposits">
+        A Deposit represents a transfer of money to a Virtual Account. One deposit may contain multiple individual donations.
+
+        Deposits track:
+        - Total amount transferred
+        - Settlement status (pending, complete, failed)
+        - Which Virtual Account received it
+        - Payment method (ACH, check, account transfer)
+    </Accordion>
+
+    <Accordion title="Donations">
+        A Donation is an individual charitable gift from a donor. Donations include complete attribution and metadata.
+
+        Each donation captures:
+        - Donor information (name, email, address)
+        - Gift amounts (gross, net, fees)
+        - Purpose and donor notes
+        - DAF account details (if applicable)
+        - Platform information (if applicable)
+        - Corporate match details (if applicable)
+    </Accordion>
+
+    <Accordion title="Programs">
+        Programs encapsulate functional operations on your Financial Account. Most nonprofits have a default "Gift Processing" program for managing inbound donations.
+
+        Programs allow you to:
+        - Segregate different types of activity
+        - Enable gift processing or grant disbursements
+        - Manage different revenue streams
+    </Accordion>
+</AccordionGroup>
+
+## Getting Started
+
+Ready to unify your offline gift processing?
+
+<Steps>
+
+### Read How It Works
+
+Learn about the [processing flow](/guides/processing/how-it-works) and key concepts
+
+### Follow Getting Started Guide
+
+Set up your account and configure Virtual Accounts with our [step-by-step guide](/guides/processing/getting-started)
+
+### Test in Sandbox
+
+Use the [sandbox environment](/guides/processing/sandbox) to test your integration
+
+### Go Live
+
+Move to production and start processing real donations
+
+</Steps>
+
+## Additional Resources
+
+<CardGroup cols={3}>
+    <Card title='How It Works' icon='circle-info' href='/guides/processing/how-it-works'>
+    Detailed explanation of the processing flow
+    </Card>
+
+    <Card title='Getting Started' icon='rocket' href='/guides/processing/getting-started'>
+    Step-by-step setup guide
+    </Card>
+
+    <Card title='Flow of Funds' icon='money-bill-transfer' href='/guides/processing/flow-of-funds'>
+    How donations flow from sources to your account
+    </Card>
+
+    <Card title='Donation Lifecycle' icon='rotate' href='/guides/processing/donation-lifecycle'>
+    Understanding deposit and donation states
+    </Card>
+
+    <Card title='Sandbox Testing' icon='flask' href='/guides/processing/sandbox'>
+    Test your integration safely
+    </Card>
+
+    <Card title='FAQ' icon='circle-question' href='/guides/processing/faq'>
+    Answers to common questions
+    </Card>
+</CardGroup>
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
