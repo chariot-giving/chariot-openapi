@@ -2625,6 +2625,7 @@ components:
           description: |-
             The original amount of the donation as intended by the donor in minor units of the currency.
             For dollars, for example, this is cents.
+          example: "10000"
         amount_net:
           type: string
           format: int64
@@ -2632,12 +2633,14 @@ components:
             The amount of the donation that the nonprofit will receive after DAF and/or
             platform processing fees are deducted in minor units of the currency.
             For dollars, for example, this is cents.
+          example: "9500"
         amount_fee:
           type: string
           format: int64
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
+          example: "500"
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
@@ -2913,6 +2916,7 @@ components:
         match_amount:
           type: string
           format: int64
+          example: "10000"
           description: The amount of the corporate match for the donation in minor units of the donation currency.
         company_name:
           type: string
