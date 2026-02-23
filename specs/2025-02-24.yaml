@@ -1065,7 +1065,7 @@ paths:
       summary: Create a disbursement
       description: |
         Create a disbursement to send money to an organization.
-
+        
         If the program specified does not have grant_disbursement_status enabled
         or if no grant_disbursement_status enabled program exists for your account, this will return a 403 Forbidden error.
         If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement
@@ -1729,11 +1729,11 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-components:
   schemas:
     CreateDisbursementInput:
       type: object
@@ -2657,26 +2657,21 @@ components:
         city:
           type: string
           description: "City, district, suburb, town, or village. Maximum length: 255 characters."
-          example: "New York"
         country:
           type: string
-          description: "Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)"
-          example: "US"
+          description: "Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Maximum length: 255 characters."
         line1:
           type: string
           description: "Address line 1 (e.g. street, PO Box, or company name). Maximum length: 255 characters."
-          example: "123 Main St."
         line2:
           type: string
           description: "Address line 2 (e.g. apartment, suite, unit, or building). Maximum length: 255 characters."
         postal_code:
           type: string
           description: "ZIP or postal code. Maximum length: 40 characters."
-          example: "12345"
         state:
           type: string
-          description: "State, county, province, or region"
-          example: "NY"
+          description: "State, county, province, or region. Maximum length: 255 characters."
     GrantAddress:
       type: object
       properties:
@@ -2710,27 +2705,21 @@ components:
         city:
           type: string
           description: City, district, suburb, town, or village.
-          example: "New York"
         country:
           type: string
           description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-          example: "US"
         line1:
           type: string
           description: Address line 1 (e.g. street, PO Box, or company name)
-          example: "123 Main St."
         line2:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
-          example: "Suite 2504"
         postal_code:
           type: string
           description: ZIP or postal code
-          example: "12345"
         state:
           type: string
           description: State, county, province, or region
-          example: "NY"
     Disbursement:
       type: object
       description: A disbursement moves funds to a verified organization.
@@ -3169,89 +3158,6 @@ components:
         - not_authorized
         - voided
         - unknown
-    CreateDisbursementInput:
-      type: object
-      description: |-
-        The request to create a disbursement and its corresponding transactions.
-        The organization and amount are required.
-        The transactions array should contain the list of transactions associated with the disbursement. The amounts
-        in the transactions should sum up to the disbursement amount.
-      required:
-        - organization_id
-        - amount
-        - transactions
-      properties:
-        organization_id:
-          type: string
-          description: The ID of the organization that will receive the disbursement.
-          example: "org_1234567890"
-        program_id:
-          type: string
-          description: |-
-            The identifier for the program that the disbursement is associated with.
-            The program must have grant_disbursement_status enabled.
-            If not provided, your grant_disbursement_status enabled program will be used.
-            If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement.
-          example: "program_01jpjenf5q6cawy43yxfcrxhct"
-          nullable: true
-        amount:
-          type: integer
-          format: int64
-          description: The disbursement amount in USD cents. Must be a positive amount.
-          example: 10000
-        auto_fund:
-          type: boolean
-          description: |-
-            Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
-          example: false
-          default: false
-        transactions:
-          type: array
-          description: |-
-            The list of transactions associated with the disbursement.
-            Each transaction is an individual donation to be included in the disbursement.
-            Must specify at least one transaction.
-
-            The sum of all transaction net amounts (amount - fee_amount) must equal the disbursement amount.
-          items:
-            type: object
-            description: |
-              An individual donation to be included in the disbursement.
-            required:
-              - amount
-              - type
-            properties:
-              amount:
-                type: integer
-                format: int64
-                description: |
-                  The gross transaction amount in minor currency units (cents) before any fees are deducted.
-                  This represents the total amount of the donation.
-                example: 10000
-              fee_amount:
-                type: integer
-                format: int64
-                description: |
-                  Optional fee amount in minor currency units (cents) to be deducted from the transaction.
-                  If provided, the fee amount must be less than the transaction amount.
-                  The net amount (amount - fee_amount) will be used when calculating the disbursement total.
-                example: 500
-                nullable: true
-              description:
-                type: string
-                description: |
-                  A description of the donation.
-                  This description is displayed to the receiving organization.
-                example: "Donation to nonprofit"
-              type:
-                $ref: "#/components/schemas/DonationType"
-              donor_advised_fund_grant:
-                $ref: "#/components/schemas/DonorAdvisedFundGrant"
-              metadata:
-                type: object
-                description: Additional metadata for the transaction
-                additionalProperties:
-                  type: string
     InboundTransfer:
       type: object
       description: |-
@@ -3443,10 +3349,6 @@ components:
         - "disbursement.updated"
         - "inbound_transfer.created"
         - "inbound_transfer.updated"
-        - "donation.created"
-        - "donation.updated"
-        - "deposit.created"
-        - "deposit.updated"
     Event:
       type: object
       description: |
