@@ -4623,6 +4623,10 @@ components:
       type: object
       description: The donor information for the transaction
       properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "John Doe"
         first_name:
           type: string
           description: "The first name of the donor. Maximum length: 255 characters."
