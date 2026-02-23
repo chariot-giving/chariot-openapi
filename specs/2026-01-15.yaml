@@ -1801,40 +1801,6 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update a Donation
-      description: |-
-        Update a donation with the given ID.
-        Use this endpoint to update core donation attributes like purpose, note and attribution.
-        To update properties, use the Properties.assign endpoint.
-      operationId: updateDonation
-      tags:
-        - donations
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the donation
-          required: true
-          schema:
-            type: string
-          example: "donation_01j8rs605a4gctmbm58d87mvsj"
-      requestBody:
-        $ref: "#/components/requestBodies/UpdateDonationRequest"
-      responses:
-        "202":
-          $ref: "#/components/responses/UpdateDonationResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
     get:
       summary: List Deposits
@@ -1916,112 +1882,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deposit"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/outbound_transfers:
-    get:
-      summary: List Outbound Transfers
-      description: |-
-        List outbound transfers for your account.
-      operationId: listOutboundTransfers
-      tags:
-        - outboundTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: page_token
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/ListOutboundTransfersResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    post:
-      summary: Create an Outbound Transfer
-      description: |-
-        Create an outbound transfer to transfer funds from a financial account
-        to an external bank account.
-        In Production, this requires that an external bank account has been setup
-        and verified by the account owner through the Chariot Dashboard.
-      operationId: createOutboundTransfer
-      tags:
-        - outboundTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          description: The idempotency key for the request
-          required: false
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/CreateOutboundTransferRequest"
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OutboundTransfer"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/outbound_transfers/{id}:
-    get:
-      summary: Get an Outbound Transfer
-      description: |-
-        Get an outbound transfer by its unique identifier.
-      operationId: getOutboundTransfer
-      tags:
-        - outboundTransfers
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the outbound transfer
-          required: true
-          schema:
-            type: string
-          example: "outbound_transfer_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OutboundTransfer"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2133,103 +1993,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/AssignPropertyResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/files:
-    get:
-      summary: List Files
-      description: |-
-        List files for your account.
-      operationId: listFiles
-      tags:
-        - files
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: page_token
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/ListFilesResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/files/{id}:
-    get:
-      summary: Get a File
-      description: |-
-        Get a file by its unique identifier.
-      operationId: getFile
-      tags:
-        - files
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the file
-          required: true
-          schema:
-            type: string
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/File"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/file_links:
-    post:
-      summary: Create a File Link
-      description: |-
-        File Links let you generate a URL that can be used to download a File.
-      operationId: createFileLink
-      tags:
-        - fileLinks
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CreateFileLinkRequest"
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileLink"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3055,7 +2818,7 @@ components:
             {
               "funding_source": "DAF",
               "funding_source_id": "daf_01j8rs605a4gctmbm58d87mvsj",
-              "funding_source_name": "DAF day"
+              "funding_source_name": "DAF day",
             }
         frequency:
           type: string
