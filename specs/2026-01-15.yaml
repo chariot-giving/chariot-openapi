@@ -2620,20 +2620,20 @@ components:
             The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
           example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
         amount_gross:
-          type: integer
+          type: string
           format: int64
           description: |-
             The original amount of the donation as intended by the donor in minor units of the currency.
             For dollars, for example, this is cents.
         amount_net:
-          type: integer
+          type: string
           format: int64
           description: |-
             The amount of the donation that the nonprofit will receive after DAF and/or
             platform processing fees are deducted in minor units of the currency.
             For dollars, for example, this is cents.
         amount_fee:
-          type: integer
+          type: string
           format: int64
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
@@ -2721,6 +2721,10 @@ components:
           readOnly: true
           description: The unique identifier for the artifact.
           example: "artifact_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the artifact.
+          example: "donation_receipt.pdf"
         file_id:
           type: string
           description: The unique identifier for the file that the artifact is associated with.
@@ -2907,7 +2911,7 @@ components:
         A subhash containing information about the corporate match for the donation.
       properties:
         match_amount:
-          type: integer
+          type: string
           format: int64
           description: The amount of the corporate match for the donation in minor units of the donation currency.
         company_name:
@@ -3051,7 +3055,7 @@ components:
             {
               "funding_source": "DAF",
               "funding_source_id": "daf_01j8rs605a4gctmbm58d87mvsj",
-              "funding_source_name": "DAF day"
+              "funding_source_name": "DAF day",
             }
         frequency:
           type: string
@@ -3128,10 +3132,10 @@ components:
         - financial_account_id
       properties:
         amount:
-          type: integer
+          type: string
           format: int64
           description: The amount of the transfer in minor currency units. For example, for dollars, this is cents.
-          example: 10000
+          example: "10000"
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the transfer's currency.
