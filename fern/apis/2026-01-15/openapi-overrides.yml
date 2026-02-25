@@ -182,10 +182,6 @@ paths:
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: get
-    patch:
-      x-fern-sdk-group-name:
-        - donations
-      x-fern-sdk-method-name: update
   /v1/deposits:
     get:
       x-fern-pagination: true
