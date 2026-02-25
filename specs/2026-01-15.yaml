@@ -1968,6 +1968,50 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/properties/{id}/options:
+    get:
+      summary: List Property Options
+      description: |-
+        List all options for an enum or user property.
+      operationId: listPropertyOptions
+      tags:
+        - properties
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the property
+          required: true
+          schema:
+            type: string
+          example: "property_01j8rs605a4gctmbm58d87mvsj"
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPropertyOptionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/properties/{id}/assign:
     post:
       summary: Assign a Property
@@ -2633,12 +2677,17 @@ components:
           $ref: "#/components/schemas/ResourceType"
         property_type:
           $ref: "#/components/schemas/PropertyType"
-        values:
+        options:
           type: array
           description: |-
-            A list of valid values for enum and user properties.
+            The first 25 options for enum and user properties. Use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
           items:
             $ref: "#/components/schemas/PropertyOptionValue"
+        total_option_count:
+          type: integer
+          format: int32
+          description: |-
+            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
     PropertyOptionValue:
       type: object
       description: |-
@@ -2653,6 +2702,9 @@ components:
         name:
           type: string
           description: The human readable string for the property value.
+        description:
+          type: string
+          description: A description of the property option.
     DonationAttribution:
       type: object
       description: |-
@@ -5369,6 +5421,27 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Property"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListPropertyOptionsResponse:
+      description: The response for Properties.listOptions
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PropertyOptionValue"
               next_page_token:
                 type: string
                 description: |-

@@ -219,6 +219,12 @@ paths:
       x-fern-sdk-group-name:
         - properties
       x-fern-sdk-method-name: get
+  /v1/properties/{id}/options:
+    get:
+      x-fern-pagination: true
+      x-fern-sdk-group-name:
+        - properties
+      x-fern-sdk-method-name: listOptions
   /v1/properties/{id}/assign:
     post:
       x-fern-sdk-group-name:
