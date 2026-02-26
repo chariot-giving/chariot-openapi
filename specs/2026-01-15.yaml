@@ -1689,6 +1689,7 @@ paths:
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
+          description: Successfully retrieved the payment source.
           content:
             application/json:
               schema:
@@ -2047,11 +2048,11 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-components:
   schemas:
     OrganizationSummary:
       type: object
@@ -2463,40 +2464,39 @@ components:
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
         attribution:
-          type: object
           description: |-
             A subhash containing information about how the donation is attributed.
-          $ref: "#/components/schemas/DonationAttribution"
+          allOf:
+            - $ref: "#/components/schemas/DonationAttribution"
         initiation:
-          type: object
           description: A subhash containing information about how the donation was initiated by DAFpay.
-          $ref: "#/components/schemas/DonationInitiation"
+          allOf:
+            - $ref: "#/components/schemas/DonationInitiation"
         settlement:
-          type: object
           description: A subhash containing information about how the donation was settled by Chariot.
-          $ref: "#/components/schemas/DonationSettlement"
+          allOf:
+            - $ref: "#/components/schemas/DonationSettlement"
         donor_advised_fund_grant:
-          type: object
           description: A subhash containing information about the grant from a Donor-Advised Fund sponsor.
-          $ref: "#/components/schemas/DafGrant"
+          allOf:
+            - $ref: "#/components/schemas/DafGrant"
         platform:
-          type: object
           description: |-
             A subhash containing information about the platform that facilitated the donation.
             If this is empty, then the donation was not facilitated by a platform.
-          $ref: "#/components/schemas/Platform"
+          allOf:
+            - $ref: "#/components/schemas/Platform"
         corporate_match:
-          type: object
           description: |-
             A subhash containing information about the corporate match for the donation.
             If this is empty, then the donation was not matched by a corporate sponsor.
-          $ref: "#/components/schemas/CorporateMatch"
+          allOf:
+            - $ref: "#/components/schemas/CorporateMatch"
         properties:
           type: array
           description: |-
             A list of custom properties for the donation.
           items:
-            type: object
             $ref: "#/components/schemas/PropertyAssignment"
         artifacts:
           type: array
@@ -2504,7 +2504,6 @@ components:
             A list of source artifacts that were used to create the donation.
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
-            type: object
             $ref: "#/components/schemas/Artifact"
         created_at:
           type: string
@@ -2608,7 +2607,6 @@ components:
           description: The unique identifier for the property.
           example: "property_01j8rs605a4gctmbm58d87mvsj"
         value:
-          type: object
           $ref: "#/components/schemas/PropertyValue"
     PropertyType:
       type: string
@@ -2711,15 +2709,15 @@ components:
         A subhash containing information about how the donation is attributed.
       properties:
         primary_donor:
-          type: object
           description: |-
             A subhash containing information about the primary donor of the donation.
-          $ref: "#/components/schemas/Donor"
+          allOf:
+            - $ref: "#/components/schemas/Donor"
         joint_donor:
-          type: object
           description: |-
             A subhash containing information about the joint donor of the donation.
-          $ref: "#/components/schemas/Donor"
+          allOf:
+            - $ref: "#/components/schemas/Donor"
     CorporateMatch:
       type: object
       description: |-
@@ -2760,11 +2758,11 @@ components:
           additionalProperties:
             type: string
         acceptance:
-          type: object
           description: |-
             A subhash containing information about the acceptance of the grant from the platform.
             This is only present if the platform requires grant acceptance before disbursing funds.
-          $ref: "#/components/schemas/PlatformAcceptance"
+          allOf:
+            - $ref: "#/components/schemas/PlatformAcceptance"
     PlatformAcceptance:
       type: object
       description: |-
@@ -2919,9 +2917,9 @@ components:
             - complete
             - failed
         transfer:
-          type: object
           description: A subhash containing information about the transfer associated with the deposit.
-          $ref: "#/components/schemas/Transfer"
+          allOf:
+            - $ref: "#/components/schemas/Transfer"
         properties:
           type: array
           description: |-
@@ -2964,17 +2962,17 @@ components:
           description: A description of the transfer.
           example: "Disbursement to nonprofit"
         inbound_account_transfer:
-          type: object
           description: A subhash containing information about the inbound account transfer associated with the deposit.
-          $ref: "#/components/schemas/InboundAccountTransfer"
+          allOf:
+            - $ref: "#/components/schemas/InboundAccountTransfer"
         inbound_ach_transfer:
-          type: object
           description: A subhash containing information about the inbound ACH transfer associated with the deposit.
-          $ref: "#/components/schemas/InboundAchTransfer"
+          allOf:
+            - $ref: "#/components/schemas/InboundAchTransfer"
         check_deposit:
-          type: object
           description: A subhash containing information about the check deposit associated with the deposit.
-          $ref: "#/components/schemas/CheckDeposit"
+          allOf:
+            - $ref: "#/components/schemas/CheckDeposit"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -4634,14 +4632,14 @@ components:
                   An informational note from the donor to the nonprofit about the donation.
                   This may contain a message or other useful information that the donor wants to share with the nonprofit.
               attribution:
-                type: object
-                $ref: "#/components/schemas/DonationAttribution"
+                allOf:
+                  - $ref: "#/components/schemas/DonationAttribution"
               donor_advised_fund_grant:
-                type: object
-                $ref: "#/components/schemas/DafGrant"
+                allOf:
+                  - $ref: "#/components/schemas/DafGrant"
               corporate_match:
-                type: object
-                $ref: "#/components/schemas/CorporateMatch"
+                allOf:
+                  - $ref: "#/components/schemas/CorporateMatch"
             example:
               reason: "Donor requested a change to the donation"
               purpose: "Capital Campaign"
