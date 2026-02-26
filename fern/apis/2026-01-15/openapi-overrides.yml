@@ -162,7 +162,10 @@ paths:
       x-fern-sdk-method-name: cancel
   /v1/payment_sources:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - paymentSources
       x-fern-sdk-method-name: list
@@ -173,7 +176,10 @@ paths:
       x-fern-sdk-method-name: get
   /v1/donations:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: list
@@ -184,7 +190,10 @@ paths:
       x-fern-sdk-method-name: get
   /v1/deposits:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: list
@@ -193,24 +202,12 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
-  /v1/outbound_transfers:
-    post:
-      x-fern-sdk-group-name:
-        - outboundTransfers
-      x-fern-sdk-method-name: create
-    get:
-      x-fern-pagination: true
-      x-fern-sdk-group-name:
-        - outboundTransfers
-      x-fern-sdk-method-name: list
-  /v1/outbound_transfers/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - outboundTransfers
-      x-fern-sdk-method-name: get
   /v1/properties:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - properties
       x-fern-sdk-method-name: list
@@ -221,7 +218,10 @@ paths:
       x-fern-sdk-method-name: get
   /v1/properties/{id}/options:
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - properties
       x-fern-sdk-method-name: listOptions
@@ -230,19 +230,4 @@ paths:
       x-fern-sdk-group-name:
         - properties
       x-fern-sdk-method-name: assign
-  /v1/files:
-    get:
-      x-fern-pagination: true
-      x-fern-sdk-group-name:
-        - files
-      x-fern-sdk-method-name: list
-  /v1/files/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - files
-      x-fern-sdk-method-name: get
-  /v1/file_links:
-    post:
-      x-fern-sdk-group-name:
-        - fileLinks
-      x-fern-sdk-method-name: create
+
