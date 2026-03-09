@@ -104,6 +104,80 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/programs:
+    get:
+      summary: List Programs
+      description: |-
+        Returns a list of all programs for your Chariot account.
+      operationId: list-programs
+      tags:
+        - Programs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of results per page. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: |-
+            Cursor token for pagination. Use the next_page_token from the previous response to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProgramsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/programs/{id}:
+    get:
+      summary: Get Program
+      description: |-
+        Retrieves the program with the given ID.
+      operationId: get-program
+      tags:
+        - Programs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the program
+          schema:
+            type: string
+          required: true
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Program"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects:
     post:
       summary: Create Connect
@@ -4544,6 +4618,61 @@ components:
           example: "https://example.com/webhook"
         category:
           $ref: "#/components/schemas/EventCategory"
+    Program:
+      type: object
+      description: |-
+        Programs encapsulate functional operations and allow for segregation of funds & activity on top of a Financial Account.
+        By default, most organizations will have a Gift Processing program for managing inbound donation revenue.
+        If you are disbursing funds to other nonprofits, we will work together to create a Grantmaking program for you.
+        If there are other use cases where you need to segregate funds or activity, we will work together to create additional Programs for you.
+      required:
+        - id
+        - name
+        - grant_disbursement_status
+        - gift_processing_status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the program
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the program
+          example: "Gift Processing"
+        description:
+          type: string
+          description: A description of the program
+          example: "This program is used to unify and standardize donation processing across all Donor-Advised Fund grants."
+        grant_disbursement_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
+          description: |-
+            The status of the program's ability to disburse grant payments to other eligible nonprofit recipients.
+          example: "enabled"
+          readOnly: true
+        gift_processing_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
+          description: |-
+            The status of the program's ability to connect payment sources to process donations and grants to your organization.
+          example: "enabled"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the program was created
+          example: "2020-01-31T23:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the program was last updated
+          example: "2020-01-31T23:00:00Z"
     Paging:
       type: object
       description: The paging information
@@ -5502,6 +5631,27 @@ components:
               num_updated:
                 type: integer
                 description: The number of resources that were updated.
+    ListProgramsResponse:
+      description: The response for Programs.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Program"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
     BadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
