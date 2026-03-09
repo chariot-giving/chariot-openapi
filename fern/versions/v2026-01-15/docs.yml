@@ -134,6 +134,7 @@ navigation:
             icon: network-wired
             contents:
               - organizations
+              - programs
               - financialAccounts:
                   title: Financial Accounts
               - outboundTransfers:
