@@ -5146,7 +5146,7 @@ components:
                 example: "https://example.com/webhook"
               category:
                 $ref: "#/components/schemas/EventCategory"
-              signingSecret:
+              signing_secret:
                 type: string
                 description: |-
                   The key that will be used to sign webhooks.
