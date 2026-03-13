@@ -23,11 +23,11 @@ Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depen
 |--------|-------------|
 | `pending_approval` | The disbursement is awaiting approval from the grantmaker |
 | `canceled` | The disbursement was canceled by the grantmaker |
-| `awaiting_verification` | The disbursement is awaiting verification from Chariot |
+| `awaiting_verification` | The disbursement is awaiting verification from Chariot. **Nonprofit outreach begins at this stage** -- Chariot starts contacting the recipient organization to claim their account for electronic payments. |
 | `rejected` | The disbursement was rejected by Chariot before being submitted|
 | `validating_organization` | Validating recipient organization's payment and contact information before submission |
-| `awaiting_account_claim` | The disbursement is awaiting account claim by the nonprofit or check delay expiration |
-| `awaiting_balance` | The disbursement is awaiting sufficient grantmaker balance |
+| `awaiting_account_claim` | The disbursement is awaiting account claim by the nonprofit or check delay expiration. Outreach to the nonprofit is already underway. If the nonprofit claims their account during this window, they will receive the disbursement electronically. |
+| `awaiting_balance` | The disbursement is awaiting sufficient grantmaker balance. This is a **funding gate only** -- all other prerequisites (verification, outreach, account claim) have already been satisfied. Once funds are available, the disbursement will be submitted automatically. |
 | `submitted` | The disbursement has been submitted to the payment rail |
 | `stopped` | The disbursement payment was stopped after it was submitted |
 | `completed` | The disbursement payment has been completed and funds have been received by the receiving organization |
@@ -48,6 +48,32 @@ JIT disbursements is an optional feature that must be enabled on a per-account b
 3. **Execution**: The disbursement is not tied to the specific auto-funded transfer. Instead, it executes like any other disbursement when the required funds are available in your account
 
 This eliminates the need to manually manage the funding of your account for each disbursement.
+
+## How Balance and Funding Works
+
+Funds in your Chariot Deposit Account are managed as a **shared balance pool** -- they are not earmarked for any specific disbursement.
+
+When an inbound transfer completes, the deposited amount increases your account's available balance. The system then automatically processes eligible disbursements using the following rules:
+
+1. Chariot looks at all disbursements in `awaiting_balance` status, ordered from **oldest to newest**.
+2. The oldest disbursement whose amount is **less than or equal to** the current available balance is submitted first.
+3. The available balance is reduced by that disbursement's amount, and the process repeats for remaining disbursements.
+
+<Warning>
+Disbursements do not wait for a specific inbound transfer. If you create an inbound transfer at the same time as a disbursement, the funds from that transfer are not reserved for that disbursement. Any available balance -- regardless of its source -- can be used to fulfill any disbursement in `awaiting_balance`.
+</Warning>
+
+<Tip>
+We recommend maintaining a rolling balance of **1-4 weeks** of expected disbursement volume. This allows disbursements to move through `awaiting_balance` immediately and significantly reduces end-to-end grant timelines.
+</Tip>
+
+## Payment Rail Selection
+
+The payment rail (electronic vs check) is **determined at the moment of submission** -- not when the disbursement is created or approved. This means:
+
+- If a nonprofit does not have a Chariot account when the disbursement is created, but **claims their account before the disbursement is submitted**, the payment will be sent **electronically**.
+- The `awaiting_account_claim` and `awaiting_balance` stages provide a window of opportunity: if the nonprofit signs up for Chariot during this period, they automatically receive the payment electronically instead of by check.
+- Chariot actively reaches out to nonprofits starting at the `awaiting_verification` stage to encourage them to claim their account for electronic payments.
 
 ## Payment Rail Lifecycle
 

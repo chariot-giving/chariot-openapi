@@ -62,6 +62,68 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Accordion>
 </AccordionGroup>
 
+### Funding & Timing
+
+<AccordionGroup>
+    <Accordion title="How long does an inbound transfer take to settle?">
+
+        Settlement times depend on the transfer method:
+        - **ACH debit** (pulling funds from your bank): **3-4 business days**
+        - **ACH credit** (your bank pushes funds to Chariot): **1-2 business days**
+        - **In-network** (transfer between Chariot accounts): **Instant**
+
+        Funds are not available for disbursements until the inbound transfer has completed.
+
+    </Accordion>
+    <Accordion title="Does a disbursement wait for its own inbound transfer?">
+
+        No. Funds in your Chariot Deposit Account are managed as a **shared balance pool** -- they are not earmarked for any specific disbursement.
+
+        When funds land in your account (from any source), Chariot automatically applies the available balance to the oldest disbursement in `awaiting_balance` whose amount can be fully covered. This means:
+        - Disbursements don't wait for "their" inbound transfer to settle.
+        - Any available balance can fulfill any disbursement.
+        - If you maintain a pre-funded balance, disbursements can execute immediately without waiting for a new inbound transfer.
+
+        For more details, see [How Balance and Funding Works](/guides/disbursements/disbursement-lifecycle#how-balance-and-funding-works).
+
+    </Accordion>
+    <Accordion title="What is the expected end-to-end timeline for a disbursement?">
+
+        The end-to-end timeline depends on several factors, many of which run in parallel:
+
+        | Stage | Timing | Notes |
+        |-------|--------|-------|
+        | `pending_approval` | Depends on your approval workflow | Can be instant with auto-approval |
+        | `awaiting_verification` | Typically same day | Chariot verifies the disbursement and begins nonprofit outreach |
+        | `awaiting_account_claim` | Up to several weeks | Waiting for the nonprofit to claim their account or for the check delay to expire. Outreach is active. |
+        | `awaiting_balance` | Depends on funding | Instant if pre-funded; 3-4 business days if waiting for an ACH debit to settle |
+        | `submitted` to `completed` | Varies by payment rail | In-network: instant. ACH credit: 1-2 business days. Check: depends on mail delivery |
+
+        **Key insight:** The `awaiting_balance` stage runs in parallel with outreach and account claim stages. If your account is pre-funded, the disbursement progresses through earlier stages without delay once balance prerequisites are met.
+
+    </Accordion>
+    <Accordion title="What is the recommended funding strategy?">
+
+        We recommend maintaining a rolling balance of **1-4 weeks** of expected disbursement volume in your Chariot Deposit Account. This allows disbursements to move through `awaiting_balance` immediately and significantly reduces end-to-end grant timelines.
+
+        Even a **1-week buffer** is better than funding on demand, as it eliminates the 3-4 business day ACH settlement delay for most disbursements.
+
+        If pre-funding isn't feasible, consider using [Just-In-Time (JIT) funding](/guides/disbursements/disbursement-lifecycle#just-in-time-jit-disbursements) to automatically create an inbound transfer when a disbursement is approved.
+
+    </Accordion>
+    <Accordion title="When is the payment method (check vs electronic) decided?">
+
+        The payment rail is determined **at the moment of submission** -- not when the disbursement is created or approved.
+
+        This means if a nonprofit does not have a Chariot account when the disbursement is created, but claims their account and is verified for electronic payments **before** the disbursement is submitted, the payment will be sent electronically.
+
+        The pre-submission stages (`awaiting_account_claim`, `awaiting_balance`) provide a window of opportunity: Chariot actively reaches out to nonprofits to encourage them to sign up for electronic payments during this time. If the nonprofit claims their account during this window, they receive the disbursement electronically instead of by check.
+
+        For more details, see [Payment Rail Selection](/guides/disbursements/disbursement-lifecycle#payment-rail-selection).
+
+    </Accordion>
+</AccordionGroup>
+
 ### Disbursements
 
 <AccordionGroup>
