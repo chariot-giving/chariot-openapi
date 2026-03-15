@@ -104,6 +104,80 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/programs:
+    get:
+      summary: List Programs
+      description: |-
+        Returns a list of all programs for your Chariot account.
+      operationId: list-programs
+      tags:
+        - Programs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Number of results per page. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: |-
+            Cursor token for pagination. Use the next_page_token from the previous response to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProgramsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/programs/{id}:
+    get:
+      summary: Get Program
+      description: |-
+        Retrieves the program with the given ID.
+      operationId: get-program
+      tags:
+        - Programs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the program
+          schema:
+            type: string
+          required: true
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Program"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects:
     post:
       summary: Create Connect
@@ -881,6 +955,28 @@ paths:
       operationId: listFinancialAccounts
       tags:
         - financial_accounts
+      parameters:
+        - name: program_id
+          in: query
+          description: The unique identifier for the program
+          required: false
+          schema:
+            type: string
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: next_page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+          required: false
+          schema:
+            type: string
       security:
         - bearerAuth: []
       responses:
@@ -969,6 +1065,11 @@ paths:
       summary: Create a disbursement
       description: |
         Create a disbursement to send money to an organization.
+        
+        If the program specified does not have grant_disbursement_status enabled
+        or if no grant_disbursement_status enabled program exists for your account, this will return a 403 Forbidden error.
+        If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement
+        otherwise the request will return a 400 Bad Request error.
       operationId: createDisbursement
       tags:
         - disbursements
@@ -1006,11 +1107,18 @@ paths:
       parameters:
         - name: organization_id
           in: query
-          description: The unique identifier for the organization
+          description: The unique identifier for the recipient organization
           required: false
           schema:
             type: string
           example: "org_01j8rs605a4gctmbm58d87mvsj"
+        - name: program_id
+          in: query
+          description: The unique identifier for the program
+          required: false
+          schema:
+            type: string
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
         - name: page_limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
@@ -1018,7 +1126,7 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: page_token
+        - name: next_page_token
           in: query
           description: |-
             A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
@@ -1055,6 +1163,11 @@ paths:
 
         All disbursements in the request will be created together. If any disbursement fails validation,
         the entire request will fail and no disbursements will be created.
+
+        If any of the disbursements in the request have a program specified that does not have grant_disbursement_status enabled
+        or if no grant_disbursement_status enabled program exists for your account, the request will return a 403 Forbidden error.
+        If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursements
+        otherwise the request will return a 400 Bad Request error.
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
@@ -1638,16 +1751,20 @@ components:
           type: string
           description: The ID of the organization that will receive the disbursement.
           example: "org_1234567890"
+        program_id:
+          type: string
+          description: |-
+            The identifier for the program that the disbursement is associated with.
+            The program must have grant_disbursement_status enabled.
+            If not provided, your grant_disbursement_status enabled program will be used.
+            If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement.
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+          nullable: true
         amount:
           type: integer
           format: int64
           description: The disbursement amount in USD cents. Must be a positive amount.
           example: 10000
-        description:
-          type: string
-          description: |-
-            A description of the disbursement that will be displayed to the receiving organization.
-          example: "Disbursement to nonprofit"
         auto_fund:
           type: boolean
           description: |-
@@ -1660,6 +1777,8 @@ components:
             The list of transactions associated with the disbursement.
             Each transaction is an individual donation to be included in the disbursement.
             Must specify at least one transaction.
+
+            The sum of all transaction net amounts (amount - fee_amount) must equal the disbursement amount.
           items:
             type: object
             description: |
@@ -1671,8 +1790,19 @@ components:
               amount:
                 type: integer
                 format: int64
-                description: The transaction amount in minor currency units (cents)
+                description: |
+                  The gross transaction amount in minor currency units (cents) before any fees are deducted.
+                  This represents the total amount of the donation.
                 example: 10000
+              fee_amount:
+                type: integer
+                format: int64
+                description: |
+                  Optional fee amount in minor currency units (cents) to be deducted from the transaction.
+                  If provided, the fee amount must be less than the transaction amount.
+                  The net amount (amount - fee_amount) will be used when calculating the disbursement total.
+                example: 500
+                nullable: true
               description:
                 type: string
                 description: |
@@ -2461,7 +2591,7 @@ components:
       required:
         - id
         - name
-        - account_type
+        - program_id
         - bank_provider
         - created_at
         - updated_at
@@ -2472,15 +2602,25 @@ components:
           example: "account_01jpjenf5q6cawy43yxfcrxhct"
         account_type:
           type: string
-          description: The type of account
+          deprecated: true
+          description: |-
+            The type of account.
+            This field is deprecated and will be removed in a future version.
+            Use the program_id field instead.
           enum:
             - disbursements
             - processing
           example: "disbursements"
+        program_id:
+          type: string
+          description: The identifier for the program determining the capabilities of this financial account
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
         bank_provider:
           type: string
           description: The bank provider for the account
           example: "mock_alpha"
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -2513,31 +2653,25 @@ components:
           example: "2020-01-31T23:00:00Z"
     Address:
       type: object
-      required:
-        - city
-        - country
-        - line1
-        - postal_code
-        - state
       properties:
         city:
           type: string
-          description: City, district, suburb, town, or village.
+          description: "City, district, suburb, town, or village. Maximum length: 255 characters."
         country:
           type: string
-          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          description: "Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Maximum length: 255 characters."
         line1:
           type: string
-          description: Address line 1 (e.g. street, PO Box, or company name)
+          description: "Address line 1 (e.g. street, PO Box, or company name). Maximum length: 255 characters."
         line2:
           type: string
-          description: Address line 2 (e.g. apartment, suite, unit, or building)
+          description: "Address line 2 (e.g. apartment, suite, unit, or building). Maximum length: 255 characters."
         postal_code:
           type: string
-          description: ZIP or postal code
+          description: "ZIP or postal code. Maximum length: 40 characters."
         state:
           type: string
-          description: State, county, province, or region
+          description: "State, county, province, or region. Maximum length: 255 characters."
     GrantAddress:
       type: object
       properties:
@@ -2592,6 +2726,7 @@ components:
       required:
         - id
         - organization_id
+        - program_id
         - amount
       properties:
         id:
@@ -2605,16 +2740,16 @@ components:
           example: "org_01jpjenf5q6cawy43yxfcrxhct"
         organization:
           $ref: "#/components/schemas/Organization"
+        program_id:
+          type: string
+          description: The identifier for the program that the disbursement is associated with
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
         amount:
           type: integer
           format: int64
           description: The payment amount in USD cents. Must be a positive amount.
           example: 10000
-        description:
-          type: string
-          description: |
-            A description of the disbursement that will be displayed to the receiving organization.
-          example: "Disbursement to nonprofit"
         auto_fund:
           type: boolean
           description: |-
@@ -2664,8 +2799,9 @@ components:
           - `canceled`: The disbursement was canceled by the grantmaker
           - `awaiting_verification`: The disbursement is awaiting verification from Chariot
           - `rejected`: The disbursement was rejected by Chariot before being submitted
-          - `validating_organization`: Validating recipient organization’s payment and contact information before submission.
-          - `pending_submission`: The disbursement is awaiting submission to the payment network
+          - `validating_organization`: Validating recipient organization's payment and contact information before submission.
+          - `awaiting_account_claim`: The disbursement is awaiting account claim by the nonprofit or check delay expiration
+          - `awaiting_balance`: The disbursement is awaiting sufficient grantmaker balance
           - `submitted`: The disbursement payment has been submitted to the payment network and is being processed
           - `stopped`: The disbursement payment was stopped after it was submitted
           - `completed`: The disbursement payment has been completed and funds have been received by the receiving organization
@@ -2679,7 +2815,8 @@ components:
         - awaiting_verification
         - rejected
         - validating_organization
-        - pending_submission
+        - awaiting_account_claim
+        - awaiting_balance
         - submitted
         - stopped
         - completed
@@ -3077,8 +3214,10 @@ components:
       type: object
       description: |
         A transaction represents an individual line-item or donation for a recipient nonprofit organization.
+        The transaction amount represents the gross amount, and an optional fee can be deducted to calculate the net amount that will be disbursed.
       required:
         - amount
+        - net_amount
         - type
       properties:
         id:
@@ -3089,8 +3228,28 @@ components:
         amount:
           type: integer
           format: int64
-          description: The transaction amount in minor currency units (cents)
+          description: |
+            The gross transaction amount in minor currency units (cents) before any fees are deducted.
+            This represents the total amount of the donation.
           example: 10000
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            The fee amount in minor currency units (cents) to be deducted from the transaction amount.
+            This is an optional field. If not provided, no fee will be deducted.
+            The fee amount must be less than the transaction amount.
+          example: 500
+          nullable: true
+        net_amount:
+          type: integer
+          format: int64
+          description: |
+            The net transaction amount in minor currency units (cents) after fees are deducted.
+            This is calculated as: net_amount = amount - fee_amount.
+            This is the actual amount that will be disbursed to the nonprofit.
+          example: 9500
+          readOnly: true
         description:
           type: string
           description: |
@@ -3132,15 +3291,15 @@ components:
       properties:
         grant_id:
           type: string
-          description: A unique identifier for the grant within the DAF provider's internal system.
+          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
           example: "grant_1234567890"
         organization_name:
           type: string
-          description: The name of the DAF organization that made the grant
+          description: "The name of the DAF organization that made the grant. Maximum length: 255 characters."
           example: "Vanguard Charitable"
         fund_name:
           type: string
-          description: The name of the DAF fund that made the grant
+          description: "The name of the DAF fund that made the grant. Maximum length: 255 characters."
           example: "John Doe Fund"
         purpose:
           type: string
@@ -3161,19 +3320,19 @@ components:
       properties:
         first_name:
           type: string
-          description: The first name of the donor
+          description: "The first name of the donor. Maximum length: 255 characters."
           example: "John"
         last_name:
           type: string
-          description: The last name of the donor
+          description: "The last name of the donor. Maximum length: 255 characters."
           example: "Doe"
         email:
           type: string
-          description: The email address of the donor
+          description: "The email address of the donor. Maximum length: 255 characters."
           example: "bob@me.com"
         phone:
           type: string
-          description: The phone number of the donor
+          description: "The phone number of the donor. Maximum length: 20 characters."
           example: "415-555-1212"
         address:
           $ref: "#/components/schemas/Address"
@@ -3259,6 +3418,61 @@ components:
           example: "https://example.com/webhook"
         category:
           $ref: "#/components/schemas/EventCategory"
+    Program:
+      type: object
+      description: |-
+        Programs encapsulate functional operations and allow for segregation of funds & activity on top of a Financial Account.
+        By default, most organizations will have a Gift Processing program for managing inbound donation revenue.
+        If you are disbursing funds to other nonprofits, we will work together to create a Grantmaking program for you.
+        If there are other use cases where you need to segregate funds or activity, we will work together to create additional Programs for you.
+      required:
+        - id
+        - name
+        - grant_disbursement_status
+        - gift_processing_status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the program
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: The name of the program
+          example: "Gift Processing"
+        description:
+          type: string
+          description: A description of the program
+          example: "This program is used to unify and standardize donation processing across all Donor-Advised Fund grants."
+        grant_disbursement_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
+          description: |-
+            The status of the program's ability to disburse grant payments to other eligible nonprofit recipients.
+          example: "enabled"
+          readOnly: true
+        gift_processing_status:
+          type: string
+          enum:
+            - "enabled"
+            - "disabled"
+          description: |-
+            The status of the program's ability to connect payment sources to process donations and grants to your organization.
+          example: "enabled"
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the program was created
+          example: "2020-01-31T23:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the program was last updated
+          example: "2020-01-31T23:00:00Z"
     Paging:
       type: object
       description: The paging information
@@ -3503,7 +3717,6 @@ components:
               value:
                 organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
                 amount: 25000
-                description: "February 2025 Disbursement"
                 transactions:
                   [
                     {
@@ -3528,6 +3741,55 @@ components:
                     },
                     {
                       amount: 10000,
+                      description: "Grant from Smith Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          organization_name: "LA Charitable",
+                          fund_name: "Smith Family Legacy Fund",
+                          purpose: "Program Support",
+                          donors:
+                            [
+                              {
+                                first_name: "John",
+                                last_name: "Smith",
+                                email: "john.smith@example.com",
+                              },
+                            ],
+                        },
+                    },
+                  ]
+            MultipleTransactionsWithFees:
+              summary: Disbursement with multiple transactions including fees
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 24000
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      fee_amount: 500,
+                      description: "Grant from Doe Family Fund",
+                      type: "donor_advised_fund_grant",
+                      donor_advised_fund_grant:
+                        {
+                          grant_id: "grant_1234567890",
+                          organization_name: "Miami Charitable",
+                          fund_name: "Doe Family Charitable Fund",
+                          purpose: "General Operating Support",
+                          donors:
+                            [
+                              {
+                                first_name: "Jane",
+                                last_name: "Doe",
+                                email: "jane.doe@example.com",
+                              },
+                            ],
+                        },
+                    },
+                    {
+                      amount: 10000,
+                      fee_amount: 500,
                       description: "Grant from Smith Family Fund",
                       type: "donor_advised_fund_grant",
                       donor_advised_fund_grant:
@@ -3601,7 +3863,7 @@ components:
                 example: "https://example.com/webhook"
               category:
                 $ref: "#/components/schemas/EventCategory"
-              signingSecret:
+              signing_secret:
                 type: string
                 description: |-
                   The key that will be used to sign webhooks.
@@ -3643,6 +3905,10 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/FinancialAccount"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
     ListDafsResponse:
       description: The response for Dafs.list
       headers:
@@ -3904,6 +4170,27 @@ components:
                 items:
                   $ref: "#/components/schemas/InboundTransfer"
               nextPageToken:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListProgramsResponse:
+      description: The response for Programs.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Program"
+              next_page_token:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call

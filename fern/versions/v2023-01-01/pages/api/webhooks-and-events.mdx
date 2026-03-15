@@ -76,7 +76,7 @@ The `signed_payload` string is created by concatenating:
 
 #### Step 3: Determine the expected signature
 
-Compute an HMAC with the SHA256 hash function. Use the Event Subscription's `signingSecret` as the key, and use the `signed_payload` string as the message.
+Compute an HMAC with the SHA256 hash function. Use the Event Subscription's `signing_secret` as the key, and use the `signed_payload` string as the message.
 
 #### Step 4: Compare the Signatures
 

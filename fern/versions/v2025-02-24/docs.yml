@@ -119,6 +119,9 @@ navigation:
             icon: network-wired
             contents:
               - organizations
+              - programs
+              - financialAccounts:
+                  title: Financial Accounts
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
@@ -138,9 +141,8 @@ navigation:
             skip-slug: true
             icon: money-check
             contents:
-              - financialAccounts:
-                  title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
-              - disbursements
+              - disbursements:
+                  title: Disbursements
   - tab: changelog
