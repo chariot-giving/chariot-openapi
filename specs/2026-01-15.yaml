@@ -2206,26 +2206,8 @@ paths:
                   description: The identifier of the newly provisioned PO box.
                   example: "po_9876"
       responses:
-        "200":
-          description: Successfully registered the provisioned mailbox.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: The unique identifier for the provisioned mailbox.
-                  request_id:
-                    type: string
-                    description: The request ID that was provided.
-                  location_id:
-                    type: string
-                    description: The location ID of the provisioned PO box.
-                  status:
-                    type: string
-                    description: The status of the provisioned mailbox.
-                    example: "active"
+        "204":
+          description: Indicates the PO box has been successfully provisioned.
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
