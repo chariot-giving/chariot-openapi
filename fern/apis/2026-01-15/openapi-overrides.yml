@@ -244,4 +244,14 @@ paths:
       x-fern-sdk-group-name:
         - properties
       x-fern-sdk-method-name: assign
+  /v1/mailbox/upload_url:
+    post:
+      x-fern-sdk-group-name:
+        - mailbox
+      x-fern-sdk-method-name: getUploadUrl
+  /v1/mailbox/provision:
+    post:
+      x-fern-sdk-group-name:
+        - mailbox
+      x-fern-sdk-method-name: provision
 
