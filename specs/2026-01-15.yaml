@@ -4040,7 +4040,7 @@ components:
         check_transfer:
           $ref: "#/components/schemas/CheckTransfer"
         real_time_transfer:
-          $ref: "#/components/schemas/RealTimeTransfer"
+          $ref: "#/components/schemas/RealTimePaymentsTransfer"
     RealTimePaymentsTransfer:
       type: object
       description: |-
