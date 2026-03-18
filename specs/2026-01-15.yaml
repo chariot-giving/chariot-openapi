@@ -4039,6 +4039,84 @@ components:
           $ref: "#/components/schemas/AchTransfer"
         check_transfer:
           $ref: "#/components/schemas/CheckTransfer"
+        real_time_transfer:
+          $ref: "#/components/schemas/RealTimeTransfer"
+    RealTimePaymentsTransfer:
+      type: object
+      description: |-
+        A real-time payments transfer represents an instant, electronic transfer of funds.
+      required:
+        - transfer_id
+        - amount
+        - status
+        - creditor_name
+        - remittance_information
+        - created_at
+        - updated_at
+      properties:
+        transfer_id:
+          type: string
+          description: The unique identifier for the real-time payments transfer
+          example: "real_time_payments_transfer_01j8rs605a4gctmbm58d87mvsj"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the real-time payments transfer in minor currency units (cents)
+          example: 10000
+        status:
+          type: string
+          description: The status of the real-time payments transfer
+          example: "complete"
+          enum:
+            - pending_submission
+            - submitted
+            - complete
+            - rejected
+        creditor_name:
+          type: string
+          description: The name of the creditor for the real-time payments transfer
+          example: "Acme Inc."
+        remittance_information:
+          type: string
+          description: The remittance information for the real-time payments transfer
+          example: "Real-Time Payment: Acme Inc."
+        transaction_identification:
+          type: string
+          description: The transaction identification for the real-time payments transfer
+          example: "20260101101050001T1BTEST01234557890"
+        submitted_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time the real-time payments transfer was submitted to the payment network.
+          example: "2020-01-31T23:00:00Z"
+        acknowledged_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time at which the real-time payments transfer was acknowledged by the receiving bank.
+            If the transfer is not acknowledged, this will be null.
+          example: "2020-01-31T23:00:05Z"
+        rejected_at:
+          type: string
+          format: date-time
+          description: |-
+            The date and time at which the real-time payments transfer was rejected.
+            If the transfer is not rejected, this will be null.
+          example: "2020-01-31T23:00:05Z"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the real-time payments transfer was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the real-time payments transfer was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
     AccountTransfer:
       type: object
       description: |-
