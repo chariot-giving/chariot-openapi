@@ -3873,6 +3873,7 @@ components:
       required:
         - id
         - organization_id
+        - program_id
         - amount
       properties:
         id:
@@ -3886,11 +3887,19 @@ components:
           example: "org_01jpjenf5q6cawy43yxfcrxhct"
         organization:
           $ref: "#/components/schemas/Organization"
+        program_id:
+          type: string
+          description: The unique identifier for the program that the disbursement belongs to
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
         amount:
           type: integer
           format: int64
           description: The payment amount in USD cents. Must be a positive amount.
           example: 10000
+        description:
+          type: string
+          description: A description for the disbursement
+          example: "Annual grant to Acme Inc."
         auto_fund:
           type: boolean
           description: |-
@@ -3917,6 +3926,12 @@ components:
           $ref: "#/components/schemas/DisbursementApproval"
         rejection:
           $ref: "#/components/schemas/DisbursementRejection"
+        verification:
+          $ref: "#/components/schemas/DisbursementVerification"
+        stop:
+          $ref: "#/components/schemas/DisbursementStop"
+        program_details:
+          $ref: "#/components/schemas/ProgramDetails"
         transfers:
           type: array
           description: |-
@@ -4024,6 +4039,44 @@ components:
           description: The RFC 3339 date and time at which the Disbursement was rejected.
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    DisbursementVerification:
+      type: object
+      description: |-
+        If the disbursement has been verified by Chariot, this will contain the verification details.
+      properties:
+        verified_at:
+          type: string
+          format: date-time
+          description: The RFC 3339 date and time at which the Disbursement was verified.
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+    DisbursementStop:
+      type: object
+      description: |-
+        If the disbursement was stopped by the grantmaker after it was submitted, this will contain the details of the stop.
+      properties:
+        stopped_by:
+          type: string
+          description: If the disbursement was stopped by a user in the dashboard, the email address of that user.
+          example: "user@example.com"
+        stopped_at:
+          type: string
+          format: date-time
+          description: The RFC 3339 date and time at which the Disbursement was stopped.
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+    ProgramDetails:
+      type: object
+      description: Details about the program that the disbursement belongs to.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the program
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+        name:
+          type: string
+          description: The name of the program
+          example: "Annual Grants"
     DisbursementTransfer:
       type: object
       description: |-
@@ -4039,7 +4092,7 @@ components:
           $ref: "#/components/schemas/AchTransfer"
         check_transfer:
           $ref: "#/components/schemas/CheckTransfer"
-        real_time_transfer:
+        real_time_payments_transfer:
           $ref: "#/components/schemas/RealTimePaymentsTransfer"
     RealTimePaymentsTransfer:
       type: object
@@ -4122,11 +4175,13 @@ components:
       description: |-
         An account transfer represents an instant, electronic transfer of funds.
       required:
-        - id
+        - transfer_id
         - amount
+        - status
         - created_at
+        - updated_at
       properties:
-        id:
+        transfer_id:
           type: string
           description: The unique identifier for the account transfer
           example: "account_transfer_01j8rs605a4gctmbm58d87mvsj"
@@ -4136,10 +4191,24 @@ components:
           format: int64
           description: The amount of the account transfer in minor currency units (cents)
           example: 10000
+        status:
+          type: string
+          description: The status of the account transfer
+          example: "complete"
+          enum:
+            - pending_approval
+            - canceled
+            - complete
         created_at:
           type: string
           format: date-time
           description: The date and time the account transfer was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the account transfer was last updated
           example: "2020-01-31T23:00:00Z"
           readOnly: true
     AchTransfer:
@@ -4147,12 +4216,12 @@ components:
       description: |-
         An ACH transfer represents an electronic transfer of funds via the Automated Clearing House (ACH) payment network.
       required:
-        - id
+        - transfer_id
         - amount
         - status
         - created_at
       properties:
-        id:
+        transfer_id:
           type: string
           description: The unique identifier for the ACH transfer
           example: "ach_transfer_01j8rs605a4gctmbm58d87mvsj"
@@ -4181,6 +4250,23 @@ components:
             - completed
             - rejected
             - returned
+        direction:
+          type: string
+          description: |-
+            The direction of the ACH transfer.
+          example: "credit"
+          enum:
+            - credit
+            - debit
+        standard_entry_class_code:
+          type: string
+          description: |-
+            The Standard Entry Class (SEC) code for the ACH transfer.
+          example: "corporate_credit_or_debit"
+          enum:
+            - corporate_credit_or_debit
+            - prearranged_payments_and_deposit
+            - internet_initiated
         company_entry_description:
           type: string
           description: |-
@@ -4245,14 +4331,15 @@ components:
       description: |-
         A check transfer represents a paper check that is mailed to the receiving organization.
       required:
-        - id
+        - transfer_id
         - amount
         - status
         - mailing_address
         - memo
+        - recipient_name
         - created_at
       properties:
-        id:
+        transfer_id:
           type: string
           description: The unique identifier for the check transfer
           example: "check_transfer_01j8rs605a4gctmbm58d87mvsj"
@@ -4290,6 +4377,10 @@ components:
           type: string
           description: The memo on the check. Maximum of 72 characters.
           example: "Disbursement to nonprofit"
+        note:
+          type: string
+          description: An optional note for the check
+          example: "Please deposit promptly"
         check_number:
           type: string
           description: The check number
@@ -4300,11 +4391,15 @@ components:
           example: "Charity Good"
         mailing_address:
           $ref: "#/components/schemas/PostalAddress"
-        tracking_updates:
+        bank_of_first_deposit_routing_number:
+          type: string
+          description: The routing number for the bank of first deposit
+          example: "021000089"
+        postal_tracking_updates:
           type: array
           description: The list of tracking updates for the check
           items:
-            $ref: "#/components/schemas/TrackingUpdate"
+            $ref: "#/components/schemas/PostalTrackingUpdate"
         submitted_at:
           type: string
           format: date-time
@@ -4335,18 +4430,25 @@ components:
           format: date-time
           description: The date and time the check transfer was last updated
           example: "2020-01-31T23:00:00Z"
-    TrackingUpdate:
+    PostalTrackingUpdate:
       type: object
-      description: The tracking update for the check
+      description: The postal tracking update for the check
       required:
-        - category
+        - id
+        - event_type
         - created_at
       properties:
-        category:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier for the tracking update
+          example: 1
+          readOnly: true
+        event_type:
           type: string
           description: |-
-            The category of the tracking update.
-            The set of categories include:
+            The event type of the tracking update.
+            The set of event types include:
               - `in_transit`: The check has been processed by the origin facility.
               - `processed_for_delivery`: The check has been greenlit for delivery at the recipient's nearest postal facility. The check should reach the mailbox within 1-2 business days of this tracking update.
               - `delivered`: The check has been delivered to the recipient's address.
