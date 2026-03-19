@@ -2315,6 +2315,27 @@ components:
             A flag to indicate if the nonprofit has been claimed by a user.
             A nonprofit is claimed if a user signs up for a Chariot account with
             this nonprofit and is verified by the Chariot team.
+        incorporation:
+          $ref: "#/components/schemas/Incorporation"
+    Incorporation:
+      type: object
+      description: |-
+        Incorporation and IRS determination information for the nonprofit entity.
+      properties:
+        year:
+          type: integer
+          description: The year the organization was incorporated or formed.
+          example: 2005
+        state:
+          type: string
+          description: The U.S. state where the organization is legally domiciled.
+          example: AZ
+        ruling_date:
+          type: string
+          description: |-
+            The month and year on the IRS ruling or determination letter recognizing the organization's exempt status.
+            Formatted as an ISO 8601 year-month string.
+          example: "2020-07"
     NonprofitClassification:
       type: object
       description: |-
