@@ -2322,7 +2322,7 @@ components:
       description: |-
         Incorporation and IRS determination information for the nonprofit entity.
       properties:
-        year:
+        formation_year:
           type: string
           format: integer
           description: The year the organization was incorporated or formed.
