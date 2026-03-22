@@ -23,7 +23,7 @@ Once a Disbursement is `submitted`, it can no longer be canceled. Instead, depen
 |--------|-------------|
 | `pending_approval` | The disbursement is awaiting approval from the grantmaker |
 | `canceled` | The disbursement was canceled by the grantmaker |
-| `awaiting_verification` | The disbursement is awaiting verification from Chariot. This status is used when disbursing to an organization created via a [Verification Request](/api/verification-requests/create) without setting `bypass_chariot_organization_verification` to `true`. The disbursement will automatically proceed once the organization is verified. |
+| `awaiting_verification` | The disbursement is awaiting verification from Chariot |
 | `rejected` | The disbursement was rejected by Chariot before being submitted|
 | `validating_organization` | Validating recipient organization's payment and contact information before submission |
 | `awaiting_account_claim` | The disbursement is awaiting account claim by the nonprofit or check delay expiration |

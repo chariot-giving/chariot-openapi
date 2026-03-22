@@ -4827,6 +4827,7 @@ components:
             If set to `false` or omitted, the disbursement will remain in the `awaiting_verification` status until
             Chariot's compliance team has verified the nonprofit.
             This field is only relevant when disbursing to an organization that was created via a [verification request](/api/verification-requests/create).
+          default: false
         transactions:
           type: array
           description: |-
