@@ -1,0 +1,18 @@
+## Summary
+
+Verification Requests API & Disbursements to Unlisted Organizations
+
+### What's new?
+
+#### Verification Requests API
+
+You can now disburse to nonprofit organizations that are not yet in Chariot's database. The new [Verification Requests](/api/verification-requests/create) API allows grantmakers to submit an unlisted organization for review by Chariot's compliance team. The response includes an `organization_id` that can be used immediately to create disbursements.
+
+Available endpoints:
+- **Create** a verification request (`POST /v1/verification_requests`)
+- **Get** a verification request by ID (`GET /v1/verification_requests/{id}`)
+- **List** all verification requests (`GET /v1/verification_requests`)
+
+#### `bypass_chariot_organization_verification` on Create Disbursement
+
+A new optional field `bypass_chariot_organization_verification` has been added to the [Create Disbursement](/api/disbursements/create) request. When set to `true`, the disbursement will proceed through its normal lifecycle without waiting for Chariot to verify the organization. This is only relevant when disbursing to an organization created via a verification request.
