@@ -4821,11 +4821,11 @@ components:
         bypass_chariot_organization_verification:
           type: boolean
           description: |-
+            By default (`false`), the disbursement will remain in the `awaiting_verification` status until
+            Chariot's compliance team has verified the nonprofit.
             If set to `true`, the disbursement will proceed through its normal lifecycle without waiting for
             Chariot to verify the organization. Only set this if you have independently verified the organization
             and do not want to wait for or rely on Chariot's verification.
-            If set to `false` or omitted, the disbursement will remain in the `awaiting_verification` status until
-            Chariot's compliance team has verified the nonprofit.
             This field is only relevant when disbursing to an organization that was created via a [verification request](/api/verification-requests/create).
           default: false
         transactions:
