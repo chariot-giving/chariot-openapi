@@ -1044,7 +1044,6 @@ paths:
       description: |
         Request verification of an unlisted organization. If the organization cannot be found through Chariot's search,
         you can submit a verification request so that Chariot's compliance team can review and verify the organization.
-        The response includes an `organization_id` that can be used immediately to create disbursements.
       operationId: createVerificationRequest
       tags:
         - verificationRequests
@@ -4114,12 +4113,12 @@ components:
       description: |-
         The status of the verification request.
         Possible values include:
-          - `verifying`: Chariot's compliance team is actively reviewing the organization
+          - `needs_review`: The request has been submitted and is awaiting review by Chariot's compliance team
           - `verified`: The organization has been verified as tax-exempt and eligible for disbursements
           - `failed`: Chariot's compliance team determined the organization is not eligible
-      example: "verifying"
+      example: "needs_review"
       enum:
-        - verifying
+        - needs_review
         - verified
         - failed
     VerificationRequestAddress:
@@ -4160,7 +4159,6 @@ components:
         - id
         - ein
         - organization_name
-        - requesting_organization_id
         - organization_id
         - status
       properties:
@@ -4177,16 +4175,10 @@ components:
           type: string
           description: The name of the organization as provided by the grantmaker
           example: "Local Community Foundation"
-        requesting_organization_id:
-          type: string
-          description: The ID of the grantmaker's organization that created this request
-          example: "org_01jpjenf5q6cawy43yxfcrxhct"
-          readOnly: true
         organization_id:
           type: string
           description: |-
             The ID of the Organization record for the nonprofit being verified.
-            Use this to create disbursements — it is available immediately upon creation.
           example: "org_01j8rs605a4gctmbm58d87mvsj"
         status:
           $ref: "#/components/schemas/VerificationRequestStatus"
@@ -4199,12 +4191,12 @@ components:
         verified_at:
           type: string
           format: date-time
-          description: When the organization was verified as compliant
+          description: When the organization was verified as tax-exempt and eligible for disbursements
           readOnly: true
         failed_at:
           type: string
           format: date-time
-          description: When the verification failed
+          description: When the verification request was rejected
           readOnly: true
         created_at:
           type: string
@@ -5074,6 +5066,8 @@ components:
         - "donation.updated"
         - "deposit.created"
         - "deposit.updated"
+        - "verification_request.created"
+        - "verification_request.updated"
     Event:
       type: object
       description: |
@@ -5645,9 +5639,7 @@ components:
                 $ref: "#/components/schemas/VerificationRequestAddress"
               contact_email:
                 type: string
-                description: |-
-                  Contact email for the nonprofit. If provided, triggers an onboarding invite email
-                  so the nonprofit can optionally create a Chariot Deposit Account.
+                description: Contact email for the nonprofit organization.
                 example: "contact@localfoundation.org"
     CreateInboundTransferRequest:
       description: The request body for originating an inbound transfer from an external bank account

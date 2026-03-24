@@ -96,11 +96,11 @@ Use the `organization_id` from the verification request response to create a dis
 
 ### Monitor Verification Status
 
-You can poll the [GET Verification Request](/api/verification-requests/get) endpoint to track the progress of the verification. The status will transition through:
+You can track the progress of the verification by polling the [GET Verification Request](/api/verification-requests/get) endpoint or by subscribing to `verification_request.updated` [webhook events](/api/webhooks). The status will transition through:
 
 | Status | Description |
 |--------|-------------|
-| `verifying` | Chariot's compliance team is actively reviewing the organization |
+| `needs_review` | The request has been submitted and is awaiting review by Chariot's compliance team |
 | `verified` | The organization has been verified as tax-exempt and eligible for disbursements |
 | `failed` | The compliance team determined the organization is not eligible |
 
