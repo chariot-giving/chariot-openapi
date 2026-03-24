@@ -104,7 +104,9 @@ You can poll the [GET Verification Request](/api/verification-requests/get) endp
 | `verified` | The organization has been verified as tax-exempt and eligible for disbursements |
 | `failed` | The compliance team determined the organization is not eligible |
 
-Once the verification request status is `verified`, any disbursements in `awaiting_verification` status that are below the compliance threshold and do not have `bypass_chariot_organization_verification` set will automatically proceed.
+Disbursements without bypass_chariot_organization_verification enabled will remain in awaiting_verification until the verification request status is verified.
+
+Once the verification request is verified, eligible disbursements will progress as usual. However, some disbursements may not move out of awaiting_verification immediately, as additional review steps may be required on a per-disbursement basis.
 
 </Steps>
 
