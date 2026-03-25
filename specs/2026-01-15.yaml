@@ -1038,6 +1038,115 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/verification_requests:
+    post:
+      summary: Create a verification request
+      description: |
+        Request verification of an unlisted organization. If the organization cannot be found through Chariot's search,
+        you can submit a verification request so that Chariot's compliance team can review and verify the organization.
+      operationId: createVerificationRequest
+      tags:
+        - verificationRequests
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateVerificationRequestRequest"
+      responses:
+        "201":
+          description: The verification request was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationRequest"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+    get:
+      summary: List verification requests
+      description: |
+        Returns a paginated list of all verification requests for the authenticated grantmaker.
+      operationId: listVerificationRequests
+      tags:
+        - verificationRequests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ein
+          in: query
+          description: Filter by EIN. If provided, only returns verification requests matching this EIN.
+          required: false
+          schema:
+            type: string
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListVerificationRequestsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/verification_requests/{id}:
+    get:
+      summary: Get a verification request
+      description: |
+        Get a specific verification request by its unique identifier.
+      operationId: getVerificationRequest
+      tags:
+        - verificationRequests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the verification request
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The verification request
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationRequest"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
     post:
       summary: Create a disbursement
@@ -3999,6 +4108,108 @@ components:
         - stopped
         - completed
         - failed
+    VerificationRequestStatus:
+      type: string
+      description: |-
+        The status of the verification request.
+        Possible values include:
+          - `needs_review`: The request has been submitted and is awaiting review by Chariot's compliance team
+          - `verified`: The organization has been verified as tax-exempt and eligible for disbursements
+          - `failed`: Chariot's compliance team determined the organization is not eligible
+      example: "needs_review"
+      enum:
+        - needs_review
+        - verified
+        - failed
+    VerificationRequestAddress:
+      type: object
+      description: A mailing address for the organization being verified.
+      required:
+        - line1
+        - city
+        - state
+        - zip_code
+      properties:
+        line1:
+          type: string
+          description: Street address line 1
+          example: "123 Main St"
+        line2:
+          type: string
+          description: Street address line 2 (suite, unit, etc.)
+          example: "Suite 100"
+        city:
+          type: string
+          description: City
+          example: "San Francisco"
+        state:
+          type: string
+          description: Two-letter US state code (e.g. "CA", "NY")
+          example: "CA"
+        zip_code:
+          type: string
+          description: ZIP or postal code
+          example: "94105"
+    VerificationRequest:
+      type: object
+      description: |-
+        A verification request allows grantmakers to request that Chariot's compliance team verify an unlisted organization,
+        enabling disbursements to nonprofits not yet in Chariot's database.
+      required:
+        - id
+        - ein
+        - organization_name
+        - organization_id
+        - status
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the verification request
+          example: "vr_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        ein:
+          type: string
+          description: The EIN of the organization being verified
+          example: "123456789"
+        organization_name:
+          type: string
+          description: The name of the organization as provided by the grantmaker
+          example: "Local Community Foundation"
+        organization_id:
+          type: string
+          description: |-
+            The ID of the Organization record for the nonprofit being verified.
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
+        status:
+          $ref: "#/components/schemas/VerificationRequestStatus"
+        website:
+          type: string
+          description: The organization's website URL
+          example: "https://localfoundation.org"
+        recommended_mailing_address:
+          $ref: "#/components/schemas/VerificationRequestAddress"
+        verified_at:
+          type: string
+          format: date-time
+          description: When the organization was verified as tax-exempt and eligible for disbursements
+          readOnly: true
+        failed_at:
+          type: string
+          format: date-time
+          description: When the verification request was rejected
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: When the verification request was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: When the verification request was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
     DisbursementCancelation:
       type: object
       description: |-
@@ -4599,6 +4810,16 @@ components:
             Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
           example: false
           default: false
+        bypass_chariot_organization_verification:
+          type: boolean
+          description: |-
+            By default (`false`), the disbursement will remain in the `awaiting_verification` status until
+            Chariot's compliance team has verified the nonprofit.
+            If set to `true`, the disbursement will proceed through its normal lifecycle without waiting for
+            Chariot to verify the organization. Only set this if you have independently verified the organization
+            and do not want to wait for or rely on Chariot's verification.
+            This field is only relevant when disbursing to an organization that was created via a [verification request](/api/verification-requests/create).
+          default: false
         transactions:
           type: array
           description: |-
@@ -4845,6 +5066,8 @@ components:
         - "donation.updated"
         - "deposit.created"
         - "deposit.updated"
+        - "verification_request.created"
+        - "verification_request.updated"
     Event:
       type: object
       description: |
@@ -5387,6 +5610,37 @@ components:
                         },
                     },
                   ]
+    CreateVerificationRequestRequest:
+      description: |-
+        The request to create a verification request for an unlisted organization.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - ein
+              - organization_name
+              - recommended_mailing_address
+            properties:
+              ein:
+                type: string
+                description: The EIN of the organization to verify
+                example: "123456789"
+              organization_name:
+                type: string
+                description: The name of the organization as known to the grantmaker
+                example: "Local Community Foundation"
+              website:
+                type: string
+                description: The organization's website URL
+                example: "https://localfoundation.org"
+              recommended_mailing_address:
+                $ref: "#/components/schemas/VerificationRequestAddress"
+              contact_email:
+                type: string
+                description: Contact email for the nonprofit organization.
+                example: "contact@localfoundation.org"
     CreateInboundTransferRequest:
       description: The request body for originating an inbound transfer from an external bank account
       required: true
@@ -5946,6 +6200,27 @@ components:
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call
                    to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListVerificationRequestsResponse:
+      description: The response for VerificationRequests.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VerificationRequest"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the page_token). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
     BadRequestError:

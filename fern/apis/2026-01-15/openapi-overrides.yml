@@ -140,6 +140,20 @@ paths:
       x-fern-sdk-group-name:
         - financialAccounts
       x-fern-sdk-method-name: getBalance
+  /v1/verification_requests:
+    post:
+      x-fern-sdk-group-name:
+        - verificationRequests
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-sdk-group-name:
+        - verificationRequests
+      x-fern-sdk-method-name: list
+  /v1/verification_requests/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - verificationRequests
+      x-fern-sdk-method-name: get
   /v1/disbursements:
     post:
       x-fern-sdk-group-name:
