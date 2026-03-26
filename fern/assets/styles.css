@@ -1,5 +1,5 @@
 /* :not(.dark) body {
-    color: #240642 !important;
+    color: #364757 !important;
 }
 
 :is(.dark) body {
@@ -7,7 +7,7 @@
 }
 
 :not(.dark) .prose {
-    color: #240642 !important;
+    color: #364757 !important;
 }
 
 :is(.dark) .prose {
