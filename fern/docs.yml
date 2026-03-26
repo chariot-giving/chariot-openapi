@@ -20,8 +20,8 @@ versions:
 
 logo:
   href: /
-  light: assets/logo.png
-  dark: assets/logo.png
+  light: assets/chariot_full-logo_glacier.png
+  dark: assets/chariot_full-logo_white.png
   height: 24
 
 favicon: assets/favicon.png
@@ -64,14 +64,14 @@ typography:
 
 colors:
   accentPrimary:
-    light: "#35BBF4"
-    dark: "#35BBF4"
+    light: "#209AE5"
+    dark: "#6DC7FF"
   background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: "#F5F5F5"
+    dark: "#051A2E"
   sidebar-background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: "#F5F5F5"
+    dark: "#051A2E"
   header-background:
-    light: '#F6F8FA'
-    dark: "#212121"
+    light: '#F5F5F5'
+    dark: "#051A2E"
