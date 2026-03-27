@@ -102,7 +102,7 @@ navigation:
             path: ./pages/oauth/overview.mdx
           - page: Identity
             slug: identity
-            path: ./pages/oauth/openid-connect.mdx
+            path: ./pages/oauth/identity.mdx
       - section: Lockbox Providers
         slug: lockbox-providers
         hidden: true
