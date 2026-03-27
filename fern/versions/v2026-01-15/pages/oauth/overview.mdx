@@ -25,13 +25,13 @@ Chariot implements the **OAuth 2.0 Authorization Code** flow with **PKCE** (Proo
 
 ## Authentication
 
-When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server authenticates with Chariot using HTTP Basic Auth with these credentials.
+When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server uses these credentials (via HTTP Basic Auth) to authenticate with Chariot during the OAuth token exchange and refresh flows. Once you have an access token, your server uses that token — not the client credentials — to call the Chariot API on behalf of the nonprofit.
 
 Your client secret should be kept secure and should never be exposed to the public.
 
 ## Scopes
 
-Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. Available scopes will be configured during client registration.
+Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. Available scopes are configured during client registration.
 
 ## Authorization Code Flow
 
@@ -116,16 +116,16 @@ Direct the user's browser to Chariot's authorization endpoint:
 GET https://dashboard.givechariot.com/oauth/authorize
 ```
 
-| Parameter               | Required    | Description                                                                                       |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
-| `client_id`             | Yes         | Your application's client ID                                                                      |
-| `redirect_uri`          | Yes         | URL to redirect back to (must match a registered URI)                                             |
-| `response_type`         | Yes         | Must be `code`                                                                                    |
-| `scope`                 | Yes         | Space-separated list of requested scopes                                                          |
-| `state`                 | Recommended | An opaque value to prevent CSRF attacks                                                           |
-| `nonce`                 | Yes         | Cryptographically random string to prevent replay attacks. See [Identity](/guides/oauth/identity) |
-| `code_challenge`        | Yes         | Base64url-encoded SHA-256 hash of the code verifier                                               |
-| `code_challenge_method` | Yes         | Must be `S256`                                                                                    |
+| Parameter               | Required    | Description                                                                                                        |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| `client_id`             | Yes         | Your application's client ID                                                                                       |
+| `redirect_uri`          | Yes         | URL to redirect back to (must match a registered URI). See [Redirect URI Requirements](#redirect-uri-requirements) |
+| `response_type`         | Yes         | Must be `code`                                                                                                     |
+| `scope`                 | Yes         | Space-separated list of requested scopes                                                                           |
+| `state`                 | Recommended | An opaque value to prevent CSRF attacks                                                                            |
+| `nonce`                 | Yes         | Cryptographically random string to prevent replay attacks. See [Identity](/guides/oauth/identity)                  |
+| `code_challenge`        | Yes         | Base64url-encoded SHA-256 hash of the code verifier                                                                |
+| `code_challenge_method` | Yes         | Must be `S256`                                                                                                     |
 
 **Example:**
 
@@ -146,7 +146,7 @@ Chariot presents the nonprofit user with a consent screen showing your applicati
 
 ### Step 4: Receive the Authorization Code
 
-After approval, Chariot redirects back to your `redirect_uri`:
+After approval, Chariot redirects back to your [`redirect_uri`](#redirect-uri-requirements):
 
 ```
 https://example.com/callback?code=AUTHORIZATION_CODE&state=RANDOM_CSRF_TOKEN
@@ -245,3 +245,37 @@ Common errors during the token exchange:
 | `400`       | Malformed request (invalid parameters, missing fields)               |
 | `401`       | Invalid authorization code, expired token, or bad client credentials |
 | `412`       | User lacks the required permissions for the requested scopes         |
+
+## Redirect URI Requirements
+
+Redirect URIs are validated when your application is registered and again at authorization time. Each URI must meet the following requirements:
+
+| Rule                    | Requirement                                                     |
+| ----------------------- | --------------------------------------------------------------- |
+| **Scheme**              | Must use `https`                                                |
+| **Host**                | Must include a hostname                                         |
+| **Path**                | Must include a path beyond `/` (e.g., `/callback`)              |
+| **No query parameters** | Query strings are not allowed                                   |
+| **No fragments**        | URL fragments (`#`) are not allowed                             |
+| **No user info**        | Credentials in the URL (e.g., `user:pass@host`) are not allowed |
+| **Length**              | Must be 255 characters or fewer                                 |
+| **Max count**           | You can register up to 5 redirect URIs per client               |
+
+At authorization time, the `redirect_uri` parameter must **exactly match** one of your registered URIs. Scheme and host are compared case-insensitively, but the path must match exactly. Wildcard or pattern matching is not supported.
+
+**Valid examples:**
+
+```
+https://example.com/callback
+https://example.com/auth/chariot/callback
+https://example.com:443/callback
+```
+
+**Invalid examples:**
+
+```
+http://example.com/callback        # HTTP not allowed in production
+https://example.com                # Missing path
+https://example.com/               # Root path not allowed
+https://example.com/cb?foo=bar     # Query parameters not allowed
+```
