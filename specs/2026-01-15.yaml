@@ -1548,8 +1548,8 @@ paths:
                           type: "donor_advised_fund_grant",
                           purpose: "General Operating Support",
                           note: "Annual grant from the Doe Family Fund",
-                          internal_grant_id: "grant_1234567890",
-                          attribution:
+                          internal_transaction_id: "grant_1234567890",
+                          donors:
                             {
                               primary_donor:
                                 {
@@ -1584,7 +1584,7 @@ paths:
                           net_amount: 14500,
                           type: "donor_advised_fund_grant",
                           purpose: "General Operating Support",
-                          attribution:
+                          donors:
                             {
                               primary_donor:
                                 {
@@ -1604,7 +1604,7 @@ paths:
                           net_amount: 9500,
                           type: "corporate_match",
                           purpose: "Employee matching gift",
-                          attribution:
+                          donors:
                             {
                               primary_donor:
                                 {
@@ -5631,13 +5631,11 @@ components:
             The gross transaction amount in minor currency units (cents) before any fees are deducted.
             This represents the total amount of the donation.
           example: 10000
-        fee_amount:
-          type: integer
-          format: int64
-          description: |
-            The fee amount in minor currency units (cents) to be deducted from the transaction amount.
-            Only present in the response when the fee amount is greater than zero.
-          example: 500
+        internal_transaction_id:
+          type: string
+          description: "A unique identifier for the transaction within the grantmaker's internal system. Maximum length: 255 characters."
+          example: "grant_1234567890"
+          maxLength: 255
         net_amount:
           type: integer
           format: int64
@@ -5659,13 +5657,9 @@ components:
           description: "A note for the grant. Maximum length: 600 characters."
           example: "This grant is for the general operating support of the organization."
           maxLength: 600
-        internal_grant_id:
-          type: string
-          description: "A unique identifier for the grant within the grantmaker's internal system. Maximum length: 255 characters."
-          example: "grant_1234567890"
-          maxLength: 255
-        attribution:
+        donors:
           $ref: "#/components/schemas/DonationAttribution"
+          description: "Information about the individuals associated with the gift. Includes a primary donor and a joint donor."
         daf_grant:
           $ref: "#/components/schemas/V2TransactionDafGrant"
         corporate_match:
@@ -5682,6 +5676,13 @@ components:
           description: The date and time the transaction was last updated
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            The fee amount in minor currency units (cents) to be deducted from the transaction amount.
+            Only present in the response when the fee amount is greater than zero.
+          example: 500
         metadata:
           type: object
           description: Additional metadata for the transaction
@@ -5704,7 +5705,7 @@ components:
       properties:
         fund_name:
           type: string
-          description: "The name of the DAF fund. Maximum length: 255 characters."
+          description: "The name of the DAF account associated with the donor (e.g., \"Jane Doe Giving Fund\"). Maximum length: 255 characters."
           example: "John Doe Fund"
           maxLength: 255
     V2TransactionCorporateMatch:
@@ -5785,13 +5786,11 @@ components:
           description: |
             The transaction amount in minor currency units (cents). Must be a positive amount.
           example: 10000
-        fee_amount:
-          type: integer
-          format: int64
-          description: |
-            Optional fee amount in minor currency units (cents) to be deducted from the transaction.
-            Must be greater than or equal to zero.
-          example: 500
+        internal_transaction_id:
+          type: string
+          description: "A unique identifier for the transaction within the grantmaker's internal system. Maximum length: 255 characters."
+          example: "grant_1234567890"
+          maxLength: 255
         type:
           $ref: "#/components/schemas/V2TransactionType"
         purpose:
@@ -5804,17 +5803,20 @@ components:
           description: "A note for the grant. Maximum length: 600 characters."
           example: "This grant is for the general operating support of the organization."
           maxLength: 600
-        internal_grant_id:
-          type: string
-          description: "A unique identifier for the grant within the grantmaker's internal system. Maximum length: 255 characters."
-          example: "grant_1234567890"
-          maxLength: 255
-        attribution:
+        donors:
           $ref: "#/components/schemas/DonationAttribution"
+          description: "Information about the individuals associated with the gift. Includes a required primary donor and an optional joint donor."
         daf_grant:
           $ref: "#/components/schemas/V2TransactionDafGrant"
         corporate_match:
           $ref: "#/components/schemas/V2TransactionCorporateMatch"
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            Optional fee amount in minor currency units (cents) to be deducted from the transaction.
+            Must be greater than or equal to zero.
+          example: 500
         metadata:
           type: object
           description: Additional metadata for the transaction
@@ -6463,8 +6465,8 @@ components:
                       type: "donor_advised_fund_grant",
                       purpose: "General Operating Support",
                       note: "Annual grant from the Doe Family Fund",
-                      internal_grant_id: "grant_1234567890",
-                      attribution:
+                      internal_transaction_id: "grant_1234567890",
+                      donors:
                         {
                           primary_donor:
                             {
@@ -6488,7 +6490,7 @@ components:
                       fee_amount: 500,
                       type: "donor_advised_fund_grant",
                       purpose: "General Operating Support",
-                      attribution:
+                      donors:
                         {
                           primary_donor:
                             {
@@ -6504,7 +6506,7 @@ components:
                       fee_amount: 500,
                       type: "corporate_match",
                       purpose: "Employee matching gift",
-                      attribution:
+                      donors:
                         {
                           primary_donor:
                             {
