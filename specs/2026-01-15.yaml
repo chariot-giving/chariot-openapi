@@ -5658,8 +5658,9 @@ components:
           example: "This grant is for the general operating support of the organization."
           maxLength: 600
         donors:
-          $ref: "#/components/schemas/DonationAttribution"
           description: "Information about the individuals associated with the gift. Includes a primary donor and a joint donor."
+          allOf:
+            - $ref: "#/components/schemas/DonationAttribution"
         daf_grant:
           $ref: "#/components/schemas/V2TransactionDafGrant"
         corporate_match:
@@ -5804,8 +5805,9 @@ components:
           example: "This grant is for the general operating support of the organization."
           maxLength: 600
         donors:
-          $ref: "#/components/schemas/DonationAttribution"
           description: "Information about the individuals associated with the gift. Includes a required primary donor and an optional joint donor."
+          allOf:
+            - $ref: "#/components/schemas/DonationAttribution"
         daf_grant:
           $ref: "#/components/schemas/V2TransactionDafGrant"
         corporate_match:
