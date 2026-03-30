@@ -64,10 +64,10 @@ You can attach a document or file to the payment by [first uploading a file to C
 and then creating a `Transaction` with the `attachment_file_id` field populated.
 </Note> */}
 
-<EndpointRequestSnippet endpoint="POST /v1/disbursements"  example="MultipleTransactions"/>
+<EndpointRequestSnippet endpoint="POST /v2/disbursements"  example="DafGrantTransaction"/>
 
 Once you receive a successful response, Chariot will use the funds in your account to push a payment to the organization.
-You can call the [GET Disbursement](/api/disbursements/get) endpoint to see the status of the submission.
+You can call the [GET Disbursement](/api/disbursements-v2/get) endpoint to see the status of the submission.
 
 To learn more about how to handle errors, please refer to the [FAQ](/guides/disbursements/faq).
 

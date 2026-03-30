@@ -179,8 +179,12 @@ navigation:
                   title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
-              - disbursements:
-                  title: Disbursements
+              - section: Disbursements
+                contents:
+                  - disbursements:
+                      title: V1
+                  - disbursements_v2:
+                      title: V2
               - verificationRequests:
                   title: Verification Requests
           - section: Gift Processing
@@ -195,6 +199,12 @@ navigation:
                   title: Deposits
               - properties:
                   title: Properties
+          - section: Simulations
+            skip-slug: true
+            icon: flask
+            contents:
+              - simulations:
+                  title: Simulations
           - section: Lockbox Providers
             skip-slug: true
             icon: mailbox

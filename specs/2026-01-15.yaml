@@ -1495,6 +1495,536 @@ paths:
           $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements:
+    post:
+      summary: Create a disbursement
+      description: |
+        Create a disbursement to send money to an organization.
+      operationId: createV2Disbursement
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: |-
+            An idempotency key to ensure that the same request is not processed more than once.
+            If a request is made with the same idempotency key as a previous request, the previous response will be returned.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateV2DisbursementRequest"
+      responses:
+        "201":
+          description: The disbursement was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/V2Disbursement"
+              examples:
+                DafGrantTransaction:
+                  summary: Disbursement with a DAF grant transaction
+                  value:
+                    id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+                    organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                    program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+                    amount: 10000
+                    auto_fund: false
+                    bypass_chariot_organization_verification: false
+                    status: "pending_approval"
+                    created_at: "2020-01-31T23:00:00Z"
+                    updated_at: "2020-01-31T23:00:00Z"
+                    transactions:
+                      [
+                        {
+                          id: "txn_01jpjen1s23s29kkmnjsb6fzga",
+                          amount: 10000,
+                          net_amount: 10000,
+                          type: "donor_advised_fund_grant",
+                          purpose: "General Operating Support",
+                          note: "Annual grant from the Doe Family Fund",
+                          internal_grant_id: "grant_1234567890",
+                          attribution:
+                            {
+                              primary_donor:
+                                {
+                                  first_name: "Jane",
+                                  last_name: "Doe",
+                                  email: "jane.doe@example.com",
+                                },
+                            },
+                          daf_grant: { fund_name: "Doe Family Charitable Fund" },
+                          created_at: "2020-01-31T23:00:00Z",
+                          updated_at: "2020-01-31T23:00:00Z",
+                        },
+                      ]
+                MultipleTransactionsWithFees:
+                  summary: Disbursement with multiple transactions including fees
+                  value:
+                    id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+                    organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                    program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+                    amount: 24000
+                    auto_fund: false
+                    bypass_chariot_organization_verification: false
+                    status: "pending_approval"
+                    created_at: "2020-01-31T23:00:00Z"
+                    updated_at: "2020-01-31T23:00:00Z"
+                    transactions:
+                      [
+                        {
+                          id: "txn_01jpjen1s23s29kkmnjsb6fzga",
+                          amount: 15000,
+                          fee_amount: 500,
+                          net_amount: 14500,
+                          type: "donor_advised_fund_grant",
+                          purpose: "General Operating Support",
+                          attribution:
+                            {
+                              primary_donor:
+                                {
+                                  first_name: "Jane",
+                                  last_name: "Doe",
+                                  email: "jane.doe@example.com",
+                                },
+                            },
+                          daf_grant: { fund_name: "Doe Family Charitable Fund" },
+                          created_at: "2020-01-31T23:00:00Z",
+                          updated_at: "2020-01-31T23:00:00Z",
+                        },
+                        {
+                          id: "txn_02kqkfn2t34t3almnokuc7g0hb",
+                          amount: 10000,
+                          fee_amount: 500,
+                          net_amount: 9500,
+                          type: "corporate_match",
+                          purpose: "Employee matching gift",
+                          attribution:
+                            {
+                              primary_donor:
+                                {
+                                  first_name: "John",
+                                  last_name: "Smith",
+                                  email: "john.smith@example.com",
+                                },
+                            },
+                          corporate_match: { company_name: "Acme Corp" },
+                          created_at: "2020-01-31T23:00:00Z",
+                          updated_at: "2020-01-31T23:00:00Z",
+                        },
+                      ]
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List disbursements
+      description: |
+        Returns a list of disbursements.
+      operationId: listV2Disbursements
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: Filter by the unique identifier for the recipient organization
+          required: false
+          schema:
+            type: string
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: next_page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the next_page_token in the previous response.
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by one or more disbursement statuses
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DisbursementStatus"
+        - name: nonprofit_name
+          in: query
+          description: Filter by the name of the recipient nonprofit organization
+          required: false
+          schema:
+            type: string
+        - name: nonprofit_id
+          in: query
+          description: Filter by the nonprofit organization ID
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Filter by the disbursement ID
+          required: false
+          schema:
+            type: string
+        - name: has_transfer_id
+          in: query
+          description: Filter by whether the disbursement has an associated transfer ID
+          required: false
+          schema:
+            type: boolean
+        - name: include_transfer_types
+          in: query
+          description: |-
+            Filter by transfer types. Only disbursements with transfers of the specified types will be returned.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - account_transfer
+                - inbound_ach_transfer
+                - ach_transfer
+                - check_deposit
+                - check_transfer
+                - inbound_account_transfer
+        - name: ein
+          in: query
+          description: Filter by the EIN of the recipient organization
+          required: false
+          schema:
+            type: string
+        - name: program_id
+          in: query
+          description: Filter by the program ID
+          required: false
+          schema:
+            type: string
+        - name: amount.exact
+          in: query
+          description: Filter by exact disbursement amount in cents
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: amount.gte
+          in: query
+          description: Filter by minimum disbursement amount in cents (inclusive)
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: amount.lte
+          in: query
+          description: Filter by maximum disbursement amount in cents (inclusive)
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: date.gte
+          in: query
+          description: Filter by minimum creation date (inclusive). RFC 3339 format.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: date.lt
+          in: query
+          description: Filter by maximum creation date (exclusive). RFC 3339 format.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListV2DisbursementsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/bulk:
+    post:
+      summary: Create multiple disbursements
+      description: |
+        Create multiple disbursements in a single request.
+        This is useful for batch operations where you need to create many disbursements at once.
+
+        All disbursements in the request will be created together. If any disbursement fails validation,
+        the entire request will fail and no disbursements will be created.
+      operationId: bulkCreateV2Disbursements
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - disbursements
+              properties:
+                disbursements:
+                  type: array
+                  description: Array of disbursements to create
+                  minItems: 1
+                  items:
+                    $ref: "#/components/schemas/V2CreateDisbursementInput"
+      responses:
+        "201":
+          description: The disbursements were created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - disbursements
+                  - count
+                properties:
+                  disbursements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/V2Disbursement"
+                  count:
+                    type: integer
+                    description: The number of disbursements created
+                    example: 5
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/{id}:
+    get:
+      summary: Get a disbursement
+      description: |
+        Get a disbursement by its unique identifier.
+      operationId: getV2Disbursement
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/V2Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/{id}/approve:
+    post:
+      summary: Approve a disbursement
+      description: |
+        Approve a disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: approveV2Disbursement
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/V2Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/approve:
+    post:
+      summary: Approve multiple disbursements
+      description: |
+        Approve multiple disbursements in a single request.
+        This is useful for batch approval operations.
+
+        All disbursements must be in the `pending_approval` state. If any disbursement
+        cannot be approved, the entire request will fail and no disbursements will be approved.
+      operationId: bulkApproveV2Disbursements
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - disbursement_ids
+              properties:
+                disbursement_ids:
+                  type: array
+                  description: Array of disbursement IDs to approve
+                  minItems: 1
+                  items:
+                    type: string
+                    example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursements were approved
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - disbursements
+                  - count
+                properties:
+                  disbursements:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/V2Disbursement"
+                  count:
+                    type: integer
+                    description: The number of disbursements approved
+                    example: 5
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/{id}/cancel:
+    post:
+      summary: Cancel a pending disbursement
+      description: |
+        Cancel a pending disbursement in a pending_approval state.
+        If the disbursement is in a different state, this will return a 400 error.
+      operationId: cancelV2Disbursement
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was canceled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/V2Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v2/disbursements/{id}/stop:
+    post:
+      summary: Stop payment for a disbursement
+      description: |
+        Stop payment for a disbursement that has been submitted.
+        This prevents the recipient from receiving the funds.
+      operationId: stopV2Disbursement
+      tags:
+        - disbursements_v2
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the disbursement
+          required: true
+          schema:
+            type: string
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The disbursement was stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/V2Disbursement"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/simulations/disbursements/{id}/complete:
     post:
       summary: "Sandbox: Complete a disbursement"
@@ -1509,7 +2039,7 @@ paths:
         </Note>
       operationId: simulateDisbursementCompletion
       tags:
-        - disbursements
+        - simulations
       security:
         - bearerAuth: []
       parameters:
@@ -1549,7 +2079,7 @@ paths:
         </Note>
       operationId: simulateDisbursementFailure
       tags:
-        - disbursements
+        - simulations
       security:
         - bearerAuth: []
       parameters:
@@ -1740,7 +2270,7 @@ paths:
         </Note>
       operationId: simulateInboundTransferFailure
       tags:
-        - inboundTransfers
+        - simulations
       security:
         - bearerAuth: []
       parameters:
@@ -1775,7 +2305,7 @@ paths:
         </Note>
       operationId: simulateInboundTransferCompletion
       tags:
-        - inboundTransfers
+        - simulations
       security:
         - bearerAuth: []
       parameters:
@@ -4037,6 +4567,15 @@ components:
             Whether just-in-time (JIT) funding is enabled for this disbursement. When true, Chariot automatically creates an inbound transfer for the disbursement amount when it is approved.
           example: false
           readOnly: true
+        bypass_chariot_organization_verification:
+          type: boolean
+          description: |-
+            Whether the disbursement bypasses Chariot's organization verification.
+            When `false` (default), the disbursement will remain in the `awaiting_verification` status until
+            Chariot's compliance team has verified the nonprofit.
+            When `true`, the disbursement proceeds without waiting for Chariot to verify the organization.
+          example: false
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -4986,6 +5525,301 @@ components:
           description: Additional metadata for the transaction
           additionalProperties:
             type: string
+    V2Disbursement:
+      type: object
+      description: A disbursement moves funds to a verified organization.
+      required:
+        - id
+        - organization_id
+        - program_id
+        - amount
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the disbursement
+          example: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization that will receive the payment
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
+        organization:
+          $ref: "#/components/schemas/Organization"
+        program_id:
+          type: string
+          description: The unique identifier for the program that the disbursement belongs to
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+        amount:
+          type: integer
+          format: int64
+          description: The payment amount in USD cents. Must be a positive amount.
+          example: 10000
+        auto_fund:
+          type: boolean
+          description: |-
+            Whether just-in-time (JIT) funding is enabled for this disbursement. When true, Chariot automatically creates an inbound transfer for the disbursement amount when it is approved.
+          example: false
+          readOnly: true
+        bypass_chariot_organization_verification:
+          type: boolean
+          description: |-
+            Whether the disbursement bypasses Chariot's organization verification.
+            When `false` (default), the disbursement will remain in the `awaiting_verification` status until
+            Chariot's compliance team has verified the nonprofit.
+            When `true`, the disbursement proceeds without waiting for Chariot to verify the organization.
+          example: false
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the disbursement was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        status:
+          $ref: "#/components/schemas/DisbursementStatus"
+        cancelation:
+          $ref: "#/components/schemas/DisbursementCancelation"
+        approval:
+          $ref: "#/components/schemas/DisbursementApproval"
+        rejection:
+          $ref: "#/components/schemas/DisbursementRejection"
+        verification:
+          $ref: "#/components/schemas/DisbursementVerification"
+        stop:
+          $ref: "#/components/schemas/DisbursementStop"
+        program_details:
+          $ref: "#/components/schemas/ProgramDetails"
+        transfers:
+          type: array
+          description: |-
+            The list of transfers for the disbursement.
+            This can have multiple items if the disbursement's underlying payment was retried multiple times.
+            For example, if a check was returned or stopped and the disbursement was retried as an ACH transfer.
+            If the disbursement was not retried, this will have a single item.
+          items:
+            $ref: "#/components/schemas/DisbursementTransfer"
+        transactions:
+          type: array
+          description: The list of transactions for the disbursement
+          items:
+            $ref: "#/components/schemas/V2Transaction"
+    V2Transaction:
+      type: object
+      description: |
+        A transaction represents an individual line-item or donation for a recipient nonprofit organization.
+        The transaction amount represents the gross amount, and an optional fee can be deducted to calculate the net amount that will be disbursed.
+      required:
+        - amount
+        - net_amount
+        - type
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the transaction
+          example: "txn_1LaXpKGUcADgqoEMl0Cx0Ygg"
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          description: |
+            The gross transaction amount in minor currency units (cents) before any fees are deducted.
+            This represents the total amount of the donation.
+          example: 10000
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            The fee amount in minor currency units (cents) to be deducted from the transaction amount.
+            Only present in the response when the fee amount is greater than zero.
+          example: 500
+        net_amount:
+          type: integer
+          format: int64
+          description: |
+            The net transaction amount in minor currency units (cents) after fees are deducted.
+            This is calculated as: net_amount = amount - fee_amount.
+            This is the actual amount that will be disbursed to the nonprofit.
+          example: 9500
+          readOnly: true
+        type:
+          $ref: "#/components/schemas/V2TransactionType"
+        purpose:
+          type: string
+          description: "The purpose of the grant. Maximum length: 600 characters."
+          example: "General Operating Support"
+          maxLength: 600
+        note:
+          type: string
+          description: "A note for the grant. Maximum length: 600 characters."
+          example: "This grant is for the general operating support of the organization."
+          maxLength: 600
+        internal_grant_id:
+          type: string
+          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
+          example: "grant_1234567890"
+          maxLength: 255
+        attribution:
+          $ref: "#/components/schemas/DonationAttribution"
+        daf_grant:
+          $ref: "#/components/schemas/V2TransactionDafGrant"
+        corporate_match:
+          $ref: "#/components/schemas/V2TransactionCorporateMatch"
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: The date and time the transaction was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        metadata:
+          type: object
+          description: Additional metadata for the transaction
+          additionalProperties:
+            type: string
+    V2TransactionType:
+      type: string
+      description: |-
+        The type of transaction.
+        Possible values include:
+          - `donor_advised_fund_grant`: A charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
+          - `corporate_match`: A corporate matching gift.
+      enum:
+        - donor_advised_fund_grant
+        - corporate_match
+    V2TransactionDafGrant:
+      type: object
+      description: |-
+        DAF grant details for the transaction. Only applicable when the transaction type is `donor_advised_fund_grant`.
+      properties:
+        fund_name:
+          type: string
+          description: "The name of the DAF fund. Maximum length: 255 characters."
+          example: "John Doe Fund"
+          maxLength: 255
+    V2TransactionCorporateMatch:
+      type: object
+      description: |-
+        Corporate match details for the transaction. Required when the transaction type is `corporate_match`.
+      required:
+        - company_name
+      properties:
+        company_name:
+          type: string
+          description: "The name of the company that matched the donation. Maximum length: 255 characters."
+          example: "Acme Corp"
+          maxLength: 255
+    V2CreateDisbursementInput:
+      type: object
+      description: |-
+        The request to create a V2 disbursement and its corresponding transactions.
+        The organization and amount are required.
+        The transactions array should contain the list of transactions associated with the disbursement. The amounts
+        in the transactions should sum up to the disbursement amount.
+      required:
+        - organization_id
+        - amount
+        - transactions
+      properties:
+        organization_id:
+          type: string
+          description: The Chariot organization ID of the recipient nonprofit.
+          example: "org_1234567890"
+        program_id:
+          type: string
+          description: |-
+            The identifier for the program that the disbursement is associated with.
+          example: "program_01jpjenf5q6cawy43yxfcrxhct"
+          nullable: true
+        amount:
+          type: integer
+          format: int64
+          description: The total disbursement amount in USD cents. Must be a positive amount.
+          example: 10000
+        auto_fund:
+          type: boolean
+          description: |-
+            Whether to auto-fund from the grantmaker balance. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved.
+          example: false
+          default: false
+        bypass_chariot_organization_verification:
+          type: boolean
+          description: |-
+            By default (`false`), the disbursement will remain in the `awaiting_verification` status until
+            Chariot's compliance team has verified the nonprofit.
+            If set to `true`, the disbursement will proceed through its normal lifecycle without waiting for
+            Chariot to verify the organization. Only set this if you have independently verified the organization
+            and do not want to wait for or rely on Chariot's verification.
+            This field is only relevant when disbursing to an organization that was created via a [verification request](/api/verification-requests/create).
+          default: false
+        transactions:
+          type: array
+          description: |-
+            The list of transactions associated with the disbursement.
+            Each transaction is an individual donation to be included in the disbursement.
+            Must specify at least one transaction.
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/V2TransactionInput"
+    V2TransactionInput:
+      type: object
+      description: |
+        An individual transaction to be included in a V2 disbursement.
+      required:
+        - amount
+        - type
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: |
+            The transaction amount in minor currency units (cents). Must be a positive amount.
+          example: 10000
+        fee_amount:
+          type: integer
+          format: int64
+          description: |
+            Optional fee amount in minor currency units (cents) to be deducted from the transaction.
+            Must be greater than or equal to zero.
+          example: 500
+        type:
+          $ref: "#/components/schemas/V2TransactionType"
+        purpose:
+          type: string
+          description: "The purpose of the grant. Maximum length: 600 characters."
+          example: "General Operating Support"
+          maxLength: 600
+        note:
+          type: string
+          description: "A note for the grant. Maximum length: 600 characters."
+          example: "This grant is for the general operating support of the organization."
+          maxLength: 600
+        internal_grant_id:
+          type: string
+          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
+          example: "grant_1234567890"
+          maxLength: 255
+        attribution:
+          $ref: "#/components/schemas/DonationAttribution"
+        daf_grant:
+          $ref: "#/components/schemas/V2TransactionDafGrant"
+        corporate_match:
+          $ref: "#/components/schemas/V2TransactionCorporateMatch"
+        metadata:
+          type: object
+          description: Additional metadata for the transaction
+          additionalProperties:
+            type: string
     DonationType:
       type: string
       description: The type of donation
@@ -5610,6 +6444,78 @@ components:
                         },
                     },
                   ]
+    CreateV2DisbursementRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/V2CreateDisbursementInput"
+          examples:
+            DafGrantTransaction:
+              summary: Disbursement with a DAF grant transaction
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 10000
+                transactions:
+                  [
+                    {
+                      amount: 10000,
+                      type: "donor_advised_fund_grant",
+                      purpose: "General Operating Support",
+                      note: "Annual grant from the Doe Family Fund",
+                      internal_grant_id: "grant_1234567890",
+                      attribution:
+                        {
+                          primary_donor:
+                            {
+                              first_name: "Jane",
+                              last_name: "Doe",
+                              email: "jane.doe@example.com",
+                            },
+                        },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
+                    },
+                  ]
+            MultipleTransactionsWithFees:
+              summary: Disbursement with multiple transactions including fees
+              value:
+                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                amount: 24000
+                transactions:
+                  [
+                    {
+                      amount: 15000,
+                      fee_amount: 500,
+                      type: "donor_advised_fund_grant",
+                      purpose: "General Operating Support",
+                      attribution:
+                        {
+                          primary_donor:
+                            {
+                              first_name: "Jane",
+                              last_name: "Doe",
+                              email: "jane.doe@example.com",
+                            },
+                        },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
+                    },
+                    {
+                      amount: 10000,
+                      fee_amount: 500,
+                      type: "corporate_match",
+                      purpose: "Employee matching gift",
+                      attribution:
+                        {
+                          primary_donor:
+                            {
+                              first_name: "John",
+                              last_name: "Smith",
+                              email: "john.smith@example.com",
+                            },
+                        },
+                      corporate_match: { company_name: "Acme Corp" },
+                    },
+                  ]
     CreateVerificationRequestRequest:
       description: |-
         The request to create a verification request for an unlisted organization.
@@ -5998,6 +6904,27 @@ components:
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call
                    to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListV2DisbursementsResponse:
+      description: The response for V2 Disbursements.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/V2Disbursement"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the next_page_token). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
     ListInboundTransfersResponse:

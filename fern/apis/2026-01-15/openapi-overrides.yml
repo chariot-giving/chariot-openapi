@@ -168,6 +168,69 @@ paths:
       x-fern-sdk-group-name:
         - disbursements
       x-fern-sdk-method-name: get
+  /v2/disbursements:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.next_page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: list
+  /v2/disbursements/bulk:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: bulkCreate
+  /v2/disbursements/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: get
+  /v2/disbursements/{id}/approve:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: approve
+  /v2/disbursements/approve:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: bulkApprove
+  /v2/disbursements/{id}/cancel:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: cancel
+  /v2/disbursements/{id}/stop:
+    post:
+      x-fern-sdk-group-name:
+        - disbursements_v2
+      x-fern-sdk-method-name: stop
+  /v1/simulations/disbursements/{id}/complete:
+    post:
+      x-fern-sdk-group-name:
+        - simulations
+      x-fern-sdk-method-name: completeDisbursement
+  /v1/simulations/disbursements/{id}/fail:
+    post:
+      x-fern-sdk-group-name:
+        - simulations
+      x-fern-sdk-method-name: failDisbursement
+  /v1/simulations/inbound_transfers/{id}/fail:
+    post:
+      x-fern-sdk-group-name:
+        - simulations
+      x-fern-sdk-method-name: failInboundTransfer
+  /v1/simulations/inbound_transfers/{id}/complete:
+    post:
+      x-fern-sdk-group-name:
+        - simulations
+      x-fern-sdk-method-name: completeInboundTransfer
   /v1/inbound_transfers:
     get:
       x-fern-pagination: true
