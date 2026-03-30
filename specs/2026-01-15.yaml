@@ -3535,22 +3535,22 @@ components:
     DonationAttribution:
       type: object
       description: |-
-        A subhash containing information about how the donation is attributed.
+        Attribution details for the donation, including primary and optional joint donor information.
       properties:
         primary_donor:
           description: |-
-            A subhash containing information about the primary donor of the donation.
+            The primary donor of the donation.
           allOf:
             - $ref: "#/components/schemas/Donor"
         joint_donor:
           description: |-
-            A subhash containing information about the joint donor of the donation.
+            The joint donor of the donation, if applicable.
           allOf:
             - $ref: "#/components/schemas/Donor"
     CorporateMatch:
       type: object
       description: |-
-        A subhash containing information about the corporate match for the donation.
+        Corporate match details for the donation.
       properties:
         match_amount:
           type: integer
@@ -5661,7 +5661,7 @@ components:
           maxLength: 600
         internal_grant_id:
           type: string
-          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
+          description: "A unique identifier for the grant within the grantmaker's internal system. Maximum length: 255 characters."
           example: "grant_1234567890"
           maxLength: 255
         attribution:
@@ -5806,7 +5806,7 @@ components:
           maxLength: 600
         internal_grant_id:
           type: string
-          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
+          description: "A unique identifier for the grant within the grantmaker's internal system. Maximum length: 255 characters."
           example: "grant_1234567890"
           maxLength: 255
         attribution:
@@ -5834,7 +5834,7 @@ components:
       properties:
         grant_id:
           type: string
-          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
+          description: "A unique identifier for the grant within the grantmaker's internal system. Maximum length: 255 characters."
           example: "grant_1234567890"
         organization_name:
           type: string
