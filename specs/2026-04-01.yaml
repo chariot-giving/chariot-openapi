@@ -1169,6 +1169,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Disbursement"
+              examples:
+                DafGrantDisbursement:
+                  $ref: "#/components/examples/DafGrantDisbursement"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1195,7 +1198,7 @@ paths:
           required: false
           schema:
             type: string
-          example: "org_01j8rs605a4gctmbm58d87mvsj"
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
         - name: page_limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
@@ -1246,20 +1249,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - disbursements
-              properties:
-                disbursements:
-                  type: array
-                  description: Array of disbursements to create
-                  minItems: 1
-                  items:
-                    $ref: "#/components/schemas/CreateDisbursementInput"
+        $ref: "#/components/requestBodies/BulkCreateDisbursementsRequest"
       responses:
         "201":
           description: The disbursements were created
@@ -1278,7 +1268,10 @@ paths:
                   count:
                     type: integer
                     description: The number of disbursements created
-                    example: 5
+                    example: 2
+              examples:
+                BulkCreateDisbursements:
+                  $ref: "#/components/examples/BulkCreateDisbursements"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1314,6 +1307,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Disbursement"
+              examples:
+                DafGrantDisbursement:
+                  $ref: "#/components/examples/DafGrantDisbursement"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1350,6 +1346,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Disbursement"
+              examples:
+                ApprovedDafGrantDisbursement:
+                  $ref: "#/components/examples/ApprovedDafGrantDisbursement"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2347,7 +2346,7 @@ components:
         id:
           type: string
           description: The unique identifier for the organization.
-          example: org_01j8rs605a4gctmbm58d87mvsj
+          example: org_01jpjenf5q6cawy43yxfcrxhct
         ein:
           type: string
           description: The Employer Identification Number (EIN) or TaxID for the nonprofit entity.
@@ -2383,7 +2382,7 @@ components:
           type: string
           readOnly: true
           description: The unique identifier for the object.
-          example: org_01j8rs605a4gctmbm58d87mvsj
+          example: org_01jpjenf5q6cawy43yxfcrxhct
         ein:
           type: string
           description: The EIN of the organization.
@@ -4189,7 +4188,7 @@ components:
           type: string
           description: |-
             The ID of the Organization record for the nonprofit being verified.
-          example: "org_01j8rs605a4gctmbm58d87mvsj"
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
         status:
           $ref: "#/components/schemas/VerificationRequestStatus"
         website:
@@ -5617,101 +5616,185 @@ components:
             $ref: "#/components/schemas/CreateDisbursementInput"
           examples:
             MultipleTransactions:
-              summary: Disbursement with multiple transactions
+              summary: Disbursement with multiple DAF grant transactions
               value:
-                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
                 amount: 25000
                 transactions:
                   [
                     {
                       amount: 15000,
-                      description: "Grant from Doe Family Fund",
+                      internal_transaction_id: "GRANT-001",
                       type: "donor_advised_fund_grant",
-                      donor_advised_fund_grant:
+                      purpose: "General Operating Support",
+                      note: "Allocate to education programs",
+                      donors:
                         {
-                          grant_id: "grant_1234567890",
-                          organization_name: "Miami Charitable",
-                          fund_name: "Doe Family Charitable Fund",
-                          purpose: "General Operating Support",
-                          donors:
-                            [
-                              {
-                                first_name: "Jane",
-                                last_name: "Doe",
-                                email: "jane.doe@example.com",
-                              },
-                            ],
+                          primary_donor:
+                            {
+                              first_name: "Jane",
+                              last_name: "Doe",
+                              email: "jane.doe@example.com",
+                            },
                         },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
                     },
                     {
                       amount: 10000,
-                      description: "Grant from Smith Family Fund",
-                      type: "donor_advised_fund_grant",
-                      donor_advised_fund_grant:
+                      internal_transaction_id: "MATCH-001",
+                      type: "corporate_match",
+                      purpose: "Corporate matching gift",
+                      note: "Matched employee donation",
+                      donors:
                         {
-                          organization_name: "LA Charitable",
-                          fund_name: "Smith Family Legacy Fund",
-                          purpose: "Program Support",
-                          donors:
-                            [
-                              {
-                                first_name: "John",
-                                last_name: "Smith",
-                                email: "john.smith@example.com",
-                              },
-                            ],
+                          primary_donor:
+                            {
+                              first_name: "John",
+                              last_name: "Smith",
+                              email: "john.smith@example.com",
+                            },
                         },
+                      corporate_match: { company_name: "Acme Corporation" },
                     },
                   ]
             MultipleTransactionsWithFees:
               summary: Disbursement with multiple transactions including fees
               value:
-                organization_id: "org_01j8rs605a4gctmbm58d87mvsj"
+                organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
                 amount: 24000
                 transactions:
                   [
                     {
                       amount: 15000,
                       fee_amount: 500,
-                      description: "Grant from Doe Family Fund",
+                      internal_transaction_id: "GRANT-001",
                       type: "donor_advised_fund_grant",
-                      donor_advised_fund_grant:
+                      purpose: "General Operating Support",
+                      note: "Allocate to education programs",
+                      donors:
                         {
-                          grant_id: "grant_1234567890",
-                          organization_name: "Miami Charitable",
-                          fund_name: "Doe Family Charitable Fund",
-                          purpose: "General Operating Support",
-                          donors:
-                            [
-                              {
-                                first_name: "Jane",
-                                last_name: "Doe",
-                                email: "jane.doe@example.com",
-                              },
-                            ],
+                          primary_donor:
+                            {
+                              first_name: "Jane",
+                              last_name: "Doe",
+                              email: "jane.doe@example.com",
+                            },
                         },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
                     },
                     {
                       amount: 10000,
                       fee_amount: 500,
-                      description: "Grant from Smith Family Fund",
+                      internal_transaction_id: "GRANT-002",
                       type: "donor_advised_fund_grant",
-                      donor_advised_fund_grant:
+                      purpose: "Program Support",
+                      donors:
                         {
-                          organization_name: "LA Charitable",
-                          fund_name: "Smith Family Legacy Fund",
-                          purpose: "Program Support",
-                          donors:
-                            [
-                              {
-                                first_name: "John",
-                                last_name: "Smith",
-                                email: "john.smith@example.com",
-                              },
-                            ],
+                          primary_donor:
+                            {
+                              first_name: "John",
+                              last_name: "Smith",
+                              email: "john.smith@example.com",
+                            },
                         },
+                      daf_grant: { fund_name: "Smith Family Legacy Fund" },
                     },
                   ]
+            CorporateMatchTransaction:
+              summary: Disbursement with a corporate match transaction
+              value:
+                organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+                amount: 10000
+                transactions:
+                  [
+                    {
+                      amount: 10000,
+                      internal_transaction_id: "MATCH-001",
+                      type: "corporate_match",
+                      purpose: "Corporate matching gift",
+                      note: "Matched employee donation",
+                      donors:
+                        {
+                          primary_donor:
+                            {
+                              first_name: "Alice",
+                              last_name: "Williams",
+                            },
+                        },
+                      corporate_match: { company_name: "Acme Corporation" },
+                    },
+                  ]
+    BulkCreateDisbursementsRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - disbursements
+            properties:
+              disbursements:
+                type: array
+                description: Array of disbursements to create
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/CreateDisbursementInput"
+            example:
+              disbursements:
+                - organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+                  amount: 25000
+                  transactions:
+                    - amount: 15000
+                      internal_transaction_id: "GRANT-001"
+                      type: "donor_advised_fund_grant"
+                      purpose: "General Operating Support"
+                      note: "Allocate to education programs"
+                      donors:
+                        primary_donor:
+                          first_name: "Jane"
+                          last_name: "Doe"
+                          email: "jane.doe@example.com"
+                      daf_grant:
+                        fund_name: "Doe Family Charitable Fund"
+                    - amount: 10000
+                      internal_transaction_id: "MATCH-001"
+                      type: "corporate_match"
+                      purpose: "Corporate matching gift"
+                      note: "Matched employee donation"
+                      donors:
+                        primary_donor:
+                          first_name: "John"
+                          last_name: "Smith"
+                          email: "john.smith@example.com"
+                      corporate_match:
+                        company_name: "Acme Corporation"
+                - organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+                  amount: 20000
+                  transactions:
+                    - amount: 12000
+                      internal_transaction_id: "GRANT-002"
+                      type: "donor_advised_fund_grant"
+                      purpose: "Youth Programs"
+                      note: "Annual grant for youth services"
+                      donors:
+                        primary_donor:
+                          first_name: "Alice"
+                          last_name: "Williams"
+                          email: "alice.williams@example.com"
+                      daf_grant:
+                        fund_name: "Williams Family Foundation"
+                    - amount: 8000
+                      internal_transaction_id: "MATCH-002"
+                      type: "corporate_match"
+                      purpose: "Corporate matching gift"
+                      note: "Matched employee donation"
+                      donors:
+                        primary_donor:
+                          first_name: "Bob"
+                          last_name: "Chen"
+                          email: "bob.chen@example.com"
+                      corporate_match:
+                        company_name: "TechCorp Inc."
     CreateVerificationRequestRequest:
       description: |-
         The request to create a verification request for an unlisted organization.
@@ -6102,6 +6185,9 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+          examples:
+            ListDisbursements:
+              $ref: "#/components/examples/ListDisbursements"
     ListInboundTransfersResponse:
       description: The response for InboundTransfers.list
       headers:
@@ -6438,6 +6524,800 @@ components:
             error: "Internal server error"
             message: "The server encountered an error processing your request"
   examples:
+    DafGrantDisbursement:
+      summary: Disbursement with DAF grant transactions
+      value:
+        id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+        organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+        organization:
+          id: "org_01jpjenf5q6cawy43yxfcrxhct"
+          name: "Local Community Foundation"
+          ein: "123456789"
+          parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+          physical_address:
+            line1: "456 Oak Avenue"
+            line2: "Suite 200"
+            city: "San Francisco"
+            state: "CA"
+            postal_code: "94105"
+            country: "US"
+          classification:
+            group_exemption_number: "0000"
+            subsection_code:
+              code: 3
+              name: "501(C)(3)"
+              description: "Organizations described in section 501(c)(3)"
+            filing_requirement_code:
+              code: 1
+              name: "990_REQUIRED"
+              description: "990 - Required to file Form 990"
+            foundation_code:
+              code: 15
+              name: "PUBLIC_CHARITY"
+              description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+            affiliation_code:
+              code: 3
+              name: "INDEPENDENT"
+              description: "Independent - the organization is an independent organization"
+            organization_code:
+              code: 1
+              name: "CORPORATION"
+              description: "Corporation"
+            exempt_status_code:
+              code: 1
+              name: "UNCONDITIONAL"
+              description: "Unconditional Exemption"
+            deductibility_code:
+              code: 1
+              name: "DEDUCTIBLE"
+              description: "Contributions are deductible"
+            ntee_code:
+              code: "T31"
+              description: "Community Foundations"
+              parent_code: "T"
+              parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+            naics_code:
+              naics2: "81"
+              naics2_description: "Other Services"
+              naics4: "8134"
+              naics4_description: "Civic and Social Organizations"
+              naics6: "813410"
+              naics6_description: "Civic and Social Organizations"
+          compliance:
+            daf_eligible: true
+            irs_pub_78:
+              compliant: true
+              reason: "Organization found in IRS Publication 78"
+              last_found_at: "2026-03-01T00:00:00Z"
+            ofac:
+              compliant: true
+              reason: "No matches found on OFAC SDN list"
+              last_found_at: "2026-03-01T00:00:00Z"
+            foundation_code:
+              compliant: true
+              reason: "Foundation code is eligible"
+              last_found_at: "2026-03-01T00:00:00Z"
+            california_attorney_general_registry:
+              compliant: true
+              reason: "Registered with California Attorney General"
+              last_found_at: "2026-03-01T00:00:00Z"
+            california_franchise_tax_board:
+              compliant: true
+              reason: "Listed on California Franchise Tax Board"
+              last_found_at: "2026-03-01T00:00:00Z"
+          mission_statement: "Supporting local communities through education and outreach"
+          web:
+            domain: "localcommunityfoundation.org"
+          brand:
+            icon_url: "https://cdn.example.com/lcf-icon.png"
+            logo_url: "https://cdn.example.com/lcf-logo.png"
+          officers:
+            - name: "Sarah Johnson"
+              title: "Executive Director"
+          claimed: true
+          incorporation:
+            formation_year: "2010"
+            state: "CA"
+            ruling_date: "2010-09"
+        program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+        amount: 25000
+        auto_fund: false
+        bypass_chariot_organization_verification: false
+        status: "pending_approval"
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-01T12:00:00Z"
+        transactions:
+          - id: "txn_01jpjen1s23s29kkmnjsb6fzga"
+            amount: 15000
+            internal_transaction_id: "GRANT-001"
+            net_amount: 15000
+            type: "donor_advised_fund_grant"
+            purpose: "General Operating Support"
+            note: "Allocate to education programs"
+            donors:
+              primary_donor:
+                first_name: "Jane"
+                last_name: "Doe"
+                email: "jane.doe@example.com"
+            daf_grant:
+              fund_name: "Doe Family Charitable Fund"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+          - id: "txn_02jpjen1s23s29kkmnjsb6fzga"
+            amount: 10000
+            internal_transaction_id: "MATCH-001"
+            net_amount: 10000
+            type: "corporate_match"
+            purpose: "Corporate matching gift"
+            note: "Matched employee donation"
+            donors:
+              primary_donor:
+                first_name: "John"
+                last_name: "Smith"
+                email: "john.smith@example.com"
+            corporate_match:
+              company_name: "Acme Corporation"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+    ApprovedDafGrantDisbursement:
+      summary: Approved disbursement with DAF grant transactions
+      value:
+        id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+        organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+        organization:
+          id: "org_01jpjenf5q6cawy43yxfcrxhct"
+          name: "Local Community Foundation"
+          ein: "123456789"
+          parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+          physical_address:
+            line1: "456 Oak Avenue"
+            line2: "Suite 200"
+            city: "San Francisco"
+            state: "CA"
+            postal_code: "94105"
+            country: "US"
+          classification:
+            group_exemption_number: "0000"
+            subsection_code:
+              code: 3
+              name: "501(C)(3)"
+              description: "Organizations described in section 501(c)(3)"
+            filing_requirement_code:
+              code: 1
+              name: "990_REQUIRED"
+              description: "990 - Required to file Form 990"
+            foundation_code:
+              code: 15
+              name: "PUBLIC_CHARITY"
+              description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+            affiliation_code:
+              code: 3
+              name: "INDEPENDENT"
+              description: "Independent - the organization is an independent organization"
+            organization_code:
+              code: 1
+              name: "CORPORATION"
+              description: "Corporation"
+            exempt_status_code:
+              code: 1
+              name: "UNCONDITIONAL"
+              description: "Unconditional Exemption"
+            deductibility_code:
+              code: 1
+              name: "DEDUCTIBLE"
+              description: "Contributions are deductible"
+            ntee_code:
+              code: "T31"
+              description: "Community Foundations"
+              parent_code: "T"
+              parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+            naics_code:
+              naics2: "81"
+              naics2_description: "Other Services"
+              naics4: "8134"
+              naics4_description: "Civic and Social Organizations"
+              naics6: "813410"
+              naics6_description: "Civic and Social Organizations"
+          compliance:
+            daf_eligible: true
+            irs_pub_78:
+              compliant: true
+              reason: "Organization found in IRS Publication 78"
+              last_found_at: "2026-03-01T00:00:00Z"
+            ofac:
+              compliant: true
+              reason: "No matches found on OFAC SDN list"
+              last_found_at: "2026-03-01T00:00:00Z"
+            foundation_code:
+              compliant: true
+              reason: "Foundation code is eligible"
+              last_found_at: "2026-03-01T00:00:00Z"
+            california_attorney_general_registry:
+              compliant: true
+              reason: "Registered with California Attorney General"
+              last_found_at: "2026-03-01T00:00:00Z"
+            california_franchise_tax_board:
+              compliant: true
+              reason: "Listed on California Franchise Tax Board"
+              last_found_at: "2026-03-01T00:00:00Z"
+          mission_statement: "Supporting local communities through education and outreach"
+          web:
+            domain: "localcommunityfoundation.org"
+          brand:
+            icon_url: "https://cdn.example.com/lcf-icon.png"
+            logo_url: "https://cdn.example.com/lcf-logo.png"
+          officers:
+            - name: "Sarah Johnson"
+              title: "Executive Director"
+          claimed: true
+          incorporation:
+            formation_year: "2010"
+            state: "CA"
+            ruling_date: "2010-09"
+        program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+        amount: 25000
+        auto_fund: false
+        bypass_chariot_organization_verification: false
+        status: "awaiting_verification"
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-01T12:30:00Z"
+        approval:
+          approved_at: "2026-04-01T12:30:00Z"
+        transactions:
+          - id: "txn_01jpjen1s23s29kkmnjsb6fzga"
+            amount: 15000
+            internal_transaction_id: "GRANT-001"
+            net_amount: 15000
+            type: "donor_advised_fund_grant"
+            purpose: "General Operating Support"
+            note: "Allocate to education programs"
+            donors:
+              primary_donor:
+                first_name: "Jane"
+                last_name: "Doe"
+                email: "jane.doe@example.com"
+            daf_grant:
+              fund_name: "Doe Family Charitable Fund"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+    BulkCreateDisbursements:
+      summary: Multiple disbursements created
+      value:
+        disbursements:
+          - id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+            organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+            organization:
+              id: "org_01jpjenf5q6cawy43yxfcrxhct"
+              name: "Local Community Foundation"
+              ein: "123456789"
+              parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+              physical_address:
+                line1: "456 Oak Avenue"
+                line2: "Suite 200"
+                city: "San Francisco"
+                state: "CA"
+                postal_code: "94105"
+                country: "US"
+              classification:
+                group_exemption_number: "0000"
+                subsection_code:
+                  code: 3
+                  name: "501(C)(3)"
+                  description: "Organizations described in section 501(c)(3)"
+                filing_requirement_code:
+                  code: 1
+                  name: "990_REQUIRED"
+                  description: "990 - Required to file Form 990"
+                foundation_code:
+                  code: 15
+                  name: "PUBLIC_CHARITY"
+                  description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+                affiliation_code:
+                  code: 3
+                  name: "INDEPENDENT"
+                  description: "Independent - the organization is an independent organization"
+                organization_code:
+                  code: 1
+                  name: "CORPORATION"
+                  description: "Corporation"
+                exempt_status_code:
+                  code: 1
+                  name: "UNCONDITIONAL"
+                  description: "Unconditional Exemption"
+                deductibility_code:
+                  code: 1
+                  name: "DEDUCTIBLE"
+                  description: "Contributions are deductible"
+                ntee_code:
+                  code: "T31"
+                  description: "Community Foundations"
+                  parent_code: "T"
+                  parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+                naics_code:
+                  naics2: "81"
+                  naics2_description: "Other Services"
+                  naics4: "8134"
+                  naics4_description: "Civic and Social Organizations"
+                  naics6: "813410"
+                  naics6_description: "Civic and Social Organizations"
+              compliance:
+                daf_eligible: true
+                irs_pub_78:
+                  compliant: true
+                  reason: "Organization found in IRS Publication 78"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                ofac:
+                  compliant: true
+                  reason: "No matches found on OFAC SDN list"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                foundation_code:
+                  compliant: true
+                  reason: "Foundation code is eligible"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_attorney_general_registry:
+                  compliant: true
+                  reason: "Registered with California Attorney General"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_franchise_tax_board:
+                  compliant: true
+                  reason: "Listed on California Franchise Tax Board"
+                  last_found_at: "2026-03-01T00:00:00Z"
+              mission_statement: "Supporting local communities through education and outreach"
+              web:
+                domain: "localcommunityfoundation.org"
+              brand:
+                icon_url: "https://cdn.example.com/lcf-icon.png"
+                logo_url: "https://cdn.example.com/lcf-logo.png"
+              officers:
+                - name: "Sarah Johnson"
+                  title: "Executive Director"
+              claimed: true
+              incorporation:
+                formation_year: "2010"
+                state: "CA"
+                ruling_date: "2010-09"
+            program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+            amount: 25000
+            auto_fund: false
+            bypass_chariot_organization_verification: false
+            status: "pending_approval"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+            transactions:
+              - id: "txn_01jpjen1s23s29kkmnjsb6fzga"
+                amount: 15000
+                internal_transaction_id: "GRANT-001"
+                net_amount: 15000
+                type: "donor_advised_fund_grant"
+                purpose: "General Operating Support"
+                note: "Allocate to education programs"
+                donors:
+                  primary_donor:
+                    first_name: "Jane"
+                    last_name: "Doe"
+                    email: "jane.doe@example.com"
+                daf_grant:
+                  fund_name: "Doe Family Charitable Fund"
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+              - id: "txn_02jpjen1s23s29kkmnjsb6fzga"
+                amount: 10000
+                internal_transaction_id: "MATCH-001"
+                net_amount: 10000
+                type: "corporate_match"
+                purpose: "Corporate matching gift"
+                note: "Matched employee donation"
+                donors:
+                  primary_donor:
+                    first_name: "John"
+                    last_name: "Smith"
+                    email: "john.smith@example.com"
+                corporate_match:
+                  company_name: "Acme Corporation"
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+          - id: "disbursement_02jpjen1s23s29kkmnjsb6fzga"
+            organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+            organization:
+              id: "org_01jpjenf5q6cawy43yxfcrxhct"
+              name: "Local Community Foundation"
+              ein: "123456789"
+              parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+              physical_address:
+                line1: "456 Oak Avenue"
+                line2: "Suite 200"
+                city: "San Francisco"
+                state: "CA"
+                postal_code: "94105"
+                country: "US"
+              classification:
+                group_exemption_number: "0000"
+                subsection_code:
+                  code: 3
+                  name: "501(C)(3)"
+                  description: "Organizations described in section 501(c)(3)"
+                filing_requirement_code:
+                  code: 1
+                  name: "990_REQUIRED"
+                  description: "990 - Required to file Form 990"
+                foundation_code:
+                  code: 15
+                  name: "PUBLIC_CHARITY"
+                  description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+                affiliation_code:
+                  code: 3
+                  name: "INDEPENDENT"
+                  description: "Independent - the organization is an independent organization"
+                organization_code:
+                  code: 1
+                  name: "CORPORATION"
+                  description: "Corporation"
+                exempt_status_code:
+                  code: 1
+                  name: "UNCONDITIONAL"
+                  description: "Unconditional Exemption"
+                deductibility_code:
+                  code: 1
+                  name: "DEDUCTIBLE"
+                  description: "Contributions are deductible"
+                ntee_code:
+                  code: "T31"
+                  description: "Community Foundations"
+                  parent_code: "T"
+                  parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+                naics_code:
+                  naics2: "81"
+                  naics2_description: "Other Services"
+                  naics4: "8134"
+                  naics4_description: "Civic and Social Organizations"
+                  naics6: "813410"
+                  naics6_description: "Civic and Social Organizations"
+              compliance:
+                daf_eligible: true
+                irs_pub_78:
+                  compliant: true
+                  reason: "Organization found in IRS Publication 78"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                ofac:
+                  compliant: true
+                  reason: "No matches found on OFAC SDN list"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                foundation_code:
+                  compliant: true
+                  reason: "Foundation code is eligible"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_attorney_general_registry:
+                  compliant: true
+                  reason: "Registered with California Attorney General"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_franchise_tax_board:
+                  compliant: true
+                  reason: "Listed on California Franchise Tax Board"
+                  last_found_at: "2026-03-01T00:00:00Z"
+              mission_statement: "Supporting local communities through education and outreach"
+              web:
+                domain: "localcommunityfoundation.org"
+              brand:
+                icon_url: "https://cdn.example.com/lcf-icon.png"
+                logo_url: "https://cdn.example.com/lcf-logo.png"
+              officers:
+                - name: "Sarah Johnson"
+                  title: "Executive Director"
+              claimed: true
+              incorporation:
+                formation_year: "2010"
+                state: "CA"
+                ruling_date: "2010-09"
+            program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+            amount: 20000
+            auto_fund: false
+            bypass_chariot_organization_verification: false
+            status: "pending_approval"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+            transactions:
+              - id: "txn_03jpjen1s23s29kkmnjsb6fzga"
+                amount: 12000
+                internal_transaction_id: "GRANT-002"
+                net_amount: 12000
+                type: "donor_advised_fund_grant"
+                purpose: "Youth Programs"
+                note: "Annual grant for youth services"
+                donors:
+                  primary_donor:
+                    first_name: "Alice"
+                    last_name: "Williams"
+                    email: "alice.williams@example.com"
+                daf_grant:
+                  fund_name: "Williams Family Foundation"
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+              - id: "txn_04jpjen1s23s29kkmnjsb6fzga"
+                amount: 8000
+                internal_transaction_id: "MATCH-002"
+                net_amount: 8000
+                type: "corporate_match"
+                purpose: "Corporate matching gift"
+                note: "Matched employee donation"
+                donors:
+                  primary_donor:
+                    first_name: "Bob"
+                    last_name: "Chen"
+                    email: "bob.chen@example.com"
+                corporate_match:
+                  company_name: "TechCorp Inc."
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+        count: 2
+    ListDisbursements:
+      summary: List of disbursements
+      value:
+        results:
+          - id: "disbursement_01jpjen1s23s29kkmnjsb6fzga"
+            organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+            organization:
+              id: "org_01jpjenf5q6cawy43yxfcrxhct"
+              name: "Local Community Foundation"
+              ein: "123456789"
+              parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+              physical_address:
+                line1: "456 Oak Avenue"
+                line2: "Suite 200"
+                city: "San Francisco"
+                state: "CA"
+                postal_code: "94105"
+                country: "US"
+              classification:
+                group_exemption_number: "0000"
+                subsection_code:
+                  code: 3
+                  name: "501(C)(3)"
+                  description: "Organizations described in section 501(c)(3)"
+                filing_requirement_code:
+                  code: 1
+                  name: "990_REQUIRED"
+                  description: "990 - Required to file Form 990"
+                foundation_code:
+                  code: 15
+                  name: "PUBLIC_CHARITY"
+                  description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+                affiliation_code:
+                  code: 3
+                  name: "INDEPENDENT"
+                  description: "Independent - the organization is an independent organization"
+                organization_code:
+                  code: 1
+                  name: "CORPORATION"
+                  description: "Corporation"
+                exempt_status_code:
+                  code: 1
+                  name: "UNCONDITIONAL"
+                  description: "Unconditional Exemption"
+                deductibility_code:
+                  code: 1
+                  name: "DEDUCTIBLE"
+                  description: "Contributions are deductible"
+                ntee_code:
+                  code: "T31"
+                  description: "Community Foundations"
+                  parent_code: "T"
+                  parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+                naics_code:
+                  naics2: "81"
+                  naics2_description: "Other Services"
+                  naics4: "8134"
+                  naics4_description: "Civic and Social Organizations"
+                  naics6: "813410"
+                  naics6_description: "Civic and Social Organizations"
+              compliance:
+                daf_eligible: true
+                irs_pub_78:
+                  compliant: true
+                  reason: "Organization found in IRS Publication 78"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                ofac:
+                  compliant: true
+                  reason: "No matches found on OFAC SDN list"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                foundation_code:
+                  compliant: true
+                  reason: "Foundation code is eligible"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_attorney_general_registry:
+                  compliant: true
+                  reason: "Registered with California Attorney General"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_franchise_tax_board:
+                  compliant: true
+                  reason: "Listed on California Franchise Tax Board"
+                  last_found_at: "2026-03-01T00:00:00Z"
+              mission_statement: "Supporting local communities through education and outreach"
+              web:
+                domain: "localcommunityfoundation.org"
+              brand:
+                icon_url: "https://cdn.example.com/lcf-icon.png"
+                logo_url: "https://cdn.example.com/lcf-logo.png"
+              officers:
+                - name: "Sarah Johnson"
+                  title: "Executive Director"
+              claimed: true
+              incorporation:
+                formation_year: "2010"
+                state: "CA"
+                ruling_date: "2010-09"
+            program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+            amount: 25000
+            auto_fund: false
+            bypass_chariot_organization_verification: false
+            status: "pending_approval"
+            created_at: "2026-04-01T12:00:00Z"
+            updated_at: "2026-04-01T12:00:00Z"
+            transactions:
+              - id: "txn_01jpjen1s23s29kkmnjsb6fzga"
+                amount: 15000
+                internal_transaction_id: "GRANT-001"
+                net_amount: 15000
+                type: "donor_advised_fund_grant"
+                purpose: "General Operating Support"
+                note: "Allocate to education programs"
+                donors:
+                  primary_donor:
+                    first_name: "Jane"
+                    last_name: "Doe"
+                    email: "jane.doe@example.com"
+                daf_grant:
+                  fund_name: "Doe Family Charitable Fund"
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+              - id: "txn_02jpjen1s23s29kkmnjsb6fzga"
+                amount: 10000
+                internal_transaction_id: "MATCH-001"
+                net_amount: 10000
+                type: "corporate_match"
+                purpose: "Corporate matching gift"
+                note: "Matched employee donation"
+                donors:
+                  primary_donor:
+                    first_name: "John"
+                    last_name: "Smith"
+                    email: "john.smith@example.com"
+                corporate_match:
+                  company_name: "Acme Corporation"
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-01T12:00:00Z"
+          - id: "disbursement_02jpjen1s23s29kkmnjsb6fzga"
+            organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+            organization:
+              id: "org_01jpjenf5q6cawy43yxfcrxhct"
+              name: "Local Community Foundation"
+              ein: "123456789"
+              parent_organization_id: "org_01j8rs605a4gctmbm58d87mvsk"
+              physical_address:
+                line1: "456 Oak Avenue"
+                line2: "Suite 200"
+                city: "San Francisco"
+                state: "CA"
+                postal_code: "94105"
+                country: "US"
+              classification:
+                group_exemption_number: "0000"
+                subsection_code:
+                  code: 3
+                  name: "501(C)(3)"
+                  description: "Organizations described in section 501(c)(3)"
+                filing_requirement_code:
+                  code: 1
+                  name: "990_REQUIRED"
+                  description: "990 - Required to file Form 990"
+                foundation_code:
+                  code: 15
+                  name: "PUBLIC_CHARITY"
+                  description: "Organization that normally receives a substantial part of its support from a governmental unit or from the general public"
+                affiliation_code:
+                  code: 3
+                  name: "INDEPENDENT"
+                  description: "Independent - the organization is an independent organization"
+                organization_code:
+                  code: 1
+                  name: "CORPORATION"
+                  description: "Corporation"
+                exempt_status_code:
+                  code: 1
+                  name: "UNCONDITIONAL"
+                  description: "Unconditional Exemption"
+                deductibility_code:
+                  code: 1
+                  name: "DEDUCTIBLE"
+                  description: "Contributions are deductible"
+                ntee_code:
+                  code: "T31"
+                  description: "Community Foundations"
+                  parent_code: "T"
+                  parent_description: "Philanthropy, Voluntarism & Grantmaking Foundations"
+                naics_code:
+                  naics2: "81"
+                  naics2_description: "Other Services"
+                  naics4: "8134"
+                  naics4_description: "Civic and Social Organizations"
+                  naics6: "813410"
+                  naics6_description: "Civic and Social Organizations"
+              compliance:
+                daf_eligible: true
+                irs_pub_78:
+                  compliant: true
+                  reason: "Organization found in IRS Publication 78"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                ofac:
+                  compliant: true
+                  reason: "No matches found on OFAC SDN list"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                foundation_code:
+                  compliant: true
+                  reason: "Foundation code is eligible"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_attorney_general_registry:
+                  compliant: true
+                  reason: "Registered with California Attorney General"
+                  last_found_at: "2026-03-01T00:00:00Z"
+                california_franchise_tax_board:
+                  compliant: true
+                  reason: "Listed on California Franchise Tax Board"
+                  last_found_at: "2026-03-01T00:00:00Z"
+              mission_statement: "Supporting local communities through education and outreach"
+              web:
+                domain: "localcommunityfoundation.org"
+              brand:
+                icon_url: "https://cdn.example.com/lcf-icon.png"
+                logo_url: "https://cdn.example.com/lcf-logo.png"
+              officers:
+                - name: "Sarah Johnson"
+                  title: "Executive Director"
+              claimed: true
+              incorporation:
+                formation_year: "2010"
+                state: "CA"
+                ruling_date: "2010-09"
+            program_id: "program_01jpjenf5q6cawy43yxfcrxhct"
+            amount: 20000
+            auto_fund: false
+            bypass_chariot_organization_verification: false
+            status: "completed"
+            created_at: "2026-03-15T12:00:00Z"
+            updated_at: "2026-03-20T12:00:00Z"
+            transactions:
+              - id: "txn_03jpjen1s23s29kkmnjsb6fzga"
+                amount: 12000
+                internal_transaction_id: "GRANT-002"
+                net_amount: 12000
+                type: "donor_advised_fund_grant"
+                purpose: "Youth Programs"
+                note: "Annual grant for youth services"
+                donors:
+                  primary_donor:
+                    first_name: "Alice"
+                    last_name: "Williams"
+                    email: "alice.williams@example.com"
+                daf_grant:
+                  fund_name: "Williams Family Foundation"
+                created_at: "2026-03-15T12:00:00Z"
+                updated_at: "2026-03-20T12:00:00Z"
+              - id: "txn_04jpjen1s23s29kkmnjsb6fzga"
+                amount: 8000
+                internal_transaction_id: "MATCH-002"
+                net_amount: 8000
+                type: "corporate_match"
+                purpose: "Corporate matching gift"
+                note: "Matched employee donation"
+                donors:
+                  primary_donor:
+                    first_name: "Bob"
+                    last_name: "Chen"
+                    email: "bob.chen@example.com"
+                corporate_match:
+                  company_name: "TechCorp Inc."
+                created_at: "2026-03-15T12:00:00Z"
+                updated_at: "2026-03-20T12:00:00Z"
+        next_page_token: "eyJsYXN0X2lkIjoiZGlzYnVyc2VtZW50XzAyanBqZW4xcz"
     NonprofitRedCross:
       summary: American Red Cross
       value:
