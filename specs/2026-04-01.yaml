@@ -5067,7 +5067,8 @@ components:
         - corporate_match
     DonorAdvisedFundGrant:
       type: object
-      description: A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor.
+      deprecated: true
+      description: "Deprecated. Use daf_grant instead. A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor."
       properties:
         grant_id:
           type: string
