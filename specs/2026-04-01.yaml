@@ -4986,13 +4986,6 @@ components:
             This is the actual amount that will be disbursed to the nonprofit.
           example: 9500
           readOnly: true
-        description:
-          type: string
-          deprecated: true
-          description: |
-            A description of the transaction.
-            This description is displayed to the receiving organization.
-          example: "Disbursement to nonprofit"
         type:
           $ref: "#/components/schemas/DonationType"
         purpose:
@@ -5009,37 +5002,6 @@ components:
           $ref: "#/components/schemas/TransactionDonors"
         daf_grant:
           $ref: "#/components/schemas/TransactionDafGrant"
-        donor_advised_fund_grant:
-          type: object
-          deprecated: true
-          description: "Deprecated. A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor. Use daf_grant instead."
-          nullable: true
-          properties:
-            grant_id:
-              type: string
-              description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
-              example: "grant_1234567890"
-            organization_name:
-              type: string
-              description: "The name of the DAF organization that made the grant. Maximum length: 255 characters."
-              example: "Vanguard Charitable"
-            fund_name:
-              type: string
-              description: "The name of the DAF fund that made the grant. Maximum length: 255 characters."
-              example: "John Doe Fund"
-            purpose:
-              type: string
-              description: "The purpose of the grant. Maximum length: 400 characters."
-              example: "General Operating Support"
-            note:
-              type: string
-              description: "A note about the grant. Maximum length: 400 characters."
-              example: "This grant is for the general operating support of the organization."
-            donors:
-              type: array
-              description: The list of donors for the transaction
-              items:
-                $ref: "#/components/schemas/Donor"
         corporate_match:
           $ref: "#/components/schemas/TransactionCorporateMatch"
         created_at:
@@ -5065,36 +5027,6 @@ components:
       enum:
         - donor_advised_fund_grant
         - corporate_match
-    DonorAdvisedFundGrant:
-      type: object
-      deprecated: true
-      description: "Deprecated. Use daf_grant instead. A donor-advised fund grant is a charitable donation made by a donor-advised fund (DAF) on behalf of the donor."
-      properties:
-        grant_id:
-          type: string
-          description: "A unique identifier for the grant within the DAF provider's internal system. Maximum length: 255 characters."
-          example: "grant_1234567890"
-        organization_name:
-          type: string
-          description: "The name of the DAF organization that made the grant. Maximum length: 255 characters."
-          example: "Vanguard Charitable"
-        fund_name:
-          type: string
-          description: "The name of the DAF fund that made the grant. Maximum length: 255 characters."
-          example: "John Doe Fund"
-        purpose:
-          type: string
-          description: "The purpose of the grant. Maximum length: 400 characters."
-          example: "General Operating Support"
-        note:
-          type: string
-          description: "A note about the grant. Maximum length: 400 characters."
-          example: "This grant is for the general operating support of the organization."
-        donors:
-          type: array
-          description: The list of donors for the transaction
-          items:
-            $ref: "#/components/schemas/Donor"
     Donor:
       type: object
       description: The donor information for the transaction
