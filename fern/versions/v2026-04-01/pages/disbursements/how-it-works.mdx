@@ -37,11 +37,14 @@ This section provides the steps required to send a disbursement via API. Note, y
 
 ### Fund your account
 
-First, you'll need to fund your Chariot Deposit Account with the amount of money you'd like to send in disbursements.
+Fund your Chariot Deposit Account with the amount of money you'd like to send in disbursements.
 
-You can do this by creating an [Inbound Transfer](/api/inbound-transfers/create).
-Note that the funds will need to be available in your Chariot Deposit Account before you can create and send disbursements.
+You can do this by creating an [Inbound Transfer](/api/inbound-transfers/create) or by sending an ACH credit to your Chariot Deposit Account.
 You can use the [GET Financial Account Balance](/api/financial-accounts/get-balance) endpoint to check the balance of the account.
+
+<Note>
+You can create disbursements before your account is funded, but they will remain in `awaiting_balance` status until sufficient funds are available. Alternatively, you can use [Just-In-Time (JIT) funding](/guides/disbursements/disbursement-lifecycle#just-in-time-jit-disbursements) to have Chariot automatically fund disbursements when they are approved.
+</Note>
 
 <EndpointRequestSnippet endpoint="POST /v1/inbound_transfers" example="CreateInboundTransfer" />
 
