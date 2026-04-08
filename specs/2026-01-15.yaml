@@ -2318,7 +2318,7 @@ paths:
                 address:
                   $ref: "#/components/schemas/Address"
       responses:
-        "204":
+        "200":
           description: Indicates the PO box has been successfully provisioned.
         "400":
           $ref: "#/components/responses/BadRequestError"

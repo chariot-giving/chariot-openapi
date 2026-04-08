@@ -2320,6 +2320,17 @@ paths:
                   example: "po_9876"
                 address:
                   $ref: "#/components/schemas/Address"
+      responses:
+        "200":
+          description: Indicates the PO box has been successfully provisioned.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
