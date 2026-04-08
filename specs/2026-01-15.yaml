@@ -2282,9 +2282,9 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/mailbox/provision:
+  /v1/lockboxes/fulfill_request:
     post:
-      summary: Provision a Mailbox
+      summary: Fulfill a Lockbox Request
       description: |-
         Notifies Chariot that a new PO box has been provisioned by the lockbox provider.
 
@@ -2305,6 +2305,7 @@ paths:
               required:
                 - request_id
                 - location_id
+                - address
               properties:
                 request_id:
                   type: string
@@ -2314,6 +2315,8 @@ paths:
                   type: string
                   description: The identifier of the newly provisioned PO box.
                   example: "po_9876"
+                address:
+                  $ref: "#/components/schemas/Address"
       responses:
         "204":
           description: Indicates the PO box has been successfully provisioned.

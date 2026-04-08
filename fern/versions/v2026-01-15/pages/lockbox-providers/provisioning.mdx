@@ -4,7 +4,7 @@ createdAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
 ---
 
-For dedicated PO boxes, the provisioning flow is as follows. See the [Provision a Mailbox](/v2026-01-15/api/mailbox/provision) API reference for endpoint details.
+For dedicated PO boxes, the provisioning flow is as follows. See the [Provision a Lockbox](/v2026-01-15/api/lockbox/provision) API reference for endpoint details.
 
 Also see: [Mail Uploads](/v2026-01-15/guides/lockbox-providers/mail-uploads) | [Rescans](/v2026-01-15/guides/lockbox-providers/mail-uploads#rescans)
 
@@ -25,10 +25,17 @@ The provider reserves and sets up the new PO box (e.g., PO 9876).
 
 Once the PO box is live, the provider sends a request to the Chariot provisioning endpoint:
 
-```json title="POST /mailbox/provision"
+```json title="POST /lockbox/provision"
 {
   "request_id": "req_01kkmjrdgdjtwgk7wdkba1kn9s",
-  "location_id": "po_9876"
+  "location_id": "po_9876",
+  "address": {
+    "line1": "123 Main St"
+    "line2": "STE 12345",
+    "city": "New York",
+    "state": "NY",
+    "zip": "12345-1234"
+  }
 }
 ```
 
