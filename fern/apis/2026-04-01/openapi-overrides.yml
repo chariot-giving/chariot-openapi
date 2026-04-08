@@ -263,9 +263,8 @@ paths:
       x-fern-sdk-group-name:
         - mailbox
       x-fern-sdk-method-name: getUploadUrl
-  /v1/mailbox/provision:
+  /v1/lockboxes/fulfill_request:
     post:
       x-fern-sdk-group-name:
         - mailbox
-      x-fern-sdk-method-name: provision
-
+      x-fern-sdk-method-name: fulfillRequest
