@@ -175,8 +175,6 @@ navigation:
             skip-slug: true
             icon: money-check
             contents:
-              - financialAccounts:
-                  title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
               - disbursements:
