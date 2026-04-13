@@ -94,6 +94,15 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/processing/faq.mdx
+      - section: OAuth
+        slug: oauth
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/oauth/overview.mdx
+          - page: Identity
+            slug: identity
+            path: ./pages/oauth/identity.mdx
       - section: Lockbox Providers
         slug: lockbox-providers
         hidden: true
