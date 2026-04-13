@@ -2001,7 +2001,7 @@ paths:
     post:
       summary: Create a Donation
       description: |-
-        Create a donation for your account.
+        Create a donation for a nonprofit-managed payment source.
       operationId: createDonation
       tags:
         - donations
@@ -2235,9 +2235,10 @@ paths:
     post:
       summary: Reconcile a Deposit
       description: |-
-        Reconciles a deposit to one or more donations. This links donations to
-        the deposit that settled the funds, establishing the relationship between
-        the money received and the individual donations it represents.
+        Reconciles a deposit to one or more donations for a nonprofit-managed payment source.
+        This links donations to the deposit that settled the funds, establishing the
+        relationship between the money received and the individual donations it represents.
+        This endpoint is only available for deposits and donations belonging to nonprofit-managed payment sources.
       operationId: reconcileDeposit
       tags:
         - deposits
@@ -5598,7 +5599,7 @@ components:
                   - "donation_02k9st716b5hdunco69e98nwtk"
     CreatePaymentSourceRequest:
       description: |-
-        The request to create a nonprofit-managed payment source.
+        The request to create a nonprofit-managed payment source with an electronic bank address.
         This creates a manual payment source that can be used to track and reconcile
         incoming deposits from sources outside of Chariot's integrated network.
       required: true
