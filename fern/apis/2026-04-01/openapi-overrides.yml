@@ -197,6 +197,10 @@ paths:
       x-fern-sdk-group-name:
         - paymentSources
       x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - paymentSources
+      x-fern-sdk-method-name: create
   /v1/payment_sources/{id}:
     get:
       x-fern-sdk-group-name:
@@ -211,11 +215,23 @@ paths:
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: create
   /v1/donations/{id}:
     get:
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: delete
   /v1/deposits:
     get:
       x-fern-pagination:
@@ -230,6 +246,11 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
+  /v1/reconcile:
+    post:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: reconcile
   /v1/properties:
     get:
       x-fern-pagination:
