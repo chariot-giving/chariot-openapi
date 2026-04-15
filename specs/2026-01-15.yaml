@@ -3177,14 +3177,11 @@ components:
           type: string
           description: |-
             The name of the fundraising platform that initiated the donation.
-            Populated for integrated DAFpay sources from the connected platform record.
           example: "Classy"
         dafpay_form:
           type: string
           description: |-
-            The display name of the DAFpay form or fundraising application that initiated the donation.
-            This is populated for both integrated and unintegrated DAFpay sources.
-            Derived from the fundraising application name, integration partner name, or defaults to "Components".
+            The DAFpay form where the donation was initiated.
           example: "DAF day"
         dafpay_tracking_id:
           type: string
