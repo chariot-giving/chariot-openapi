@@ -3212,8 +3212,8 @@ components:
           nullable: true
           description: |-
             The date and time when the donation was canceled.
-            A non-null value indicates the donation is tied to a canceled grant initiation
-            and the gift was not received. Expressed in RFC 3339 format.
+            This happens when a donor initiates a grant and then cancels before the grant is processed.
+            Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
     Deposit:
       type: object
