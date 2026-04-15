@@ -2748,6 +2748,14 @@ components:
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
+        individual_gift_amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount contributed by the individual donor in minor units of the currency.
+            This represents the donor's original gift amount, separate from any corporate matching.
+            Calculated as the difference between the donation's gross amount and the corporate match amount.
+            Only present when the donation includes a corporate match.
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
@@ -3025,19 +3033,10 @@ components:
       description: |-
         A subhash containing information about the corporate match for the donation.
       properties:
-        individual_contribution_amount:
-          type: integer
-          format: int64
-          description: |-
-            The amount contributed by the individual donor in minor units of the donation currency.
-            This represents the donor's original gift amount, separate from any corporate matching.
-            Calculated as the difference between the donation's gross amount and the corporate match amount.
         match_amount:
           type: integer
           format: int64
-          description: |-
-            The amount of the corporate match in minor units of the donation currency.
-            This is the company's matching contribution, separate from the individual donor's gift.
+          description: The amount of the corporate match for the donation in minor units of the donation currency.
         company_name:
           type: string
           description: The name of the company that matched the donation.
@@ -3158,7 +3157,7 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
-        integration_type:
+        channel:
           type: string
           description: |-
             The DAFpay integration channel used to initiate the donation.
