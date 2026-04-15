@@ -2756,9 +2756,6 @@ components:
           format: int64
           description: |-
             The amount contributed by the individual donor in minor units of the currency.
-            This represents the donor's original gift amount, separate from any corporate matching.
-            Calculated as the difference between the donation's gross amount and the corporate match amount.
-            Only present when the donation includes a corporate match.
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
