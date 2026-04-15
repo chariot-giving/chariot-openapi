@@ -3028,10 +3028,19 @@ components:
       description: |-
         A subhash containing information about the corporate match for the donation.
       properties:
+        individual_contribution_amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount contributed by the individual donor in minor units of the donation currency.
+            This represents the donor's original gift amount, separate from any corporate matching.
+            Calculated as the difference between the donation's gross amount and the corporate match amount.
         match_amount:
           type: integer
           format: int64
-          description: The amount of the corporate match for the donation in minor units of the donation currency.
+          description: |-
+            The amount of the corporate match in minor units of the donation currency.
+            This is the company's matching contribution, separate from the individual donor's gift.
         company_name:
           type: string
           description: The name of the company that matched the donation.
@@ -3152,13 +3161,34 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        integration_type:
+          type: string
+          description: |-
+            The DAFpay integration channel used to initiate the donation.
+            - `INTEGRATED` - The donation was initiated through an integrated DAFpay instance where the DAF sponsor
+              processes the grant electronically via the DAFpay network.
+            - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
+              completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
+          example: "INTEGRATED"
+          enum:
+            - INTEGRATED
+            - UNINTEGRATED
         web_location_url:
           type: string
           description: The URL of the web location where the donation was initiated.
           example: "https://www.example.com/donation/1234567890"
         fundraising_platform_name:
           type: string
-          description: The name of the fundraising platform that initiated the donation.
+          description: |-
+            The name of the fundraising platform that initiated the donation.
+            Populated for integrated DAFpay sources from the connected platform record.
+          example: "Classy"
+        dafpay_form:
+          type: string
+          description: |-
+            The display name of the DAFpay form or fundraising application that initiated the donation.
+            This is populated for both integrated and unintegrated DAFpay sources.
+            Derived from the fundraising application name, integration partner name, or defaults to "Components".
           example: "DAF day"
         dafpay_tracking_id:
           type: string
@@ -3182,6 +3212,16 @@ components:
           enum:
             - ONE_TIME
             - MONTHLY
+        canceled_at:
+          type: string
+          readOnly: true
+          format: date-time
+          nullable: true
+          description: |-
+            The date and time when the donation was canceled.
+            A non-null value indicates the donation is tied to a canceled grant initiation
+            and the gift was not received. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
     Deposit:
       type: object
       description: |-

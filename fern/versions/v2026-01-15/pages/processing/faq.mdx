@@ -60,6 +60,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     <Accordion title="What are the fees for Chariot Gift Processing?">
         Please visit [our pricing page](https://givechariot.com/pricing) for more information.
     </Accordion>
+
 </AccordionGroup>
 
 ## Payment Sources
@@ -91,6 +92,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         If you no longer want to use a Payment Source, you can stop directing payment sources to it and it will become inactive over time.
     </Accordion>
+
 </AccordionGroup>
 
 ## Donations and Deposits
@@ -164,11 +166,30 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
         You must configure and verify an external bank account through the Chariot Dashboard before you can create outbound transfers in production.
         </Note>
     </Accordion>
+
 </AccordionGroup>
 
 ## Integration and API
 
 <AccordionGroup>
+    <Accordion title="How do I map dashboard fields to the API?">
+        The table below maps common fields from the Chariot Dashboard donation export to their corresponding API fields on the [Donation](/api/donations/list) object.
+
+        | Dashboard Field | API Field | Notes |
+        |---|---|---|
+        | Additional Details | `platform.metadata` | Key-value metadata from the platform that facilitated the donation. |
+        | Company | `corporate_match.company_name` | The name of the company that matched the donation. |
+        | External ID | `donor_advised_fund_grant.sponsor_grant_id` | The grant identifier from the DAF sponsor. |
+        | CRM Status / Internal Note | `properties` | Custom properties assigned to the donation via the Properties API. |
+        | DAFpay Metadata | `initiation.dafpay_metadata` | Key-value pairs passed to DAFpay during the donation initiation. |
+        | DAFpay Form | `initiation.dafpay_form` | The display name of the DAFpay form. Populated for both integrated and unintegrated sources. |
+        | DAFpay Type | `initiation.integration_type` | `INTEGRATED` or `UNINTEGRATED`. |
+        | Canceled | `initiation.canceled_at` | If non-null, the donation is tied to a canceled grant initiation. |
+        | Donor Amount | `corporate_match.individual_contribution_amount` | The individual donor's contribution amount (for corporate match donations). |
+        | Match Amount | `corporate_match.match_amount` | The company's matching contribution amount. |
+        | Deposit Type | Requires a separate call to the [Deposit API](/api/deposits/get) using `settlement.deposit_id` from the donation. | The deposit contains transfer method and payment source details. |
+    </Accordion>
+
     <Accordion title="How do I integrate Chariot with my CRM?">
         The typical integration flow:
 
@@ -211,6 +232,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         Contact [support@givechariot.com](mailto:support@givechariot.com) if you need help resolving returned deposits.
     </Accordion>
+
 </AccordionGroup>
 
 ## Compliance and Security
@@ -233,6 +255,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
     </Accordion>
+
 </AccordionGroup>
 
 ## Still Have Questions?
@@ -244,5 +267,9 @@ If you can't find the answer you're looking for:
 - **Dashboard**: Access your account at [dashboard.givechariot.com](https://dashboard.givechariot.com)
 
 <Info>
-Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+  Chariot is a financial technology company, not a bank. Chariot Accounts come
+  with a Demand Deposit Account through our banking services partner, Column
+  N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC
+  insurance up to $250,000 per depositor, for each insurable capacity in which
+  the account is held.
 </Info>
