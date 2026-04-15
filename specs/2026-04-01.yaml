@@ -2751,6 +2751,11 @@ components:
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
+        individual_gift_amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount contributed by the individual donor in minor units of the currency.
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
@@ -2821,6 +2826,16 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the donation was last updated.
+          example: "2020-01-31T23:59:59Z"
+        canceled_at:
+          type: string
+          readOnly: true
+          format: date-time
+          nullable: true
+          description: |-
+            The date and time when the donation was canceled.
+            A non-null value indicates the donation is tied to a canceled grant initiation
+            and the gift was not received. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
     Artifact:
       type: object
@@ -3152,13 +3167,31 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        channel:
+          type: string
+          description: |-
+            The DAFpay integration channel used to initiate the donation.
+            - `INTEGRATED` - The donation was initiated through an integrated DAFpay instance where the DAF sponsor
+              processes the grant electronically via the DAFpay network.
+            - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
+              completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
+          example: "INTEGRATED"
+          enum:
+            - INTEGRATED
+            - UNINTEGRATED
         web_location_url:
           type: string
           description: The URL of the web location where the donation was initiated.
           example: "https://www.example.com/donation/1234567890"
         fundraising_platform_name:
           type: string
-          description: The name of the fundraising platform that initiated the donation.
+          description: |-
+            The name of the fundraising platform that initiated the donation.
+          example: "Classy"
+        dafpay_form:
+          type: string
+          description: |-
+            The DAFpay form where the donation was initiated.
           example: "DAF day"
         dafpay_tracking_id:
           type: string
