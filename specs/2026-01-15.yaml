@@ -2834,6 +2834,18 @@ components:
             A non-null value indicates the donation is tied to a canceled grant initiation
             and the gift was not received. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        payment_status:
+          type: string
+          readOnly: true
+          description: The payment status of the donation. Indicates the current state of the payment lifecycle.
+          example: "PAYMENT_STATUS_INCOMING_TO_CHARIOT"
+          enum:
+            - PAYMENT_STATUS_UNSPECIFIED
+            - PAYMENT_STATUS_INCOMING_TO_CHARIOT
+            - PAYMENT_STATUS_INCOMING_OUTSIDE_CHARIOT
+            - PAYMENT_STATUS_RECEIVED_IN_CHARIOT
+            - PAYMENT_STATUS_RECEIVED_OUTSIDE_CHARIOT
+            - PAYMENT_STATUS_CANCELED
     Artifact:
       type: object
       description: |-
