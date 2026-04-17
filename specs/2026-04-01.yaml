@@ -2843,7 +2843,6 @@ components:
           description: The payment status of the donation. Indicates the current state of the payment lifecycle.
           example: "INCOMING_TO_CHARIOT"
           enum:
-            - UNSPECIFIED
             - INCOMING_TO_CHARIOT
             - INCOMING_OUTSIDE_CHARIOT
             - RECEIVED_IN_CHARIOT
