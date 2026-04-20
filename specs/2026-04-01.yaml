@@ -2076,13 +2076,7 @@ paths:
     patch:
       summary: Update a Donation
       description: |-
-        Update specific fields on a donation.
-
-        The `update_mask` array declares which fields to modify. Only fields listed in the mask are affected — all other fields remain unchanged.
-
-        - **Field in mask with a value**: The field is overridden and frozen to that value. Future sync events will not change it.
-        - **Field in mask with null**: The override is removed and the field reverts to its source data.
-        - **Field not in mask**: The field is unchanged.
+        Update specific fields on a donation. Fields listed in `update_mask` are overridden with the provided value. Fields not in the mask are unchanged.
       operationId: updateDonation
       tags:
         - donations
