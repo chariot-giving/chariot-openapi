@@ -2076,8 +2076,13 @@ paths:
     patch:
       summary: Update a Donation
       description: |-
-        Update a donation by its unique identifier.
-        This can be used to update core donation attributes like purpose, note, and attribution.
+        Update specific fields on a donation.
+
+        The `update_mask` array declares which fields to modify. Only fields listed in the mask are affected — all other fields remain unchanged.
+
+        - **Field in mask with a value**: The field is overridden and frozen to that value. Future sync events will not change it.
+        - **Field in mask with null**: The override is removed and the field reverts to its source data.
+        - **Field not in mask**: The field is unchanged.
       operationId: updateDonation
       tags:
         - donations
@@ -5477,48 +5482,96 @@ components:
                 example: "file_01j8rs605a4gctmbm58d87mvsj"
     UpdateDonationRequest:
       description: |-
-        The request to update core donation attributes like purpose, note and attribution.
+        The request to update donation fields using a field mask.
+        Only fields listed in `update_mask` are modified. Fields not in the mask are unchanged.
       required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - update_mask
             properties:
-              reason:
-                type: string
+              update_mask:
+                type: array
+                items:
+                  type: string
                 description: |-
-                  A user-friendly reason or comment about the update.
-                  This is useful to understand why the donation was updated.
-                example: "Donor requested a change to the donation purpose"
+                  The list of field paths to update. Uses dot notation for nested fields.
+                  Only fields in the mask are modified. Fields not in the mask are unchanged.
+
+                  Allowed paths: `purpose`, `note`,
+                  `attribution.primary_donor.full_name`, `attribution.primary_donor.first_name`,
+                  `attribution.primary_donor.last_name`, `attribution.primary_donor.email`,
+                  `attribution.primary_donor.phone`, `attribution.primary_donor.address.line1`,
+                  `attribution.primary_donor.address.line2`, `attribution.primary_donor.address.city`,
+                  `attribution.primary_donor.address.state`, `attribution.primary_donor.address.postal_code`,
+                  `attribution.primary_donor.address.country`,
+                  `attribution.joint_donor.full_name`, `attribution.joint_donor.first_name`,
+                  `attribution.joint_donor.last_name`, `attribution.joint_donor.email`,
+                  `attribution.joint_donor.phone`, `attribution.joint_donor.address.line1`,
+                  `attribution.joint_donor.address.line2`, `attribution.joint_donor.address.city`,
+                  `attribution.joint_donor.address.state`, `attribution.joint_donor.address.postal_code`,
+                  `attribution.joint_donor.address.country`,
+                  `donor_advised_fund_grant.organization_name`, `donor_advised_fund_grant.donor_fund_name`, `donor_advised_fund_grant.program_name`,
+                  `corporate_match.company_name`, `corporate_match.program_name`, `corporate_match.source`
+                example:
+                  - "purpose"
+                  - "attribution.primary_donor.email"
               purpose:
                 type: string
+                nullable: true
                 description: |-
                   A description of the donor's intent for the donation.
-                  This is useful to understand how the donor intended the donation to be used.
               note:
                 type: string
+                nullable: true
                 description: |-
                   An informational note from the donor to the nonprofit about the donation.
-                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
               attribution:
+                nullable: true
                 allOf:
                   - $ref: "#/components/schemas/DonationAttribution"
               donor_advised_fund_grant:
-                allOf:
-                  - $ref: "#/components/schemas/DafGrant"
+                type: object
+                nullable: true
+                properties:
+                  organization_name:
+                    type: string
+                    nullable: true
+                    description: The name of the DAF sponsor organization.
+                  donor_fund_name:
+                    type: string
+                    nullable: true
+                    description: The name of the donor's fund at the DAF sponsor.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the program at the DAF sponsor.
               corporate_match:
-                allOf:
-                  - $ref: "#/components/schemas/CorporateMatch"
+                type: object
+                nullable: true
+                properties:
+                  company_name:
+                    type: string
+                    nullable: true
+                    description: The name of the company that matched the donation.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the corporate matching program.
+                  source:
+                    type: string
+                    nullable: true
+                    description: The source of the corporate match.
             example:
-              reason: "Donor requested a change to the donation"
+              update_mask:
+                - "purpose"
+                - "attribution.primary_donor.email"
               purpose: "Capital Campaign"
-              note: "Please dedicate in memory of grandma"
               attribution:
                 primary_donor:
                   email: "warrenBuffet@example.com"
-              donor_advised_fund_grant:
-                organization_name: "Fidelity Charitable"
-                fund_name: "Warren Buffet Fund"
     CreateDonationRequest:
       description: |-
         The request to create a donation.
