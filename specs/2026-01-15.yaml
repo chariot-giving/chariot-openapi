@@ -3282,6 +3282,11 @@ components:
           format: date-time
           description: The date and time when the deposit was last updated.
           example: "2020-01-31T23:59:59Z"
+        bank_created_at:
+          type: string
+          format: date-time
+          description: The date and time when the bank created the deposit.
+          example: "2020-01-31T23:59:59Z"
     Transfer:
       type: object
       description: A subhash containing information about the transfer associated with the deposit.
