@@ -5487,11 +5487,9 @@ components:
               - update_mask
             properties:
               update_mask:
-                type: array
-                items:
-                  type: string
+                type: string
                 description: |-
-                  The list of field paths to update. Uses dot notation for nested fields.
+                  A comma-separated list of field paths to update (google.protobuf.FieldMask format). Uses dot notation for nested fields.
                   Only fields in the mask are modified. Fields not in the mask are unchanged.
 
                   Allowed paths: `purpose`, `note`,
@@ -5509,9 +5507,7 @@ components:
                   `attribution.joint_donor.address.country`,
                   `donor_advised_fund_grant.organization_name`, `donor_advised_fund_grant.donor_fund_name`, `donor_advised_fund_grant.program_name`,
                   `corporate_match.company_name`, `corporate_match.program_name`, `corporate_match.source`
-                example:
-                  - "purpose"
-                  - "attribution.primary_donor.email"
+                example: "purpose,attribution.primary_donor.email"
               purpose:
                 type: string
                 nullable: true
@@ -5559,9 +5555,7 @@ components:
                     nullable: true
                     description: The source of the corporate match.
             example:
-              update_mask:
-                - "purpose"
-                - "attribution.primary_donor.email"
+              update_mask: "purpose,attribution.primary_donor.email"
               purpose: "Capital Campaign"
               attribution:
                 primary_donor:
@@ -5581,8 +5575,15 @@ components:
               payment_source_id:
                 type: string
                 description: |-
-                  The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
+                  The unique identifier for the payment source to associate the donation with.
                 example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The effective date of the donation. Defaults to the current date if not provided.
+                  Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
               amount_gross:
                 type: integer
                 format: int64
@@ -5599,7 +5600,7 @@ components:
                 example: 0
               currency:
                 type: string
-                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency.
+                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency. Defaults to "USD".
                 example: "USD"
               purpose:
                 type: string
@@ -5611,6 +5612,13 @@ components:
                 description: |-
                   An informational note from the donor to the nonprofit about the donation.
                 example: "Please dedicate in memory of grandma"
+              external_id:
+                type: string
+                description: An external identifier for the donation, useful for reconciliation against your own systems.
+                example: "INV-12345"
+              dafpay_tracking_id:
+                type: string
+                description: A DAFpay tracking identifier for reconciliation purposes.
               attribution:
                 allOf:
                   - $ref: "#/components/schemas/DonationAttribution"
@@ -5620,6 +5628,11 @@ components:
               corporate_match:
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatch"
+              platform_metadata:
+                type: object
+                description: Arbitrary key-value metadata for the donation.
+                additionalProperties:
+                  type: string
     ReconcileDepositRequest:
       description: |-
         The request to reconcile a deposit to one or more donations.
