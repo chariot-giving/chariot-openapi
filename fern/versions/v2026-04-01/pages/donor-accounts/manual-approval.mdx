@@ -1,0 +1,122 @@
+---
+title: "Manual Approval"
+subtitle: "The base Donor Account flow — donor gives first, DAF verifies after."
+hidden: false
+---
+
+This flow lets donors give at the point of inspiration without any pre-setup with the DAF. The DAF performs identity verification after the donor submits a Grant Request, then approves the Donor Account so subsequent processing can proceed.
+
+## Sequence
+
+```
+Donor                           DAFpay                          DAF (you)
+  │                               │                                │
+  │  1. Open DAFpay, select fund  │                                │
+  │ ─────────────────────────────▶│                                │
+  │                               │                                │
+  │  2. Verify email + setup      │                                │
+  │ ◄────────────────────────────▶│                                │
+  │                               │                                │
+  │  3. Submit grant request      │                                │
+  │ ─────────────────────────────▶│                                │
+  │                               │  4. donor_account.created      │
+  │                               │ ──────────────────────────────▶│
+  │                               │  5. grant.created              │
+  │                               │ ──────────────────────────────▶│
+  │                               │                                │
+  │                               │  6. Verify donor identity      │
+  │                               │     within DAF's systems       │
+  │                               │                                │
+  │                               │  7. POST /donor_accounts/{id}  │
+  │                               │      /approve                  │
+  │                               │ ◄──────────────────────────────│
+  │                               │                                │
+  │                               │  8. POST /grants/{id}/approve  │
+  │                               │ ◄──────────────────────────────│
+  │                               │                                │
+```
+
+## Step-by-step
+
+### 1. Listen for `donor_account.created`
+
+When a donor authenticates with DAFpay for the first time and submits a Grant Request, Chariot creates a new `DonorAccount` in `pending` status and a `Grant` in `Initiated` / `PendingDonorAccountApproval` status. You'll receive both webhook events.
+
+```http
+POST https://your-server.example.com/webhook
+Content-Type: application/json
+
+{
+  "id": "evt_01jpjenf5q6cawy43yxfcrxhct",
+  "category": "donor_account.created",
+  "associated_object_id": "donor_account_01jpjenf5q6cawy43yxfcrxhct",
+  "associated_object_type": "donor_account",
+  "created_at": "2026-04-01T12:00:00Z"
+}
+```
+
+Fetch the full Donor Account to read the donor's email and (optionally) profile fields:
+
+<CodeBlocks>
+```bash cURL
+curl -X GET https://api.givechariot.com/v1/donor_accounts/donor_account_01jpjenf5q6cawy43yxfcrxhct \
+  -H "Authorization: Bearer $CHARIOT_API_KEY"
+```
+```typescript TypeScript
+const account = await chariot.donorAccounts.get("donor_account_01jpjenf5q6cawy43yxfcrxhct");
+```
+</CodeBlocks>
+
+### 2. Verify the donor in your systems
+
+Use whatever process your compliance team requires. Common approaches include:
+
+- Match on the verified `email` field.
+- For first-time donors, verify manually (phone call, email follow-up, or back-office review).
+- For returning donors with an existing `externalId`, auto-approve.
+
+<Tip title="Email is the only verified identifier">
+DAFpay verifies the donor's `email` via an email verification step. The `phone` field on a Donor Account is donor-asserted and **not** verified by DAFpay. If your verification policy requires a verified phone number, plan accordingly.
+</Tip>
+
+### 3. Approve the Donor Account
+
+Once you've verified the donor, call [Approve Donor Account](/api/donor-accounts/approve). Optionally include the donor's identifier in your system as `externalId` — doing so up-front avoids a follow-up [Update Donor Account](/api/donor-accounts/update) call.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/donor_accounts/donor_account_01jpjenf5q6cawy43yxfcrxhct/approve \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "externalId": "ACME-DAF-DONOR-1042",
+    "comment": "Verified via phone call on 2026-04-02"
+  }'
+```
+```typescript TypeScript
+await chariot.donorAccounts.approve("donor_account_01jpjenf5q6cawy43yxfcrxhct", {
+  externalId: "ACME-DAF-DONOR-1042",
+  comment: "Verified via phone call on 2026-04-02",
+});
+```
+</CodeBlocks>
+
+If you cannot verify the donor (e.g. they don't exist in your records), call [Reject Donor Account](/api/donor-accounts/reject) with a reason. Any open Grants tied to the rejected Donor Account are automatically rejected.
+
+### 4. Decision the Grant
+
+Once the Donor Account is approved, the Grant becomes eligible for decisioning. See [Decisioning Grants](/guides/dafpay/donor-accounts/decisioning-grants).
+
+## Diligence on subsequent grants
+
+Donor Account decisions are persistent. Once a donor's account is `approved`, future Grants from that same donor can be auto-approved without repeating the verification step — the donor's identity has already been established. You only need to repeat the manual verification step for new Donor Accounts.
+
+This makes the manual flow particularly well-suited to DAFs that have a heavy lift on first-time donor verification but want a streamlined experience for returning donors.
+
+## Tradeoffs
+
+| Pro | Con |
+|---|---|
+| Donors can give at the point of inspiration with zero pre-setup | DAF must verify each new donor after-the-fact |
+| No new donor-facing UI required from the DAF | First grants are delayed until manual verification completes |
+| Subsequent grants from approved donors flow through quickly | Email is the only verified identifier — DAFs that need stronger identity proofs should consider [Token Verification](/guides/dafpay/donor-accounts/token-verification) |

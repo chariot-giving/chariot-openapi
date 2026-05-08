@@ -1,0 +1,104 @@
+---
+title: "Token Verification"
+subtitle: "Donor passes a code from DAFpay to the DAF; DAF verifies in one API call."
+hidden: false
+---
+
+In this flow, DAFpay automatically issues an Authorization Token after the donor submits a Grant Request and emails the `code` to the donor with instructions. The donor relays the code to their DAF (via portal form, support ticket, or phone call), and the DAF calls a single API to verify and approve the linked Donor Account.
+
+## When to use this flow
+
+This flow is well-suited to DAFs that:
+
+- **Want a stronger identity link** between the DAFpay donor and the authenticated DAF account than email-matching alone provides.
+- **Have capacity to intake codes** from donors — either via a portal form (recommended) or a back-office support workflow.
+- **Don't want to manually verify each Donor Account** in their internal systems.
+
+## Sequence
+
+```
+Donor                       DAFpay                          DAF (you)
+  │                           │                                │
+  │  1. Submit grant request  │                                │
+  │ ─────────────────────────▶│                                │
+  │                           │  2. Issue token + email donor  │
+  │ ◄─────────────────────────│                                │
+  │                           │                                │
+  │  3. Donor submits code    │                                │
+  │ ─────────────────────────────────────────────────────────▶│
+  │                           │                                │
+  │                           │  4. POST /authorization_tokens │
+  │                           │      /verify  { code }         │
+  │                           │ ◄──────────────────────────────│
+  │                           │                                │
+  │                           │  5. Returns approved           │
+  │                           │     DonorAccount               │
+  │                           │ ──────────────────────────────▶│
+  │                           │                                │
+```
+
+## Step-by-step
+
+### 1. DAFpay issues the token automatically
+
+When a donor submits a Grant Request without an approved Donor Account, DAFpay automatically:
+
+- Creates a `DonorAuthorizationToken` bound to the new Donor Account.
+- Sends an email to the donor's verified email address containing the `code` and instructions for delivering it to their DAF.
+
+You don't need to do anything for this step — but you should be aware that this is happening so your support team can speak knowledgeably about the email donors receive.
+
+<Note title="Customizing the email">
+The email contains a default DAFpay-branded message and instructions pointing to your DAF's portal or support contact. If you would like Chariot to customize the email's `from` address or instructions text for your DAF, contact support@givechariot.com.
+</Note>
+
+### 2. Build a code intake on your side
+
+The donor needs to give you the code. The recommended pattern is a simple form on your DAF portal, behind your existing donor authentication, with a single text input labeled "DAFpay verification code". Other options include:
+
+- A support ticket form.
+- A phone-call workflow where a CSR enters the code on the donor's behalf.
+
+The code is a 12-character alphanumeric string formatted with dashes for legibility (e.g. `DAFP-7K3X-9M4Q`). Verification is **case-insensitive** and tolerant of whitespace and dashes — so you can normalize input however you like, or pass it through verbatim.
+
+### 3. Verify the token
+
+Call [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` and (optionally) the donor's `externalId` from your system.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/authorization_tokens/verify \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "DAFP-7K3X-9M4Q",
+    "externalId": "ACME-DAF-DONOR-1042"
+  }'
+```
+```typescript TypeScript
+const account = await chariot.authorizationTokens.verify({
+  code: "DAFP-7K3X-9M4Q",
+  externalId: "ACME-DAF-DONOR-1042",
+});
+```
+</CodeBlocks>
+
+The response is the linked `DonorAccount` in `approved` status. The token is consumed and cannot be re-verified.
+
+<Warning title="Error handling">
+- Unknown, expired, revoked, or already-consumed codes return `404 Not Found` or `410 Gone`. Both responses are intentionally indistinguishable to avoid leaking information about valid codes.
+- The endpoint enforces strict per-DAF rate limits — repeated failures return `429 Too Many Requests`. Surface a generic "couldn't verify code" error to the donor and, after a small number of failures, ask them to contact support.
+</Warning>
+
+### 4. Decision the Grant
+
+Once the Donor Account is approved, the linked Grant becomes eligible for decisioning. See [Decisioning Grants](/guides/dafpay/donor-accounts/decisioning-grants).
+
+## Comparing to manual approval
+
+| | Manual Approval | Token Verification |
+|---|---|---|
+| Donor effort | None — submits grant and walks away | Low — copies code from email to portal form |
+| DAF effort per new donor | Manual verification required | Single API call |
+| Identity guarantee | Email-matching only | Strong: donor demonstrably received the email AND authenticated with the DAF |
+| Best for | DAFs that prefer to verify in their own systems | DAFs that want to minimize back-office work |

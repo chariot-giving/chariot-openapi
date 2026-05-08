@@ -1,0 +1,97 @@
+---
+title: "Donor Accounts Overview"
+subtitle: "An identity-based alternative to OAuth and web-scraping that lets DAFs accept DAFpay grants on their own terms."
+hidden: false
+---
+
+<Note title="Audience">
+This guide is for **Donor Advised Fund (DAF) providers** integrating with DAFpay using their Chariot API key. If you are a nonprofit or fundraising platform looking to accept DAFpay donations, see [Integrating DAFpay](/guides/dafpay/integrating-dafpay/checklist) instead.
+</Note>
+
+## What are Donor Accounts?
+
+DAFpay Donor Accounts are a feature that lets a donor submit DAF grants on a nonprofit's donation form using their **DAFpay Identity** — an email-verified identity owned and managed by DAFpay — rather than logging directly into the DAF.
+
+Donor Accounts are an alternative to two other DAFpay flows:
+
+- **OAuth-based integration** — often impractical to implement on the DAF's side because of cost and complexity.
+- **Web-scraping integration** — flaky in production, frequently disrupted by DAF UI changes, and not well accepted by DAF providers.
+
+Instead, the Donor Account flow gives DAFs a clean, well-defined API to:
+
+1. **Verify** the donor's identity within their own systems (with the level of diligence appropriate to that DAF).
+2. **Approve or reject** Donor Accounts and individual Grant Requests.
+3. **Link** the DAFpay donor to the DAF's internal donor record via an `externalId`.
+
+## Three flows, one data model
+
+Donor Accounts support three flows that vary in **where the verification handshake happens** and **how much the donor is required to do up front**. The underlying data model — `DonorAccount`, `DonorAuthorizationToken`, and `Grant` — is shared across all three.
+
+### 1. Manual approval (base flow)
+
+The simplest model. The donor authenticates with DAFpay and submits a Grant Request. The DAF receives a `donor_account.created` webhook, verifies the donor in their internal systems (with whatever diligence they choose — first-time donors are often verified manually; returning donors can be auto-approved), and then calls [Approve Donor Account](/api/donor-accounts/approve).
+
+**Best for:** DAFs that prioritize "give at the point of inspiration" over up-front identity exchange and that have capacity to verify donors after-the-fact.
+
+[See the manual approval guide →](/guides/dafpay/donor-accounts/manual-approval)
+
+### 2. Token verification
+
+After the donor submits a Grant Request, DAFpay automatically issues an Authorization Token and emails the `code` to the donor along with instructions to provide the code to their DAF (via portal, phone, or email). The DAF then calls [Verify Authorization Token](/api/authorization-tokens/verify) with the code, which verifies and approves the linked Donor Account in a single call.
+
+**Best for:** DAFs that have capacity to intake codes from donors (via a portal form or support workflow) and want a stronger link between DAFpay identity and the DAF's authenticated donor than email-matching alone provides.
+
+[See the token verification guide →](/guides/dafpay/donor-accounts/token-verification)
+
+### 3. Pre-established access
+
+The DAF requires the donor to enable DAFpay use for their account before they can submit grants. The donor authenticates with their DAF (e.g. via the DAF portal) and either clicks an "Enable DAFpay Access" button or contacts the DAF directly. The DAF then calls Chariot's APIs in this order:
+
+1. [Create Donor Account](/api/donor-accounts/create)
+2. [Create Authorization Token](/api/authorization-tokens/create) and surface the `code` to the donor
+
+The donor then enters the code into DAFpay during profile setup, which automatically verifies and approves the Donor Account. The DAF receives no follow-up verification work because the handshake completed up-front.
+
+**Best for:** DAFs that don't want to support "give at the point of inspiration" and prefer to gate DAFpay access behind their own consent flow. Closest in spirit to OAuth without requiring real-time exchange.
+
+[See the pre-established access guide →](/guides/dafpay/donor-accounts/pre-established-access)
+
+## Lifecycle
+
+```
+                       ┌──────────────┐
+                       │   pending    │  ◄── created via Donor (any flow)
+                       │              │      or via [Create Donor Account]
+                       └──┬───────┬───┘
+                          │       │
+            approve /     │       │     reject /
+            verify token  │       │     (rejection reason)
+                          ▼       ▼
+                  ┌──────────┐  ┌──────────┐
+                  │ approved │  │ rejected │
+                  └──────────┘  └──────────┘
+
+      Once decisioned, a Donor Account is terminal — it cannot
+      be re-decisioned. Grants can only be approved/rejected
+      AFTER the linked Donor Account is approved.
+```
+
+## Webhook events
+
+Listen for these events on your [Event Subscription](/api/event-subscriptions) to drive your internal workflows:
+
+| Event Category | When it fires |
+|---|---|
+| `donor_account.created` | A new Donor Account has been created. For variant 1, this is your signal to begin verification. |
+| `donor_account.approved` | The Donor Account has transitioned to `approved` status. |
+| `donor_account.rejected` | The Donor Account has transitioned to `rejected` status. |
+| `donor_account.updated` | Any other update to the Donor Account (e.g. profile fields). |
+| `grant.created` | A new Grant has been submitted via DAFpay. |
+| `grant.approved` | A Grant has been approved by the DAF for processing. |
+| `grant.rejected` | A Grant has been rejected by the DAF. |
+
+## Next steps
+
+- Pick the flow that best matches your operational model and follow the linked guide.
+- Review the [Donor Accounts API reference](/api/donor-accounts) and [Authorization Tokens API reference](/api/authorization-tokens).
+- Set up an [Event Subscription](/api/event-subscriptions) to receive `donor_account.*` and `grant.*` webhooks.

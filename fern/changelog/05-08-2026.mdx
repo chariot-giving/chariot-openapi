@@ -1,0 +1,36 @@
+## Summary
+
+DAFpay Donor Accounts (Beta)
+
+### What's new?
+
+We've introduced **DAFpay Donor Accounts** — a new identity-based DAFpay flow designed for Donor Advised Fund providers integrating with DAFpay without needing OAuth or web-scraping.
+
+Donors authenticate with their DAFpay Identity (email-verified, DAFpay-managed) and submit Grant Requests. DAFs then use new Chariot APIs to verify the donor and decision Grant Requests. Three flows are supported on the same data model:
+
+1. **Manual approval** — donor gives at the point of inspiration; DAF verifies and approves the Donor Account after the fact.
+2. **Token verification** — DAFpay emails a one-time code to the donor; the donor relays it to the DAF; the DAF calls a single API to verify and approve.
+3. **Pre-established access** — DAF creates a Donor Account and Authorization Token in advance; donor enters the code into DAFpay during profile setup, auto-approving their account.
+
+### New APIs
+
+- [Donor Accounts](/api/donor-accounts) — create, list, get, update, approve, reject.
+- [Authorization Tokens](/api/authorization-tokens) — create, list, get, revoke, verify.
+- [Approve Grant](/api/grants/approve) and [Reject Grant](/api/grants/reject) — DAF decisioning on Grant Requests.
+
+### New webhook events
+
+- `donor_account.created`, `donor_account.updated`, `donor_account.approved`, `donor_account.rejected`
+- `grant.approved`, `grant.rejected`
+
+### New guides
+
+- [Donor Accounts overview](/guides/dafpay/donor-accounts/overview)
+- [Manual Approval](/guides/dafpay/donor-accounts/manual-approval)
+- [Token Verification](/guides/dafpay/donor-accounts/token-verification)
+- [Pre-established Access](/guides/dafpay/donor-accounts/pre-established-access)
+- [Decisioning Grants](/guides/dafpay/donor-accounts/decisioning-grants)
+
+### Availability
+
+Donor Accounts are currently in beta and are available as part of a pilot program with a handful of design partners. If you're a DAF provider and interested in integrating with DAFpay this way, please reach out to contact@givechariot.com.

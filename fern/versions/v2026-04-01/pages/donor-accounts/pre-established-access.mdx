@@ -1,0 +1,149 @@
+---
+title: "Pre-established Access"
+subtitle: "Gate DAFpay behind donor consent in your portal — closest to OAuth without realtime exchange."
+hidden: false
+---
+
+In this flow, donors must opt in to DAFpay use via their DAF's portal **before** they can submit grants on a nonprofit's donation form. The DAF creates the Donor Account and an Authorization Token in advance, surfaces the code to the donor, and the donor enters the code into DAFpay during profile setup. This auto-approves the Donor Account at the moment of first use, so the DAF has zero follow-up verification work for individual Grant Requests.
+
+## When to use this flow
+
+This flow is well-suited to DAFs that:
+
+- **Want explicit donor consent** before grants can be submitted.
+- **Don't want to support "give at the point of inspiration"** — every donor must complete the DAF's opt-in flow first.
+- **Already have a portal** where donors can authenticate and click through to enable third-party services.
+
+This is the most operationally similar to an OAuth flow without requiring a real-time token exchange.
+
+## Sequence
+
+```
+Donor                          DAF (you)                       Chariot
+  │                              │                                │
+  │  1. Authenticate to DAF      │                                │
+  │ ────────────────────────────▶│                                │
+  │                              │                                │
+  │  2. "Enable DAFpay Access"   │                                │
+  │ ────────────────────────────▶│                                │
+  │                              │  3. POST /donor_accounts       │
+  │                              │ ──────────────────────────────▶│
+  │                              │                                │
+  │                              │  4. POST /donor_accounts/{id}  │
+  │                              │      /authorization_tokens     │
+  │                              │ ──────────────────────────────▶│
+  │                              │                                │
+  │  5. Display code to donor    │                                │
+  │ ◄────────────────────────────│                                │
+  │                              │                                │
+  │  6. Open DAFpay on a         │                                │
+  │     nonprofit donation form  │                                │
+  │     and enter code during    │                                │
+  │     profile setup            │                                │
+  │ ──────────────────────────────────────────────────────────────▶│
+  │                              │                                │
+  │                              │  7. donor_account.approved     │
+  │                              │ ◄──────────────────────────────│
+  │                              │                                │
+  │                              │  8. grant.created (when donor  │
+  │                              │     submits a grant)           │
+  │                              │ ◄──────────────────────────────│
+  │                              │                                │
+```
+
+## Step-by-step
+
+### 1. Add an "Enable DAFpay Access" entry point in your portal
+
+This is the donor-facing entry point. The simplest implementation is a button on the donor's account page; clicking it kicks off your portal-side handler.
+
+If you support multiple "funds" within a single donor account, your handler may also include a UI for the donor to choose which fund to enable. The fund choice maps to the `fundId` you'll send to Chariot.
+
+### 2. Create the Donor Account
+
+Call [Create Donor Account](/api/donor-accounts/create) with the donor's email and (recommended) your internal `externalId`. The email **must** match the email the donor will use when they authenticate with DAFpay — DAFpay matches incoming verified emails to existing Donor Accounts.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/donor_accounts \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fundId": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+    "email": "warrenBuffet@example.com",
+    "externalId": "ACME-DAF-DONOR-1042",
+    "firstName": "Warren",
+    "lastName": "Buffet"
+  }'
+```
+```typescript TypeScript
+const account = await chariot.donorAccounts.create({
+  fundId: "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+  email: "warrenBuffet@example.com",
+  externalId: "ACME-DAF-DONOR-1042",
+  firstName: "Warren",
+  lastName: "Buffet",
+});
+```
+</CodeBlocks>
+
+<Note title="Idempotency on `(fundId, email)`">
+A given `(fundId, email)` pair can only have one Donor Account. If the donor previously enabled access and then clicked the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
+</Note>
+
+### 3. Create an Authorization Token
+
+Call [Create Authorization Token](/api/authorization-tokens/create) on the new Donor Account.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/donor_accounts/donor_account_01jpjenf5q6cawy43yxfcrxhct/authorization_tokens \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+```typescript TypeScript
+const token = await chariot.authorizationTokens.create(
+  "donor_account_01jpjenf5q6cawy43yxfcrxhct",
+  {}
+);
+```
+</CodeBlocks>
+
+The response includes the `code` — this is the only time the code will be returned. Display it to the donor immediately; do not store it on your side beyond what's needed to display it once.
+
+### 4. Surface the code to the donor
+
+The simplest pattern is to display the code inline on the donor's portal page after they click "Enable DAFpay Access". Pair it with brief instructions:
+
+> Your DAFpay code is **DAFP-7K3X-9M4Q**.
+>
+> Copy this code and paste it into the DAFpay form on any participating nonprofit's donation page when prompted to verify your account. The code is single-use and expires in 30 days.
+
+If the donor loses the code before using it, give them a "Generate a new code" action that revokes the existing token and creates a new one.
+
+### 5. Donor consumes the code in DAFpay
+
+When the donor opens DAFpay on a nonprofit's donation form, authenticates with their email, and reaches profile setup, they will be prompted to enter the code (DAFpay detects that the email matches a Donor Account in `pending` status with at least one valid Authorization Token).
+
+When they enter the code, DAFpay verifies it client-side, the Donor Account transitions to `approved`, and the donor proceeds directly to submitting a Grant Request.
+
+### 6. You receive a webhook
+
+You'll receive a `donor_account.approved` event. Subsequent `grant.created` events for this donor flow through normally — no further verification work required.
+
+## Token lifecycle considerations
+
+- **Default expiration**: 30 days. Configurable via `expiresIn` on token creation (60s — 90 days).
+- **Single-use**: Once consumed, a token is `consumed` and cannot be re-verified.
+- **Revocation**: If a donor loses their code, [revoke](/api/authorization-tokens/revoke) the existing token and create a new one. Don't share two valid tokens at once.
+
+## Comparing to other flows
+
+| | Manual Approval | Token Verification | Pre-established Access |
+|---|---|---|---|
+| Donor opt-in required up front? | No | No | **Yes** |
+| Give at point of inspiration? | Yes | Yes | No |
+| DAF work per donor | Verify after each new donor | One API call after first grant | Setup once before first grant |
+| DAF work per Grant Request | Approve grant | Approve grant | Approve grant |
+| Best for | Light-touch DAFs | DAFs that want stronger identity | DAFs that gate access via portal |
