@@ -750,7 +750,7 @@ paths:
         Alternatively, you can transition the account to `approved` immediately by calling [Approve Donor Account](/api/donor-accounts/approve).
 
         <Note>
-        Each `(fundId, email)` pair can only have a single Donor Account. If a Donor Account already exists for the given fund and email, the request will return status `409 Conflict`.
+        Each `(fund_id, email)` pair can only have a single Donor Account. If a Donor Account already exists for the given fund and email, the request will return status `409 Conflict`.
         </Note>
       operationId: create-donor-account
       tags:
@@ -798,7 +798,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: fundId
+        - name: fund_id
           in: query
           description: |-
             The `id` of the Donor Advised Fund. Use this to filter Donor Accounts by a specific fund. Required if the authenticated DAF supports more than one fund.
@@ -821,23 +821,23 @@ paths:
             type: string
           required: false
           example: "warrenBuffet@example.com"
-        - name: externalId
+        - name: external_id
           in: query
           description: |-
             Filter Donor Accounts by the DAF's internal identifier set via approval or update.
           schema:
             type: string
           required: false
-        - name: pageLimit
+        - name: page_limit
           in: query
           description: the number of results to return; defaults to 10, max is 100
           schema:
             type: integer
             default: 10
-        - name: pageToken
+        - name: page_token
           in: query
           description: |-
-            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the nextPageToken in the previous response.
+            A token to use to retrieve the next page of results. This is useful for paginating over many pages of results. If set, all other arguments are expected to be kept the same as previous calls and the value of this field should be from the next_page_token in the previous response.
           schema:
             type: string
       responses:
@@ -896,7 +896,7 @@ paths:
     patch:
       summary: Update Donor Account
       description: |-
-        Update mutable properties on a Donor Account such as `externalId` and `metadata`.
+        Update mutable properties on a Donor Account such as `external_id` and `metadata`.
 
         To change the Donor Account's status, use [Approve Donor Account](/api/donor-accounts/approve) or [Reject Donor Account](/api/donor-accounts/reject) instead.
       operationId: update-donor-account
@@ -946,7 +946,7 @@ paths:
         Approval signals that the DAF has verified the donor's identity within their own systems and that grants from this account can be processed.
         Once approved, any [Grants](/api/grants) tied to this Donor Account become eligible for the DAF to decision via [Approve Grant](/api/grants/approve) or [Reject Grant](/api/grants/reject).
 
-        You may optionally include an `externalId` to link the Donor Account to the donor's record in your internal systems. This value can be set or updated later via [Update Donor Account](/api/donor-accounts/update).
+        You may optionally include an `external_id` to link the Donor Account to the donor's record in your internal systems. This value can be set or updated later via [Update Donor Account](/api/donor-accounts/update).
 
         <Note>
         Donor Account decisions are terminal — a Donor Account that has already been approved or rejected cannot be re-decisioned. Subsequent calls return status `409 Conflict`.
@@ -1122,15 +1122,15 @@ paths:
           schema:
             $ref: "#/components/schemas/DonorAuthorizationTokenStatus"
           required: false
-        - name: pageLimit
+        - name: page_limit
           in: query
           description: the number of results to return; defaults to 10, max is 100
           schema:
             type: integer
             default: 10
-        - name: pageToken
+        - name: page_token
           in: query
-          description: A cursor for paginating; pass the value from `nextPageToken` of the previous response.
+          description: A cursor for paginating; pass the value from `next_page_token` of the previous response.
           schema:
             type: string
       responses:
@@ -4335,18 +4335,18 @@ components:
         See the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for a full discussion of these flows.
       required:
         - id
-        - fundId
+        - fund_id
         - email
         - status
-        - createdAt
-        - updatedAt
+        - created_at
+        - updated_at
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for this object.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fundId:
+        fund_id:
           type: string
           readOnly: true
           description: |-
@@ -4360,12 +4360,12 @@ components:
           description: |-
             The donor's email. This is the donor's verified identifier — DAFpay verifies ownership via an email verification flow before a Donor Account is created.
           example: "warrenBuffet@example.com"
-        firstName:
+        first_name:
           type: string
           description: |-
             The donor's first name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
           example: "Warren"
-        lastName:
+        last_name:
           type: string
           description: |-
             The donor's last name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
@@ -4378,37 +4378,37 @@ components:
             DAFpay does not currently verify ownership of the phone number. Treat this field as donor-asserted information.
             </Note>
           example: "+12125550100"
-        externalId:
+        external_id:
           type: string
           description: |-
             The DAF's internal identifier for this donor. Optionally provided by the DAF when the Donor Account is approved (or via [Update Donor Account](/api/donor-accounts/update)) to link the DAFpay donor to the donor's record in the DAF's own systems.
           example: "ACME-DAF-DONOR-1042"
-        decisionedAt:
+        decisioned_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
             Time when this Donor Account was decisioned (approved or rejected). Null while `status` is `pending`.
           example: "2026-04-02T18:30:00Z"
-        decisionedBy:
+        decisioned_by:
           type: string
           readOnly: true
           description: |-
             Identifier of the actor that decisioned this Donor Account. For DAF-initiated decisions, this is the DAF's API key principal. For automatic approvals via token verification, this is `system:authorization_token`.
           example: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-        rejectionReason:
+        rejection_reason:
           type: string
           readOnly: true
           description: |-
             A human-readable reason provided by the DAF when rejecting the Donor Account. Only set when `status` is `rejected`.
           example: "Donor could not be located in our records."
-        createdAt:
+        created_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when this object was created. Expressed in RFC 3339 format.
           example: "2026-04-01T12:00:00Z"
-        updatedAt:
+        updated_at:
           type: string
           readOnly: true
           format: date-time
@@ -4446,17 +4446,17 @@ components:
         Tokens are single-use: once verified, the token's status becomes `consumed` and the `code` cannot be used again.
       required:
         - id
-        - donorAccountId
+        - donor_account_id
         - status
-        - createdAt
-        - expiresAt
+        - created_at
+        - expires_at
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for this object.
           example: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
-        donorAccountId:
+        donor_account_id:
           type: string
           readOnly: true
           description: |-
@@ -4476,27 +4476,27 @@ components:
 
             The format is a 12-character alphanumeric string designed to be easy for donors to read aloud or copy. Codes are not case-sensitive when verified.
           example: "DAFP-7K3X-9M4Q"
-        createdAt:
+        created_at:
           type: string
           readOnly: true
           format: date-time
           description: Time when the token was issued. Expressed in RFC 3339 format.
           example: "2026-04-01T12:00:00Z"
-        expiresAt:
+        expires_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            Time at which this token will expire and can no longer be verified. Defaults to 30 days after creation; configurable via the `expiresIn` parameter on [Create Authorization Token](/api/authorization-tokens/create).
+            Time at which this token will expire and can no longer be verified. Defaults to 30 days after creation; configurable via the `expires_in` parameter on [Create Authorization Token](/api/authorization-tokens/create).
           example: "2026-05-01T12:00:00Z"
-        consumedAt:
+        consumed_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
             Time at which the token was verified. Only set when `status` is `consumed`.
           example: "2026-04-02T18:30:00Z"
-        revokedAt:
+        revoked_at:
           type: string
           readOnly: true
           format: date-time
@@ -4546,7 +4546,7 @@ components:
           readOnly: true
           description: ID of the donor advised fund
           example: daf-id
-        donorAccountId:
+        donor_account_id:
           type: string
           readOnly: true
           description: |-
@@ -6960,10 +6960,10 @@ components:
           schema:
             type: object
             required:
-              - fundId
+              - fund_id
               - email
             properties:
-              fundId:
+              fund_id:
                 type: string
                 description: |-
                   The ID of the [Donor Advised Fund](/api/donor-advised-funds) to associate the Donor Account with. Required if the authenticated DAF supports more than one fund.
@@ -6973,16 +6973,16 @@ components:
                 description: |-
                   The donor's email. This is used as the verified identifier when the donor authenticates through DAFpay. Maximum length: 255 characters.
                 example: "warrenBuffet@example.com"
-              externalId:
+              external_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this donor. Optional but strongly recommended — it allows you to reconcile DAFpay grants with the donor's record in your own system without an additional update later. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
-              firstName:
+              first_name:
                 type: string
                 description: "The donor's first name. Maximum length: 255 characters."
                 example: "Warren"
-              lastName:
+              last_name:
                 type: string
                 description: "The donor's last name. Maximum length: 255 characters."
                 example: "Buffet"
@@ -7005,7 +7005,7 @@ components:
           schema:
             type: object
             properties:
-              externalId:
+              external_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this donor. Maximum length: 255 characters.
@@ -7025,7 +7025,7 @@ components:
           schema:
             type: object
             properties:
-              externalId:
+              external_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this donor. Setting this field at approval time is the recommended way to link the DAFpay donor to your internal donor record. Maximum length: 255 characters.
@@ -7046,7 +7046,7 @@ components:
               reason:
                 type: string
                 description: |-
-                  A human-readable reason for the rejection. Surfaced on the `DonorAccount.rejectionReason` field. Maximum length: 400 characters.
+                  A human-readable reason for the rejection. Surfaced on the `DonorAccount.rejection_reason` field. Maximum length: 400 characters.
                 example: "Donor could not be located in our records."
     CreateDonorAuthorizationTokenRequest:
       description: |-
@@ -7058,7 +7058,7 @@ components:
           schema:
             type: object
             properties:
-              expiresIn:
+              expires_in:
                 type: integer
                 description: |-
                   The number of seconds the token is valid for. Defaults to 30 days. Must be between 60 (1 minute) and 7,776,000 (90 days).
@@ -7084,7 +7084,7 @@ components:
                 description: |-
                   The token's secret code value as provided by the donor. Verification is case-insensitive and tolerant of whitespace and dashes.
                 example: "DAFP-7K3X-9M4Q"
-              externalId:
+              external_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this donor. If provided, will be set on the Donor Account as part of the verification. Maximum length: 255 characters.
@@ -7099,7 +7099,7 @@ components:
           schema:
             type: object
             properties:
-              externalGrantId:
+              external_grant_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this grant. Setting this at approval time provides a useful audit trail and reconciliation key. Maximum length: 255 characters.
@@ -7206,38 +7206,38 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/DonorAccount"
-              nextPageToken:
+              next_page_token:
                 type: string
                 nullable: true
                 description: |-
-                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the page_token). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
           examples:
             MoreResults:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    fundId: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "approved"
                     email: "warrenBuffet@example.com"
-                    firstName: "Warren"
-                    lastName: "Buffet"
+                    first_name: "Warren"
+                    last_name: "Buffet"
                     phone: "+12125550100"
-                    externalId: "ACME-DAF-DONOR-1042"
-                    decisionedAt: "2026-04-02T18:30:00Z"
-                    decisionedBy: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-                    createdAt: "2026-04-01T12:00:00Z"
-                    updatedAt: "2026-04-02T18:30:00Z"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
+                    external_id: "ACME-DAF-DONOR-1042"
+                    decisioned_at: "2026-04-02T18:30:00Z"
+                    decisioned_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                    created_at: "2026-04-01T12:00:00Z"
+                    updated_at: "2026-04-02T18:30:00Z"
+                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
             NoMoreResults:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    fundId: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "pending"
                     email: "warrenBuffet@example.com"
-                    createdAt: "2026-04-01T12:00:00Z"
-                    updatedAt: "2026-04-01T12:00:00Z"
-                nextPageToken: null
+                    created_at: "2026-04-01T12:00:00Z"
+                    updated_at: "2026-04-01T12:00:00Z"
+                next_page_token: null
     ListDonorAuthorizationTokensResponse:
       description: The response for DonorAccounts.listAuthorizationTokens
       headers:
@@ -7252,22 +7252,22 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/DonorAuthorizationToken"
-              nextPageToken:
+              next_page_token:
                 type: string
                 nullable: true
                 description: |-
-                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
+                  A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the page_token). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
           examples:
             Default:
               value:
                 results:
                   - id: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
-                    donorAccountId: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                    donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
                     status: "consumed"
-                    createdAt: "2026-04-01T12:00:00Z"
-                    expiresAt: "2026-05-01T12:00:00Z"
-                    consumedAt: "2026-04-02T18:30:00Z"
-                nextPageToken: null
+                    created_at: "2026-04-01T12:00:00Z"
+                    expires_at: "2026-05-01T12:00:00Z"
+                    consumed_at: "2026-04-02T18:30:00Z"
+                next_page_token: null
     ListGrantsResponse:
       description: The response for Grants.list
       headers:
@@ -8669,44 +8669,44 @@ components:
       summary: Pending donor account
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fundId: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "pending"
         email: "warrenBuffet@example.com"
-        firstName: "Warren"
-        lastName: "Buffet"
+        first_name: "Warren"
+        last_name: "Buffet"
         phone: "+12125550100"
-        createdAt: "2026-04-01T12:00:00Z"
-        updatedAt: "2026-04-01T12:00:00Z"
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-01T12:00:00Z"
     DonorAccountApprovedOutput:
       summary: Approved donor account
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fundId: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "approved"
         email: "warrenBuffet@example.com"
-        firstName: "Warren"
-        lastName: "Buffet"
+        first_name: "Warren"
+        last_name: "Buffet"
         phone: "+12125550100"
-        externalId: "ACME-DAF-DONOR-1042"
-        decisionedAt: "2026-04-02T18:30:00Z"
-        decisionedBy: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-        createdAt: "2026-04-01T12:00:00Z"
-        updatedAt: "2026-04-02T18:30:00Z"
+        external_id: "ACME-DAF-DONOR-1042"
+        decisioned_at: "2026-04-02T18:30:00Z"
+        decisioned_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-02T18:30:00Z"
     DonorAuthorizationTokenCreatedOutput:
       summary: Newly created authorization token (code is only present on creation)
       value:
         id: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
-        donorAccountId: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         status: "pending"
         code: "DAFP-7K3X-9M4Q"
-        createdAt: "2026-04-01T12:00:00Z"
-        expiresAt: "2026-05-01T12:00:00Z"
+        created_at: "2026-04-01T12:00:00Z"
+        expires_at: "2026-05-01T12:00:00Z"
     DonorAuthorizationTokenOutput:
       summary: Authorization token (post-creation; code is omitted)
       value:
         id: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
-        donorAccountId: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         status: "consumed"
-        createdAt: "2026-04-01T12:00:00Z"
-        expiresAt: "2026-05-01T12:00:00Z"
-        consumedAt: "2026-04-02T18:30:00Z"
+        created_at: "2026-04-01T12:00:00Z"
+        expires_at: "2026-05-01T12:00:00Z"
+        consumed_at: "2026-04-02T18:30:00Z"

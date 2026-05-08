@@ -73,7 +73,7 @@ Use whatever process your compliance team requires. Common approaches include:
 
 - Match on the verified `email` field.
 - For first-time donors, verify manually (phone call, email follow-up, or back-office review).
-- For returning donors with an existing `externalId`, auto-approve.
+- For returning donors with an existing `external_id`, auto-approve.
 
 <Tip title="Email is the only verified identifier">
 DAFpay verifies the donor's `email` via an email verification step. The `phone` field on a Donor Account is donor-asserted and **not** verified by DAFpay. If your verification policy requires a verified phone number, plan accordingly.
@@ -81,7 +81,7 @@ DAFpay verifies the donor's `email` via an email verification step. The `phone` 
 
 ### 3. Approve the Donor Account
 
-Once you've verified the donor, call [Approve Donor Account](/api/donor-accounts/approve). Optionally include the donor's identifier in your system as `externalId` — doing so up-front avoids a follow-up [Update Donor Account](/api/donor-accounts/update) call.
+Once you've verified the donor, call [Approve Donor Account](/api/donor-accounts/approve). Optionally include the donor's identifier in your system as `external_id` — doing so up-front avoids a follow-up [Update Donor Account](/api/donor-accounts/update) call.
 
 <CodeBlocks>
 ```bash cURL
@@ -89,13 +89,13 @@ curl -X POST https://api.givechariot.com/v1/donor_accounts/donor_account_01jpjen
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "externalId": "ACME-DAF-DONOR-1042",
+    "external_id": "ACME-DAF-DONOR-1042",
     "comment": "Verified via phone call on 2026-04-02"
   }'
 ```
 ```typescript TypeScript
 await chariot.donorAccounts.approve("donor_account_01jpjenf5q6cawy43yxfcrxhct", {
-  externalId: "ACME-DAF-DONOR-1042",
+  external_id: "ACME-DAF-DONOR-1042",
   comment: "Verified via phone call on 2026-04-02",
 });
 ```

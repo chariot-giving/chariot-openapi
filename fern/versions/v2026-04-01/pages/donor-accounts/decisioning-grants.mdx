@@ -25,7 +25,7 @@ If the Donor Account is **rejected**, all open Grants on it are automatically re
 
 ## Approving a Grant
 
-Call [Approve Grant](/api/grants/approve). Optionally include the `externalGrantId` to link this Grant to a record in your internal grants ledger.
+Call [Approve Grant](/api/grants/approve). Optionally include the `external_grant_id` to link this Grant to a record in your internal grants ledger.
 
 <CodeBlocks>
 ```bash cURL
@@ -33,13 +33,13 @@ curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "externalGrantId": "ACME-GRANT-2026-00481",
+    "external_grant_id": "ACME-GRANT-2026-00481",
     "comment": "Auto-approved per donor schedule"
   }'
 ```
 ```typescript TypeScript
 await chariot.grants.approve("10229488-08d2-4629-b70c-a2f4f4d25344", {
-  externalGrantId: "ACME-GRANT-2026-00481",
+  external_grant_id: "ACME-GRANT-2026-00481",
   comment: "Auto-approved per donor schedule",
 });
 ```
@@ -81,7 +81,7 @@ do {
     if (grant.status !== "Initiated") continue;
     if (await passesInternalChecks(grant)) {
       await chariot.grants.approve(grant.id, {
-        externalGrantId: await ledger.recordGrant(grant),
+        external_grant_id: await ledger.recordGrant(grant),
       });
     } else {
       await chariot.grants.reject(grant.id, {

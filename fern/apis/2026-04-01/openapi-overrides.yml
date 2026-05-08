@@ -68,7 +68,10 @@ paths:
         - donorAccounts
       x-fern-sdk-method-name: create
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - donorAccounts
       x-fern-sdk-method-name: list
@@ -97,7 +100,10 @@ paths:
         - authorizationTokens
       x-fern-sdk-method-name: create
     get:
-      x-fern-pagination: true
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
       x-fern-sdk-group-name:
         - authorizationTokens
       x-fern-sdk-method-name: list

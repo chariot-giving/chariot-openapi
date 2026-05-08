@@ -63,7 +63,7 @@ The code is a 12-character alphanumeric string formatted with dashes for legibil
 
 ### 3. Verify the token
 
-Call [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` and (optionally) the donor's `externalId` from your system.
+Call [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` and (optionally) the donor's `external_id` from your system.
 
 <CodeBlocks>
 ```bash cURL
@@ -72,13 +72,13 @@ curl -X POST https://api.givechariot.com/v1/authorization_tokens/verify \
   -H "Content-Type: application/json" \
   -d '{
     "code": "DAFP-7K3X-9M4Q",
-    "externalId": "ACME-DAF-DONOR-1042"
+    "external_id": "ACME-DAF-DONOR-1042"
   }'
 ```
 ```typescript TypeScript
 const account = await chariot.authorizationTokens.verify({
   code: "DAFP-7K3X-9M4Q",
-  externalId: "ACME-DAF-DONOR-1042",
+  external_id: "ACME-DAF-DONOR-1042",
 });
 ```
 </CodeBlocks>
