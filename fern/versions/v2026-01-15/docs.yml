@@ -181,6 +181,8 @@ navigation:
                   title: Disbursements
               - verificationRequests:
                   title: Verification Requests
+              - nonprofitContacts:
+                  title: Nonprofit Contacts
           - section: Gift Processing
             skip-slug: true
             icon: gear

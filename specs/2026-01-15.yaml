@@ -2328,6 +2328,42 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofit_contacts:
+    post:
+      summary: Create Nonprofit Contacts
+      description: |-
+        Uploads one or more person-contact suggestions for nonprofits the
+        caller funds. Each entry is matched to a nonprofit by EIN.
+
+        Suggestions are append-only — multiple suggestions per nonprofit are
+        allowed and existing rows are never overwritten. Operators review
+        suggestions and, when verified, promote them into the canonical
+        contact used for disbursement claim-account emails.
+
+        Single-row uploads pass a one-element list; bulk CSV imports send up
+        to 500 entries in one request. If any entry's EIN does not match a
+        known nonprofit, the entire request is rejected and no rows are
+        written.
+      operationId: createNonprofitContactSuggestion
+      tags:
+        - nonprofitContacts
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNonprofitContactSuggestionRequest"
+      responses:
+        "200":
+          description: All suggestions were accepted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
@@ -2495,6 +2531,44 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
+    NonprofitContactSuggestionEntry:
+      type: object
+      description: |-
+        A single grantmaker-uploaded contact suggestion for a nonprofit.
+        The nonprofit is identified by `ein`. Suggestions are append-only
+        hints reviewed by operators before being promoted into the contact
+        used for disbursement claim-account emails.
+      required:
+        - ein
+        - email
+      properties:
+        ein:
+          type: string
+          description: |-
+            The EIN of the nonprofit this contact belongs to. Accepted as
+            either nine digits (`123456789`) or `XX-XXXXXXX`.
+          example: "13-1635294"
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Email of the contact person at the nonprofit.
+          example: "claims@redcross.org"
+        phone:
+          type: string
+          maxLength: 255
+          description: Optional phone number for the contact.
+          example: "+12025551212"
+        first_name:
+          type: string
+          maxLength: 255
+          description: Optional first name of the contact.
+          example: "Sarah"
+        last_name:
+          type: string
+          maxLength: 255
+          description: Optional last name of the contact.
+          example: "Johnson"
     Person:
       type: object
       description: |-
@@ -5306,6 +5380,37 @@ components:
                 type: string
                 description: The unique identifier for the file to create a link for.
                 example: "file_01j8rs605a4gctmbm58d87mvsj"
+    CreateNonprofitContactSuggestionRequest:
+      description: |-
+        The request body for the Nonprofit Contacts.create endpoint.
+        Supply one or more entries, each identifying its nonprofit by EIN.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - entries
+            properties:
+              entries:
+                type: array
+                description: |-
+                  List of contact suggestions to create. Each entry resolves its
+                  nonprofit by EIN. Up to 500 entries may be sent in a single
+                  request.
+                minItems: 1
+                maxItems: 500
+                items:
+                  $ref: "#/components/schemas/NonprofitContactSuggestionEntry"
+            example:
+              entries:
+                - ein: "13-1635294"
+                  email: "claims@redcross.org"
+                  phone: "+12025551212"
+                  first_name: "Sarah"
+                  last_name: "Johnson"
+                - ein: "530196605"
+                  email: "ap@worldwildlife.org"
     UpdateDonationRequest:
       description: |-
         The request to update core donation attributes like purpose, note and attribution.
