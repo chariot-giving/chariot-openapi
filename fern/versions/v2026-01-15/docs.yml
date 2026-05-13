@@ -181,8 +181,10 @@ navigation:
                   title: Disbursements
               - verificationRequests:
                   title: Verification Requests
-              - nonprofits:
-                  title: Nonprofits
+              - nonprofitAddresses:
+                  title: Nonprofit Addresses
+              - nonprofitContacts:
+                  title: Nonprofit Contacts
           - section: Gift Processing
             skip-slug: true
             icon: gear

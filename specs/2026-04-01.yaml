@@ -2339,7 +2339,7 @@ paths:
         addresses are used as suggestions for where to send disbursements.
       operationId: createNonprofitAddressSuggestion
       tags:
-        - nonprofits
+        - nonprofitAddresses
       security:
         - bearerAuth: []
       requestBody:
@@ -2365,7 +2365,7 @@ paths:
         contacts are used as suggestions for who to notify about disbursements.
       operationId: createNonprofitContactSuggestion
       tags:
-        - nonprofits
+        - nonprofitContacts
       security:
         - bearerAuth: []
       requestBody:

@@ -271,10 +271,10 @@ paths:
   /v1/nonprofit_addresses:
     post:
       x-fern-sdk-group-name:
-        - nonprofits
-      x-fern-sdk-method-name: createAddress
+        - nonprofitAddresses
+      x-fern-sdk-method-name: create
   /v1/nonprofit_contacts:
     post:
       x-fern-sdk-group-name:
-        - nonprofits
-      x-fern-sdk-method-name: createContact
+        - nonprofitContacts
+      x-fern-sdk-method-name: create
