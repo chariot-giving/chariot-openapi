@@ -2607,7 +2607,6 @@ components:
           example: "13-1635294"
         email:
           type: string
-          format: email
           maxLength: 255
           description: Email of the contact person at the nonprofit.
           example: "claims@redcross.org"
