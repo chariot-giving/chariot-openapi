@@ -2328,25 +2328,47 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofit_addresses:
+    post:
+      summary: Create Nonprofit Addresses
+      description: |-
+        Upload mailing addresses you have on file for nonprofits you fund.
+        Each entry is matched to a nonprofit by its EIN.
+
+        Uploaded addresses are used as suggestions for where to send
+        disbursements.
+      operationId: createNonprofitAddressSuggestion
+      tags:
+        - nonprofits
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNonprofitAddressSuggestionRequest"
+      responses:
+        "200":
+          description: All addresses were accepted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/nonprofit_contacts:
     post:
       summary: Create Nonprofit Contacts
       description: |-
-        Uploads one or more person-contact suggestions for nonprofits the
-        caller funds. Each entry is matched to a nonprofit by EIN.
+        Upload contact information you have on file for nonprofits you fund.
+        Each entry is matched to a nonprofit by its EIN.
 
-        Suggestions are append-only — multiple suggestions per nonprofit are
-        allowed and existing rows are never overwritten. Operators review
-        suggestions and, when verified, promote them into the canonical
-        contact used for disbursement claim-account emails.
-
-        Single-row uploads pass a one-element list; bulk CSV imports send up
-        to 500 entries in one request. If any entry's EIN does not match a
-        known nonprofit, the entire request is rejected and no rows are
-        written.
+        Uploaded contacts are used as suggestions for who to notify about
+        disbursements.
       operationId: createNonprofitContactSuggestion
       tags:
-        - nonprofitContacts
+        - nonprofits
       security:
         - bearerAuth: []
       requestBody:
@@ -2531,13 +2553,50 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
+    NonprofitAddressSuggestionEntry:
+      type: object
+      description: A mailing address uploaded for a nonprofit, identified by its EIN.
+      required:
+        - ein
+        - line1
+        - city
+        - state
+        - zip
+      properties:
+        ein:
+          type: string
+          description: |-
+            The EIN of the nonprofit this address belongs to. Accepted as
+            either nine digits (`123456789`) or `XX-XXXXXXX`.
+          example: "13-1635294"
+        line1:
+          type: string
+          maxLength: 255
+          description: Street address.
+          example: "431 18th Street NW"
+        line2:
+          type: string
+          maxLength: 255
+          description: Optional suite, apartment, or unit.
+          example: "Suite 200"
+        city:
+          type: string
+          maxLength: 255
+          description: City.
+          example: "Washington"
+        state:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          description: Two-letter US state code (uppercase).
+          example: "DC"
+        zip:
+          type: string
+          pattern: "^\\d{5}(-\\d{4})?$"
+          description: US ZIP code. Five digits, optionally followed by `-NNNN`.
+          example: "20006"
     NonprofitContactSuggestionEntry:
       type: object
-      description: |-
-        A single grantmaker-uploaded contact suggestion for a nonprofit.
-        The nonprofit is identified by `ein`. Suggestions are append-only
-        hints reviewed by operators before being promoted into the contact
-        used for disbursement claim-account emails.
+      description: A contact uploaded for a nonprofit, identified by its EIN.
       required:
         - ein
         - email
@@ -2558,7 +2617,7 @@ components:
           type: string
           maxLength: 255
           description: Optional phone number for the contact.
-          example: "+12025551212"
+          example: "2025551212"
         first_name:
           type: string
           maxLength: 255
@@ -5380,10 +5439,8 @@ components:
                 type: string
                 description: The unique identifier for the file to create a link for.
                 example: "file_01j8rs605a4gctmbm58d87mvsj"
-    CreateNonprofitContactSuggestionRequest:
-      description: |-
-        The request body for the Nonprofit Contacts.create endpoint.
-        Supply one or more entries, each identifying its nonprofit by EIN.
+    CreateNonprofitAddressSuggestionRequest:
+      description: Address entries to upload, each matched to a nonprofit by EIN.
       required: true
       content:
         application/json:
@@ -5394,10 +5451,37 @@ components:
             properties:
               entries:
                 type: array
-                description: |-
-                  List of contact suggestions to create. Each entry resolves its
-                  nonprofit by EIN. Up to 500 entries may be sent in a single
-                  request.
+                description: Address entries to upload. Up to 500 per request.
+                minItems: 1
+                maxItems: 500
+                items:
+                  $ref: "#/components/schemas/NonprofitAddressSuggestionEntry"
+            example:
+              entries:
+                - ein: "13-1635294"
+                  line1: "431 18th Street NW"
+                  city: "Washington"
+                  state: "DC"
+                  zip: "20006"
+                - ein: "530196605"
+                  line1: "1250 24th Street NW"
+                  line2: "Suite 300"
+                  city: "Washington"
+                  state: "DC"
+                  zip: "20037-1175"
+    CreateNonprofitContactSuggestionRequest:
+      description: Contact entries to upload, each matched to a nonprofit by EIN.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - entries
+            properties:
+              entries:
+                type: array
+                description: Contact entries to upload. Up to 500 per request.
                 minItems: 1
                 maxItems: 500
                 items:
@@ -5406,7 +5490,7 @@ components:
               entries:
                 - ein: "13-1635294"
                   email: "claims@redcross.org"
-                  phone: "+12025551212"
+                  phone: "2025551212"
                   first_name: "Sarah"
                   last_name: "Johnson"
                 - ein: "530196605"

@@ -268,8 +268,13 @@ paths:
       x-fern-sdk-group-name:
         - mailbox
       x-fern-sdk-method-name: fulfillRequest
+  /v1/nonprofit_addresses:
+    post:
+      x-fern-sdk-group-name:
+        - nonprofits
+      x-fern-sdk-method-name: createAddress
   /v1/nonprofit_contacts:
     post:
       x-fern-sdk-group-name:
-        - nonprofitContacts
-      x-fern-sdk-method-name: create
+        - nonprofits
+      x-fern-sdk-method-name: createContact
