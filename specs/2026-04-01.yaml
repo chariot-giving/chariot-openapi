@@ -3186,7 +3186,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/reconcile:
+  /v1/deposits/{id}/reconcile:
     post:
       summary: Reconcile a Deposit
       description: |-
@@ -3199,15 +3199,19 @@ paths:
         - deposits
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to reconcile.
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
         $ref: "#/components/requestBodies/ReconcileDepositRequest"
       responses:
-        "200":
+        "204":
           description: The deposit was reconciled to the donations
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Deposit"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3216,6 +3220,8 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/properties:
@@ -4036,6 +4042,10 @@ components:
             An informational note from the donor to the nonprofit about the donation.
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
+        external_id:
+          type: string
+          description: An external identifier for the donation, useful for reconciliation against your own systems.
+          example: "INV-12345"
         attribution:
           description: |-
             A subhash containing information about how the donation is attributed.
@@ -4643,6 +4653,10 @@ components:
             - declined
             - accepted
             - returned
+        receiver_id:
+          type: string
+          description: The receiver ID for the ACH transfer. For DAF sponsors like Fidelity Charitable, this corresponds to the ACH Group ID used to identify a batch of grants.
+          example: "123456"
     CheckDeposit:
       type: object
       description: |-
@@ -7269,13 +7283,8 @@ components:
           schema:
             type: object
             required:
-              - deposit_id
               - donation_ids
             properties:
-              deposit_id:
-                type: string
-                description: The unique identifier for the deposit to reconcile.
-                example: "deposit_01j8rs605a4gctmbm58d87mvsj"
               donation_ids:
                 type: array
                 description: The unique identifiers for the donations to reconcile with the deposit.
