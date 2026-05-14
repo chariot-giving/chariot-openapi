@@ -2328,6 +2328,58 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofit_addresses:
+    post:
+      summary: Create Nonprofit Addresses
+      description: |-
+        Submit mailing addresses for one or more nonprofits. Uploaded
+        addresses are used as suggestions for where to send disbursements.
+      operationId: createNonprofitAddressSuggestion
+      tags:
+        - nonprofitAddresses
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNonprofitAddressSuggestionRequest"
+      responses:
+        "200":
+          description: All addresses were accepted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofit_contacts:
+    post:
+      summary: Create Nonprofit Contacts
+      description: |-
+        Submit contact information for one or more nonprofits. Uploaded
+        contacts are used as suggestions for who to notify about disbursements.
+      operationId: createNonprofitContactSuggestion
+      tags:
+        - nonprofitContacts
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNonprofitContactSuggestionRequest"
+      responses:
+        "200":
+          description: All suggestions were accepted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
@@ -2495,6 +2547,78 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
+    NonprofitAddressSuggestionEntry:
+      type: object
+      description: A mailing address uploaded for a nonprofit, identified by its EIN.
+      required:
+        - ein
+        - line1
+        - city
+        - state
+        - zip
+      properties:
+        ein:
+          type: string
+          description: |-
+            The EIN of the nonprofit this address belongs to. Accepted as
+            either nine digits (`123456789`) or `XX-XXXXXXX`.
+          example: "13-1635294"
+        line1:
+          type: string
+          maxLength: 255
+          description: Street address.
+          example: "431 18th Street NW"
+        line2:
+          type: string
+          maxLength: 255
+          description: Optional suite, apartment, or unit.
+          example: "Suite 200"
+        city:
+          type: string
+          maxLength: 255
+          description: City.
+          example: "Washington"
+        state:
+          type: string
+          description: Two-letter US state code (uppercase).
+          example: "DC"
+        zip:
+          type: string
+          description: US ZIP code. Five digits, optionally followed by a four-digit extension.
+          example: "20006"
+    NonprofitContactSuggestionEntry:
+      type: object
+      description: A contact uploaded for a nonprofit, identified by its EIN.
+      required:
+        - ein
+        - email
+      properties:
+        ein:
+          type: string
+          description: |-
+            The EIN of the nonprofit this contact belongs to. Accepted as
+            either nine digits (`123456789`) or `XX-XXXXXXX`.
+          example: "13-1635294"
+        email:
+          type: string
+          maxLength: 255
+          description: Email of the contact person at the nonprofit.
+          example: "claims@redcross.org"
+        phone:
+          type: string
+          maxLength: 255
+          description: Optional phone number for the contact.
+          example: "2025551212"
+        first_name:
+          type: string
+          maxLength: 255
+          description: Optional first name of the contact.
+          example: "Sarah"
+        last_name:
+          type: string
+          maxLength: 255
+          description: Optional last name of the contact.
+          example: "Johnson"
     Person:
       type: object
       description: |-
@@ -5306,6 +5430,62 @@ components:
                 type: string
                 description: The unique identifier for the file to create a link for.
                 example: "file_01j8rs605a4gctmbm58d87mvsj"
+    CreateNonprofitAddressSuggestionRequest:
+      description: Address entries to upload, each matched to a nonprofit by EIN.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - entries
+            properties:
+              entries:
+                type: array
+                description: Address entries to upload. Up to 500 per request.
+                minItems: 1
+                maxItems: 500
+                items:
+                  $ref: "#/components/schemas/NonprofitAddressSuggestionEntry"
+            example:
+              entries:
+                - ein: "13-1635294"
+                  line1: "431 18th Street NW"
+                  city: "Washington"
+                  state: "DC"
+                  zip: "20006"
+                - ein: "530196605"
+                  line1: "1250 24th Street NW"
+                  line2: "Suite 300"
+                  city: "Washington"
+                  state: "DC"
+                  zip: "20037-1175"
+    CreateNonprofitContactSuggestionRequest:
+      description: Contact entries to upload, each matched to a nonprofit by EIN.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - entries
+            properties:
+              entries:
+                type: array
+                description: Contact entries to upload. Up to 500 per request.
+                minItems: 1
+                maxItems: 500
+                items:
+                  $ref: "#/components/schemas/NonprofitContactSuggestionEntry"
+            example:
+              entries:
+                - ein: "13-1635294"
+                  email: "claims@redcross.org"
+                  phone: "2025551212"
+                  first_name: "Sarah"
+                  last_name: "Johnson"
+                - ein: "530196605"
+                  email: "ap@worldwildlife.org"
     UpdateDonationRequest:
       description: |-
         The request to update core donation attributes like purpose, note and attribution.
