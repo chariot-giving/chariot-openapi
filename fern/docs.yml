@@ -64,7 +64,7 @@ typography:
 
 colors:
   accentPrimary:
-    light: "#209AE5"
+    light: "#0A5483"
     dark: "#6DC7FF"
   background:
     light: "#F5F5F5"
