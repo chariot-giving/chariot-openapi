@@ -1,0 +1,33 @@
+---
+title: "FAQ"
+subtitle: "Common questions about DAFpay Accounts for DAF Providers."
+hidden: false
+---
+
+<AccordionGroup>
+
+<Accordion title="**How is this different from the DAFpay payment option?**">
+  The DAFpay payment option is the embeddable widget fundraisers add to their site so donors can give from their DAF. DAFpay Accounts is the API DAF Providers use to *power* that experience — onboarding donors, registering their funds, and processing the grants they submit.
+</Accordion>
+
+<Accordion title="**Can I create donors directly?**">
+  No. Donors are created when an individual signs up through the DAFpay payment option. As a DAF Provider, you can read donors that are linked to one of your accounts, but you cannot create or modify them.
+</Accordion>
+
+<Accordion title="**Can I move an account from `pending` to `approved` myself?**">
+  No. The `pending` → `approved` transition only happens when the donor verifies ownership of the account by entering the `auth_code` (or signing up via the `invite_url`). This safeguards both the donor and your organization.
+</Accordion>
+
+<Accordion title="**How do I remove an account I no longer want active?**">
+  Accounts cannot be deleted — disable them instead. Set `status` to `disabled` via [PATCH](/api/dafpay-accounts/update). A disabled account stops accepting grant requests but preserves its history, and you (or the donor) can re-enable it at any time.
+</Accordion>
+
+<Accordion title="**Can I create grant requests via the API?**">
+  No. Grant requests are created exclusively by donors through the DAFpay payment option. You can list, view, and update their status (to `initiated` once you've processed them, or `cancelled` to reject them) — but you cannot create new ones.
+</Accordion>
+
+<Accordion title="**When does `awaiting_account_approval` transition to `awaiting_daf_submission`?**">
+  Automatically, when the parent account reaches `approved` status. You don't need to make any API call.
+</Accordion>
+
+</AccordionGroup>

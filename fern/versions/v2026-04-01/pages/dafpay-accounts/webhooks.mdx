@@ -1,0 +1,48 @@
+---
+title: "Webhooks"
+subtitle: "Stay in sync with DAFpay as donors sign up and submit grants."
+hidden: false
+---
+
+Configure a webhook URL in your DAF Provider settings to receive real-time notifications. Every webhook is signed with an HMAC-SHA256 signature you can verify against your provider secret.
+
+## Events
+
+| Event | When it fires |
+|-------|---------------|
+| `account.requested` | A donor signed up on DAFpay and selected your organization. The account is in `requested` status. |
+| `account.approved` | A donor verified their account (or signed up via your invite URL). |
+| `account.disabled` | An account was deactivated — by you or by the donor. |
+| `account.enabled` | A previously disabled account was re-enabled. |
+| `grant_request.created` | A donor submitted a new grant request through the DAFpay payment option. |
+| `grant_request.status_changed` | A grant request's status changed — including the automatic transition to `awaiting_daf_submission` when an account is approved. |
+
+## Headers
+
+| Header | Description |
+|--------|-------------|
+| `X-DAFpay-Signature` | HMAC-SHA256 signature for payload verification |
+| `X-DAFpay-Event` | The event type |
+
+## Payload shape
+
+```json
+{
+  "id": "evt_001",
+  "type": "grant_request.created",
+  "created_at": "2026-03-10T16:45:00Z",
+  "data": {
+    "id": "gr_ghi789",
+    "fund_id": "fund_def456",
+    "account_id": "acct_xyz789",
+    "donor_id": "dnr_abc123",
+    "status": "awaiting_account_approval",
+    "ein": "13-1788491",
+    "amount_cents": 50000,
+    "frequency": "monthly",
+    "form_url": "https://example.org/donate"
+  }
+}
+```
+
+The shape of `data` mirrors the resource returned by the corresponding API endpoint. Use the endpoint's `id` to fetch the full record if you need fields not included on the webhook.

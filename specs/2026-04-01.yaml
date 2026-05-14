@@ -2383,6 +2383,567 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/accounts:
+    get:
+      summary: List DAFpay Accounts
+      description: |-
+        Returns a list of DAFpay accounts for your DAF Provider. Use the query parameters to filter by `status` or `donor_id`.
+      operationId: list-dafpay-accounts
+      tags:
+        - DAFpay Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by account status.
+          required: false
+          schema:
+            type: string
+            enum: [requested, pending, approved, disabled]
+        - name: donor_id
+          in: query
+          description: Return only accounts linked to this donor.
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of results per page. Defaults to 25, maximum 100.
+          required: false
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: page_token
+          in: query
+          description: |-
+            A cursor for pagination. Pass the `next_page_token` from a previous response to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDafpayAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create DAFpay Account
+      description: |-
+        Create a new DAFpay account for a donor. The account is created in `pending` status with no donor attached. DAFpay generates an `auth_code` and `invite_url` — share these with the donor through a trusted channel (your portal, email, etc.).
+
+        When the donor signs up on DAFpay using the invite URL (or enters the `auth_code` manually), they are automatically linked to this account and it moves to `approved`.
+      operationId: create-dafpay-account
+      tags:
+        - DAFpay Accounts
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDafpayAccountRequest"
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayAccount"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayAccountOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/accounts/{id}:
+    get:
+      summary: Get DAFpay Account
+      description: |-
+        Retrieve a DAFpay account by its unique identifier.
+      operationId: get-dafpay-account
+      tags:
+        - DAFpay Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayAccount"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayAccountOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update DAFpay Account
+      description: |-
+        Update a DAFpay account. Use this to:
+
+        - Link a `requested` account to your system by setting the `external_account_id` (this moves the account to `pending`).
+        - Update the `external_account_id` of an existing account.
+        - Disable an account, or re-enable a previously `disabled` account.
+
+        The donor-driven transition from `pending` to `approved` happens automatically when the donor enters the `auth_code`; you cannot trigger it directly.
+      operationId: update-dafpay-account
+      tags:
+        - DAFpay Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDafpayAccountRequest"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayAccount"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/accounts/{account_id}/funds:
+    get:
+      summary: List DAFpay Funds
+      description: |-
+        Returns a list of funds for the given DAFpay account.
+      operationId: list-dafpay-funds
+      tags:
+        - DAFpay Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          description: The unique identifier of the parent account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+        - name: active
+          in: query
+          description: Filter by active or inactive funds.
+          required: false
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          description: Number of results per page. Defaults to 25, maximum 100.
+          required: false
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: page_token
+          in: query
+          description: A cursor for pagination.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDafpayFundsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create DAFpay Fund
+      description: |-
+        Create a new fund under a DAFpay account. The fund's `name` is displayed to the donor inside the DAFpay payment option; donors with multiple funds choose which to give from.
+      operationId: create-dafpay-fund
+      tags:
+        - DAFpay Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          description: The unique identifier of the parent account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDafpayFundRequest"
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayFund"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayFundOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/accounts/{account_id}/funds/{id}:
+    get:
+      summary: Get DAFpay Fund
+      description: |-
+        Retrieve a single DAFpay fund.
+      operationId: get-dafpay-fund
+      tags:
+        - DAFpay Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          description: The unique identifier of the parent account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+        - name: id
+          in: path
+          description: The unique identifier of the fund.
+          required: true
+          schema:
+            type: string
+          example: "fund_def456"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayFund"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayFundOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update DAFpay Fund
+      description: |-
+        Update a DAFpay fund's display name, external identifier, or active status. Setting `active` to `false` hides the fund from the donor inside the DAFpay payment option.
+      operationId: update-dafpay-fund
+      tags:
+        - DAFpay Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          description: The unique identifier of the parent account.
+          required: true
+          schema:
+            type: string
+          example: "acct_xyz789"
+        - name: id
+          in: path
+          description: The unique identifier of the fund.
+          required: true
+          schema:
+            type: string
+          example: "fund_def456"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDafpayFundRequest"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayFund"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/grant_requests:
+    get:
+      summary: List Grant Requests
+      description: |-
+        Returns a list of grant requests across all of your accounts and funds. Grant requests are created by donors through the DAFpay payment option — DAF Providers cannot create them directly.
+      operationId: list-dafpay-grant-requests
+      tags:
+        - DAFpay Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by grant request status.
+          required: false
+          schema:
+            type: string
+            enum: [awaiting_account_approval, awaiting_daf_submission, initiated, cancelled]
+        - name: account_id
+          in: query
+          description: Filter by parent account.
+          required: false
+          schema:
+            type: string
+        - name: fund_id
+          in: query
+          description: Filter by fund.
+          required: false
+          schema:
+            type: string
+        - name: ein
+          in: query
+          description: Filter by nonprofit EIN.
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of results per page. Defaults to 25, maximum 100.
+          required: false
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: page_token
+          in: query
+          description: A cursor for pagination.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDafpayGrantRequestsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/grant_requests/{id}:
+    get:
+      summary: Get Grant Request
+      description: |-
+        Retrieve a single grant request.
+      operationId: get-dafpay-grant-request
+      tags:
+        - DAFpay Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the grant request.
+          required: true
+          schema:
+            type: string
+          example: "gr_ghi789"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayGrantRequest"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayGrantRequestOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update Grant Request
+      description: |-
+        Update a grant request's status. This is the primary way DAF Providers process grants.
+
+        - Set `status` to `initiated` once you've submitted the grant in your system. This is a final state.
+        - Set `status` to `cancelled` to reject the grant. A `cancellation_reason` is required.
+
+        Allowed transitions:
+
+        | From                          | Allowed To                 |
+        | ----------------------------- | -------------------------- |
+        | `awaiting_account_approval`   | `cancelled`                |
+        | `awaiting_daf_submission`     | `initiated`, `cancelled`   |
+        | `initiated`                   | *(final)*                  |
+        | `cancelled`                   | *(final)*                  |
+
+        The transition from `awaiting_account_approval` to `awaiting_daf_submission` happens automatically when the parent account reaches `approved`.
+      operationId: update-dafpay-grant-request
+      tags:
+        - DAFpay Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the grant request.
+          required: true
+          schema:
+            type: string
+          example: "gr_ghi789"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDafpayGrantRequestRequest"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayGrantRequest"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/donors/{id}:
+    get:
+      summary: Get Donor
+      description: |-
+        Retrieve a donor by ID. You can only read donors that are linked to one of your DAFpay accounts. Donors are created by the donor through the DAFpay payment option — they cannot be created or modified via this API.
+      operationId: get-dafpay-donor
+      tags:
+        - DAFpay Donors
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the donor.
+          required: true
+          schema:
+            type: string
+          example: "dnr_abc123"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayDonor"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayDonorOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     bearerAuth:
@@ -5402,6 +5963,292 @@ components:
           format: date-time
           description: The date and time the program was last updated
           example: "2020-01-31T23:00:00Z"
+    DafpayAccount:
+      type: object
+      description: |-
+        A DAFpay account links one of your donors to a DAF Provider record. Donors can have accounts with multiple DAF Providers.
+      required:
+        - id
+        - status
+        - auth_code
+        - invite_url
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the account.
+          example: "acct_xyz789"
+        donor_id:
+          type: string
+          nullable: true
+          description: |-
+            The DAFpay donor linked to this account. `null` until the donor verifies via the `auth_code` or signs up using the `invite_url`.
+          example: "dnr_abc123"
+        status:
+          type: string
+          enum: [requested, pending, approved, disabled]
+          description: |-
+            The lifecycle status of the account.
+
+            - `requested`: The donor created the account in DAFpay and selected your organization, but you have not linked them yet.
+            - `pending`: The account is linked between DAFpay and your system, but the donor has not yet verified ownership via the `auth_code`.
+            - `approved`: The donor has verified ownership. Grant requests can be submitted.
+            - `disabled`: The account has been deactivated by you or the donor. Re-enabled accounts return to the previous status.
+          example: "pending"
+        external_account_id:
+          type: string
+          nullable: true
+          description: Your internal account identifier for the donor.
+          example: "DAF-10042"
+        auth_code:
+          type: string
+          readOnly: true
+          description: A short verification code the donor enters in DAFpay to claim and verify this account.
+          example: "a1b2c3d4"
+        invite_url:
+          type: string
+          format: uri
+          readOnly: true
+          description: A shareable URL the donor can use to sign up and have this account automatically linked and approved.
+          example: "https://dafpay.com/invite/a1b2c3d4"
+        disabled_by:
+          type: string
+          enum: [provider, donor]
+          nullable: true
+          description: Indicates who disabled the account, when applicable.
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-02-01T14:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-02-01T14:00:00Z"
+    DafpayFund:
+      type: object
+      description: A fund belongs to a DAFpay account. Donors with multiple funds can toggle between them in the DAFpay payment option.
+      required:
+        - id
+        - account_id
+        - name
+        - active
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the fund.
+          example: "fund_def456"
+        account_id:
+          type: string
+          description: The unique identifier of the parent account.
+          example: "acct_xyz789"
+        external_fund_id:
+          type: string
+          nullable: true
+          description: Your internal fund identifier.
+          example: "FUND-2001"
+        name:
+          type: string
+          description: The display name of the fund shown to the donor in DAFpay.
+          example: "Smith Family Fund"
+        active:
+          type: boolean
+          description: Whether the fund is visible to the donor in the DAFpay payment option.
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-02-05T09:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-02-05T09:00:00Z"
+    DafpayDonorContactAddress:
+      type: object
+      description: The donor's mailing address provided at the time of the grant request.
+      properties:
+        line1:
+          type: string
+          example: "123 Main St"
+        line2:
+          type: string
+          nullable: true
+          example: null
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        zip:
+          type: string
+          example: "10001"
+    DafpayDonorContact:
+      type: object
+      description: A snapshot of the donor's contact information captured for this grant request.
+      properties:
+        name:
+          type: string
+          example: "Jane Smith"
+        email:
+          type: string
+          format: email
+          example: "jane@example.com"
+        phone:
+          type: string
+          example: "+15551234567"
+        address:
+          $ref: "#/components/schemas/DafpayDonorContactAddress"
+    DafpayGrantRequest:
+      type: object
+      description: |-
+        A grant request is a donation intent submitted by a donor through the DAFpay payment option, addressed to a specific nonprofit. The DAF Provider is responsible for processing it in their own system and reporting the outcome back to DAFpay.
+
+        All grant amounts are in US dollars.
+      required:
+        - id
+        - fund_id
+        - account_id
+        - donor_id
+        - status
+        - ein
+        - amount_cents
+        - frequency
+        - form_url
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the grant request.
+          example: "gr_ghi789"
+        fund_id:
+          type: string
+          description: The fund the grant is being made from.
+          example: "fund_def456"
+        account_id:
+          type: string
+          description: The account the grant is being made from.
+          example: "acct_xyz789"
+        donor_id:
+          type: string
+          description: The donor who created the grant request.
+          example: "dnr_abc123"
+        status:
+          type: string
+          enum: [awaiting_account_approval, awaiting_daf_submission, initiated, cancelled]
+          description: |-
+            The lifecycle status of the grant request.
+
+            - `awaiting_account_approval`: The parent account is not yet `approved`. Advances automatically when the account is approved.
+            - `awaiting_daf_submission`: Ready for you to submit in your system.
+            - `initiated`: You have submitted the grant in your system. Final.
+            - `cancelled`: You have rejected the grant. Final.
+          example: "awaiting_daf_submission"
+        ein:
+          type: string
+          description: The EIN of the recipient nonprofit.
+          example: "13-1788491"
+        nonprofit_name:
+          type: string
+          description: The name of the recipient nonprofit at the time of the grant request.
+          example: "Robin Hood Foundation"
+        amount_cents:
+          type: integer
+          format: int64
+          description: The grant amount in cents (USD).
+          example: 50000
+        frequency:
+          type: string
+          enum: [one_time, monthly, quarterly, annual]
+          description: |-
+            How often the donor intends this grant to recur. DAF Providers control which frequencies donors can choose from in the DAFpay payment option — only your enabled frequencies will appear on grant requests we send you. Configure this in your DAF Provider settings.
+          example: "monthly"
+        form_url:
+          type: string
+          format: uri
+          description: The URL of the fundraiser page where the donor submitted the DAFpay gift.
+          example: "https://example.org/donate"
+        purpose:
+          type: string
+          nullable: true
+          description: The donor's stated purpose for the grant.
+          example: "General operating support"
+        note:
+          type: string
+          nullable: true
+          description: An optional note from the donor to the nonprofit, captured at the time of the grant request.
+          example: "In honor of my grandmother."
+        donor_contact:
+          $ref: "#/components/schemas/DafpayDonorContact"
+        cancellation_reason:
+          type: string
+          nullable: true
+          description: The reason provided when the grant request was cancelled. Required when transitioning to `cancelled`.
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-03-10T16:45:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-03-10T16:45:00Z"
+    DafpayDonor:
+      type: object
+      description: |-
+        A DAFpay donor. Donor records are created when an individual signs up through the DAFpay payment option. DAF Providers can read donors that are linked to one of their accounts but cannot create or modify them.
+      required:
+        - id
+        - phone
+        - phone_verified
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the donor.
+          example: "dnr_abc123"
+        first_name:
+          type: string
+          nullable: true
+          example: "Jane"
+        last_name:
+          type: string
+          nullable: true
+          example: "Smith"
+        phone:
+          type: string
+          description: The donor's verified phone number in E.164 format.
+          example: "+15551234567"
+        phone_verified:
+          type: boolean
+          example: true
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "jane@example.com"
+        email_verified:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2026-01-15T10:30:00Z"
     Paging:
       type: object
       description: The paging information
@@ -5520,6 +6367,94 @@ components:
                   last_name: "Johnson"
                 - ein: "530196605"
                   email: "ap@worldwildlife.org"
+    CreateDafpayAccountRequest:
+      description: The request body to create a DAFpay account.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              external_account_id:
+                type: string
+                description: Your internal account identifier for this donor. Optional — useful for reconciling with your own system.
+                example: "DAF-10042"
+    UpdateDafpayAccountRequest:
+      description: |-
+        The request body to update a DAFpay account.
+
+        Setting `external_account_id` on a `requested` account moves it to `pending`. Setting `status` to `disabled` deactivates the account; setting it back to `pending` or `approved` re-enables it (DAFpay restores the appropriate prior status).
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              external_account_id:
+                type: string
+                description: Your internal account identifier.
+                example: "DAF-10042"
+              status:
+                type: string
+                enum: [pending, approved, disabled]
+                description: Set to `disabled` to deactivate the account, or `pending`/`approved` to re-enable a disabled account.
+                example: "disabled"
+    CreateDafpayFundRequest:
+      description: The request body to create a DAFpay fund.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: The display name of the fund shown to the donor in DAFpay.
+                example: "Smith Family Fund"
+              external_fund_id:
+                type: string
+                description: Your internal fund identifier.
+                example: "FUND-2001"
+    UpdateDafpayFundRequest:
+      description: The request body to update a DAFpay fund.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Smith Family Charitable Fund"
+              external_fund_id:
+                type: string
+                example: "FUND-2001-A"
+              active:
+                type: boolean
+                description: Set to `false` to hide the fund from the donor inside the DAFpay payment option.
+                example: false
+    UpdateDafpayGrantRequestRequest:
+      description: |-
+        The request body to update a grant request's status. Provide `cancellation_reason` when transitioning to `cancelled`.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum: [initiated, cancelled]
+                description: The new status for the grant request.
+                example: "initiated"
+              cancellation_reason:
+                type: string
+                description: Required when `status` is `cancelled`. A short reason for the cancellation, shown to the donor.
+                example: "Insufficient fund balance"
     UpdateDonationRequest:
       description: |-
         The request to update core donation attributes like purpose, note and attribution.
@@ -6685,6 +7620,60 @@ components:
             code: 500
             error: "Internal server error"
             message: "The server encountered an error processing your request"
+    ListDafpayAccountsResponse:
+      description: The response for DafpayAccounts.list.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DafpayAccount"
+              next_page_token:
+                type: string
+                nullable: true
+                description: A cursor for retrieving the next page. `null` when no more results exist.
+    ListDafpayFundsResponse:
+      description: The response for DafpayFunds.list.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DafpayFund"
+              next_page_token:
+                type: string
+                nullable: true
+                description: A cursor for retrieving the next page. `null` when no more results exist.
+    ListDafpayGrantRequestsResponse:
+      description: The response for DafpayGrantRequests.list.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DafpayGrantRequest"
+              next_page_token:
+                type: string
+                nullable: true
+                description: A cursor for retrieving the next page. `null` when no more results exist.
   examples:
     DafGrantDisbursement:
       summary: Disbursement with DAF grant transactions
@@ -7544,3 +8533,63 @@ components:
         supported: true
         minimumGrantAmount: 25000
         institutionDown: false
+    DafpayAccountOutput:
+      summary: Pending DAFpay account
+      value:
+        id: "acct_xyz789"
+        donor_id: null
+        status: "pending"
+        external_account_id: "DAF-10042"
+        auth_code: "a1b2c3d4"
+        invite_url: "https://dafpay.com/invite/a1b2c3d4"
+        disabled_by: null
+        created_at: "2026-02-01T14:00:00Z"
+        updated_at: "2026-02-01T14:00:00Z"
+    DafpayFundOutput:
+      summary: Active DAFpay fund
+      value:
+        id: "fund_def456"
+        account_id: "acct_xyz789"
+        external_fund_id: "FUND-2001"
+        name: "Smith Family Fund"
+        active: true
+        created_at: "2026-02-05T09:00:00Z"
+        updated_at: "2026-02-05T09:00:00Z"
+    DafpayGrantRequestOutput:
+      summary: Grant request awaiting submission
+      value:
+        id: "gr_ghi789"
+        fund_id: "fund_def456"
+        account_id: "acct_xyz789"
+        donor_id: "dnr_abc123"
+        status: "awaiting_daf_submission"
+        ein: "13-1788491"
+        nonprofit_name: "Robin Hood Foundation"
+        amount_cents: 50000
+        frequency: "monthly"
+        form_url: "https://example.org/donate"
+        purpose: "General operating support"
+        note: "In honor of my grandmother."
+        donor_contact:
+          name: "Jane Smith"
+          email: "jane@example.com"
+          phone: "+15551234567"
+          address:
+            line1: "123 Main St"
+            city: "New York"
+            state: "NY"
+            zip: "10001"
+        cancellation_reason: null
+        created_at: "2026-03-10T16:45:00Z"
+        updated_at: "2026-03-10T16:45:00Z"
+    DafpayDonorOutput:
+      summary: Verified DAFpay donor
+      value:
+        id: "dnr_abc123"
+        first_name: "Jane"
+        last_name: "Smith"
+        phone: "+15551234567"
+        phone_verified: true
+        email: "jane@example.com"
+        email_verified: true
+        created_at: "2026-01-15T10:30:00Z"

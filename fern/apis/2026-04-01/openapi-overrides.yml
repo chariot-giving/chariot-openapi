@@ -278,3 +278,70 @@ paths:
       x-fern-sdk-group-name:
         - nonprofitContacts
       x-fern-sdk-method-name: create
+  /v1/dafpay/accounts:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - dafpayAccounts
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - dafpayAccounts
+      x-fern-sdk-method-name: create
+  /v1/dafpay/accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - dafpayAccounts
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - dafpayAccounts
+      x-fern-sdk-method-name: update
+  /v1/dafpay/accounts/{account_id}/funds:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - dafpayFunds
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - dafpayFunds
+      x-fern-sdk-method-name: create
+  /v1/dafpay/accounts/{account_id}/funds/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - dafpayFunds
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - dafpayFunds
+      x-fern-sdk-method-name: update
+  /v1/dafpay/grant_requests:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - dafpayGrantRequests
+      x-fern-sdk-method-name: list
+  /v1/dafpay/grant_requests/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - dafpayGrantRequests
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - dafpayGrantRequests
+      x-fern-sdk-method-name: update
+  /v1/dafpay/donors/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - dafpayDonors
+      x-fern-sdk-method-name: get

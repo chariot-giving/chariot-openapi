@@ -1,0 +1,52 @@
+---
+title: "Grant Request Lifecycle"
+subtitle: "How a grant request moves from creation to a final state."
+hidden: false
+---
+
+Grant requests are donation intents submitted by donors through the DAFpay payment option. DAF Providers cannot create grant requests — your job is to process them in your system and report the outcome back.
+
+## Statuses
+
+| Status | Meaning | Your action |
+|--------|---------|-------------|
+| `awaiting_account_approval` | The parent account isn't `approved` yet. | None — advances automatically when the account is approved. |
+| `awaiting_daf_submission` | Ready for you to submit in your system. | Submit, then mark `initiated`. Or `cancelled` if you can't process it. |
+| `initiated` | You've submitted the grant. **Final.** | None. |
+| `cancelled` | You've rejected the grant. **Final.** | None. |
+
+## Lifecycle diagram
+
+```
+Donor submits a grant
+        │
+        ▼
+awaiting_account_approval ────► awaiting_daf_submission ────► initiated
+   (account not yet approved)       (account approved, ready)     (final)
+        │                                 │
+        ▼                                 ▼
+   cancelled                         cancelled
+   (final, with reason)              (final, with reason)
+```
+
+The `awaiting_account_approval` → `awaiting_daf_submission` transition happens automatically when the parent account reaches `approved`. You never set this manually.
+
+## Allowed transitions
+
+| From                          | Allowed to                 |
+| ----------------------------- | -------------------------- |
+| `awaiting_account_approval`   | `cancelled`                |
+| `awaiting_daf_submission`     | `initiated`, `cancelled`   |
+| `initiated`                   | *(final)*                  |
+| `cancelled`                   | *(final)*                  |
+
+## Cancelling
+
+Grant requests cannot be deleted — cancel them instead. When you cancel a grant request you must supply a `cancellation_reason`. The reason is shown to the donor.
+
+```json
+{
+  "status": "cancelled",
+  "cancellation_reason": "Insufficient fund balance"
+}
+```

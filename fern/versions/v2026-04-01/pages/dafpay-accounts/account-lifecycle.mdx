@@ -1,0 +1,52 @@
+---
+title: "Account Lifecycle"
+subtitle: "How a DAFpay account moves between requested, pending, approved, and disabled."
+hidden: false
+---
+
+A DAFpay account is the link between one of your donors and DAFpay. The account moves through a small set of statuses depending on whether you or the donor took the first step.
+
+## Statuses
+
+| Status | Meaning | Grants can submit? |
+|--------|---------|--------------------|
+| `requested` | The donor signed up on DAFpay and selected your organization. You haven't linked them yet. | No |
+| `pending` | The account is linked between DAFpay and your system, but the donor hasn't verified ownership via the `auth_code`. | No |
+| `approved` | The donor has verified ownership. | Yes |
+| `disabled` | Deactivated by you or the donor. Can be re-enabled. | No |
+
+## Three onboarding paths
+
+### Path 1 — You create the account first
+
+```
+You create the account ───► pending ─────────────► approved
+(POST /accounts)              (auth_code +          (donor signs up via
+                               invite_url           invite URL, or enters
+                               returned)            auth_code manually)
+```
+
+This is the most common path. Create the account in your system, share the `invite_url` with your donor through a trusted channel, and DAFpay auto-links and approves the account when the donor signs up.
+
+### Path 2 — The donor signs up without an invite
+
+```
+Donor signs up on DAFpay ───► requested ───► pending ───────► approved
+(searches for your DAF)        (you haven't    (you set         (donor enters
+                                linked them)   external_        auth_code)
+                                               account_id)
+```
+
+When you see a `requested` account, acknowledge it by setting `external_account_id` via [PATCH](/api/dafpay-accounts/update). That moves the account to `pending` and waits for the donor to verify via the `auth_code`.
+
+### Path 3 — Donor signs up via your invite URL
+
+```
+Donor signs up via invite URL ─────────────────────► approved
+```
+
+If the donor signs up using an `invite_url` you generated, verification is automatic and the account skips straight to `approved`.
+
+## Disabling and re-enabling
+
+Either you or the donor can `disable` an account at any time. Re-enabling an account restores it to its previous status (typically `approved`). The `disabled_by` field on the account tells you who disabled it.

@@ -1,0 +1,43 @@
+---
+title: "Overview"
+subtitle: "DAFpay Accounts let DAF Providers connect their donors to the DAFpay payment option."
+hidden: false
+---
+
+DAFpay Accounts is a DAF Provider–facing API. It lets you create accounts for your donors, register the funds they can give from, and process the grant requests they submit through DAFpay on nonprofit websites.
+
+This is distinct from the [DAFpay payment option](/guides/fundraisers/dafpay/overview), which fundraisers embed on their site to accept gifts from DAFs.
+
+## What you get
+
+<CardGroup cols={2}>
+  <Card title='Invite-based onboarding' icon='paper-plane'>
+    Create an account in your system and share an invite URL — your donor signs up in DAFpay and is auto-verified.
+  </Card>
+  <Card title='Multi-fund support' icon='layer-group'>
+    Register one or many funds per account. Donors with multiple funds toggle between them in the payment option.
+  </Card>
+  <Card title='Streamlined grant processing' icon='check-double'>
+    Receive grant requests as donors submit them, and report `initiated` or `cancelled` back to DAFpay.
+  </Card>
+  <Card title='Webhooks' icon='bell'>
+    Subscribe to account and grant request events so your system stays in sync with DAFpay in real time.
+  </Card>
+</CardGroup>
+
+## Data model
+
+```
+DAF Provider (you)
+ └── Account     (one of your donors, linked to DAFpay)
+      └── Fund        (one or many per account)
+           └── Grant Request   (donation intent)
+```
+
+A **Donor** is identified by a verified phone number and is created when an individual signs up through the DAFpay payment option. You can read donors that are linked to one of your accounts, but you cannot create or modify them.
+
+An **Account** links a donor to your organization. One donor can have accounts with multiple DAF Providers.
+
+A **Fund** belongs to an account. Donors with multiple funds choose which to give from when they submit a grant.
+
+A **Grant Request** is a donation intent created by a donor through the DAFpay payment option. You process it in your system, then report the outcome back to DAFpay.
