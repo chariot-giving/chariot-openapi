@@ -213,6 +213,7 @@ navigation:
       - section: v6
         slug: v6
         icon: light code-branch
+        collapsed: true
         contents:
           - api: FDX API Reference
             api-name: "fdx-v6"
@@ -249,6 +250,7 @@ navigation:
       - section: v7
         slug: v7
         icon: light code-branch
+        collapsed: true
         contents:
           - api: FDX API Reference v7
             api-name: "fdx-v7"
