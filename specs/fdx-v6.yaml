@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
   title: Chariot FDX API
-  version: "6.0"
+  version: "6.3"
   description: >-
-    Financial Data Exchange (FDX) v6 compatible API for read-only access to
-    Chariot bank account data. Implements the FDX v6 standard for account
+    Financial Data Exchange (FDX) v6.3 compatible API for read-only access to
+    Chariot bank account data. Implements the FDX v6.3 standard for account
     information, transactions, and statements.
   contact:
     name: Chariot Development Team
