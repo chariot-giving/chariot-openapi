@@ -34,13 +34,3 @@ paths:
       x-fern-sdk-group-name:
         - transactions
       x-fern-sdk-method-name: list
-  /accounts/{id}/payment-networks:
-    get:
-      x-fern-sdk-group-name:
-        - paymentNetworks
-      x-fern-sdk-method-name: list
-  /accounts/{id}/asset-transfer-networks:
-    get:
-      x-fern-sdk-group-name:
-        - assetTransferNetworks
-      x-fern-sdk-method-name: list

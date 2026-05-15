@@ -5,7 +5,7 @@ info:
   description: >-
     Financial Data Exchange (FDX) v6 compatible API for read-only access to
     Chariot bank account data. Implements the FDX v6 standard for account
-    information, transactions, statements, and payment networks.
+    information, transactions, and statements.
   contact:
     name: Chariot Development Team
     url: https://givechariot.com/contact
@@ -250,58 +250,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /accounts/{id}/payment-networks:
-    get:
-      summary: List account payment networks
-      description: Get the payment networks supported by an account (e.g., ACH, FedNow, RTP).
-      operationId: listAccountPaymentNetworks
-      tags:
-        - Payment Networks
-      parameters:
-        - $ref: "#/components/parameters/AccountId"
-        - $ref: "#/components/parameters/Limit"
-        - $ref: "#/components/parameters/PageKey"
-      responses:
-        "200":
-          description: The list of payment networks for the account
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaymentNetworkListResponse"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  /accounts/{id}/asset-transfer-networks:
-    get:
-      summary: List account asset transfer networks
-      description: Get the asset transfer networks supported by an account.
-      operationId: listAccountAssetTransferNetworks
-      tags:
-        - Asset Transfer Networks
-      parameters:
-        - $ref: "#/components/parameters/AccountId"
-      responses:
-        "200":
-          description: The list of asset transfer networks for the account
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AssetTransferNetworkListResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -922,89 +870,6 @@ components:
           items:
             $ref: "#/components/schemas/DepositTransaction"
 
-    # ─── Payment Network ────────────────────────────────────────────────
-
-    PaymentNetwork:
-      type: object
-      description: A payment network supported by an account.
-      required:
-        - bankId
-        - identifier
-        - type
-        - transferIn
-        - transferOut
-      properties:
-        bankId:
-          type: string
-          description: Routing transit number (RTN)
-        identifier:
-          type: string
-          description: Account number on this payment network
-        type:
-          $ref: "#/components/schemas/PaymentNetworkType"
-        transferIn:
-          type: boolean
-          description: Whether the account can receive transfers on this network
-        transferOut:
-          type: boolean
-          description: Whether the account can send transfers on this network
-
-    PaymentNetworkListResponse:
-      type: object
-      description: Paginated list of payment networks.
-      required:
-        - paymentNetworks
-      properties:
-        page:
-          $ref: "#/components/schemas/Page"
-        paymentNetworks:
-          type: array
-          items:
-            $ref: "#/components/schemas/PaymentNetwork"
-
-    # ─── Asset Transfer Network ─────────────────────────────────────────
-
-    AssetTransferNetwork:
-      type: object
-      description: An asset transfer network supported by an account.
-      required:
-        - identifier
-        - identifierType
-        - institutionName
-        - institutionId
-        - type
-        - jointAccount
-      properties:
-        identifier:
-          type: string
-          description: Account identifier on this network
-        identifierType:
-          $ref: "#/components/schemas/AssetTransferNetworkIdentifierType"
-        institutionName:
-          type: string
-          description: Name of the financial institution
-        institutionId:
-          type: string
-          description: Identifier of the financial institution
-        type:
-          $ref: "#/components/schemas/AssetTransferNetworkType"
-        jointAccount:
-          type: boolean
-          description: Whether this is a joint account
-
-    AssetTransferNetworkListResponse:
-      type: object
-      description: Paginated list of asset transfer networks.
-      required:
-        - assetTransferNetworks
-      properties:
-        page:
-          $ref: "#/components/schemas/Page"
-        assetTransferNetworks:
-          type: array
-          items:
-            $ref: "#/components/schemas/AssetTransferNetwork"
-
     # ─── Shared ─────────────────────────────────────────────────────────
 
     Currency:
@@ -1135,29 +1000,3 @@ components:
         - CELL
         - FAX
 
-    PaymentNetworkType:
-      type: string
-      description: Type of payment network
-      enum:
-        - US_ACH
-        - US_CHIPS
-        - US_FEDNOW
-        - US_FEDWIRE
-        - US_RTP
-        - CA_ACSS
-        - CA_LVTS
-
-    AssetTransferNetworkType:
-      type: string
-      description: Type of asset transfer network
-      enum:
-        - CA_ATON
-        - US_ACATS
-        - US_DTC
-
-    AssetTransferNetworkIdentifierType:
-      type: string
-      description: Type of identifier used on the asset transfer network
-      enum:
-        - ACCOUNT_NUMBER
-        - TOKENIZED_ACCOUNT_NUMBER

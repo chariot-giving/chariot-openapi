@@ -1,0 +1,52 @@
+---
+title: FDX Authentication
+subtitle: OAuth 2.0 and IP whitelisting for FDX API access
+slug: fdx/authentication
+---
+
+The FDX API uses OAuth 2.0 Bearer token authentication combined with IP address whitelisting.
+
+## Client Setup
+
+To access the FDX API, you need a client name and client secret for each environment. Contact Chariot at [support@givechariot.com](mailto:support@givechariot.com) to request credentials.
+
+| Environment | Base URL | Credentials |
+|-------------|----------|-------------|
+| **Production** | `https://api.givechariot.com/bank/fdx/v6` | Separate client name and secret |
+| **Staging** | `https://devapi.givechariot.com/bank/fdx/v6` | Separate client name and secret |
+
+Each environment has its own set of credentials. Staging credentials cannot be used in production and vice versa.
+
+## OAuth 2.0
+
+All requests must include a valid OAuth 2.0 Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer <access_token>
+```
+
+Tokens must include the `read:bank_accounts` scope. Requests without a valid token receive a `401 Unauthorized` response.
+
+## IP Whitelisting
+
+In addition to OAuth 2.0, all requests are validated against an IP whitelist. Requests from non-whitelisted IP addresses receive a `403 Forbidden` response.
+
+Contact Chariot to register IP addresses for FDX API access.
+
+## Error Responses
+
+Authentication and authorization failures return RFC 7807 Problem Details:
+
+```json
+{
+  "type": "about:blank",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Missing or invalid Bearer token"
+}
+```
+
+| Status | Meaning |
+|--------|---------|
+| `401 Unauthorized` | Missing or invalid OAuth 2.0 Bearer token |
+| `403 Forbidden` | Valid token but insufficient permissions or IP not whitelisted |
