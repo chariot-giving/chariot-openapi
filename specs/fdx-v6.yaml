@@ -260,8 +260,8 @@ components:
       description: OAuth 2.0 Bearer token with the `read:bank_accounts` scope
       flows:
         authorizationCode:
-          authorizationUrl: https://api.givechariot.com/bank/oauth/authorize
-          tokenUrl: https://api.givechariot.com/bank/oauth/token
+          authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
           scopes:
             "read:bank_accounts": Read access to bank account data
 
