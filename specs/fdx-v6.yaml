@@ -12,9 +12,9 @@ info:
     email: developers@givechariot.com
 
 servers:
-  - url: https://api.givechariot.com/bank/fdx/v6
+  - url: https://api.givechariot.com/fdx/v6
     description: Production
-  - url: https://devapi.givechariot.com/bank/fdx/v6
+  - url: https://devapi.givechariot.com/fdx/v6
     description: Staging
 
 security:
