@@ -124,6 +124,7 @@ paths:
         Get a paginated list of statements for an account. When specifying a
         date range, both startTime and endTime must be provided together.
         Defaults to the last 7 days if no date range is specified.
+        Data is available for up to 24 months from the current date.
       operationId: listAccountStatements
       tags:
         - Statements
@@ -226,6 +227,7 @@ paths:
         Get a paginated list of transactions for an account. When specifying a
         date range, both startTime and endTime must be provided together.
         Defaults to the last 7 days if no date range is specified.
+        Data is available for up to 24 months from the current date.
       operationId: listAccountTransactions
       tags:
         - Transactions

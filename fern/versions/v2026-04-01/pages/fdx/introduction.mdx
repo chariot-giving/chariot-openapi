@@ -34,6 +34,8 @@ List endpoints support cursor-based pagination using `pageKey` (a UUID cursor) a
 
 The statements and transactions endpoints support date range filtering via `startTime` and `endTime` query parameters (format: `YYYY-MM-DD`). Both must be specified together or both omitted. When omitted, defaults to the last 7 days.
 
+Data is available for up to **24 months** from the current date. Requests with a `startTime` older than 24 months will return data starting from the 24-month boundary.
+
 ### Content Negotiation
 
 The statement document endpoint supports multiple formats via the `Accept` header:

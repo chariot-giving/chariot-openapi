@@ -101,7 +101,7 @@ Contact Chariot to register IP addresses for FDX API access.
 
 ## Error Responses
 
-Authentication and authorization failures return RFC 7807 Problem Details:
+All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details format:
 
 ```json
 {
@@ -112,7 +112,24 @@ Authentication and authorization failures return RFC 7807 Problem Details:
 }
 ```
 
-| Status | Meaning |
-|--------|---------|
-| `401 Unauthorized` | Missing or invalid OAuth 2.0 Bearer token |
-| `403 Forbidden` | Valid token but insufficient permissions or IP not whitelisted |
+### Token Exchange Errors
+
+Errors returned by `POST /auth/oauth/token`:
+
+| Status | Condition |
+|--------|-----------|
+| `400 Bad Request` | Missing or invalid `grant_type`, `code`, `refresh_token`, or `scope` parameter |
+| `401 Unauthorized` | Invalid client credentials, expired authorization code, or invalid refresh token |
+| `500 Internal Server Error` | Unexpected server error |
+
+### API Request Errors
+
+Errors returned by FDX API endpoints:
+
+| Status | Condition |
+|--------|-----------|
+| `400 Bad Request` | Invalid query parameters or missing required fields |
+| `401 Unauthorized` | Missing, invalid, or expired Bearer token |
+| `403 Forbidden` | Insufficient permissions or IP not whitelisted |
+| `404 Not Found` | Resource does not exist (e.g., invalid account or statement ID) |
+| `500 Internal Server Error` | Unexpected server error |
