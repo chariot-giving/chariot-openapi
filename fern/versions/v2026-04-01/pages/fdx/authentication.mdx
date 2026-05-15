@@ -38,6 +38,13 @@ The FDX API uses the OAuth 2.0 Authorization Code flow. After receiving client c
 | **Production** | `https://dashboard.givechariot.com/oauth/authorize` | `https://api.givechariot.com/auth/oauth/token` |
 | **Staging** | `https://staging.dashboard.givechariot.com/oauth/authorize` | `https://devapi.givechariot.com/auth/oauth/token` |
 
+### OIDC Well-Known Configuration
+
+| Environment | URL |
+|-------------|-----|
+| **Production** | `https://api.givechariot.com/.well-known/openid-configuration` |
+| **Staging** | `https://devapi.givechariot.com/.well-known/openid-configuration` |
+
 ### 1. Authorize
 
 Redirect the user to the authorization endpoint:
