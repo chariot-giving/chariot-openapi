@@ -1,0 +1,117 @@
+---
+title: "Overview"
+hidden: false
+createdAt: "Wed Jan 14 2026 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+
+This section provides an introduction to Chariot's Gift Proccessing <span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span> solution, a unified platform for nonprofits to streamline gift processing.
+
+## The Problem
+
+> Nonprofits receive donations from **multiple sources** - Donor-Advised Funds, workplace giving, crowdfunding platforms, mailed checks - each with their own portal, payment method, and data format.
+
+> Nonprofits spend countless hours **manually reconciling** payments across different systems, logging into dozens of portals, downloading CSV files, and matching donations to bank deposits.
+
+> Donor data is **fragmented and inconsistent** across these systems, making it difficult to maintain accurate constituent records and generate proper acknowledgment letters.
+
+> Getting donations into your CRM and accounting systems requires **custom work for each payment source**, creating a maintenance nightmare and data quality issues.
+
+And, the problem is only getting worse as more payment sources emerge - creating a never-ending game of gift processing wack-a-mole.
+
+> **It doesn't have to be this way.**
+
+## A New Approach
+
+What if you could?
+
+- Receive donations from all sources through a single unified platform
+- Enrich donation data with complete donor attribution, campaign codes, appeal codes, fund codes, and more.
+- Seamlessly integrate with your existing CRM and accounting systems
+- Eliminate hours of manual data entry and reconciliation work
+
+That's what Chariot does.
+
+## How It Works
+
+Chariot provides **Payment Sources** - segregated addresses for receiving donations from different sources. These can be electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+
+When donations arrive at a Payment Source, Chariot automatically:
+1. **Captures** the payment and creates a Deposit record
+2. **Attaches** donation data to the deposit
+
+You get complete donation data from the source including:
+- Donor name, email, and contact information
+- Gift amounts (gross, net, and fees)
+- DAF account details and grant letters
+- Platform information and platform fees
+- Corporate match information
+
+## Key Benefits
+
+<CardGroup cols={2}>
+    <Card title='Unified Gift Processing' icon='layer-group'>
+    Consolidate donations from 50+ DAF sponsors and platforms into a single stream
+    </Card>
+
+    <Card title='Automatic Reconciliation' icon='check-double'>
+    Match donations to deposits automatically with complete donation details
+    </Card>
+
+    <Card title='Seamless Integration' icon='plug'>
+    Export data to your existing CRM and accounting systems
+    </Card>
+
+    <Card title='Reduce Manual Work' icon='robot'>
+    Eliminate hours of manual reconciliation and data entry each month
+    </Card>
+</CardGroup>
+
+## Who Is This For?
+
+Chariot is ideal for nonprofits that:
+
+- Receive payments from multiple Donor-Advised Fund sponsors and platforms such as Benevity, CyberGrants, YourCause, etc.
+- Want to reduce manual reconciliation work
+- Need to integrate donation data with their CRM and accounting software
+- Want complete visibility into gift processing
+
+## Core Concepts
+
+<AccordionGroup>
+    <Accordion title="Payment Sources">
+        Payment Sources are segregated addresses for receiving donations. Think of them as different "doors" into your Financial Account.
+
+        - **Electronic Payment Sources**: Unique routing + account numbers for ACH transfers
+        - **Lockbox Payment Sources**: Physical mailing addresses for check processing
+
+        Each Payment Source can be dedicated to a specific source (e.g., one for Fidelity Charitable, one for PayPal Giving Fund) making reconciliation seamless.
+    </Accordion>
+
+    <Accordion title="Deposits">
+        A Deposit represents a transfer of money to a Payment Source. One deposit may contain multiple individual donations.
+
+        Deposits track:
+        - Total amount transferred
+        - Settlement status (pending, complete, failed)
+        - Which Payment Source received it
+        - Payment method (ACH, check, account transfer)
+    </Accordion>
+
+    <Accordion title="Donations">
+        A Donation is an individual charitable gift from a donor. Donations include complete attribution and metadata.
+
+        Each donation captures:
+        - Donor information (name, email, address)
+        - Gift amounts (gross, net, fees)
+        - Purpose and donor notes
+        - DAF account details (if applicable)
+        - Platform information (if applicable)
+        - Corporate match details (if applicable)
+    </Accordion>
+</AccordionGroup>
+
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

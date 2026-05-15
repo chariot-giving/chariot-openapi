@@ -1,0 +1,102 @@
+---
+title: "Batch Format"
+createdAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+
+A batch is a ZIP file containing one or more TIFF images and a single CSV index file. The CSV describes the mail items and their associated transactions. Each TIFF file in the ZIP must have a corresponding row in the CSV, and vice versa.
+
+Also see: [Mail Uploads](/v2026-01-15/guides/lockbox-providers/mail-uploads) | [Rescans](/v2026-01-15/guides/lockbox-providers/mail-uploads#rescans) | [Provisioning](/v2026-01-15/guides/lockbox-providers/provisioning)
+
+## Mail Item Types
+
+Mail items are classified into one of the following types:
+
+- White Mail. Mail items with no check or grant data.
+- Donor Advised Fund (DAF) Check. Mail items with a check from a Donor Advised Fund. This will typically also include grant data.
+- Other Check. Mail items with a check from a non-DAF source.
+
+## ZIP Structure
+
+A batch ZIP should contain one CSV index file and one TIFF file per mail item. The TIFF filenames should correspond to the `mail_item_id` values in the CSV.
+
+```
+batch.zip
+├── index.csv
+├── mail_a1b2c3.tiff
+├── mail_d4e5f6.tiff
+└── mail_g7h8i9.tiff
+```
+
+In this example, the CSV would contain rows with `mail_item_id` values `mail_a1b2c3`, `mail_d4e5f6`, and `mail_g7h8i9`. If a mail item has multiple transactions, only one TIFF file is needed — the `mail_item_id` is repeated across CSV rows but maps to a single image.
+
+### Validation Rules
+
+- The ZIP must contain exactly **one CSV file** and one or more TIFF files
+- Every TIFF file must have a corresponding `mail_item_id` row in the CSV
+- Every `mail_item_id` in the CSV must have a corresponding TIFF file in the ZIP
+
+<Note>
+  A mail item may have **multiple transactions**. In this case, use the same
+  `mail_item_id` for all rows belonging to that mail item.
+</Note>
+
+## CSV Structure
+
+The CSV index file has the following columns, listed in the order they should appear. They are grouped into three categories: **mail item info**, **payment info**, and **transaction info**.
+Note that column requirement indicates that the mail item cannot be processed if the column is missing.
+
+### Mail Item Info
+
+Required for all mail items.
+
+| Column                         | Description                                                                                             | Required |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------- | -------- |
+| `mail_item_id`                 | Unique identifier for the mail item. Used to match CSV rows to TIFF files in the ZIP.                   | **Yes**  |
+| `mail_sent_to_po_box`          | PO box number the item was sent to                                                                      | **Yes**  |
+| `mail_sent_to_department_code` | Department code within a shared PO box. **Must be set if the mail item was sent to a department code.** | No\*     |
+
+### Payment Info
+
+Required for all mail items that contain a check.
+
+| Column           | Description                                                                | Required |
+| ---------------- | -------------------------------------------------------------------------- | -------- |
+| `payment_method` | Payment method. Must be `CHECK`.                                           | **Yes**  |
+| `payment_amount` | Total payment amount in cents (e.g., `30000` for $300.00)                  | **Yes**  |
+| `check_number`   | Check number                                                               | **Yes**  |
+| `check_date`     | Date on the check in `MMddYYYY` format (e.g., `07012025` for July 1, 2025) | **Yes**  |
+| `check_memo`     | Memo line from the check                                                   | No       |
+| `payer`          | Name of the paying entity                                                  | **Yes**  |
+| `payee`          | Name of the payee                                                          | **Yes**  |
+
+### Transaction Info
+
+Required for DAF checks.
+
+| Column                | Description                                             | Required | Example                   |
+| --------------------- | ------------------------------------------------------- | -------- | ------------------------- |
+| `amount`              | Transaction amount in cents (e.g., `18000` for $180.00) | **Yes**  | 18000                     |
+| `fund_name`           | The name of the donor's account in the DAF              | No       | The Doe Family Fund       |
+| `donor_first_name`    | Donor's first name                                      | No       | John                      |
+| `donor_last_name`     | Donor's last name                                       | No       | Doe                       |
+| `donor_address_line1` | Donor's street address                                  | No       | 123 Main St               |
+| `donor_address_line2` | Donor's address line 2                                  | No       |                           |
+| `donor_address_city`  | Donor's city                                            | No       | New York                  |
+| `donor_address_state` | Donor's state                                           | No       | NY                        |
+| `donor_address_zip`   | Donor's ZIP code                                        | No       | 10001                     |
+| `donor_email`         | Donor's email address                                   | No       | john.doe@example.com      |
+| `purpose`             | Purpose of the grant                                    | No       | General Operating Support |
+| `note`                | Donor provided note                                     | No       | In honor of my mom        |
+
+Note that a DAF check may be associated with multiple grants (or "transactions"). In this case, the CSV should contain a row for each grant, sharing the same `mail_item_id` and check information.
+
+#### Example
+
+A mail item has a \$180.00 check from DAFgiving360. The grant letter includes two grants: \$100.00 from John Doe for general operating support, and \$80.00 from Jane Smith for program support.
+The CSV should contain two rows:
+
+| `mail_sent_to_po_box` | `mail_sent_to_department_code` | `mail_item_id` | `payment_method` | `payment_amount` | `check_number` | `check_date` | `check_memo` | `payer`      | `payee`         | `amount` | `fund_name`  | `donor_first_name` | `donor_last_name` | `donor_address_line1` | `donor_address_line2` | `donor_address_city` | `donor_address_state` | `donor_address_zip` | `donor_email`          | `purpose`                 | `note`                                                               |
+| --------------------- | ------------------------------ | -------------- | ---------------- | ---------------- | -------------- | ------------ | ------------ | ------------ | --------------- | -------- | ------------ | ------------------ | ----------------- | --------------------- | --------------------- | -------------------- | --------------------- | ------------------- | ---------------------- | ------------------------- | -------------------------------------------------------------------- |
+| 5432                  | DPT1                           | mail_a1b2c3    | CHECK            | 18000            | 0002617986     | 12182024     | 8922058      | DAFgiving360 | Save the Whales | 18000    | DAFgiving360 | John Doe           | Doe               | 123 Main St           | _(empty)_             | New York             | NY                    | 10001               | john.doe@example.com   | General Operating Support | This grant is for the general operating support of the organization. |
+| 5432                  | DPT1                           | mail_a1b2c3    | CHECK            | 18000            | 0002617986     | 12182024     | 8922058      | DAFgiving360 | Save the Whales | 18000    | DAFgiving360 | Jane Smith         | Smith             | 123 Main St           | _(empty)_             | New York             | NY                    | 10001               | jane.smith@example.com | Program Support           | This grant is for the program support of the organization.           |
