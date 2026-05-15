@@ -1,0 +1,47 @@
+---
+title: FDX API
+subtitle: Financial Data Exchange v7 API for bank data aggregation
+slug: fdx
+---
+
+The Chariot FDX API implements the [Financial Data Exchange (FDX)](https://financialdataexchange.org/) v7 standard, providing read-only access to bank account data for authorized financial data aggregators.
+
+## Overview
+
+The FDX API exposes 7 read-only endpoints organized around deposit accounts:
+
+| Category | Endpoints | Description |
+|----------|-----------|-------------|
+| **Accounts** | List accounts, Get account, Get contact | Account information, balances, and contact details |
+| **Statements** | List statements, Get statement document | Statement metadata and document downloads (PDF, CSV, BAI2) |
+| **Customers** | List customers | Organization identity associated with an account |
+| **Transactions** | List transactions | Transaction history with pagination and date filtering |
+
+## Base URL
+
+| Environment | Base URL |
+|-------------|----------|
+| **Production** | `https://api.givechariot.com/bank/fdx/v6` |
+| **Staging** | `https://devapi.givechariot.com/bank/fdx/v6` |
+
+## Key Concepts
+
+### Pagination
+
+List endpoints support cursor-based pagination using `pageKey` (a UUID cursor) and `limit` (10–100 results per page). The response includes a `page` object with `nextPageKey` when more results are available.
+
+### Date Filtering
+
+The statements and transactions endpoints support date range filtering via `startTime` and `endTime` query parameters (format: `YYYY-MM-DD`). Both must be specified together or both omitted. When omitted, defaults to the last 7 days.
+
+### Content Negotiation
+
+The statement document endpoint supports multiple formats via the `Accept` header:
+
+- `application/pdf` (default)
+- `text/csv`
+- `application/vnd.bai2`
+
+### Error Format
+
+All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details standard with content type `application/problem+json`.

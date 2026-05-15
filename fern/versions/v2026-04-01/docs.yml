@@ -250,4 +250,44 @@ navigation:
                 icon: arrow-right-arrow-left
                 contents:
                   - transactions
+      - section: v7
+        slug: v7
+        icon: light code-branch
+        contents:
+          - api: FDX API Reference v7
+            api-name: "fdx-v7"
+            flattened: true
+            skip-slug: true
+            display-errors: true
+            layout:
+              - section: Overview
+                skip-slug: true
+                icon: book-open-cover
+                contents:
+                  - page: Introduction
+                    slug: /
+                    path: ./pages/fdx-v7/introduction.mdx
+                  - page: Authentication
+                    slug: authentication
+                    path: ./pages/fdx-v7/authentication.mdx
+              - section: Accounts
+                skip-slug: true
+                icon: building-columns
+                contents:
+                  - accounts
+              - section: Statements
+                skip-slug: true
+                icon: file-lines
+                contents:
+                  - statements
+              - section: Customers
+                skip-slug: true
+                icon: users
+                contents:
+                  - customers
+              - section: Transactions
+                skip-slug: true
+                icon: arrow-right-arrow-left
+                contents:
+                  - transactions
   - tab: changelog
