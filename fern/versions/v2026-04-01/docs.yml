@@ -220,16 +220,12 @@ navigation:
             skip-slug: true
             display-errors: true
             layout:
-              - section: Overview
-                skip-slug: true
-                icon: book-open-cover
-                contents:
-                  - page: Introduction
-                    slug: /
-                    path: ./pages/fdx/introduction.mdx
-                  - page: Authentication
-                    slug: authentication
-                    path: ./pages/fdx/authentication.mdx
+              - page: Introduction
+                slug: /
+                path: ./pages/fdx/introduction.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/fdx/authentication.mdx
               - section: Accounts
                 skip-slug: true
                 icon: building-columns
@@ -260,16 +256,12 @@ navigation:
             skip-slug: true
             display-errors: true
             layout:
-              - section: Overview
-                skip-slug: true
-                icon: book-open-cover
-                contents:
-                  - page: Introduction
-                    slug: /
-                    path: ./pages/fdx-v7/introduction.mdx
-                  - page: Authentication
-                    slug: authentication
-                    path: ./pages/fdx-v7/authentication.mdx
+              - page: Introduction
+                slug: /
+                path: ./pages/fdx-v7/introduction.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/fdx-v7/authentication.mdx
               - section: Accounts
                 skip-slug: true
                 icon: building-columns
