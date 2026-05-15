@@ -14,13 +14,13 @@ As a DAF provider, you control which donors can use DAFpay and which grant reque
 
 ## Primary Resources
 
-**Donor Accounts** — A Donor Account represents a DAFpay donor identity linked to your organization. It holds the donor's verified `email`, `status`, the `fund_id` of the giving pool they're using, and an optional `external_id` to link them to your internal records. An Account must reach `approved` status before its Grant Requests can be processed.
+**Donor Accounts** — A Donor Account represents a DAFpay donor identity linked to your organization. It holds an optional `external_id` — your internal identifier for the user's account. A Donor Account must be approved before its Grant Requests can be processed. A Donor Account can be associated with multiple Funds; a Fund represents a specific giving pool within a donor's DAF.
 
-**Grant Requests** — Submitted when a donor uses DAFpay on a nonprofit's donation form. Grant Requests are tied to a specific Account and can only be approved or rejected once the Account is `approved`.
+**Grant Requests** — Submitted when a donor uses DAFpay on a nonprofit's donation form. Grant Requests are tied to a specific Donor Account and can only be approved or rejected once the Donor Account is `approved`.
 
 ## Verification Flows
 
 Accounts reach `approved` status by verifying an Authorization Token — a one-time code. There are two flows that differ in who initiates the process:
 
 - **[Donor-Initiated Verification](/guides/dafpay/donor-accounts/account-lifecycle#donor-initiated-verification)** — The donor submits a grant first; DAFpay emails them a code which they pass to the DAF.
-- **[DAF-Initiated Setup](/guides/dafpay/donor-accounts/account-lifecycle#daf-initiated-setup)** — The DAF creates an Account and token in advance and gives the code to the donor via their portal.
+- **[DAF-Initiated Setup](/guides/dafpay/donor-accounts/account-lifecycle#daf-initiated-setup)** — The DAF creates a Donor Account and token in advance and gives the code to the donor via their portal.

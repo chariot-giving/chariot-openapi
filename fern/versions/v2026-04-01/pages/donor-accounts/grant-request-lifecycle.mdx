@@ -4,19 +4,19 @@ subtitle: "How Grant Requests move from submission to completion."
 hidden: false
 ---
 
-When a donor submits a grant via DAFpay, a Grant Request is created and tied to their Donor Account. Its status advances based on the state of the Account and your actions as a DAF.
+When a donor submits a grant via DAFpay, a Grant Request is created and tied to their Donor Account. Its status advances based on the state of the Donor Account and your actions as a DAF.
 
 ## Statuses
 
 | Status | Meaning | Your action |
 |---|---|---|
-| `awaiting_account_approval` | The parent Account isn't `approved` yet. | Advances automatically when the Account is approved. You may cancel if needed. |
-| `awaiting_daf_submission` | Ready for you to submit in your system. | Submit, then mark `initiated`. Or `cancelled` if you can't process it. |
+| `awaiting_account_approval` | The parent Donor Account isn't `approved` yet. | Advances automatically when the Donor Account is approved. You may cancel if needed. |
+| `awaiting_daf_submission` | Ready for you to submit in your system. | Submit, then mark `initiated`. Or `canceled` if you can't process it. |
 | `initiated` | You've submitted the grant. **Final.** | None. |
-| `cancelled` | You've cancelled the grant. **Final.** | None. |
+| `canceled` | You've canceled the grant. **Final.** | None. |
 
 <Note>
-A Grant Request in `awaiting_account_approval` cannot be submitted until its linked Donor Account reaches `approved` status. If the Account is rejected, all open Grant Requests tied to it are automatically moved to `cancelled`.
+A Grant Request in `awaiting_account_approval` cannot be submitted until its linked Donor Account reaches `approved` status. If the Donor Account is rejected, all open Grant Requests tied to it are automatically moved to `canceled`.
 </Note>
 
 ## Submitting a Grant Request
@@ -41,7 +41,7 @@ await chariot.grants.approve("10229488-08d2-4629-b70c-a2f4f4d25344", {
 ```
 </CodeBlocks>
 
-The Grant Request moves to `initiated` and a `grant.approved` webhook is emitted.
+The Grant Request moves to `initiated` and a `grant.updated` webhook is emitted — fetch the Grant Request to confirm its current status.
 
 ## Cancelling a Grant Request
 
@@ -63,7 +63,7 @@ await chariot.grants.reject("10229488-08d2-4629-b70c-a2f4f4d25344", {
 ```
 </CodeBlocks>
 
-The Grant Request moves to `cancelled` and a `grant.rejected` webhook is emitted. The Account is unaffected — future Grant Requests from the same donor can still be processed.
+The Grant Request moves to `canceled` and a `grant.updated` webhook is emitted — fetch the Grant Request to confirm its current status. The Donor Account is unaffected — future Grant Requests from the same donor can still be processed.
 
 ## Bulk processing
 
@@ -91,4 +91,4 @@ do {
 
 ## Idempotency
 
-`initiated` and `cancelled` are terminal. Calling approve or reject on an already-decided Grant Request returns `409 Conflict`. To safely retry on network errors, call [Get Grant](/api/grants/get) first and check `status` before retrying.
+`initiated` and `canceled` are terminal. Calling approve or reject on an already-decided Grant Request returns `409 Conflict`. To safely retry on network errors, call [Get Grant](/api/grants/get) first and check `status` before retrying.

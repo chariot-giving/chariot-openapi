@@ -1282,11 +1282,11 @@ paths:
         Submit a Grant Request.
 
         This endpoint is used by DAFs to confirm that they have submitted the grant within their own systems.
-        Calling this endpoint moves the Grant's status to `initiated` and emits a `grant.approved` webhook event.
+        Calling this endpoint moves the Grant's status to `initiated` and emits a `grant.updated` webhook event.
 
         <Warning>
         - The Grant must be in `awaiting_daf_submission` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant will be in `awaiting_account_approval` and this request returns status `412 Precondition Failed`.
-        - A Grant that is already `initiated` or `cancelled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        - A Grant that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
       operationId: approve-grant
       tags:
@@ -1335,11 +1335,11 @@ paths:
         Cancel a Grant Request.
 
         This endpoint is used by DAFs to indicate that they will not process the grant.
-        Calling this endpoint moves the Grant's status to `cancelled` and emits a `grant.rejected` webhook event.
+        Calling this endpoint moves the Grant's status to `canceled` and emits a `grant.updated` webhook event.
         The Donor Account itself is unaffected; future grants from the same donor can still be processed.
 
         <Warning>
-        A Grant that is already `initiated` or `cancelled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        A Grant that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
       operationId: reject-grant
       tags:
@@ -4815,13 +4815,13 @@ components:
             - awaiting_account_approval
             - awaiting_daf_submission
             - initiated
-            - cancelled
+            - canceled
           description: |
             The status of the grant.
               * awaiting_account_approval: The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved.
               * awaiting_daf_submission: The Account is approved and the grant is ready for the DAF to submit in their system.
               * initiated: The DAF has submitted the grant. Terminal.
-              * cancelled: The DAF has cancelled the grant. Terminal.
+              * canceled: The DAF has canceled the grant. Terminal.
           example: awaiting_daf_submission
         comment:
           type: string
@@ -6166,13 +6166,11 @@ components:
       enum:
         - "grant.created"
         - "grant.updated"
-        - "grant.approved"
-        - "grant.rejected"
+        - "grant.updated"
         - "unintegrated_grant.created"
         - "unintegrated_grant.updated"
         - "donor_account.created"
         - "donor_account.updated"
-        - "donor_account.approved"
         - "donor_account.rejected"
         - "disbursement.created"
         - "disbursement.updated"

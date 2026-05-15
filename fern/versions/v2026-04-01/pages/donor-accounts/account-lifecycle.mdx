@@ -6,14 +6,16 @@ hidden: false
 
 A Donor Account starts in `pending` status and must reach `approved` before any of its Grant Requests can be processed. Approval always happens by verifying an Authorization Token — a one-time code that ties the donor's DAFpay identity to their DAF account.
 
+Both flows are available to any DAF — you can support one or both depending on your donor experience.
+
 ---
 
 <Tabs>
 <Tab title="Donor-Initiated Verification">
 
-The donor uses DAFpay first. DAFpay issues an Authorization Token and emails the code to the donor. The donor passes the code to the DAF, and the DAF verifies it in one API call — which approves the Account.
+The donor uses DAFpay first. DAFpay issues an Authorization Token and emails the code to the donor. The donor passes the code to the DAF, and the DAF verifies it in one API call — which approves the Donor Account.
 
-**Best for:** DAFs that want donors to give at the point of inspiration with no pre-setup.
+**Works well when:** donors give at the point of inspiration with no pre-setup required.
 
 ### Sequence
 
@@ -65,7 +67,7 @@ const account = await chariot.authorizationTokens.verify({
 ```
 </CodeBlocks>
 
-The response is the linked Account in `approved` status. The token is consumed and cannot be re-verified. **Store the returned Account's `id` against the donor record in your system** — this is your link between the donor who handed you the code and their Donor Account for all future Grant Request processing.
+The response is the linked Donor Account in `approved` status. The token is consumed and cannot be re-verified. **Store the returned Donor Account's `id` against the donor record in your system** — this is your link between the donor who handed you the code and their Donor Account for all future Grant Request processing.
 
 <Warning title="Error handling">
 Unknown, expired, revoked, or already-consumed codes return `404 Not Found` or `410 Gone` — intentionally indistinguishable to avoid leaking information about valid codes.
@@ -74,14 +76,14 @@ Strict per-DAF rate limits apply. Repeated failures return `429 Too Many Request
 
 #### 3. Decision the Grant Request
 
-Once the Account is `approved`, proceed to [Grant Request Lifecycle](/guides/dafpay/donor-accounts/grant-request-lifecycle).
+Once the Donor Account is `approved`, proceed to [Grant Request Lifecycle](/guides/dafpay/donor-accounts/grant-request-lifecycle).
 
 </Tab>
 <Tab title="DAF-Initiated Setup">
 
-The DAF creates an Account and an Authorization Token in advance — before the donor ever opens DAFpay. The code is surfaced to the donor via the DAF's portal. When the donor enters it in DAFpay during their first grant, the Account is auto-approved with no follow-up work.
+The DAF creates a Donor Account and an Authorization Token in advance — before the donor ever opens DAFpay. The code is surfaced to the donor via the DAF's portal. When the donor enters it in DAFpay during their first grant, the Donor Account is auto-approved with no follow-up work.
 
-**Best for:** DAFs that want explicit donor opt-in and prefer to gate access from their own portal before any grant is submitted.
+**Works well when:** you want explicit donor opt-in and prefer to gate access from your own portal before any grant is submitted.
 
 ### Sequence
 
@@ -107,7 +109,7 @@ Donor                          DAF (you)                       Chariot
   │     during profile setup     │                                │
   │ ──────────────────────────────────────────────────────────────▶│
   │                              │                                │
-  │                              │  7. donor_account.approved     │
+  │                              │  7. donor_account.updated      │
   │                              │ ◄──────────────────────────────│
   │                              │                                │
 ```
@@ -136,7 +138,7 @@ const account = await chariot.donorAccounts.create({
 
 #### 2. Create an Authorization Token
 
-Call [Create Authorization Token](/api/authorization-tokens/create) on the new Account.
+Call [Create Authorization Token](/api/authorization-tokens/create) on the new Donor Account.
 
 <CodeBlocks>
 ```bash cURL
@@ -159,7 +161,7 @@ Show the code inline on the portal page with brief instructions. You can also sh
 
 #### 4. Donor enters the code in DAFpay
 
-When the donor opens DAFpay and enters the code during profile setup, the Account transitions to `approved` automatically. You'll receive a `donor_account.approved` event. No further verification work is required.
+When the donor opens DAFpay and enters the code during profile setup, the Donor Account transitions to `approved` automatically. You'll receive a `donor_account.updated` event — fetch the Donor Account to confirm its current status. No further verification work is required.
 
 
 </Tab>

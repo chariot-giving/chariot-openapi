@@ -40,7 +40,7 @@ Donor                          DAF (you)                       Chariot
   │     profile setup            │                                │
   │ ──────────────────────────────────────────────────────────────▶│
   │                              │                                │
-  │                              │  7. donor_account.approved     │
+  │                              │  7. donor_account.updated      │
   │                              │ ◄──────────────────────────────│
   │                              │                                │
   │                              │  8. grant.created (when donor  │
@@ -126,7 +126,7 @@ When they enter the code, DAFpay verifies it client-side, the Account transition
 
 ### 6. You receive a webhook
 
-You'll receive a `donor_account.approved` event. Subsequent `grant.created` events for this donor flow through normally — no further verification work required.
+You'll receive a `donor_account.updated` event — fetch the Donor Account to confirm its current status. Subsequent `grant.created` events for this donor flow through normally — no further verification work required.
 
 ## Token lifecycle considerations
 
