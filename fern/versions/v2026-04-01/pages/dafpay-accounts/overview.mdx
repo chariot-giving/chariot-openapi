@@ -6,16 +6,15 @@ hidden: false
 
 DAFpay Accounts is a DAF Provider–facing API. It lets you create accounts for your donors, register the funds they can give from, and process the grant requests they submit through DAFpay on nonprofit websites.
 
-This is distinct from the [DAFpay payment option](/guides/fundraisers/dafpay/overview), which fundraisers embed on their site to accept gifts from DAFs.
 
 ## What you get
 
 <CardGroup cols={2}>
   <Card title='Invite-based onboarding' icon='paper-plane'>
-    Create an account in your system and share an invite URL — your donor signs up in DAFpay and is auto-verified.
+    Create an account in your system, share the `auth_code` or `invite_url`, and the donor completes verification in DAFpay.
   </Card>
   <Card title='Multi-fund support' icon='layer-group'>
-    Register one or many funds per account. Donors with multiple funds toggle between them in the payment option.
+    Register one or many funds per account whenever you need to — often when an account is created or activated, but not only then. Update funds anytime as your offering changes.
   </Card>
   <Card title='Streamlined grant processing' icon='check-double'>
     Receive grant requests as donors submit them, and report `initiated` or `cancelled` back to DAFpay.
@@ -38,6 +37,6 @@ A **Donor** is identified by a verified phone number and is created when an indi
 
 An **Account** links a donor to your organization. One donor can have accounts with multiple DAF Providers.
 
-A **Fund** belongs to an account. Donors with multiple funds choose which to give from when they submit a grant.
+A **Fund** belongs to an account. You can add or update funds at any time; donors with multiple funds choose which to give from when they submit a grant.
 
 A **Grant Request** is a donation intent created by a donor through the DAFpay payment option. You process it in your system, then report the outcome back to DAFpay.

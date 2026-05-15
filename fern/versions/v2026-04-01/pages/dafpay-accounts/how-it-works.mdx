@@ -1,38 +1,26 @@
 ---
 title: "How It Works"
-subtitle: "From creating an account to processing a grant in four steps."
+subtitle: "Create and activate accounts, then process grants from donors."
 hidden: false
 ---
 
 <Steps>
 
-### Create an account for a donor
+### Create and activate accounts
 
-Create a [DAFpay account](/api/dafpay-accounts/create) for one of your donors. The account starts in `pending` status with no donor linked. DAFpay returns an `auth_code` and an `invite_url`.
+**If you create the account first:** call [POST /v1/dafpay/accounts](/api/dafpay-accounts/create). The account starts in **`pending`**. DAFpay returns an `auth_code` and `invite_url` — share those with the donor through a trusted channel. When they enter the `auth_code` in DAFpay, the account becomes **`approved`**.
+
+**If the donor used DAFpay first:** they may already have an account in **`requested`** status. The donor receives an `auth_code` to give you. Call [POST /v1/dafpay/accounts/activate](/api/dafpay-accounts/activate) with that `auth_code`.
 
 <EndpointRequestSnippet endpoint="POST /v1/dafpay/accounts" />
 
-### Share the invite with the donor
+<EndpointRequestSnippet endpoint="POST /v1/dafpay/accounts/activate" />
 
-Share the `invite_url` (or just the `auth_code`) with the donor through a trusted channel — your portal, a signed email, or any other authenticated communication.
-
-When the donor signs up on DAFpay using the invite URL or enters the auth code manually, they're automatically linked and the account moves to `approved`.
-
-<Info>
-A donor may sign up on DAFpay on their own and select your organization before you create their account. In that case the account is created in `requested` status. Acknowledge it by setting `external_account_id` via [PATCH](/api/dafpay-accounts/update) — that moves the account to `pending` and waits for the donor to verify.
-</Info>
-
-### Register the donor's funds
-
-Once the account is created, register one or more [funds](/api/dafpay-funds/create) under it. The `name` you provide is displayed to the donor in the DAFpay payment option, so make it recognizable.
-
-<EndpointRequestSnippet endpoint="POST /v1/dafpay/accounts/{account_id}/funds" />
-
-### Process grant requests
+### Process grants
 
 When the donor gives to a nonprofit through DAFpay, you receive a `grant_request.created` webhook (or you can poll [GET /v1/dafpay/grant_requests](/api/dafpay-grant-requests/list)).
 
-Once the account is `approved`, the grant request transitions to `awaiting_daf_submission`. Submit the grant in your system, then call [PATCH](/api/dafpay-grant-requests/update) with `status: initiated` to confirm. If you need to reject the grant, send `status: cancelled` with a `cancellation_reason`.
+Once the account is `approved`, the grant request transitions to `awaiting_daf_submission`. Submit the grant in your system, then call [PATCH /v1/dafpay/grant_requests/{id}](/api/dafpay-grant-requests/update) with `status: initiated` to confirm. If you need to reject the grant, send `status: cancelled` with a `cancellation_reason`.
 
 <EndpointRequestSnippet endpoint="PATCH /v1/dafpay/grant_requests/{id}" />
 

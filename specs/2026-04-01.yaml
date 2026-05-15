@@ -2438,7 +2438,7 @@ paths:
       description: |-
         Create a new DAFpay account for a donor. The account is created in `pending` status with no donor attached. DAFpay generates an `auth_code` and `invite_url` — share these with the donor through a trusted channel (your portal, email, etc.).
 
-        When the donor signs up on DAFpay using the invite URL (or enters the `auth_code` manually), they are automatically linked to this account and it moves to `approved`.
+        When the donor enters the `auth_code` in DAFpay (including via the invite flow), they are linked to this account and it moves to `approved`. You cannot move `pending` → `approved` through this API; only the donor can complete verification inside DAFpay.
       operationId: create-dafpay-account
       tags:
         - DAFpay Accounts
@@ -2467,6 +2467,47 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/dafpay/accounts/activate:
+    post:
+      summary: Activate DAFpay Account by auth code
+      description: |-
+        Activate an account in `requested` status using the `auth_code` the donor received from DAFpay and shared with you. Chariot resolves the account by that code (within your DAF Provider) and moves it to `approved`. You do not need the account `id` — the donor only has the code.
+
+        Optionally include `external_account_id` to store your internal donor identifier in the same request.
+
+        Returns `404` if no matching activatable account exists for the code, or `400` if the code is invalid or the account is not in `requested` status.
+      operationId: activate-dafpay-account
+      tags:
+        - DAFpay Accounts
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ActivateDafpayAccountRequest"
+      responses:
+        "200":
+          description: OK — account is now `approved`.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DafpayAccount"
+              examples:
+                Simple:
+                  $ref: "#/components/examples/DafpayAccountOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/dafpay/accounts/{id}:
@@ -2515,11 +2556,12 @@ paths:
       description: |-
         Update a DAFpay account. Use this to:
 
-        - Link a `requested` account to your system by setting the `external_account_id` (this moves the account to `pending`).
-        - Update the `external_account_id` of an existing account.
-        - Disable an account, or re-enable a previously `disabled` account.
+        - **Update metadata** on `pending` or `approved` accounts (for example, change `external_account_id`).
+        - **Disable** an account, or **re-enable** a previously `disabled` account.
 
-        The donor-driven transition from `pending` to `approved` happens automatically when the donor enters the `auth_code`; you cannot trigger it directly.
+        To activate a `requested` account, use `POST /v1/dafpay/accounts/activate` with the donor's `auth_code` instead of this endpoint.
+
+        The transition from `pending` to `approved` happens only when the donor enters the `auth_code` inside DAFpay; you cannot perform that transition with this API.
       operationId: update-dafpay-account
       tags:
         - DAFpay Accounts
@@ -2611,7 +2653,7 @@ paths:
     post:
       summary: Create DAFpay Fund
       description: |-
-        Create a new fund under a DAFpay account. The fund's `name` is displayed to the donor inside the DAFpay payment option; donors with multiple funds choose which to give from.
+        Create a new fund under a DAFpay account. You can add funds at any point in the account lifecycle — commonly when the account is created or right after activation, but there is no requirement to wait. The fund's `name` is displayed to the donor inside the DAFpay payment option; donors with multiple funds choose which to give from.
       operationId: create-dafpay-fund
       tags:
         - DAFpay Funds
@@ -2703,7 +2745,7 @@ paths:
     patch:
       summary: Update DAFpay Fund
       description: |-
-        Update a DAFpay fund's display name, external identifier, or active status. Setting `active` to `false` hides the fund from the donor inside the DAFpay payment option.
+        Update a DAFpay fund at any time — display name, external identifier, or active status. Setting `active` to `false` hides the fund from the donor inside the DAFpay payment option.
       operationId: update-dafpay-fund
       tags:
         - DAFpay Funds
@@ -5984,17 +6026,17 @@ components:
           type: string
           nullable: true
           description: |-
-            The DAFpay donor linked to this account. `null` until the donor verifies via the `auth_code` or signs up using the `invite_url`.
+            The DAFpay donor linked to this account when DAFpay has associated a donor record (for example after the donor signs in on DAFpay). May be `null` until linkage exists.
           example: "dnr_abc123"
         status:
           type: string
           enum: [requested, pending, approved, disabled]
           description: |-
-            The lifecycle status of the account.
+            The lifecycle status of the account. `approved` is the active state in which grant requests can be submitted.
 
-            - `requested`: The donor created the account in DAFpay and selected your organization, but you have not linked them yet.
-            - `pending`: The account is linked between DAFpay and your system, but the donor has not yet verified ownership via the `auth_code`.
-            - `approved`: The donor has verified ownership. Grant requests can be submitted.
+            - `requested`: The donor used DAFpay first and selected your organization. The donor receives an `auth_code` to give you; you activate the account with `POST /v1/dafpay/accounts/activate` (auth code only — no account `id` required). The account was created by the donor flow, not by your `POST /v1/dafpay/accounts`.
+            - `pending`: You created the account with `POST /v1/dafpay/accounts`. Share the `auth_code` (and optionally `invite_url`) with the donor; when they enter the code in DAFpay, the account becomes `approved`.
+            - `approved`: The account is active — the donor is verified and grant requests can be submitted.
             - `disabled`: The account has been deactivated by you or the donor. Re-enabled accounts return to the previous status.
           example: "pending"
         external_account_id:
@@ -6005,13 +6047,14 @@ components:
         auth_code:
           type: string
           readOnly: true
-          description: A short verification code the donor enters in DAFpay to claim and verify this account.
+          description: |-
+            A short verification code tied to this account. For `pending` accounts you created, the donor enters this code in DAFpay to reach `approved`. For `requested` accounts, the donor shares this code with you; call `POST /v1/dafpay/accounts/activate` with that code to activate (no account `id` needed).
           example: "a1b2c3d4"
         invite_url:
           type: string
           format: uri
           readOnly: true
-          description: A shareable URL the donor can use to sign up and have this account automatically linked and approved.
+          description: A shareable URL that opens the DAFpay verification experience for this account (for example when you created a `pending` account and want to guide the donor to enter the `auth_code`).
           example: "https://dafpay.com/invite/a1b2c3d4"
         disabled_by:
           type: string
@@ -6031,7 +6074,8 @@ components:
           example: "2026-02-01T14:00:00Z"
     DafpayFund:
       type: object
-      description: A fund belongs to a DAFpay account. Donors with multiple funds can toggle between them in the DAFpay payment option.
+      description: |-
+        A fund belongs to a DAFpay account. You can create funds on an account at any time (often when the account is created or activated) and update them anytime. Donors with multiple funds can toggle between them in the DAFpay payment option.
       required:
         - id
         - account_id
@@ -6379,11 +6423,29 @@ components:
                 type: string
                 description: Your internal account identifier for this donor. Optional — useful for reconciling with your own system.
                 example: "DAF-10042"
+    ActivateDafpayAccountRequest:
+      description: The request body to activate a `requested` DAFpay account using the donor's verification code.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - auth_code
+            properties:
+              auth_code:
+                type: string
+                description: The verification code the donor received from DAFpay and shared with you. Must match a `requested` account for your DAF Provider.
+                example: "a1b2c3d4"
+              external_account_id:
+                type: string
+                description: Optional. Your internal account identifier to store when activating.
+                example: "DAF-10042"
     UpdateDafpayAccountRequest:
       description: |-
         The request body to update a DAFpay account.
 
-        Setting `external_account_id` on a `requested` account moves it to `pending`. Setting `status` to `disabled` deactivates the account; setting it back to `pending` or `approved` re-enables it (DAFpay restores the appropriate prior status).
+        Set `status` to `disabled` to deactivate an account; set `status` back to `pending` or `approved` to re-enable a disabled account (DAFpay restores the appropriate prior status).
       required: true
       content:
         application/json:

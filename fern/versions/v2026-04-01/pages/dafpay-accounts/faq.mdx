@@ -15,7 +15,11 @@ hidden: false
 </Accordion>
 
 <Accordion title="**Can I move an account from `pending` to `approved` myself?**">
-  No. The `pending` → `approved` transition only happens when the donor verifies ownership of the account by entering the `auth_code` (or signing up via the `invite_url`). This safeguards both the donor and your organization.
+  No. For accounts you created (`pending`), only the donor can complete verification by entering the `auth_code` in DAFpay. That transition is not available on the Update API.
+</Accordion>
+
+<Accordion title="**How do I activate a `requested` account?**">
+  The donor gives you the `auth_code` they received from DAFpay. Call [POST /v1/dafpay/accounts/activate](/api/dafpay-accounts/activate) with `auth_code` set to that value (and optionally `external_account_id`). Chariot finds the matching `requested` account for your organization and sets it to `approved`. You do not need the account `id`.
 </Accordion>
 
 <Accordion title="**How do I remove an account I no longer want active?**">

@@ -291,6 +291,11 @@ paths:
       x-fern-sdk-group-name:
         - dafpayAccounts
       x-fern-sdk-method-name: create
+  /v1/dafpay/accounts/activate:
+    post:
+      x-fern-sdk-group-name:
+        - dafpayAccounts
+      x-fern-sdk-method-name: activate
   /v1/dafpay/accounts/{id}:
     get:
       x-fern-sdk-group-name:

@@ -25,11 +25,37 @@ navigation:
           - page: Navigating the Docs
             slug: getting-started/navigating-the-docs
             path: ./pages/getting-started/navigating-the-docs.mdx
-      - section: For Grantmakers
-        slug: grantmakers
-        icon: light hand-holding-heart
+      - section: DAFpay
+        slug: dafpay
         contents:
-          - section: DAFpay Accounts
+          - page: Overview
+            slug: overview
+            path: ./pages/dafpay/dafpay-intro.mdx
+          - section: Integrating DAFpay
+            slug: integrating-dafpay
+            contents:
+              - page: Overview
+                slug: overview
+                path: ./pages/integrating-dafpay/overview.mdx
+              - page: Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Set Up
+                slug: set-up
+                path: ./pages/integrating-dafpay/set-up.mdx
+              - page: Installing Connect
+                slug: installation
+                path: ./pages/integrating-dafpay/installation.mdx
+              - page: Integrating Connect
+                slug: integration
+                path: ./pages/integrating-dafpay/integration.mdx
+              - page: Transaction Management
+                slug: transactions
+                path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Production API Keys
+                slug: prod-keys
+                path: ./pages/integrating-dafpay/prod-keys.mdx
+          - section: DAFpay Accounts (for DAFs)
             slug: dafpay-accounts
             contents:
               - page: Overview
@@ -50,79 +76,48 @@ navigation:
               - page: FAQ
                 slug: faq
                 path: ./pages/dafpay-accounts/faq.mdx
-          - section: Disbursements
-            slug: disbursements
-            contents:
-              - page: Overview
-                slug: /
-                path: ./pages/disbursements/overview.mdx
-              - page: How It Works
-                slug: how-it-works
-                path: ./pages/disbursements/how-it-works.mdx
-              - page: Disbursement Lifecycle
-                slug: disbursement-lifecycle
-                path: ./pages/disbursements/disbursement-lifecycle.mdx
-              - page: Compliance
-                slug: compliance
-                path: ./pages/disbursements/compliance.mdx
-              - page: Sandbox
-                slug: sandbox
-                path: ./pages/disbursements/sandbox.mdx
-              - page: How Chariot Compares
-                slug: comparisons
-                path: ./pages/disbursements/how-chariot-compares.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/disbursements/faq.mdx
-      - section: For Fundraisers
-        slug: fundraisers
-        icon: light piggy-bank
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
+      - section: Disbursements
+        slug: disbursements
         contents:
-          - section: DAFpay payment option
-            slug: dafpay
-            contents:
-              - page: Overview
-                slug: overview
-                path: ./pages/integrating-dafpay/overview.mdx
-              - section: Integrating DAFpay
-                slug: integrating-dafpay
-                contents:
-                  - page: Checklist
-                    slug: checklist
-                    path: ./pages/integrating-dafpay/checklist.mdx
-                  - page: Set Up
-                    slug: set-up
-                    path: ./pages/integrating-dafpay/set-up.mdx
-                  - page: Installing Connect
-                    slug: installation
-                    path: ./pages/integrating-dafpay/installation.mdx
-                  - page: Integrating Connect
-                    slug: integration
-                    path: ./pages/integrating-dafpay/integration.mdx
-                  - page: Transaction Management
-                    slug: transactions
-                    path: ./pages/integrating-dafpay/transactions.mdx
-                  - page: Production API Keys
-                    slug: prod-keys
-                    path: ./pages/integrating-dafpay/prod-keys.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/integrating-dafpay/faq.mdx
-          - section: Gift Processing
-            slug: processing
-            contents:
-              - page: Overview
-                slug: /
-                path: ./pages/processing/overview.mdx
-              - page: How It Works
-                slug: how-it-works
-                path: ./pages/processing/how-it-works.mdx
-              - page: Getting Started
-                slug: getting-started
-                path: ./pages/processing/getting-started.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/processing/faq.mdx
+          - page: Overview
+            slug: /
+            path: ./pages/disbursements/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/disbursements/how-it-works.mdx
+          - page: Disbursement Lifecycle
+            slug: disbursement-lifecycle
+            path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Compliance
+            slug: compliance
+            path: ./pages/disbursements/compliance.mdx
+          - page: Sandbox
+            slug: sandbox
+            path: ./pages/disbursements/sandbox.mdx
+          - page: How Chariot Compares
+            slug: comparisons
+            path: ./pages/disbursements/how-chariot-compares.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/disbursements/faq.mdx
+      - section: Gift Processing
+        slug: processing
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/processing/overview.mdx
+          - page: How It Works
+            slug: how-it-works
+            path: ./pages/processing/how-it-works.mdx
+          - page: Getting Started
+            slug: getting-started
+            path: ./pages/processing/getting-started.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/processing/faq.mdx
       - section: Lockbox Providers
         slug: lockbox-providers
         hidden: true
@@ -188,11 +183,19 @@ navigation:
                   title: Files
               - fileLinks:
                   title: File Links
-          - section: For Grantmakers
+          - section: DAFpay
             skip-slug: true
-            icon: hand-holding-heart
+            icon: box-heart
             contents:
-              - section: DAFpay Accounts
+              - connects
+              - grants
+              - recurringGrants:
+                  title: Recurring Grants
+              - unintegratedGrants:
+                  title: Unintegrated Grants
+              - donorAdvisedFunds:
+                  title: Donor Advised Funds
+              - section: DAFpay Accounts (for DAFs)
                 skip-slug: true
                 contents:
                   - dafpayAccounts:
@@ -203,45 +206,32 @@ navigation:
                       title: Grant Requests
                   - dafpayDonors:
                       title: Donors
-              - section: Disbursements
-                skip-slug: true
-                contents:
-                  - inboundTransfers:
-                      title: Inbound Transfers
-                  - disbursements:
-                      title: Disbursements
-                  - verificationRequests:
-                      title: Verification Requests
-                  - nonprofitAddresses:
-                      title: Nonprofit Addresses
-                  - nonprofitContacts:
-                      title: Nonprofit Contacts
-          - section: For Fundraisers
+          - section: Disbursements
             skip-slug: true
-            icon: piggy-bank
+            icon: money-check
             contents:
-              - section: DAFpay payment option
-                skip-slug: true
-                contents:
-                  - connects
-                  - grants
-                  - recurringGrants:
-                      title: Recurring Grants
-                  - unintegratedGrants:
-                      title: Unintegrated Grants
-                  - donorAdvisedFunds:
-                      title: Donor Advised Funds
-              - section: Gift Processing
-                skip-slug: true
-                contents:
-                  - paymentSources:
-                      title: Payment Sources
-                  - donations:
-                      title: Donations
-                  - deposits:
-                      title: Deposits
-                  - properties:
-                      title: Properties
+              - inboundTransfers:
+                  title: Inbound Transfers
+              - disbursements:
+                  title: Disbursements
+              - verificationRequests:
+                  title: Verification Requests
+              - nonprofitAddresses:
+                  title: Nonprofit Addresses
+              - nonprofitContacts:
+                  title: Nonprofit Contacts
+          - section: Gift Processing
+            skip-slug: true
+            icon: gear
+            contents:
+              - paymentSources:
+                  title: Payment Sources
+              - donations:
+                  title: Donations
+              - deposits:
+                  title: Deposits
+              - properties:
+                  title: Properties
           - section: Lockbox Providers
             skip-slug: true
             icon: mailbox

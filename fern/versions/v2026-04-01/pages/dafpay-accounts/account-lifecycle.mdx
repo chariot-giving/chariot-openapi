@@ -4,48 +4,50 @@ subtitle: "How a DAFpay account moves between requested, pending, approved, and 
 hidden: false
 ---
 
-A DAFpay account is the link between one of your donors and DAFpay. The account moves through a small set of statuses depending on whether you or the donor took the first step.
+A DAFpay account links one of your donors to DAFpay. Who creates the account first—**the donor on DAFpay** or **you via the API**—determines the starting status and how it reaches **`approved`**, the active state in which donors can submit grant requests.
 
 ## Statuses
 
 | Status | Meaning | Grants can submit? |
 |--------|---------|--------------------|
-| `requested` | The donor signed up on DAFpay and selected your organization. You haven't linked them yet. | No |
-| `pending` | The account is linked between DAFpay and your system, but the donor hasn't verified ownership via the `auth_code`. | No |
-| `approved` | The donor has verified ownership. | Yes |
+| `requested` | The donor used DAFpay first and selected your organization. They have an `auth_code` to give you; you have not activated the account yet. | No |
+| `pending` | You created the account with `POST /accounts`. The donor has not yet entered the `auth_code` in DAFpay. | No |
+| `approved` | The account is active and verified. | Yes |
 | `disabled` | Deactivated by you or the donor. Can be re-enabled. | No |
 
-## Three onboarding paths
+## Two ways to reach `approved`
 
-### Path 1 — You create the account first
+### 1 — Donor first (`requested` → `approved`)
 
-```
-You create the account ───► pending ─────────────► approved
-(POST /accounts)              (auth_code +          (donor signs up via
-                               invite_url           invite URL, or enters
-                               returned)            auth_code manually)
-```
+The donor discovers your organization on DAFpay before you create an account. DAFpay creates an account in **`requested`** status and gives the donor an **`auth_code`**.
 
-This is the most common path. Create the account in your system, share the `invite_url` with your donor through a trusted channel, and DAFpay auto-links and approves the account when the donor signs up.
+1. The donor shares that `auth_code` with you through a trusted channel.
+2. You call [POST /v1/dafpay/accounts/activate](/api/dafpay-accounts/activate) with the `auth_code` (and optionally `external_account_id` to store your internal ID). Chariot resolves the account by code and moves it straight to **`approved`**.
 
-### Path 2 — The donor signs up without an invite
+The account is **created by the donor flow** (not by your `POST /v1/dafpay/accounts`).
 
 ```
-Donor signs up on DAFpay ───► requested ───► pending ───────► approved
-(searches for your DAF)        (you haven't    (you set         (donor enters
-                                linked them)   external_        auth_code)
-                                               account_id)
+Donor uses DAFpay first ──► requested ──► approved
+                             (donor shares     (POST /v1/dafpay/accounts/activate
+                              auth_code)        with that auth_code)
 ```
 
-When you see a `requested` account, acknowledge it by setting `external_account_id` via [PATCH](/api/dafpay-accounts/update). That moves the account to `pending` and waits for the donor to verify via the `auth_code`.
+### 2 — DAF Provider first (`pending` → `approved`)
 
-### Path 3 — Donor signs up via your invite URL
+You create the account with [POST /v1/dafpay/accounts](/api/dafpay-accounts/create). It starts in **`pending`**. DAFpay returns an **`auth_code`** and **`invite_url`**.
+
+1. Share the `auth_code` (and optionally the `invite_url`) with the donor through a trusted channel.
+2. The donor enters the `auth_code` in DAFpay. DAFpay then moves the account to **`approved`**.
+
+You **cannot** move `pending` → `approved` yourself via the API; only the donor completing verification inside DAFpay performs that transition.
+
+The account is **created by you** (`POST /v1/dafpay/accounts`).
 
 ```
-Donor signs up via invite URL ─────────────────────► approved
+You POST /accounts ──► pending ──► approved
+                         (you share          (donor enters
+                          auth_code)          auth_code in DAFpay)
 ```
-
-If the donor signs up using an `invite_url` you generated, verification is automatic and the account skips straight to `approved`.
 
 ## Disabling and re-enabling
 

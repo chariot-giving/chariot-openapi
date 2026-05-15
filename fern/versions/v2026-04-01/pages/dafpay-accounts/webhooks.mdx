@@ -11,7 +11,7 @@ Configure a webhook URL in your DAF Provider settings to receive real-time notif
 | Event | When it fires |
 |-------|---------------|
 | `account.requested` | A donor signed up on DAFpay and selected your organization. The account is in `requested` status. |
-| `account.approved` | A donor verified their account (or signed up via your invite URL). |
+| `account.approved` | The account became `approved` — either you called **Activate** with the donor's `auth_code` for a `requested` account, or the donor entered the `auth_code` in DAFpay for a `pending` account you created. |
 | `account.disabled` | An account was deactivated — by you or by the donor. |
 | `account.enabled` | A previously disabled account was re-enabled. |
 | `grant_request.created` | A donor submitted a new grant request through the DAFpay payment option. |
