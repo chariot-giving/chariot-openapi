@@ -4,10 +4,10 @@ api:
   environments:
     Production:
       urls:
-        api: https://api.givechariot.com
+        api: https://api.givechariot.com/bank/fdx/v6
     Staging:
       urls:
-        api: https://devapi.givechariot.com
+        api: https://devapi.givechariot.com/bank/fdx/v6
   specs:
     - openapi: ../../../specs/fdx-v6.yaml
       overrides: ./openapi-overrides.yml
