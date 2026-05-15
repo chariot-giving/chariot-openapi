@@ -62,18 +62,15 @@ navigation:
               - page: Overview
                 slug: overview
                 path: ./pages/donor-accounts/overview.mdx
-              - page: Manual Approval
-                slug: manual-approval
-                path: ./pages/donor-accounts/manual-approval.mdx
-              - page: Token Verification
-                slug: token-verification
-                path: ./pages/donor-accounts/token-verification.mdx
-              - page: Pre-established Access
-                slug: pre-established-access
-                path: ./pages/donor-accounts/pre-established-access.mdx
-              - page: Decisioning Grants
-                slug: decisioning-grants
-                path: ./pages/donor-accounts/decisioning-grants.mdx
+              - page: Donor Account Lifecycle
+                slug: account-lifecycle
+                path: ./pages/donor-accounts/account-lifecycle.mdx
+              - page: Grant Request Lifecycle
+                slug: grant-request-lifecycle
+                path: ./pages/donor-accounts/grant-request-lifecycle.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/donor-accounts/faq.mdx
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
@@ -193,10 +190,18 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
+          - section: Donor Accounts
+            skip-slug: true
+            icon: user-shield
+            contents:
               - donorAccounts:
                   title: Donor Accounts
               - authorizationTokens:
                   title: Authorization Tokens
+              - funds:
+                  title: Funds
+              - grantRequests:
+                  title: Grant Requests
           - section: Disbursements
             skip-slug: true
             icon: money-check

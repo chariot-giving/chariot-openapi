@@ -55,13 +55,27 @@ paths:
   /v1/grants/{id}/approve:
     post:
       x-fern-sdk-group-name:
-        - grants
+        - grantRequests
       x-fern-sdk-method-name: approve
   /v1/grants/{id}/reject:
     post:
       x-fern-sdk-group-name:
-        - grants
+        - grantRequests
       x-fern-sdk-method-name: reject
+  /v1/funds:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - funds
+      x-fern-sdk-method-name: list
+  /v1/funds/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - funds
+      x-fern-sdk-method-name: get
   /v1/donor_accounts:
     post:
       x-fern-sdk-group-name:
@@ -84,16 +98,6 @@ paths:
       x-fern-sdk-group-name:
         - donorAccounts
       x-fern-sdk-method-name: update
-  /v1/donor_accounts/{id}/approve:
-    post:
-      x-fern-sdk-group-name:
-        - donorAccounts
-      x-fern-sdk-method-name: approve
-  /v1/donor_accounts/{id}/reject:
-    post:
-      x-fern-sdk-group-name:
-        - donorAccounts
-      x-fern-sdk-method-name: reject
   /v1/donor_accounts/{id}/authorization_tokens:
     post:
       x-fern-sdk-group-name:

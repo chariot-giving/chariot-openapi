@@ -279,6 +279,8 @@ paths:
       summary: List Grants
       description: |-
         Returns a list of all grants for a given Connect. This API allows for paginating over many results.
+
+        DAF providers can use `donor_account_id` to filter Grant Requests associated with a specific [Donor Account](/api/donor-accounts).
       operationId: list-grants
       tags:
         - Grants
@@ -292,6 +294,14 @@ paths:
             type: string
           required: false
           example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+        - name: donor_account_id
+          in: query
+          description: |-
+            Filter grants by a specific [Donor Account](/api/donor-accounts). Use this to retrieve all Grant Requests associated with a given donor.
+          schema:
+            type: string
+          required: false
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -742,16 +752,10 @@ paths:
       description: |-
         Create a new Donor Account.
 
-        This endpoint is intended for DAF providers who want to pre-establish a Donor Account on behalf of a donor before that donor uses DAFpay for the first time.
-        See the ["pre-established access" flow](/guides/dafpay/donor-accounts/overview#pre-established-access) for the most common use of this endpoint.
+        This endpoint is intended for DAF providers who want to set up a Donor Account on behalf of a donor before that donor uses DAFpay for the first time.
+        See the [DAF-Initiated Setup guide](/guides/dafpay/donor-accounts/daf-initiated-setup) for the most common use of this endpoint.
 
         On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor consumes the code via DAFpay, the Donor Account is automatically approved.
-
-        Alternatively, you can transition the account to `approved` immediately by calling [Approve Donor Account](/api/donor-accounts/approve).
-
-        <Note>
-        Each `(fund_id, email)` pair can only have a single Donor Account. If a Donor Account already exists for the given fund and email, the request will return status `409 Conflict`.
-        </Note>
       operationId: create-donor-account
       tags:
         - Donor Accounts
@@ -898,7 +902,7 @@ paths:
       description: |-
         Update mutable properties on a Donor Account such as `external_id` and `metadata`.
 
-        To change the Donor Account's status, use [Approve Donor Account](/api/donor-accounts/approve) or [Reject Donor Account](/api/donor-accounts/reject) instead.
+        The Donor Account's status is managed automatically through the Authorization Token verification flow and cannot be changed directly via this endpoint.
       operationId: update-donor-account
       tags:
         - Donor Accounts
@@ -937,109 +941,6 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/donor_accounts/{id}/approve:
-    post:
-      summary: Approve Donor Account
-      description: |-
-        Approve a Donor Account.
-
-        Approval signals that the DAF has verified the donor's identity within their own systems and that grants from this account can be processed.
-        Once approved, any [Grants](/api/grants) tied to this Donor Account become eligible for the DAF to decision via [Approve Grant](/api/grants/approve) or [Reject Grant](/api/grants/reject).
-
-        You may optionally include an `external_id` to link the Donor Account to the donor's record in your internal systems. This value can be set or updated later via [Update Donor Account](/api/donor-accounts/update).
-
-        <Note>
-        Donor Account decisions are terminal — a Donor Account that has already been approved or rejected cannot be re-decisioned. Subsequent calls return status `409 Conflict`.
-        </Note>
-      operationId: approve-donor-account
-      tags:
-        - Donor Accounts
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique id of the Donor Account
-          schema:
-            type: string
-          required: true
-          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-      requestBody:
-        $ref: "#/components/requestBodies/ApproveDonorAccountRequest"
-      responses:
-        "200":
-          description: The Donor Account was approved
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DonorAccount"
-              examples:
-                Approved:
-                  $ref: "#/components/examples/DonorAccountApprovedOutput"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/donor_accounts/{id}/reject:
-    post:
-      summary: Reject Donor Account
-      description: |-
-        Reject a Donor Account.
-
-        Rejection signals that the DAF was unable to verify the donor or has chosen not to allow grants from this donor on DAFpay.
-        Any open Grants tied to this Donor Account are automatically rejected as well.
-
-        <Note>
-        Donor Account decisions are terminal — a Donor Account that has already been approved or rejected cannot be re-decisioned. Subsequent calls return status `409 Conflict`.
-        </Note>
-      operationId: reject-donor-account
-      tags:
-        - Donor Accounts
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique id of the Donor Account
-          schema:
-            type: string
-          required: true
-          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-      requestBody:
-        $ref: "#/components/requestBodies/RejectDonorAccountRequest"
-      responses:
-        "200":
-          description: The Donor Account was rejected
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DonorAccount"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/donor_accounts/{id}/authorization_tokens:
     post:
       summary: Create Authorization Token
@@ -1049,8 +950,8 @@ paths:
         Authorization Tokens are the binding credential used to verify a donor's identity between DAFpay and the DAF.
         They are used in two distinct flows:
 
-        - **DAF-initiated (pre-established access)**: The DAF creates a Donor Account and then creates an Authorization Token. The DAF surfaces the token's `code` to the donor (e.g. via the DAF portal). The donor then enters the `code` into DAFpay during profile setup, which automatically verifies and approves the Donor Account.
-        - **Donor-initiated (token verification)**: After a donor submits a Grant Request, DAFpay automatically issues an Authorization Token and emails the `code` to the donor. The donor provides the `code` to the DAF (e.g. via a portal form or phone call). The DAF then calls [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` to verify and approve the linked Donor Account.
+        - **DAF-Initiated Setup**: The DAF creates a Donor Account and then creates an Authorization Token. The DAF surfaces the token's `code` to the donor via their portal. The donor enters the `code` into DAFpay during profile setup, automatically approving the Donor Account.
+        - **Donor-Initiated Verification**: After a donor submits a Grant Request, DAFpay automatically issues an Authorization Token and emails the `code` to the donor. The donor provides the `code` to the DAF (e.g. via a portal form or phone call). The DAF then calls [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` to verify and approve the linked Donor Account.
 
         <Warning>
         The token's `code` value is **only returned once** in this response. Treat it as a credential — store it securely and never log it. If the code is lost before being consumed, [revoke](/api/authorization-tokens/revoke) the token and create a new one.
@@ -1235,7 +1136,7 @@ paths:
       description: |-
         Verify and consume an Authorization Token by its `code` value.
 
-        This endpoint is used by DAFs in the **donor-initiated (token verification)** flow: when a donor presents the `code` they received from DAFpay (via email after submitting a Grant Request), the DAF calls this endpoint with the `code` to confirm the donor's identity.
+        This endpoint is used by DAFs in the **Donor-Initiated Verification** flow: when a donor presents the `code` they received from DAFpay (via email after submitting a Grant Request), the DAF calls this endpoint with the `code` to confirm the donor's identity.
 
         On success:
         - The Authorization Token transitions to `consumed`.
@@ -1282,22 +1183,114 @@ paths:
           $ref: "#/components/responses/GoneError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/funds:
+    get:
+      summary: List Funds
+      description: |-
+        Returns a list of Funds accessible to the authenticated DAF account.
+
+        Funds represent individual named giving pools within a donor's DAF account (e.g. "Smith Family Fund").
+        A donor may have multiple Funds, each of which can be linked to one or more [Donor Accounts](/api/donor-accounts).
+      operationId: list-funds
+      tags:
+        - Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page_limit
+          in: query
+          description: The number of results to return. Defaults to 10, max is 100.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page_token
+          in: query
+          description: A token to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Fund"
+                  next_page_token:
+                    type: string
+                    description: A token to retrieve the next page of results. Absent when there are no more results.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/funds/{id}:
+    get:
+      summary: Get Fund
+      description: |-
+        Retrieve a Fund with the given ID.
+      operationId: get-fund
+      tags:
+        - Funds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the Fund.
+          schema:
+            type: string
+            format: uuid
+          required: true
+          example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Fund"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/grants/{id}/approve:
     post:
       summary: Approve Grant
       description: |-
-        Approve a Grant for processing.
+        Submit a Grant Request.
 
-        This endpoint is used by DAFs to confirm that they have processed (or will process) the grant within their own systems and that funds will be sent to the recipient nonprofit.
-        Calling this endpoint moves the Grant's status to `Approved` and emits a `grant.approved` webhook event.
+        This endpoint is used by DAFs to confirm that they have submitted the grant within their own systems.
+        Calling this endpoint moves the Grant's status to `initiated` and emits a `grant.approved` webhook event.
 
         <Warning>
-        - The linked [Donor Account](/api/donor-accounts) must already be in `approved` status. Otherwise, this request returns status `412 Precondition Failed`.
-        - A Grant that has already been decisioned (approved, rejected, completed, or canceled) cannot be re-decisioned. Subsequent calls return status `409 Conflict`.
+        - The Grant must be in `awaiting_daf_submission` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant will be in `awaiting_account_approval` and this request returns status `412 Precondition Failed`.
+        - A Grant that is already `initiated` or `cancelled` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
       operationId: approve-grant
       tags:
-        - Grants
+        - Grant Requests
       security:
         - bearerAuth: []
       parameters:
@@ -1339,18 +1332,18 @@ paths:
     post:
       summary: Reject Grant
       description: |-
-        Reject a Grant.
+        Cancel a Grant Request.
 
         This endpoint is used by DAFs to indicate that they will not process the grant.
-        Calling this endpoint moves the Grant's status to `Rejected` and emits a `grant.rejected` webhook event.
+        Calling this endpoint moves the Grant's status to `cancelled` and emits a `grant.rejected` webhook event.
         The Donor Account itself is unaffected; future grants from the same donor can still be processed.
 
         <Warning>
-        A Grant that has already been decisioned cannot be re-decisioned. Subsequent calls return status `409 Conflict`.
+        A Grant that is already `initiated` or `cancelled` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
       operationId: reject-grant
       tags:
-        - Grants
+        - Grant Requests
       security:
         - bearerAuth: []
       parameters:
@@ -4323,20 +4316,19 @@ components:
     DonorAccount:
       type: object
       description: |-
-        A Donor Account represents a DAFpay donor identity associated with a specific Donor Advised Fund.
+        A Donor Account represents a DAFpay donor identity associated with a specific Fund.
 
         Donor Accounts are the bridge between a donor's verified DAFpay identity (email, profile) and the donor's record at the DAF.
-        They support three different verification flows:
+        An Account must reach `approved` status — via an [Authorization Token](/api/authorization-tokens) — before its Grant Requests can be processed.
 
-        - **Manual approval**: The DAF reviews each new Donor Account in their own systems and calls [Approve Donor Account](/api/donor-accounts/approve) when satisfied.
-        - **Token verification**: After a donor submits a Grant Request, DAFpay issues a one-time [Authorization Token](/api/authorization-tokens) and sends it to the donor by email; the donor provides the token to the DAF, who calls [Verify Authorization Token](/api/authorization-tokens/verify) to approve the account.
-        - **Pre-established access**: The DAF creates the Donor Account and an Authorization Token in advance (e.g. when a donor opts-in via the DAF portal); the donor enters the token's `code` into DAFpay during profile setup, automatically approving the account.
+        There are two flows for how an Account reaches `approved`:
+
+        - **Donor-Initiated Verification**: After a donor submits a Grant Request, DAFpay issues a one-time [Authorization Token](/api/authorization-tokens) and emails the `code` to the donor. The donor provides the code to the DAF, who calls [Verify Authorization Token](/api/authorization-tokens/verify) to approve the account.
+        - **DAF-Initiated Setup**: The DAF creates the Donor Account and an Authorization Token in advance (e.g. when a donor opts in via the DAF portal). The donor enters the token's `code` into DAFpay during profile setup, automatically approving the account.
 
         See the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for a full discussion of these flows.
       required:
         - id
-        - fund_id
-        - email
         - status
         - created_at
         - updated_at
@@ -4381,7 +4373,7 @@ components:
         external_id:
           type: string
           description: |-
-            The DAF's internal identifier for this donor. Optionally provided by the DAF when the Donor Account is approved (or via [Update Donor Account](/api/donor-accounts/update)) to link the DAFpay donor to the donor's record in the DAF's own systems.
+            The DAF's internal identifier for this donor. Can be set on creation or via [Update Donor Account](/api/donor-accounts/update) to link the DAFpay donor to the donor's record in the DAF's own systems.
           example: "ACME-DAF-DONOR-1042"
         decisioned_at:
           type: string
@@ -4440,8 +4432,8 @@ components:
 
         Tokens have two creation paths:
 
-        - **DAF-initiated**: The DAF creates a Donor Account and then a token, surfaces the token's `code` to the donor, and the donor enters the `code` into DAFpay to verify and approve their account. Used for "pre-established access" workflows.
-        - **DAFpay-initiated**: After a donor submits a Grant Request without an approved Donor Account, DAFpay automatically creates a token and emails the `code` to the donor. The DAF later receives the `code` from the donor and calls [Verify Authorization Token](/api/authorization-tokens/verify) to verify and approve the linked Donor Account.
+        - **DAF-Initiated Setup**: The DAF creates a Donor Account and then a token, surfaces the token's `code` to the donor via their portal, and the donor enters the `code` into DAFpay to approve their account.
+        - **Donor-Initiated Verification**: After a donor submits a Grant Request without an approved Donor Account, DAFpay automatically creates a token and emails the `code` to the donor. The DAF later receives the `code` from the donor and calls [Verify Authorization Token](/api/authorization-tokens/verify) to approve the linked Donor Account.
 
         Tokens are single-use: once verified, the token's status becomes `consumed` and the `code` cannot be used again.
       required:
@@ -4508,6 +4500,51 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
+    Fund:
+      type: object
+      description: |-
+        A Fund represents a named giving pool within a donor's DAF account (e.g. "Smith Family Fund" within a Fidelity Charitable account).
+
+        Donors may have multiple Funds within a single DAF account. Each [Donor Account](/api/donor-accounts) is linked to a specific Fund via `fund_id`.
+        Use the `fund_id` when creating a Donor Account to specify which of the donor's Funds the account is associated with.
+      required:
+        - id
+        - name
+        - daf_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this Fund.
+          format: uuid
+          example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        name:
+          type: string
+          description: The display name of the Fund.
+          example: "Smith Family Fund"
+        daf_id:
+          type: string
+          description: The ID of the parent [Donor Advised Fund](/api/donor-advised-funds) institution this Fund belongs to.
+          example: "f9e28217-e0f7-4a54-9764-d664ffb10722"
+        created_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created, expressed in RFC 3339 format.
+          example: "2026-01-15T09:00:00Z"
+        updated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated, expressed in RFC 3339 format.
+          example: "2026-04-01T12:00:00Z"
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object.
+          additionalProperties:
+            type: string
     Grant:
       type: object
       description: |-
@@ -4551,8 +4588,8 @@ components:
           readOnly: true
           description: |-
             ID of the [Donor Account](/api/donor-accounts) that this grant was submitted from.
-            Present on grants submitted by donors who authenticated through DAFpay's Donor Account flow.
-            Grants submitted via the OAuth or web-scraping flows will not have this field set.
+            Present on grants submitted by donors who authenticated through the DAFpay Donor Account flow.
+            Grants submitted without a linked Donor Account will not have this field set.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         externalGrantId:
           type: string
@@ -4578,7 +4615,7 @@ components:
         status:
           type: string
           description: The status of the grant
-          example: Initiated
+          example: awaiting_daf_submission
         feeDetail:
           type: object
           readOnly: true
@@ -4775,21 +4812,17 @@ components:
         status:
           type: string
           enum:
-            - Initiated
-            - PendingDonorAccountApproval
-            - Approved
-            - Rejected
-            - Completed
-            - Canceled
+            - awaiting_account_approval
+            - awaiting_daf_submission
+            - initiated
+            - cancelled
           description: |
             The status of the grant.
-              * Initiated: The grant has been initiated by the donor and is awaiting decisioning.
-              * PendingDonorAccountApproval: The grant is awaiting decisioning of its [Donor Account](/api/donor-accounts). Only emitted for grants submitted via the Donor Account flow.
-              * Approved: The grant has been approved by the DAF for processing. Only emitted for grants submitted via the Donor Account flow.
-              * Rejected: The grant has been rejected by the DAF. Only emitted for grants submitted via the Donor Account flow.
-              * Completed: The grant has been received by the nonprofit.
-              * Canceled: The grant has been canceled.
-          example: Initiated
+              * awaiting_account_approval: The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved.
+              * awaiting_daf_submission: The Account is approved and the grant is ready for the DAF to submit in their system.
+              * initiated: The DAF has submitted the grant. Terminal.
+              * cancelled: The DAF has cancelled the grant. Terminal.
+          example: awaiting_daf_submission
         comment:
           type: string
           description: The user comment for the update
@@ -6959,37 +6992,12 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - fund_id
-              - email
             properties:
-              fund_id:
-                type: string
-                description: |-
-                  The ID of the [Donor Advised Fund](/api/donor-advised-funds) to associate the Donor Account with. Required if the authenticated DAF supports more than one fund.
-                example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-              email:
-                type: string
-                description: |-
-                  The donor's email. This is used as the verified identifier when the donor authenticates through DAFpay. Maximum length: 255 characters.
-                example: "warrenBuffet@example.com"
               external_id:
                 type: string
                 description: |-
                   The DAF's internal identifier for this donor. Optional but strongly recommended — it allows you to reconcile DAFpay grants with the donor's record in your own system without an additional update later. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
-              first_name:
-                type: string
-                description: "The donor's first name. Maximum length: 255 characters."
-                example: "Warren"
-              last_name:
-                type: string
-                description: "The donor's last name. Maximum length: 255 characters."
-                example: "Buffet"
-              phone:
-                type: string
-                description: "The donor's phone number. Maximum length: 20 characters."
-                example: "+12125550100"
               metadata:
                 type: object
                 description: A map of arbitrary string keys and values to store information about the object.
@@ -6998,7 +7006,7 @@ components:
     UpdateDonorAccountRequest:
       description: |-
         The request to update mutable properties on a Donor Account.
-        Note that status changes go through dedicated endpoints — see [Approve Donor Account](/api/donor-accounts/approve) and [Reject Donor Account](/api/donor-accounts/reject).
+        Note that the Donor Account's status is managed automatically through the Authorization Token verification flow and cannot be changed directly via this endpoint.
       required: true
       content:
         application/json:
@@ -7015,39 +7023,6 @@ components:
                 description: A map of arbitrary string keys and values to store information about the object.
                 additionalProperties:
                   type: string
-    ApproveDonorAccountRequest:
-      description: |-
-        The request to approve a Donor Account.
-        All fields are optional — an empty body is valid.
-      required: false
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              external_id:
-                type: string
-                description: |-
-                  The DAF's internal identifier for this donor. Setting this field at approval time is the recommended way to link the DAFpay donor to your internal donor record. Maximum length: 255 characters.
-                example: "ACME-DAF-DONOR-1042"
-              comment:
-                type: string
-                description: |-
-                  An optional comment recorded with the approval. Useful for auditing the approval decision (e.g. "Verified via phone call on 2026-04-02"). Maximum length: 400 characters.
-    RejectDonorAccountRequest:
-      description: |-
-        The request to reject a Donor Account. All fields are optional but providing a reason is strongly recommended for auditability.
-      required: false
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              reason:
-                type: string
-                description: |-
-                  A human-readable reason for the rejection. Surfaced on the `DonorAccount.rejection_reason` field. Maximum length: 400 characters.
-                example: "Donor could not be located in our records."
     CreateDonorAuthorizationTokenRequest:
       description: |-
         The request to create a new Authorization Token bound to a Donor Account.
@@ -7297,7 +7272,7 @@ components:
                     createdAt: "2021-08-10 15:00:00.000"
                     updatedAt: "2021-08-11 15:34:00.000"
                     amount: 15000
-                    status: "Initiated"
+                    status: "awaiting_daf_submission"
                 nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
             NoMoreResults:
               value:
@@ -8669,12 +8644,8 @@ components:
       summary: Pending donor account
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "pending"
-        email: "warrenBuffet@example.com"
-        first_name: "Warren"
-        last_name: "Buffet"
-        phone: "+12125550100"
+        external_id: "ACME-DAF-DONOR-1042"
         created_at: "2026-04-01T12:00:00Z"
         updated_at: "2026-04-01T12:00:00Z"
     DonorAccountApprovedOutput:

@@ -1,10 +1,10 @@
 ---
-title: "Pre-established Access"
-subtitle: "Gate DAFpay behind donor consent in your portal — closest to OAuth without realtime exchange."
+title: "DAF-Initiated Setup"
+subtitle: "DAF creates an Account and issues an Authorization Token before the donor ever opens DAFpay."
 hidden: false
 ---
 
-In this flow, donors must opt in to DAFpay use via their DAF's portal **before** they can submit grants on a nonprofit's donation form. The DAF creates the Donor Account and an Authorization Token in advance, surfaces the code to the donor, and the donor enters the code into DAFpay during profile setup. This auto-approves the Donor Account at the moment of first use, so the DAF has zero follow-up verification work for individual Grant Requests.
+In this flow, donors must opt in to DAFpay use via their DAF's portal **before** they can submit grants on a nonprofit's donation form. The DAF creates the Account and an Authorization Token in advance, surfaces the code to the donor, and the donor enters the code into DAFpay during profile setup. This auto-approves the Account at the moment of first use — the DAF has zero follow-up verification work.
 
 ## When to use this flow
 
@@ -12,9 +12,7 @@ This flow is well-suited to DAFs that:
 
 - **Want explicit donor consent** before grants can be submitted.
 - **Don't want to support "give at the point of inspiration"** — every donor must complete the DAF's opt-in flow first.
-- **Already have a portal** where donors can authenticate and click through to enable third-party services.
-
-This is the most operationally similar to an OAuth flow without requiring a real-time token exchange.
+- **Already have a portal** where donors can authenticate and enable third-party services.
 
 ## Sequence
 
@@ -57,11 +55,11 @@ Donor                          DAF (you)                       Chariot
 
 This is the donor-facing entry point. The simplest implementation is a button on the donor's account page; clicking it kicks off your portal-side handler.
 
-If you support multiple "funds" within a single donor account, your handler may also include a UI for the donor to choose which fund to enable. The fund choice maps to the `fund_id` you'll send to Chariot.
+If your donors can have multiple Funds, your handler may also include a UI for the donor to choose which Fund to enable. The Fund choice maps to the `fund_id` you'll send to Chariot.
 
 ### 2. Create the Donor Account
 
-Call [Create Donor Account](/api/donor-accounts/create) with the donor's email and (recommended) your internal `external_id`. The email **must** match the email the donor will use when they authenticate with DAFpay — DAFpay matches incoming verified emails to existing Donor Accounts.
+Call [Create Donor Account](/api/donor-accounts/create) with the donor's email and (recommended) your internal `external_id`. The email **must** match the email the donor will use when they authenticate with DAFpay — DAFpay matches incoming verified emails to existing Accounts.
 
 <CodeBlocks>
 ```bash cURL
@@ -88,12 +86,12 @@ const account = await chariot.donorAccounts.create({
 </CodeBlocks>
 
 <Note title="Idempotency on `(fund_id, email)`">
-A given `(fund_id, email)` pair can only have one Donor Account. If the donor previously enabled access and then clicked the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
+A given `(fund_id, email)` pair can only have one Account. If the donor previously enabled access and clicks the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
 </Note>
 
 ### 3. Create an Authorization Token
 
-Call [Create Authorization Token](/api/authorization-tokens/create) on the new Donor Account.
+Call [Create Authorization Token](/api/authorization-tokens/create) on the new Account.
 
 <CodeBlocks>
 ```bash cURL
@@ -110,8 +108,6 @@ const token = await chariot.authorizationTokens.create(
 ```
 </CodeBlocks>
 
-The response includes the `code` — this is the only time the code will be returned. Display it to the donor immediately; do not store it on your side beyond what's needed to display it once.
-
 ### 4. Surface the code to the donor
 
 The simplest pattern is to display the code inline on the donor's portal page after they click "Enable DAFpay Access". Pair it with brief instructions:
@@ -122,11 +118,11 @@ The simplest pattern is to display the code inline on the donor's portal page af
 
 If the donor loses the code before using it, give them a "Generate a new code" action that revokes the existing token and creates a new one.
 
-### 5. Donor consumes the code in DAFpay
+### 5. Donor enters the code in DAFpay
 
-When the donor opens DAFpay on a nonprofit's donation form, authenticates with their email, and reaches profile setup, they will be prompted to enter the code (DAFpay detects that the email matches a Donor Account in `pending` status with at least one valid Authorization Token).
+When the donor opens DAFpay on a nonprofit's donation form, authenticates with their email, and reaches profile setup, they will be prompted to enter the code (DAFpay detects that the email matches an Account in `pending` status with at least one valid Authorization Token).
 
-When they enter the code, DAFpay verifies it client-side, the Donor Account transitions to `approved`, and the donor proceeds directly to submitting a Grant Request.
+When they enter the code, DAFpay verifies it client-side, the Account transitions to `approved`, and the donor proceeds directly to submitting a Grant Request.
 
 ### 6. You receive a webhook
 
@@ -136,14 +132,15 @@ You'll receive a `donor_account.approved` event. Subsequent `grant.created` even
 
 - **Default expiration**: 30 days. Configurable via `expires_in` on token creation (60s — 90 days).
 - **Single-use**: Once consumed, a token is `consumed` and cannot be re-verified.
-- **Revocation**: If a donor loses their code, [revoke](/api/authorization-tokens/revoke) the existing token and create a new one. Don't share two valid tokens at once.
+- **Revocation**: If a donor loses their code, [revoke](/api/authorization-tokens/revoke) the existing token and create a new one. Don't have two valid tokens active at once.
 
-## Comparing to other flows
+## Comparing to Donor-Initiated Verification
 
-| | Manual Approval | Token Verification | Pre-established Access |
-|---|---|---|---|
-| Donor opt-in required up front? | No | No | **Yes** |
-| Give at point of inspiration? | Yes | Yes | No |
-| DAF work per donor | Verify after each new donor | One API call after first grant | Setup once before first grant |
-| DAF work per Grant Request | Approve grant | Approve grant | Approve grant |
-| Best for | Light-touch DAFs | DAFs that want stronger identity | DAFs that gate access via portal |
+| | Donor-Initiated Verification | DAF-Initiated Setup |
+|---|---|---|
+| Who initiates? | Donor (submits grant first) | DAF (creates Account in portal first) |
+| Give at point of inspiration? | Yes | No — donor must pre-register |
+| Donor opt-in required up front? | No | Yes |
+| DAF work per new donor | Single API call after code is received | Create Account + token in advance |
+| DAF work per Grant Request | Approve grant request | Approve grant request |
+| Best for | Light-touch setup, give-first flows | Portal-gated access, explicit consent flows |

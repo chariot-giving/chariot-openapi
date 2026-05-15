@@ -1,18 +1,18 @@
 ---
-title: "Token Verification"
-subtitle: "Donor passes a code from DAFpay to the DAF; DAF verifies in one API call."
+title: "Donor-Initiated Verification"
+subtitle: "Donor submits a grant, receives a code, and provides it to the DAF for one-step verification."
 hidden: false
 ---
 
-In this flow, DAFpay automatically issues an Authorization Token after the donor submits a Grant Request and emails the `code` to the donor with instructions. The donor relays the code to their DAF (via portal form, support ticket, or phone call), and the DAF calls a single API to verify and approve the linked Donor Account.
+In this flow, DAFpay automatically issues an Authorization Token after the donor submits a Grant Request and emails the `code` to the donor with instructions. The donor relays the code to their DAF (via portal form, support ticket, or phone call), and the DAF calls a single API endpoint to verify and approve the linked Account.
 
 ## When to use this flow
 
 This flow is well-suited to DAFs that:
 
-- **Want a stronger identity link** between the DAFpay donor and the authenticated DAF account than email-matching alone provides.
+- **Want a strong identity link** between the DAFpay donor and the DAF's authenticated donor record, without building pre-setup infrastructure.
 - **Have capacity to intake codes** from donors — either via a portal form (recommended) or a back-office support workflow.
-- **Don't want to manually verify each Donor Account** in their internal systems.
+- **Want donors to be able to give at the point of inspiration**, without requiring them to pre-register.
 
 ## Sequence
 
@@ -23,16 +23,19 @@ Donor                       DAFpay                          DAF (you)
   │ ─────────────────────────▶│                                │
   │                           │  2. Issue token + email donor  │
   │ ◄─────────────────────────│                                │
+  │                           │  3. donor_account.created      │
+  │                           │ ──────────────────────────────▶│
+  │                           │  4. grant.created              │
+  │                           │ ──────────────────────────────▶│
   │                           │                                │
-  │  3. Donor submits code    │                                │
+  │  5. Donor submits code    │                                │
   │ ─────────────────────────────────────────────────────────▶│
   │                           │                                │
-  │                           │  4. POST /authorization_tokens │
+  │                           │  6. POST /authorization_tokens │
   │                           │      /verify  { code }         │
   │                           │ ◄──────────────────────────────│
   │                           │                                │
-  │                           │  5. Returns approved           │
-  │                           │     DonorAccount               │
+  │                           │  7. Returns approved Account   │
   │                           │ ──────────────────────────────▶│
   │                           │                                │
 ```
@@ -41,9 +44,9 @@ Donor                       DAFpay                          DAF (you)
 
 ### 1. DAFpay issues the token automatically
 
-When a donor submits a Grant Request without an approved Donor Account, DAFpay automatically:
+When a donor submits a Grant Request without an approved Account, DAFpay automatically:
 
-- Creates a `DonorAuthorizationToken` bound to the new Donor Account.
+- Creates a `DonorAuthorizationToken` bound to the new Account.
 - Sends an email to the donor's verified email address containing the `code` and instructions for delivering it to their DAF.
 
 You don't need to do anything for this step — but you should be aware that this is happening so your support team can speak knowledgeably about the email donors receive.
@@ -83,22 +86,23 @@ const account = await chariot.authorizationTokens.verify({
 ```
 </CodeBlocks>
 
-The response is the linked `DonorAccount` in `approved` status. The token is consumed and cannot be re-verified.
+The response is the linked Account in `approved` status. The token is consumed and cannot be re-verified.
 
 <Warning title="Error handling">
 - Unknown, expired, revoked, or already-consumed codes return `404 Not Found` or `410 Gone`. Both responses are intentionally indistinguishable to avoid leaking information about valid codes.
 - The endpoint enforces strict per-DAF rate limits — repeated failures return `429 Too Many Requests`. Surface a generic "couldn't verify code" error to the donor and, after a small number of failures, ask them to contact support.
 </Warning>
 
-### 4. Decision the Grant
+### 4. Decision the Grant Request
 
-Once the Donor Account is approved, the linked Grant becomes eligible for decisioning. See [Decisioning Grants](/guides/dafpay/donor-accounts/decisioning-grants).
+Once the Account is approved, the linked Grant Request becomes eligible for decisioning. See [Grants Lifecycle](/guides/dafpay/donor-accounts/grants-lifecycle).
 
-## Comparing to manual approval
+## Comparing to DAF-Initiated Setup
 
-| | Manual Approval | Token Verification |
+| | Donor-Initiated Verification | DAF-Initiated Setup |
 |---|---|---|
-| Donor effort | None — submits grant and walks away | Low — copies code from email to portal form |
-| DAF effort per new donor | Manual verification required | Single API call |
-| Identity guarantee | Email-matching only | Strong: donor demonstrably received the email AND authenticated with the DAF |
-| Best for | DAFs that prefer to verify in their own systems | DAFs that want to minimize back-office work |
+| Who initiates? | Donor (submits grant first) | DAF (creates Account in portal first) |
+| Donor effort | Low — copies code from email to portal form | Low — enters code in DAFpay during first grant |
+| Give at point of inspiration? | Yes | No — donor must pre-register via portal |
+| DAF work per new donor | Single API call after code is received | Create Account + token in advance |
+| DAF work per Grant Request | Approve grant request | Approve grant request |
