@@ -1,0 +1,1004 @@
+openapi: 3.0.0
+info:
+  title: Chariot FDX API
+  version: "6.0"
+  description: >-
+    Financial Data Exchange (FDX) v6 compatible API for read-only access to
+    Chariot bank account data. Implements the FDX v6 standard for account
+    information, transactions, and statements.
+  contact:
+    name: Chariot Development Team
+    url: https://givechariot.com/contact
+    email: developers@givechariot.com
+
+servers:
+  - url: https://api.givechariot.com/fdx/v6
+    description: Production
+  - url: https://devapi.givechariot.com/fdx/v6
+    description: Staging
+
+security:
+  - oauth2: []
+
+tags:
+  - name: Accounts
+    description: Bank account information and balances
+  - name: Contact
+    description: Account contact and holder information
+  - name: Statements
+    description: Account statements and statement documents
+  - name: Customers
+    description: Account customer (organization) identity
+  - name: Transactions
+    description: Account transaction history
+  - name: Payment Networks
+    description: Payment networks supported by an account
+  - name: Asset Transfer Networks
+    description: Asset transfer networks supported by an account
+
+paths:
+  /accounts:
+    get:
+      summary: List accounts
+      description: Search and retrieve customer deposit accounts.
+      operationId: listAccounts
+      tags:
+        - Accounts
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/PageKey"
+      responses:
+        "200":
+          description: A paginated list of deposit accounts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAccountsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}:
+    get:
+      summary: Get account
+      description: >-
+        Get account balances, liabilities, and other detailed account
+        information for a single deposit account.
+      operationId: getAccount
+      tags:
+        - Accounts
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+      responses:
+        "200":
+          description: The deposit account details including balances
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositAccountDetails"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}/contact:
+    get:
+      summary: Get account contact
+      description: Get contact information associated with an account, including holders, emails, addresses, and phone numbers.
+      operationId: getAccountContact
+      tags:
+        - Contact
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+      responses:
+        "200":
+          description: Account contact information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAccountContactResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}/statements:
+    get:
+      summary: List account statements
+      description: >-
+        Get a paginated list of statements for an account. When specifying a
+        date range, both startTime and endTime must be provided together.
+        Defaults to the last 7 days if no date range is specified.
+        Data is available for up to 24 months from the current date.
+      operationId: listAccountStatements
+      tags:
+        - Statements
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/PageKey"
+        - $ref: "#/components/parameters/StartTime"
+        - $ref: "#/components/parameters/EndTime"
+      responses:
+        "200":
+          description: A paginated list of statements
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListStatementsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}/statements/{statementId}:
+    get:
+      summary: Get account statement
+      description: >-
+        Retrieve a statement document. Use the Accept header to specify the
+        desired format. Supported formats are PDF (default), CSV, and BAI2.
+      operationId: getAccountStatement
+      tags:
+        - Statements
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/StatementId"
+      responses:
+        "200":
+          description: The statement document in the requested format
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/vnd.bai2:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}/customers:
+    get:
+      summary: List account customers
+      description: >-
+        Get the customers associated with an account. Returns
+        organization-level identity (nonprofit name, EIN, address).
+      operationId: listAccountCustomers
+      tags:
+        - Customers
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+      responses:
+        "200":
+          description: The list of customers for the account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /accounts/{id}/transactions:
+    get:
+      summary: List account transactions
+      description: >-
+        Get a paginated list of transactions for an account. When specifying a
+        date range, both startTime and endTime must be provided together.
+        Defaults to the last 7 days if no date range is specified.
+        Data is available for up to 24 months from the current date.
+      operationId: listAccountTransactions
+      tags:
+        - Transactions
+      parameters:
+        - $ref: "#/components/parameters/AccountId"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/PageKey"
+        - $ref: "#/components/parameters/StartTime"
+        - $ref: "#/components/parameters/EndTime"
+      responses:
+        "200":
+          description: A paginated list of transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTransactionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Bearer token with the `read:bank_accounts` scope
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
+          scopes:
+            "read:bank_accounts": Read access to bank account data
+
+  parameters:
+    AccountId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the account
+      schema:
+        type: string
+        format: uuid
+
+    StatementId:
+      name: statementId
+      in: path
+      required: true
+      description: Unique identifier for the statement
+      schema:
+        type: string
+        format: uuid
+
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Number of results per page. Clamped to the range 10–100.
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 100
+        default: 10
+
+    PageKey:
+      name: pageKey
+      in: query
+      required: false
+      description: Cursor token for pagination. Pass the `nextPageKey` value from a previous response.
+      schema:
+        type: string
+        format: uuid
+
+    StartTime:
+      name: startTime
+      in: query
+      required: false
+      description: >-
+        Start date for filtering results (inclusive). Format: YYYY-MM-DD. Must
+        be specified together with endTime or omitted entirely.
+      schema:
+        type: string
+        format: date
+
+    EndTime:
+      name: endTime
+      in: query
+      required: false
+      description: >-
+        End date for filtering results (inclusive). Format: YYYY-MM-DD. Must
+        be specified together with startTime or omitted entirely.
+      schema:
+        type: string
+        format: date
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 Bearer token
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    Forbidden:
+      description: Insufficient permissions or IP not whitelisted
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    NotAcceptable:
+      description: The requested media type in the Accept header is not supported
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    PreconditionFailed:
+      description: A precondition for the request was not met
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+  schemas:
+    # ─── Error ──────────────────────────────────────────────────────────
+
+    ProblemDetails:
+      type: object
+      description: Error response following RFC 7807 Problem Details for HTTP APIs.
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type
+          example: "about:blank"
+        title:
+          type: string
+          description: A short human-readable summary of the problem type
+          example: "Bad Request"
+        status:
+          type: integer
+          description: The HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: "The startTime parameter must be before endTime"
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem
+
+    # ─── Pagination ─────────────────────────────────────────────────────
+
+    Page:
+      type: object
+      description: Pagination metadata for list responses.
+      properties:
+        nextPageKey:
+          type: string
+          description: Cursor token to retrieve the next page of results. Absent when there are no more results.
+        totalElements:
+          type: integer
+          description: Total number of elements across all pages
+
+    # ─── Account ────────────────────────────────────────────────────────
+
+    DepositAccount:
+      type: object
+      description: A deposit (bank) account.
+      required:
+        - accountCategory
+        - accountType
+        - accountId
+        - accountNumber
+        - accountNumberDisplay
+        - productName
+        - currency
+        - status
+        - accountOpenDate
+      properties:
+        accountCategory:
+          $ref: "#/components/schemas/AccountCategory"
+        accountType:
+          $ref: "#/components/schemas/AccountType"
+        accountId:
+          type: string
+          description: Unique identifier for the account
+        accountNumber:
+          type: string
+          description: Full account number
+        accountNumberDisplay:
+          type: string
+          description: Masked or truncated account number for display
+        productName:
+          type: string
+          description: Product name for the account
+        nickName:
+          type: string
+          description: User-assigned nickname for the account
+        nickname:
+          type: string
+          description: Alternate nickname field
+        currency:
+          $ref: "#/components/schemas/Currency"
+        status:
+          $ref: "#/components/schemas/AccountStatus"
+        description:
+          type: string
+          description: Description of the account
+        accountOpenDate:
+          type: string
+          format: date
+          description: Date the account was opened (YYYY-MM-DD)
+        accountCloseDate:
+          type: string
+          format: date
+          description: Date the account was closed (YYYY-MM-DD). Present only for closed accounts.
+
+    DepositAccountDetails:
+      description: Detailed deposit account information including balances.
+      allOf:
+        - $ref: "#/components/schemas/DepositAccount"
+        - type: object
+          required:
+            - currentBalance
+            - availableBalance
+            - balanceType
+            - routingTransitNumber
+          properties:
+            currentBalance:
+              type: number
+              format: double
+              description: Current balance of the account
+            availableBalance:
+              type: number
+              format: double
+              description: Available balance of the account
+            balanceAsOf:
+              type: string
+              format: date-time
+              description: Timestamp of when the balance was calculated
+            lineOfBusiness:
+              type: string
+              description: Line of business for the account
+            routingTransitNumber:
+              type: string
+              description: Routing transit number (RTN) for the account
+            balanceType:
+              $ref: "#/components/schemas/BalanceType"
+            interestRate:
+              type: number
+              format: double
+              description: Interest rate for the account
+            transferIn:
+              type: boolean
+              description: Whether the account supports incoming transfers
+            transferOut:
+              type: boolean
+              description: Whether the account supports outgoing transfers
+
+    ListAccountsResponse:
+      type: object
+      description: Paginated list of deposit accounts.
+      required:
+        - accounts
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/DepositAccount"
+
+    # ─── Contact ────────────────────────────────────────────────────────
+
+    GetAccountContactResponse:
+      type: object
+      description: Contact information associated with an account.
+      properties:
+        holders:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountHolder"
+        emails:
+          type: array
+          items:
+            type: string
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountAddress"
+        telephones:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountPhone"
+
+    AccountHolder:
+      type: object
+      description: An account holder with their contact details.
+      required:
+        - name
+        - relationship
+        - type
+      properties:
+        name:
+          $ref: "#/components/schemas/PersonName"
+        relationship:
+          $ref: "#/components/schemas/CustomerRelationship"
+        type:
+          $ref: "#/components/schemas/AccountHolderType"
+        businessCustomer:
+          $ref: "#/components/schemas/BusinessCustomer"
+        emails:
+          type: array
+          items:
+            type: string
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountAddress"
+        telephones:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountPhone"
+
+    PersonName:
+      type: object
+      description: A person's name.
+      properties:
+        first:
+          type: string
+        middle:
+          type: string
+        last:
+          type: string
+        suffix:
+          type: string
+        prefix:
+          type: string
+        company:
+          type: string
+
+    BusinessCustomer:
+      type: object
+      description: Business customer information.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Legal business name
+        registeredId:
+          type: string
+          description: Registered identifier (e.g., EIN)
+
+    AccountAddress:
+      type: object
+      description: A postal address.
+      required:
+        - line1
+        - city
+        - region
+        - postalCode
+        - country
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        line3:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+          description: State or region code
+        postalCode:
+          type: string
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+
+    AccountPhone:
+      type: object
+      description: A phone number.
+      required:
+        - type
+        - number
+      properties:
+        type:
+          $ref: "#/components/schemas/PhoneNumberType"
+        country:
+          type: string
+          description: Country calling code (e.g., "+1")
+        number:
+          type: string
+          description: Phone number
+
+    # ─── Statement ──────────────────────────────────────────────────────
+
+    Statement:
+      type: object
+      description: A bank account statement.
+      required:
+        - statementId
+        - accountId
+        - statementDate
+        - description
+        - status
+      properties:
+        statementId:
+          type: string
+          description: Unique identifier for the statement
+        accountId:
+          type: string
+          description: The account this statement belongs to
+        statementDate:
+          type: string
+          format: date-time
+          description: Date of the statement
+        description:
+          type: string
+          description: Description of the statement
+        status:
+          $ref: "#/components/schemas/DocumentStatus"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+
+    ListStatementsResponse:
+      type: object
+      description: Paginated list of statements.
+      required:
+        - statements
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        statements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Statement"
+
+    # ─── Customer ───────────────────────────────────────────────────────
+
+    Customer:
+      type: object
+      description: A customer (organization) associated with an account.
+      required:
+        - customerId
+        - name
+        - type
+      properties:
+        customerId:
+          type: string
+          description: Unique identifier for the customer
+        name:
+          $ref: "#/components/schemas/PersonName"
+        taxId:
+          type: string
+          description: Tax identification number (e.g., EIN)
+        type:
+          $ref: "#/components/schemas/CustomerType"
+        addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountAddress"
+        businessCustomer:
+          $ref: "#/components/schemas/BusinessCustomer"
+
+    CustomerListResponse:
+      type: object
+      description: Paginated list of customers.
+      required:
+        - customers
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        customers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Customer"
+
+    # ─── Transaction ────────────────────────────────────────────────────
+
+    DepositTransaction:
+      type: object
+      description: A deposit account transaction.
+      required:
+        - accountCategory
+        - accountId
+        - transactionId
+        - transactionTimestamp
+        - description
+        - debitCreditMemo
+        - status
+        - amount
+      properties:
+        accountCategory:
+          $ref: "#/components/schemas/AccountCategory"
+        accountId:
+          type: string
+          description: The account this transaction belongs to
+        transactionId:
+          type: string
+          description: Unique identifier for the transaction
+        transactionTimestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the transaction occurred
+        postedTimestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the transaction was posted
+        description:
+          type: string
+          description: Description of the transaction
+        memo:
+          type: string
+          description: Additional memo text
+        debitCreditMemo:
+          $ref: "#/components/schemas/TransactionDirection"
+        category:
+          type: string
+          description: Transaction category
+        subCategory:
+          type: string
+          description: Transaction sub-category
+        status:
+          $ref: "#/components/schemas/TransactionStatus"
+        amount:
+          type: number
+          format: double
+          description: Transaction amount
+        lineItem:
+          type: array
+          items:
+            $ref: "#/components/schemas/LineItem"
+        reward:
+          $ref: "#/components/schemas/TransactionReward"
+        reference:
+          type: string
+          description: Reference identifier for the transaction
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+        fiAttributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/FiAttribute"
+        transactionType:
+          $ref: "#/components/schemas/DepositTransactionType"
+        payee:
+          type: string
+          description: Payee name
+        checkNumber:
+          type: integer
+          description: Check number if applicable
+
+    LineItem:
+      type: object
+      description: A line item within a transaction.
+      properties:
+        description:
+          type: string
+        amount:
+          type: number
+          format: double
+        checkNumber:
+          type: integer
+        memo:
+          type: string
+        reference:
+          type: string
+
+    TransactionReward:
+      type: object
+      description: Reward information associated with a transaction.
+      properties:
+        categoryId:
+          type: string
+        accrued:
+          type: number
+          format: double
+        adjusted:
+          type: number
+          format: double
+
+    FiAttribute:
+      type: object
+      description: A financial institution-specific attribute.
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    ListTransactionsResponse:
+      type: object
+      description: Paginated list of transactions.
+      required:
+        - transactions
+      properties:
+        page:
+          $ref: "#/components/schemas/Page"
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DepositTransaction"
+
+    # ─── Shared ─────────────────────────────────────────────────────────
+
+    Currency:
+      type: object
+      description: Currency information.
+      required:
+        - currencyCode
+      properties:
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code
+          example: "USD"
+
+    Link:
+      type: object
+      description: A hyperlink reference.
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          description: URI of the linked resource
+
+    # ─── Enums ──────────────────────────────────────────────────────────
+
+    AccountCategory:
+      type: string
+      description: Category of account
+      enum:
+        - DEPOSIT_ACCOUNT
+
+    AccountType:
+      type: string
+      description: Type of deposit account
+      enum:
+        - CHECKING
+
+    AccountStatus:
+      type: string
+      description: Status of the account
+      enum:
+        - OPEN
+        - CLOSED
+        - DELINQUENT
+        - NEGATIVECURRENTBALANCE
+        - PAID
+        - PENDINGCLOSE
+        - PENDINGOPEN
+        - RESTRICTED
+
+    BalanceType:
+      type: string
+      description: Type of balance
+      enum:
+        - ASSET
+
+    CustomerType:
+      type: string
+      description: Type of customer
+      enum:
+        - BUSINESS
+        - INDIVIDUAL
+
+    CustomerRelationship:
+      type: string
+      description: Relationship of the holder to the account
+      enum:
+        - AUTHORIZED_USER
+        - BUSINESS
+        - PRIMARY
+
+    AccountHolderType:
+      type: string
+      description: Type of account holder
+      enum:
+        - BUSINESS
+        - CONSUMER
+
+    TransactionDirection:
+      type: string
+      description: Whether the transaction is a debit or credit
+      enum:
+        - DEBIT
+        - CREDIT
+
+    TransactionStatus:
+      type: string
+      description: Status of the transaction
+      enum:
+        - PENDING
+        - POSTED
+        - AUTHORIZATION
+        - MEMO
+
+    DepositTransactionType:
+      type: string
+      description: Type of deposit transaction
+      enum:
+        - ADJUSTMENT
+        - ATMDEPOSIT
+        - ATMWITHDRAWAL
+        - BILLPAYMENT
+        - CHECK
+        - DEPOSIT
+        - DIRECTDEPOSIT
+        - DIVIDEND
+        - FEE
+        - INTEREST
+        - POSCREDIT
+        - POSDEBIT
+        - PREAUTHORIZEDDEPOSIT
+        - PREAUTHORIZEDWITHDRAWAL
+        - TRANSFER
+        - WITHDRAWAL
+
+    DocumentStatus:
+      type: string
+      description: Status of a document
+      enum:
+        - AVAILABLE
+
+    PhoneNumberType:
+      type: string
+      description: Type of phone number
+      enum:
+        - HOME
+        - BUSINESS
+        - CELL
+        - FAX
+

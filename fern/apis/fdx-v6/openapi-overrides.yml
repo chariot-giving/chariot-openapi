@@ -1,0 +1,36 @@
+paths:
+  /accounts:
+    get:
+      x-fern-sdk-group-name:
+        - accounts
+      x-fern-sdk-method-name: list
+  /accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - accounts
+      x-fern-sdk-method-name: get
+  /accounts/{id}/contact:
+    get:
+      x-fern-sdk-group-name:
+        - accounts
+      x-fern-sdk-method-name: getContact
+  /accounts/{id}/statements:
+    get:
+      x-fern-sdk-group-name:
+        - statements
+      x-fern-sdk-method-name: list
+  /accounts/{id}/statements/{statementId}:
+    get:
+      x-fern-sdk-group-name:
+        - statements
+      x-fern-sdk-method-name: getDocument
+  /accounts/{id}/customers:
+    get:
+      x-fern-sdk-group-name:
+        - customers
+      x-fern-sdk-method-name: list
+  /accounts/{id}/transactions:
+    get:
+      x-fern-sdk-group-name:
+        - transactions
+      x-fern-sdk-method-name: list

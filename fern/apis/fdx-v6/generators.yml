@@ -1,0 +1,13 @@
+api:
+  default-environment: Production
+  default-url: api
+  environments:
+    Production:
+      urls:
+        api: https://api.givechariot.com/fdx/v6
+    Staging:
+      urls:
+        api: https://devapi.givechariot.com/fdx/v6
+  specs:
+    - openapi: ../../../specs/fdx-v6.yaml
+      overrides: ./openapi-overrides.yml
