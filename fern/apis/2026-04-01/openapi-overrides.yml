@@ -52,29 +52,43 @@ paths:
       x-fern-sdk-group-name:
         - grants
       x-fern-sdk-method-name: get
-  /v1/grants/{id}/approve:
-    post:
-      x-fern-sdk-group-name:
-        - grantRequests
-      x-fern-sdk-method-name: approve
-  /v1/grants/{id}/reject:
-    post:
-      x-fern-sdk-group-name:
-        - grantRequests
-      x-fern-sdk-method-name: reject
-  /v1/funds:
+  /v1/grant_requests:
     get:
       x-fern-pagination:
         cursor: $request.page_token
         next_cursor: $response.next_page_token
         results: $response.results
       x-fern-sdk-group-name:
-        - funds
+        - grantRequests
       x-fern-sdk-method-name: list
-  /v1/funds/{id}:
+  /v1/grant_requests/{id}:
     get:
       x-fern-sdk-group-name:
-        - funds
+        - grantRequests
+      x-fern-sdk-method-name: get
+  /v1/grant_requests/{id}/approve:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: approve
+  /v1/grant_requests/{id}/reject:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: reject
+  /v1/giving_pools:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - givingPools
+      x-fern-sdk-method-name: list
+  /v1/giving_pools/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - givingPools
       x-fern-sdk-method-name: get
   /v1/donor_accounts:
     post:

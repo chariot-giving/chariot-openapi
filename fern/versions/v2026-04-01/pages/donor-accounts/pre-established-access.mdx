@@ -55,7 +55,7 @@ Donor                          DAF (you)                       Chariot
 
 This is the donor-facing entry point. The simplest implementation is a button on the donor's account page; clicking it kicks off your portal-side handler.
 
-If your donors can have multiple Funds, your handler may also include a UI for the donor to choose which Fund to enable. The Fund choice maps to the `fund_id` you'll send to Chariot.
+If your donors can have multiple Giving Pools, your handler may also include a UI for the donor to choose which Giving Pool to enable. The Giving Pool choice maps to the `giving_pool_id` you'll send to Chariot.
 
 ### 2. Create the Donor Account
 
@@ -67,7 +67,7 @@ curl -X POST https://api.givechariot.com/v1/donor_accounts \
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "fund_id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+    "giving_pool_id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
     "email": "warrenBuffet@example.com",
     "external_id": "ACME-DAF-DONOR-1042",
     "first_name": "Warren",
@@ -76,7 +76,7 @@ curl -X POST https://api.givechariot.com/v1/donor_accounts \
 ```
 ```typescript TypeScript
 const account = await chariot.donorAccounts.create({
-  fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
+  giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
   email: "warrenBuffet@example.com",
   external_id: "ACME-DAF-DONOR-1042",
   first_name: "Warren",
@@ -85,8 +85,8 @@ const account = await chariot.donorAccounts.create({
 ```
 </CodeBlocks>
 
-<Note title="Idempotency on `(fund_id, email)`">
-A given `(fund_id, email)` pair can only have one Account. If the donor previously enabled access and clicks the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
+<Note title="Idempotency on `(giving_pool_id, email)`">
+A given `(giving_pool_id, email)` pair can only have one Account. If the donor previously enabled access and clicks the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
 </Note>
 
 ### 3. Create an Authorization Token

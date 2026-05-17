@@ -198,8 +198,8 @@ navigation:
                   title: Donor Accounts
               - authorizationTokens:
                   title: Authorization Tokens
-              - funds:
-                  title: Funds
+              - givingPools:
+                  title: Giving Pools
               - grantRequests:
                   title: Grant Requests
           - section: Disbursements

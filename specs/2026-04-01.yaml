@@ -802,10 +802,10 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: fund_id
+        - name: giving_pool_id
           in: query
           description: |-
-            The `id` of the Donor Advised Fund. Use this to filter Donor Accounts by a specific fund. Required if the authenticated DAF supports more than one fund.
+            The `id` of the Giving Pool. Use this to filter Donor Accounts by a specific giving pool. Required if the authenticated DAF supports more than one giving pool.
           schema:
             type: string
           required: false
@@ -1183,20 +1183,26 @@ paths:
           $ref: "#/components/responses/GoneError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/funds:
+  /v1/giving_pools:
     get:
-      summary: List Funds
+      summary: List Giving Pools
       description: |-
-        Returns a list of Funds accessible to the authenticated DAF account.
+        Returns a list of Giving Pools accessible to the authenticated DAF account.
 
-        Funds represent individual named giving pools within a donor's DAF account (e.g. "Smith Family Fund").
-        A donor may have multiple Funds, each of which can be linked to one or more [Donor Accounts](/api/donor-accounts).
+        Giving Pools represent individual named giving pools within a donor's DAF account (e.g. "Smith Family Fund").
+        A [Donor Account](/api/donor-accounts) may be associated with multiple Giving Pools.
       operationId: list-funds
       tags:
-        - Funds
+        - Giving Pools
       security:
         - bearerAuth: []
       parameters:
+        - name: donor_account_id
+          in: query
+          description: Filter Giving Pools by the ID of the associated [Donor Account](/api/donor-accounts).
+          required: false
+          schema:
+            type: string
         - name: page_limit
           in: query
           description: The number of results to return. Defaults to 10, max is 100.
@@ -1224,7 +1230,7 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Fund"
+                      $ref: "#/components/schemas/GivingPool"
                   next_page_token:
                     type: string
                     description: A token to retrieve the next page of results. Absent when there are no more results.
@@ -1236,20 +1242,20 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/funds/{id}:
+  /v1/giving_pools/{id}:
     get:
-      summary: Get Fund
+      summary: Get Giving Pool
       description: |-
-        Retrieve a Fund with the given ID.
+        Retrieve a Giving Pool with the given ID.
       operationId: get-fund
       tags:
-        - Funds
+        - Giving Pools
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique ID of the Fund.
+          description: The unique ID of the Giving Pool.
           schema:
             type: string
             format: uuid
@@ -1264,7 +1270,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Fund"
+                $ref: "#/components/schemas/GivingPool"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1275,20 +1281,71 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/grants/{id}/approve:
-    post:
-      summary: Approve Grant
+  /v1/grant_requests:
+    get:
+      summary: List Grant Requests
       description: |-
-        Submit a Grant Request.
+        Returns a list of Grant Requests accessible to the authenticated DAF account.
 
-        This endpoint is used by DAFs to confirm that they have submitted the grant within their own systems.
-        Calling this endpoint moves the Grant's status to `initiated` and emits a `grant.updated` webhook event.
-
-        <Warning>
-        - The Grant must be in `awaiting_daf_submission` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant will be in `awaiting_account_approval` and this request returns status `412 Precondition Failed`.
-        - A Grant that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
-        </Warning>
-      operationId: approve-grant
+        Use `donor_account_id` to retrieve all Grant Requests associated with a specific donor.
+      operationId: list-grant-requests
+      tags:
+        - Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: donor_account_id
+          in: query
+          description: Filter Grant Requests by the ID of the associated [Donor Account](/api/donor-accounts).
+          required: false
+          schema:
+            type: string
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        - name: page_limit
+          in: query
+          description: The number of results to return. Defaults to 10, max is 100.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page_token
+          in: query
+          description: A token to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GrantRequest"
+                  next_page_token:
+                    type: string
+                    description: A token to retrieve the next page of results. Absent when there are no more results.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/grant_requests/{id}:
+    get:
+      summary: Get Grant Request
+      description: |-
+        Retrieve a Grant Request with the given ID.
+      operationId: get-grant-request
       tags:
         - Grant Requests
       security:
@@ -1296,24 +1353,66 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique id of the grant
+          description: The unique ID of the Grant Request.
+          required: true
           schema:
             type: string
-            format: uuid
-          required: true
-          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
-      requestBody:
-        $ref: "#/components/requestBodies/ApproveGrantRequest"
       responses:
         "200":
-          description: The grant was approved
+          description: OK
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Grant"
+                $ref: "#/components/schemas/GrantRequest"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/grant_requests/{id}/approve:
+    post:
+      summary: Approve Grant Request
+      description: |-
+        Confirm that you have submitted the grant in your system.
+
+        Calling this endpoint moves the Grant Request's status to `initiated` and emits a `grant_request.updated` webhook event.
+
+        <Warning>
+        - The Grant Request must be in `awaiting_daf_submission` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant Request will be in `awaiting_account_approval` and this request returns status `412 Precondition Failed`.
+        - A Grant Request that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        </Warning>
+      operationId: approve-grant-request
+      tags:
+        - Grant Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the Grant Request.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/ApproveGrantRequest"
+      responses:
+        "200":
+          description: The Grant Request was approved.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrantRequest"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1328,20 +1427,19 @@ paths:
           $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/grants/{id}/reject:
+  /v1/grant_requests/{id}/reject:
     post:
-      summary: Reject Grant
+      summary: Reject Grant Request
       description: |-
-        Cancel a Grant Request.
+        Indicate that you will not process this grant.
 
-        This endpoint is used by DAFs to indicate that they will not process the grant.
-        Calling this endpoint moves the Grant's status to `canceled` and emits a `grant.updated` webhook event.
-        The Donor Account itself is unaffected; future grants from the same donor can still be processed.
+        Calling this endpoint moves the Grant Request's status to `canceled` and emits a `grant_request.updated` webhook event.
+        The Donor Account itself is unaffected; future Grant Requests from the same donor can still be processed.
 
         <Warning>
-        A Grant that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        A Grant Request that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
-      operationId: reject-grant
+      operationId: reject-grant-request
       tags:
         - Grant Requests
       security:
@@ -1349,24 +1447,22 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The unique id of the grant
+          description: The unique ID of the Grant Request.
+          required: true
           schema:
             type: string
-            format: uuid
-          required: true
-          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
       requestBody:
         $ref: "#/components/requestBodies/RejectGrantRequest"
       responses:
         "200":
-          description: The grant was rejected
+          description: The Grant Request was rejected.
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Grant"
+                $ref: "#/components/schemas/GrantRequest"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -4316,7 +4412,7 @@ components:
     DonorAccount:
       type: object
       description: |-
-        A Donor Account represents a DAFpay donor identity associated with a specific Fund.
+        A Donor Account represents a DAFpay donor identity associated with a specific Giving Pool.
 
         Donor Accounts are the bridge between a donor's verified DAFpay identity (email, profile) and the donor's record at the DAF.
         An Account must reach `approved` status — via an [Authorization Token](/api/authorization-tokens) — before its Grant Requests can be processed.
@@ -4338,12 +4434,6 @@ components:
           readOnly: true
           description: The unique identifier for this object.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fund_id:
-          type: string
-          readOnly: true
-          description: |-
-            The ID of the [Donor Advised Fund](/api/donor-advised-funds) that this Donor Account belongs to.
-          example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status:
           $ref: "#/components/schemas/DonorAccountStatus"
         email:
@@ -4500,34 +4590,170 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
-    Fund:
+    GrantRequestStatus:
+      type: string
+      enum:
+        - awaiting_account_approval
+        - awaiting_daf_submission
+        - initiated
+        - canceled
+      description: |-
+        The lifecycle status of a Grant Request.
+
+        - `awaiting_account_approval`: The linked Donor Account is not yet `approved`. Advances automatically when the account is approved.
+        - `awaiting_daf_submission`: The account is approved and the Grant Request is ready for you to submit in your system.
+        - `initiated`: You have submitted the grant in your system. Terminal.
+        - `canceled`: The grant was rejected and will not be processed. Terminal.
+    GrantRequestFrequency:
+      type: string
+      enum:
+        - one_time
+        - monthly
+        - quarterly
+        - annual
+      description: |-
+        How often the donor intends this grant to recur. Only frequencies enabled in your DAF Provider settings will appear on Grant Requests.
+    GrantRequestDonorContactAddress:
+      type: object
+      description: The donor's mailing address at the time of the Grant Request.
+      properties:
+        line1:
+          type: string
+        line2:
+          type:
+            - string
+            - "null"
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+    GrantRequestDonorContact:
+      type: object
+      description: A snapshot of the donor's contact information captured for this Grant Request.
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          $ref: "#/components/schemas/GrantRequestDonorContactAddress"
+    GrantRequest:
       type: object
       description: |-
-        A Fund represents a named giving pool within a donor's DAF account (e.g. "Smith Family Fund" within a Fidelity Charitable account).
+        A Grant Request is a donation intent submitted by a donor through the DAFpay payment option, addressed to a specific nonprofit.
 
-        Donors may have multiple Funds within a single DAF account. Each [Donor Account](/api/donor-accounts) is linked to a specific Fund via `fund_id`.
-        Use the `fund_id` when creating a Donor Account to specify which of the donor's Funds the account is associated with.
+        The DAF Provider is responsible for processing it in their own system and reporting the outcome back to DAFpay via the [Approve](/api/grant-requests/approve) or [Reject](/api/grant-requests/reject) endpoints.
+
+        All amounts are in US dollars.
       required:
         - id
-        - name
-        - daf_id
+        - donor_account_id
+        - status
+        - ein
+        - amount_cents
+        - frequency
+        - form_url
         - created_at
         - updated_at
       properties:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for this Fund.
+          description: The unique identifier for this Grant Request.
+          example: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id:
+          type: string
+          description: The ID of the [Donor Account](/api/donor-accounts) this Grant Request belongs to.
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id:
+          type:
+            - string
+            - "null"
+          description: The ID of the [Giving Pool](/api/giving_pools) the grant is being made from. Present when the donor selected a specific giving pool.
+          example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status:
+          $ref: "#/components/schemas/GrantRequestStatus"
+        ein:
+          type: string
+          description: The EIN of the recipient nonprofit.
+          example: "12-3456789"
+        nonprofit_name:
+          type: string
+          description: The name of the recipient nonprofit at the time of the Grant Request.
+          example: "American Red Cross"
+        amount_cents:
+          type: integer
+          format: int64
+          description: The grant amount in cents (USD).
+          example: 10000
+        frequency:
+          $ref: "#/components/schemas/GrantRequestFrequency"
+        form_url:
+          type: string
+          format: uri
+          description: The URL of the page where the donor submitted the DAFpay gift.
+          example: "https://example.org/donate"
+        purpose:
+          type:
+            - string
+            - "null"
+          description: The donor's stated purpose for the grant.
+        note:
+          type:
+            - string
+            - "null"
+          description: An optional note from the donor to the nonprofit.
+        donor_contact:
+          $ref: "#/components/schemas/GrantRequestDonorContact"
+        cancellation_reason:
+          type:
+            - string
+            - "null"
+          description: The reason provided when the Grant Request was canceled. Set when status transitions to `canceled`.
+        created_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was created, expressed in RFC 3339 format.
+          example: "2026-04-01T09:00:00Z"
+        updated_at:
+          type: string
+          readOnly: true
+          format: date-time
+          description: Time when this object was last updated, expressed in RFC 3339 format.
+          example: "2026-04-01T12:00:00Z"
+    GivingPool:
+      type: object
+      description: |-
+        A Giving Pool represents a named giving pool within a donor's DAF account (e.g. "Smith Family Fund" within a Fidelity Charitable account).
+
+        A [Donor Account](/api/donor-accounts) may be associated with multiple Giving Pools. Each Giving Pool belongs to exactly one Donor Account via `donor_account_id`.
+      required:
+        - id
+        - name
+        - donor_account_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this Giving Pool.
           format: uuid
           example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         name:
           type: string
-          description: The display name of the Fund.
+          description: The display name of the Giving Pool.
           example: "Smith Family Fund"
-        daf_id:
+        donor_account_id:
           type: string
-          description: The ID of the parent [Donor Advised Fund](/api/donor-advised-funds) institution this Fund belongs to.
-          example: "f9e28217-e0f7-4a54-9764-d664ffb10722"
+          description: The ID of the [Donor Account](/api/donor-accounts) this Giving Pool belongs to.
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         created_at:
           type: string
           readOnly: true
@@ -7189,7 +7415,7 @@ components:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "approved"
                     email: "warrenBuffet@example.com"
                     first_name: "Warren"
@@ -7205,7 +7431,7 @@ components:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                    giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "pending"
                     email: "warrenBuffet@example.com"
                     created_at: "2026-04-01T12:00:00Z"
@@ -8650,7 +8876,7 @@ components:
       summary: Approved donor account
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        fund_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "approved"
         email: "warrenBuffet@example.com"
         first_name: "Warren"
