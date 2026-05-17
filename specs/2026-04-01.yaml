@@ -4620,9 +4620,8 @@ components:
         line1:
           type: string
         line2:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
         city:
           type: string
         state:
@@ -4671,9 +4670,8 @@ components:
           description: The ID of the [Donor Account](/api/donor-accounts) this Grant Request belongs to.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         giving_pool_id:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The ID of the [Giving Pool](/api/giving_pools) the grant is being made from. Present when the donor selected a specific giving pool.
           example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status:
@@ -4699,21 +4697,18 @@ components:
           description: The URL of the page where the donor submitted the DAFpay gift.
           example: "https://example.org/donate"
         purpose:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The donor's stated purpose for the grant.
         note:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: An optional note from the donor to the nonprofit.
         donor_contact:
           $ref: "#/components/schemas/GrantRequestDonorContact"
         cancellation_reason:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The reason provided when the Grant Request was canceled. Set when status transitions to `canceled`.
         created_at:
           type: string
