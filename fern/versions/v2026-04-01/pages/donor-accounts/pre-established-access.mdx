@@ -55,11 +55,9 @@ Donor                          DAF (you)                       Chariot
 
 This is the donor-facing entry point. The simplest implementation is a button on the donor's account page; clicking it kicks off your portal-side handler.
 
-If your donors can have multiple Giving Pools, your handler may also include a UI for the donor to choose which Giving Pool to enable. The Giving Pool choice maps to the `giving_pool_id` you'll send to Chariot.
-
 ### 2. Create the Donor Account
 
-Call [Create Donor Account](/api/donor-accounts/create) with the donor's email and (recommended) your internal `external_id`. The email **must** match the email the donor will use when they authenticate with DAFpay — DAFpay matches incoming verified emails to existing Accounts.
+Call [Create Donor Account](/api/donor-accounts/create) with the donor's email nested under `donor`, plus your internal `external_id` (recommended). The email **must** match the email the donor will use when they authenticate with DAFpay — DAFpay matches incoming verified emails to existing Accounts.
 
 <CodeBlocks>
 ```bash cURL
@@ -67,26 +65,28 @@ curl -X POST https://api.givechariot.com/v1/donor_accounts \
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "giving_pool_id": "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
-    "email": "warrenBuffet@example.com",
-    "external_id": "ACME-DAF-DONOR-1042",
-    "first_name": "Warren",
-    "last_name": "Buffet"
+    "donor": {
+      "email": "warrenBuffet@example.com",
+      "first_name": "Warren",
+      "last_name": "Buffet"
+    },
+    "external_id": "ACME-DAF-DONOR-1042"
   }'
 ```
 ```typescript TypeScript
 const account = await chariot.donorAccounts.create({
-  giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34",
-  email: "warrenBuffet@example.com",
+  donor: {
+    email: "warrenBuffet@example.com",
+    first_name: "Warren",
+    last_name: "Buffet",
+  },
   external_id: "ACME-DAF-DONOR-1042",
-  first_name: "Warren",
-  last_name: "Buffet",
 });
 ```
 </CodeBlocks>
 
-<Note title="Idempotency on `(giving_pool_id, email)`">
-A given `(giving_pool_id, email)` pair can only have one Account. If the donor previously enabled access and clicks the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
+<Note title="Idempotency on donor email">
+A given donor email can only have one Donor Account per DAF. If the donor previously enabled access and clicks the button again, the second create call returns `409 Conflict`. Use [List Donor Accounts](/api/donor-accounts/list) with `email=...` to look up the existing account and create a new token instead.
 </Note>
 
 ### 3. Create an Authorization Token

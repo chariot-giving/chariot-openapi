@@ -805,7 +805,7 @@ paths:
         - name: giving_pool_id
           in: query
           description: |-
-            The `id` of the Giving Pool. Use this to filter Donor Accounts by a specific giving pool. Required if the authenticated DAF supports more than one giving pool.
+            The `id` of a [Giving Pool](/api/giving-pools). When set, filters Donor Accounts to those that have this Giving Pool associated with them.
           schema:
             type: string
           required: false
@@ -828,7 +828,7 @@ paths:
         - name: external_id
           in: query
           description: |-
-            Filter Donor Accounts by the DAF's internal identifier set via approval or update.
+            Filter Donor Accounts by `external_id` — the DAF's internal identifier for the Donor Account.
           schema:
             type: string
           required: false
@@ -900,7 +900,7 @@ paths:
     patch:
       summary: Update Donor Account
       description: |-
-        Update mutable properties on a Donor Account such as `external_id` and `metadata`.
+        Update mutable properties on a Donor Account such as `external_id`, the nested `donor` fields, and `metadata`.
 
         The Donor Account's status is managed automatically through the Authorization Token verification flow and cannot be changed directly via this endpoint.
       operationId: update-donor-account
@@ -4609,10 +4609,12 @@ components:
     DonorAccount:
       type: object
       description: |-
-        A Donor Account represents a DAFpay donor identity associated with a specific Giving Pool.
+        A Donor Account represents a DAFpay donor identity at a DAF.
 
         Donor Accounts are the bridge between a donor's verified DAFpay identity (email, profile) and the donor's record at the DAF.
         An Account must reach `approved` status — via an [Authorization Token](/api/authorization-tokens) — before its Grant Requests can be processed.
+
+        A Donor Account may optionally have one or more [Giving Pools](/api/giving-pools) associated with it (see [Giving Pool](/api/giving-pools)). The relationship is many-to-one from `GivingPool` to `DonorAccount` — each Giving Pool belongs to exactly one Donor Account.
 
         There are two flows for how an Account reaches `approved`:
 
@@ -4623,6 +4625,7 @@ components:
       required:
         - id
         - status
+        - donor
         - created_at
         - updated_at
       properties:
@@ -4633,34 +4636,45 @@ components:
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         status:
           $ref: "#/components/schemas/DonorAccountStatus"
-        email:
-          type: string
-          readOnly: true
+        donor:
+          type: object
           description: |-
-            The donor's email. This is the donor's verified identifier — DAFpay verifies ownership via an email verification flow before a Donor Account is created.
-          example: "warrenBuffet@example.com"
-        first_name:
-          type: string
-          description: |-
-            The donor's first name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
-          example: "Warren"
-        last_name:
-          type: string
-          description: |-
-            The donor's last name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
-          example: "Buffet"
-        phone:
-          type: string
-          description: |-
-            The donor's phone number as captured during DAFpay profile setup.
-            <Note>
-            DAFpay does not currently verify ownership of the phone number. Treat this field as donor-asserted information.
-            </Note>
-          example: "+12125550100"
+            The donor's identity and profile information.
+          required:
+            - email
+          properties:
+            email:
+              type: string
+              readOnly: true
+              description: |-
+                The donor's email. This is the donor's verified identifier — DAFpay verifies ownership via an email verification flow before a Donor Account is created.
+              example: "warrenBuffet@example.com"
+            first_name:
+              type: string
+              nullable: true
+              description: |-
+                The donor's first name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
+              example: "Warren"
+            last_name:
+              type: string
+              nullable: true
+              description: |-
+                The donor's last name as captured during DAFpay profile setup. May be null for Donor Accounts created via [Create Donor Account](/api/donor-accounts/create) before the donor has authenticated.
+              example: "Buffet"
+            phone:
+              type: string
+              nullable: true
+              description: |-
+                The donor's phone number as captured during DAFpay profile setup.
+                <Note>
+                DAFpay does not currently verify ownership of the phone number. Treat this field as donor-asserted information.
+                </Note>
+              example: "+12125550100"
         external_id:
           type: string
+          nullable: true
           description: |-
-            The DAF's internal identifier for this donor. Can be set on creation or via [Update Donor Account](/api/donor-accounts/update) to link the DAFpay donor to the donor's record in the DAF's own systems.
+            The DAF's internal identifier for this Donor Account. Can be set on creation or via [Update Donor Account](/api/donor-accounts/update) to link the DAFpay Donor Account to the donor's record in the DAF's own systems.
           example: "ACME-DAF-DONOR-1042"
         approval:
           type: object
@@ -4956,7 +4970,7 @@ components:
       description: |-
         A Giving Pool represents a named giving pool within a donor's DAF account (e.g. "Smith Family Fund" within a Fidelity Charitable account).
 
-        A [Donor Account](/api/donor-accounts) may be associated with multiple Giving Pools. Each Giving Pool belongs to exactly one Donor Account via `donor_account_id`.
+        Giving Pools are optional — not every DAF models giving pools, and even within DAFs that do, a [Donor Account](/api/donor-accounts) may exist without any Giving Pools. When present, a Donor Account may have one or more Giving Pools. Each Giving Pool belongs to exactly one Donor Account via `donor_account_id`.
       required:
         - id
         - name
@@ -7444,11 +7458,37 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - donor
             properties:
+              donor:
+                type: object
+                description: |-
+                  The donor's identity and profile information. `email` is required and **must** match the email the donor will use when authenticating with DAFpay — DAFpay matches incoming verified emails to existing Accounts. Other fields are optional and may be filled in later by the donor during DAFpay profile setup.
+                required:
+                  - email
+                properties:
+                  email:
+                    type: string
+                    description: |-
+                      The donor's email. Must match the email the donor will use when authenticating with DAFpay.
+                    example: "warrenBuffet@example.com"
+                  first_name:
+                    type: string
+                    description: The donor's first name.
+                    example: "Warren"
+                  last_name:
+                    type: string
+                    description: The donor's last name.
+                    example: "Buffet"
+                  phone:
+                    type: string
+                    description: The donor's phone number.
+                    example: "+12125550100"
               external_id:
                 type: string
                 description: |-
-                  The DAF's internal identifier for this donor. Optional but strongly recommended — it allows you to reconcile DAFpay grants with the donor's record in your own system without an additional update later. Maximum length: 255 characters.
+                  The DAF's internal identifier for this Donor Account. Optional but strongly recommended — it allows you to reconcile DAFpay grants with the donor's record in your own system without an additional update later. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
               metadata:
                 type: object
@@ -7465,10 +7505,27 @@ components:
           schema:
             type: object
             properties:
+              donor:
+                type: object
+                description: |-
+                  Mutable donor identity fields. Only the fields you pass are updated; omitted fields are left unchanged.
+                properties:
+                  first_name:
+                    type: string
+                    description: The donor's first name.
+                    example: "Warren"
+                  last_name:
+                    type: string
+                    description: The donor's last name.
+                    example: "Buffet"
+                  phone:
+                    type: string
+                    description: The donor's phone number.
+                    example: "+12125550100"
               external_id:
                 type: string
                 description: |-
-                  The DAF's internal identifier for this donor. Maximum length: 255 characters.
+                  The DAF's internal identifier for this Donor Account. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
               metadata:
                 type: object
@@ -7514,7 +7571,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  The DAF's internal identifier for this donor. If provided, will be set on the Donor Account as part of the verification. Maximum length: 255 characters.
+                  The DAF's internal identifier for this Donor Account. If provided, will be set on the Donor Account as part of the verification. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
     SubmitGrantRequest:
       description: |-
@@ -7643,12 +7700,12 @@ components:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "approved"
-                    email: "warrenBuffet@example.com"
-                    first_name: "Warren"
-                    last_name: "Buffet"
-                    phone: "+12125550100"
+                    donor:
+                      email: "warrenBuffet@example.com"
+                      first_name: "Warren"
+                      last_name: "Buffet"
+                      phone: "+12125550100"
                     external_id: "ACME-DAF-DONOR-1042"
                     approval:
                       approved_at: "2026-04-02T18:30:00Z"
@@ -7662,9 +7719,13 @@ components:
               value:
                 results:
                   - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "pending"
-                    email: "warrenBuffet@example.com"
+                    donor:
+                      email: "warrenBuffet@example.com"
+                      first_name: null
+                      last_name: null
+                      phone: null
+                    external_id: null
                     approval: null
                     rejection: null
                     disabled: false
@@ -9103,6 +9164,11 @@ components:
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         status: "pending"
+        donor:
+          email: "warrenBuffet@example.com"
+          first_name: null
+          last_name: null
+          phone: null
         external_id: "ACME-DAF-DONOR-1042"
         approval: null
         rejection: null
@@ -9113,12 +9179,12 @@ components:
       summary: Approved donor account
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "approved"
-        email: "warrenBuffet@example.com"
-        first_name: "Warren"
-        last_name: "Buffet"
-        phone: "+12125550100"
+        donor:
+          email: "warrenBuffet@example.com"
+          first_name: "Warren"
+          last_name: "Buffet"
+          phone: "+12125550100"
         external_id: "ACME-DAF-DONOR-1042"
         approval:
           approved_at: "2026-04-02T18:30:00Z"
@@ -9131,12 +9197,12 @@ components:
       summary: Approved donor account that has been disabled
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "approved"
-        email: "warrenBuffet@example.com"
-        first_name: "Warren"
-        last_name: "Buffet"
-        phone: "+12125550100"
+        donor:
+          email: "warrenBuffet@example.com"
+          first_name: "Warren"
+          last_name: "Buffet"
+          phone: "+12125550100"
         external_id: "ACME-DAF-DONOR-1042"
         approval:
           approved_at: "2026-04-02T18:30:00Z"
@@ -9149,12 +9215,12 @@ components:
       summary: Previously-disabled donor account that has been re-enabled
       value:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         status: "approved"
-        email: "warrenBuffet@example.com"
-        first_name: "Warren"
-        last_name: "Buffet"
-        phone: "+12125550100"
+        donor:
+          email: "warrenBuffet@example.com"
+          first_name: "Warren"
+          last_name: "Buffet"
+          phone: "+12125550100"
         external_id: "ACME-DAF-DONOR-1042"
         approval:
           approved_at: "2026-04-02T18:30:00Z"
