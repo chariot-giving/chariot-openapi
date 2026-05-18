@@ -1,0 +1,98 @@
+---
+title: "Grants Lifecycle"
+subtitle: "Approve or reject Grant Requests after the linked Account is approved."
+hidden: false
+---
+
+Once a [Donor Account](/api/donor-accounts) is `approved`, the Grant Requests tied to it become eligible for decisioning. This guide covers the operational workflow for approving and rejecting Grant Requests regardless of which Account verification flow you use.
+
+<Warning title="Grant Requests cannot be decisioned before the Account is approved">
+Calling [Approve Grant](/api/grants/approve) or [Reject Grant](/api/grants/reject) on a Grant Request whose Account is still `pending` returns `412 Precondition Failed`. Approve the Account first.
+
+If the Account is **rejected**, all open Grant Requests tied to it are automatically rejected. You do not need to call Reject Grant individually.
+</Warning>
+
+## Grant Request Statuses
+
+| Status | Meaning |
+|---|---|
+| `initiated` | The donor submitted the Grant Request. The linked Account may still be `pending`. |
+| `pending_donor_account_approval` | The Account is still `pending`. The DAF cannot decision this Grant Request yet. |
+| `approved` | The DAF has approved the Grant Request for processing. |
+| `rejected` | The DAF has rejected the Grant Request. |
+| `completed` | The funds have been received by the nonprofit. |
+| `canceled` | The Grant Request has been canceled. |
+
+## Approving a Grant Request
+
+Call [Approve Grant](/api/grants/approve). Optionally include the `external_grant_id` to link this Grant Request to a record in your internal grants ledger.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f4d25344/approve \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "external_grant_id": "ACME-GRANT-2026-00481",
+    "comment": "Auto-approved per donor schedule"
+  }'
+```
+```typescript TypeScript
+await chariot.grants.approve("10229488-08d2-4629-b70c-a2f4f4d25344", {
+  external_grant_id: "ACME-GRANT-2026-00481",
+  comment: "Auto-approved per donor schedule",
+});
+```
+</CodeBlocks>
+
+The Grant Request transitions to `approved` status and a `grant.approved` webhook event is emitted. The DAF is now responsible for transferring funds to the recipient nonprofit per Chariot's standard grant fulfillment process.
+
+## Rejecting a Grant Request
+
+Call [Reject Grant](/api/grants/reject). Provide a `reason` for auditing — this value is stored on the Grant Request record but is not shown to the donor.
+
+<CodeBlocks>
+```bash cURL
+curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f4d25344/reject \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reason": "Grant amount exceeds donor available balance."
+  }'
+```
+```typescript TypeScript
+await chariot.grants.reject("10229488-08d2-4629-b70c-a2f4f4d25344", {
+  reason: "Grant amount exceeds donor available balance.",
+});
+```
+</CodeBlocks>
+
+The Grant Request transitions to `rejected` status and a `grant.rejected` webhook event is emitted. The Account itself is unaffected — future Grant Requests from the same donor can still be processed.
+
+## Bulk decisioning
+
+To process Grant Requests in batches (e.g. nightly), use [List Grants](/api/grants/list) filtered by `status=initiated` and iterate. Each decision is independent — there's no bulk endpoint.
+
+```typescript TypeScript
+let pageToken: string | undefined;
+do {
+  const page = await chariot.grants.list({ pageToken, pageLimit: 100 });
+  for (const grant of page.results) {
+    if (grant.status !== "initiated") continue;
+    if (await passesInternalChecks(grant)) {
+      await chariot.grants.approve(grant.id, {
+        external_grant_id: await ledger.recordGrant(grant),
+      });
+    } else {
+      await chariot.grants.reject(grant.id, {
+        reason: "Failed automated balance check",
+      });
+    }
+  }
+  pageToken = page.nextPageToken ?? undefined;
+} while (pageToken);
+```
+
+## Idempotency
+
+Grant Request decisions are terminal. Calling Approve or Reject on a Grant Request that has already been decisioned returns `409 Conflict`. To safely retry on network errors, call [Get Grant](/api/grants/get) first and inspect `status` before retrying.

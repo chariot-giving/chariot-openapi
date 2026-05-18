@@ -56,9 +56,24 @@ navigation:
               - page: Production API Keys
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/integrating-dafpay/faq.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/integrating-dafpay/faq.mdx
+          - section: Donor Accounts (for DAFs)
+            slug: donor-accounts
+            contents:
+              - page: Overview
+                slug: overview
+                path: ./pages/donor-accounts/overview.mdx
+              - page: Donor Account Lifecycle
+                slug: account-lifecycle
+                path: ./pages/donor-accounts/account-lifecycle.mdx
+              - page: Grant Request Lifecycle
+                slug: grant-request-lifecycle
+                path: ./pages/donor-accounts/grant-request-lifecycle.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/donor-accounts/faq.mdx
       - section: Disbursements
         slug: disbursements
         contents:
@@ -175,6 +190,18 @@ navigation:
                   title: Unintegrated Grants
               - donorAdvisedFunds:
                   title: Donor Advised Funds
+          - section: Donor Accounts
+            skip-slug: true
+            icon: user-shield
+            contents:
+              - donorAccounts:
+                  title: Donor Accounts
+              - authorizationTokens:
+                  title: Authorization Tokens
+              - givingPools:
+                  title: Giving Pools
+              - grantRequests:
+                  title: Grant Requests
           - section: Disbursements
             skip-slug: true
             icon: money-check
