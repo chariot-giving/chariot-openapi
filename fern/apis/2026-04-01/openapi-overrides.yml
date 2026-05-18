@@ -66,11 +66,11 @@ paths:
       x-fern-sdk-group-name:
         - grantRequests
       x-fern-sdk-method-name: get
-  /v1/grant_requests/{id}/approve:
+  /v1/grant_requests/{id}/submit:
     post:
       x-fern-sdk-group-name:
         - grantRequests
-      x-fern-sdk-method-name: approve
+      x-fern-sdk-method-name: submit
   /v1/grant_requests/{id}/reject:
     post:
       x-fern-sdk-group-name:

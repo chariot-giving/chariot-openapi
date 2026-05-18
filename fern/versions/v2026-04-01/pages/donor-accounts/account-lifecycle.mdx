@@ -6,9 +6,11 @@ hidden: false
 
 A Donor Account starts in `pending` status and must reach `approved` before any of its Grant Requests can be processed. Approval always happens by verifying an Authorization Token — a one-time code that ties the donor's DAFpay identity to their DAF account.
 
-Both flows are available to any DAF — you can support one or both depending on your donor experience.
+<Note title="Setup is a one-time process per donor">
+Approval happens once for each donor. After a Donor Account is `approved`, the same donor can submit future Grant Requests directly — no code exchange is required again. The donor authenticates to DAFpay at grant time to verify their identity, and the existing Donor Account is reused.
+</Note>
 
----
+Both flows are available to any DAF — you can support one or both depending on your donor experience.
 
 <Tabs>
 <Tab title="Donor-Initiated Verification">
@@ -67,10 +69,10 @@ const account = await chariot.authorizationTokens.verify({
 ```
 </CodeBlocks>
 
-The response is the linked Donor Account in `approved` status. The token is consumed and cannot be re-verified. **Store the returned Donor Account's `id` against the donor record in your system** — this is your link between the donor who handed you the code and their Donor Account for all future Grant Request processing.
+The response is the linked Donor Account in `approved` status. The token is now `verified` and cannot be re-verified. **Store the returned Donor Account's `id` against the donor record in your system** — this is your link between the donor who handed you the code and their Donor Account for all future Grant Request processing.
 
 <Warning title="Error handling">
-Unknown, expired, revoked, or already-consumed codes return `404 Not Found` or `410 Gone` — intentionally indistinguishable to avoid leaking information about valid codes.
+Unknown, expired, revoked, or already-verified codes return `404 Not Found` or `410 Gone` — intentionally indistinguishable to avoid leaking information about valid codes.
 Strict per-DAF rate limits apply. Repeated failures return `429 Too Many Requests`. Surface a generic error to the donor and ask them to contact support after a small number of failures.
 </Warning>
 

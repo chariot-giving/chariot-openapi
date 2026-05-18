@@ -755,7 +755,7 @@ paths:
         This endpoint is intended for DAF providers who want to set up a Donor Account on behalf of a donor before that donor uses DAFpay for the first time.
         See the [DAF-Initiated Setup guide](/guides/dafpay/donor-accounts/daf-initiated-setup) for the most common use of this endpoint.
 
-        On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor consumes the code via DAFpay, the Donor Account is automatically approved.
+        On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor enters the code in DAFpay, the Donor Account is automatically approved.
       operationId: create-donor-account
       tags:
         - Donor Accounts
@@ -941,6 +941,106 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/donor_accounts/{id}/disable:
+    post:
+      summary: Disable Donor Account
+      description: |-
+        Disable an approved Donor Account.
+
+        A disabled Donor Account remains `approved` but cannot submit new Grant Requests. Existing Grant Requests already in flight are unaffected — disabling does not retroactively cancel or reject prior activity. Use this when a DAF needs to temporarily prevent a donor from initiating new grants (e.g. account under review, donor offboarding) without rejecting the underlying identity verification.
+
+        This endpoint is idempotent — calling it on an already-disabled account returns the Donor Account unchanged.
+
+        <Warning>
+        - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
+        </Warning>
+      operationId: disable-donor-account
+      tags:
+        - Donor Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique id of the Donor Account.
+          schema:
+            type: string
+          required: true
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: The Donor Account was disabled (or was already disabled).
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorAccount"
+              examples:
+                Disabled:
+                  $ref: "#/components/examples/DonorAccountDisabledOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donor_accounts/{id}/enable:
+    post:
+      summary: Enable Donor Account
+      description: |-
+        Re-enable a previously disabled Donor Account. After this call, the Donor Account can submit new Grant Requests again.
+
+        This endpoint is idempotent — calling it on an account that is already enabled returns the Donor Account unchanged.
+
+        <Warning>
+        - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
+        </Warning>
+      operationId: enable-donor-account
+      tags:
+        - Donor Accounts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique id of the Donor Account.
+          schema:
+            type: string
+          required: true
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: The Donor Account was enabled (or was already enabled).
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorAccount"
+              examples:
+                Enabled:
+                  $ref: "#/components/examples/DonorAccountEnabledOutput"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donor_accounts/{id}/authorization_tokens:
     post:
       summary: Create Authorization Token
@@ -953,8 +1053,10 @@ paths:
         - **DAF-Initiated Setup**: The DAF creates a Donor Account and then creates an Authorization Token. The DAF surfaces the token's `code` to the donor via their portal. The donor enters the `code` into DAFpay during profile setup, automatically approving the Donor Account.
         - **Donor-Initiated Verification**: After a donor submits a Grant Request, DAFpay automatically issues an Authorization Token and emails the `code` to the donor. The donor provides the `code` to the DAF (e.g. via a portal form or phone call). The DAF then calls [Verify Authorization Token](/api/authorization-tokens/verify) with the `code` to verify and approve the linked Donor Account.
 
+        Tokens expire **30 days** after creation by default. Override the lifetime by passing `expires_in` (seconds) on the request body — supported range is 60 seconds to 90 days. Once a token expires it transitions to `expired` and can no longer be verified; create a new token to issue a fresh code.
+
         <Warning>
-        The token's `code` value is **only returned once** in this response. Treat it as a credential — store it securely and never log it. If the code is lost before being consumed, [revoke](/api/authorization-tokens/revoke) the token and create a new one.
+        The token's `code` value is **only returned once** in this response. Treat it as a credential — store it securely and never log it. If the code is lost before being verified, [revoke](/api/authorization-tokens/revoke) the token and create a new one.
         </Warning>
       operationId: create-authorization-token
       tags:
@@ -1093,8 +1195,8 @@ paths:
     post:
       summary: Revoke Authorization Token
       description: |-
-        Revoke an unconsumed Authorization Token. Once revoked, the `code` can no longer be verified.
-        Tokens that have already been consumed or expired cannot be revoked and will return status `412 Precondition Failed`.
+        Revoke an unverified Authorization Token. Once revoked, the `code` can no longer be verified.
+        Tokens that have already been verified or expired cannot be revoked and will return status `412 Precondition Failed`.
       operationId: revoke-authorization-token
       tags:
         - Authorization Tokens
@@ -1134,18 +1236,20 @@ paths:
     post:
       summary: Verify Authorization Token
       description: |-
-        Verify and consume an Authorization Token by its `code` value.
+        Verify an Authorization Token by its `code` value.
 
         This endpoint is used by DAFs in the **Donor-Initiated Verification** flow: when a donor presents the `code` they received from DAFpay (via email after submitting a Grant Request), the DAF calls this endpoint with the `code` to confirm the donor's identity.
 
         On success:
-        - The Authorization Token transitions to `consumed`.
+        - The Authorization Token transitions to `verified`.
         - The linked Donor Account is automatically transitioned to `approved` if it is currently `pending`.
         - The full Donor Account is returned (including the `id` you can use to call subsequent endpoints).
 
+        Codes are only valid until the token's `expires_at` — **30 days** after creation by default (configurable via `expires_in` on [Create Authorization Token](/api/authorization-tokens/create), 60 seconds to 90 days). After that point, the token's status becomes `expired` and verification will fail. If the donor's code has expired, prompt them to submit a new Grant Request — DAFpay will issue and email a fresh code automatically.
+
         <Warning>
         Error handling:
-        - If the `code` is unknown, expired, revoked, or already consumed, the request will return status `404 Not Found` or `410 Gone` to avoid leaking information about valid codes.
+        - If the `code` is unknown, expired, revoked, or already verified, the request will return status `404 Not Found` or `410 Gone` to avoid leaking information about valid codes. Expired codes are intentionally indistinguishable from other invalid codes in the response — surface a generic "code is invalid or has expired" message to the donor and ask them to request a new code.
         - If the linked Donor Account has already been rejected, the request will return status `409 Conflict`.
         - To prevent brute-force attacks, this endpoint enforces strict per-DAF rate limits. Repeated failures will return status `429 Too Many Requests`.
         </Warning>
@@ -1332,6 +1436,84 @@ paths:
                   next_page_token:
                     type: string
                     description: A token to retrieve the next page of results. Absent when there are no more results.
+              examples:
+                MixedStatuses:
+                  summary: A page of Grant Requests across statuses
+                  value:
+                    results:
+                      - id: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+                        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                        status: "pending"
+                        ein: "53-0196605"
+                        nonprofit_name: "American Red Cross"
+                        amount_cents: 10000
+                        frequency: "one_time"
+                        form_url: "https://example.org/donate"
+                        purpose: "Disaster relief"
+                        note: "Thank you for your service."
+                        donor_contact:
+                          name: "Warren Buffet"
+                          email: "warrenBuffet@example.com"
+                          phone: "+12125550100"
+                          address:
+                            line1: "3555 Farnam Street"
+                            line2: null
+                            city: "Omaha"
+                            state: "NE"
+                            zip: "68131"
+                        rejection_reason: null
+                        created_at: "2026-04-03T14:22:00Z"
+                        updated_at: "2026-04-03T14:22:00Z"
+                      - id: "grant_req_01jpjenf5q6cawy43yxfcrxhcu"
+                        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                        status: "submitted"
+                        ein: "13-1635294"
+                        nonprofit_name: "World Wildlife Fund"
+                        amount_cents: 25000
+                        frequency: "one_time"
+                        form_url: "https://example.org/donate"
+                        purpose: null
+                        note: null
+                        donor_contact:
+                          name: "Warren Buffet"
+                          email: "warrenBuffet@example.com"
+                          phone: "+12125550100"
+                          address:
+                            line1: "3555 Farnam Street"
+                            line2: null
+                            city: "Omaha"
+                            state: "NE"
+                            zip: "68131"
+                        rejection_reason: null
+                        created_at: "2026-03-28T10:05:00Z"
+                        updated_at: "2026-03-29T08:00:00Z"
+                      - id: "grant_req_01jpjenf5q6cawy43yxfcrxhcv"
+                        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                        status: "rejected"
+                        ein: "13-1788491"
+                        nonprofit_name: "Doctors Without Borders"
+                        amount_cents: 500000
+                        frequency: "one_time"
+                        form_url: "https://example.org/donate"
+                        purpose: null
+                        note: null
+                        donor_contact:
+                          name: "Warren Buffet"
+                          email: "warrenBuffet@example.com"
+                          phone: "+12125550100"
+                          address:
+                            line1: "3555 Farnam Street"
+                            line2: null
+                            city: "Omaha"
+                            state: "NE"
+                            zip: "68131"
+                        rejection_reason: "Grant amount exceeds donor's available balance."
+                        created_at: "2026-03-20T16:11:00Z"
+                        updated_at: "2026-03-21T09:30:00Z"
+                    next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1367,6 +1549,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GrantRequest"
+              examples:
+                Pending:
+                  $ref: "#/components/examples/GrantRequestPendingOutput"
+                AwaitingAccountDecision:
+                  $ref: "#/components/examples/GrantRequestAwaitingAccountDecisionOutput"
+                Submitted:
+                  $ref: "#/components/examples/GrantRequestSubmittedOutput"
+                Rejected:
+                  $ref: "#/components/examples/GrantRequestRejectedOutput"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1377,19 +1568,19 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/grant_requests/{id}/approve:
+  /v1/grant_requests/{id}/submit:
     post:
-      summary: Approve Grant Request
+      summary: Submit Grant Request
       description: |-
         Confirm that you have submitted the grant in your system.
 
-        Calling this endpoint moves the Grant Request's status to `initiated` and emits a `grant_request.updated` webhook event.
+        Calling this endpoint moves the Grant Request's status to `submitted` and emits a `grant_request.updated` webhook event.
 
         <Warning>
-        - The Grant Request must be in `awaiting_daf_submission` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant Request will be in `awaiting_account_approval` and this request returns status `412 Precondition Failed`.
-        - A Grant Request that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        - The Grant Request must be in `pending` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant Request will be in `awaiting_account_decision` and this request returns status `412 Precondition Failed`.
+        - A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
-      operationId: approve-grant-request
+      operationId: submit-grant-request
       tags:
         - Grant Requests
       security:
@@ -1402,10 +1593,10 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/ApproveGrantRequest"
+        $ref: "#/components/requestBodies/SubmitGrantRequest"
       responses:
         "200":
-          description: The Grant Request was approved.
+          description: The Grant Request was submitted.
           headers:
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
@@ -1413,6 +1604,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GrantRequest"
+              examples:
+                Submitted:
+                  $ref: "#/components/examples/GrantRequestSubmittedOutput"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1433,11 +1627,11 @@ paths:
       description: |-
         Indicate that you will not process this grant.
 
-        Calling this endpoint moves the Grant Request's status to `canceled` and emits a `grant_request.updated` webhook event.
+        Calling this endpoint moves the Grant Request's status to `rejected` and emits a `grant_request.updated` webhook event.
         The Donor Account itself is unaffected; future Grant Requests from the same donor can still be processed.
 
         <Warning>
-        A Grant Request that is already `initiated` or `canceled` cannot be updated. Subsequent calls return status `409 Conflict`.
+        A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
       operationId: reject-grant-request
       tags:
@@ -1463,6 +1657,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GrantRequest"
+              examples:
+                Rejected:
+                  $ref: "#/components/examples/GrantRequestRejectedOutput"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -4401,9 +4598,9 @@ components:
       type: string
       description: |-
         The status of a [Donor Account](/api/donor-accounts).
-          * pending: The Donor Account has been created but the DAF has not yet approved or rejected it.
-          * approved: The DAF has verified the donor's identity and Grants from this account can be processed.
-          * rejected: The DAF has rejected the Donor Account. Grants from this account will not be processed.
+          * `pending`: The Donor Account has been created but the DAF has not yet approved or rejected it.
+          * `approved`: The DAF has verified the donor's identity and Grants from this account can be processed.
+          * `rejected`: The DAF has rejected the Donor Account. Grants from this account will not be processed.
       enum:
         - pending
         - approved
@@ -4465,25 +4662,57 @@ components:
           description: |-
             The DAF's internal identifier for this donor. Can be set on creation or via [Update Donor Account](/api/donor-accounts/update) to link the DAFpay donor to the donor's record in the DAF's own systems.
           example: "ACME-DAF-DONOR-1042"
-        decisioned_at:
-          type: string
-          readOnly: true
-          format: date-time
-          description: |-
-            Time when this Donor Account was decisioned (approved or rejected). Null while `status` is `pending`.
-          example: "2026-04-02T18:30:00Z"
-        decisioned_by:
-          type: string
+        approval:
+          type: object
+          nullable: true
           readOnly: true
           description: |-
-            Identifier of the actor that decisioned this Donor Account. For DAF-initiated decisions, this is the DAF's API key principal. For automatic approvals via token verification, this is `system:authorization_token`.
-          example: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-        rejection_reason:
-          type: string
+            Details about the approval decision. Present when `status` is `approved`; otherwise `null`.
+          properties:
+            approved_at:
+              type: string
+              readOnly: true
+              format: date-time
+              description: Time when the Donor Account was approved. Expressed in RFC 3339 format.
+              example: "2026-04-02T18:30:00Z"
+            approved_by:
+              type: string
+              readOnly: true
+              description: |-
+                Identifier of the actor that approved this Donor Account. For DAF-initiated approvals, this is the DAF's API key principal. For automatic approvals via token verification, this is `system:authorization_token`.
+              example: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        rejection:
+          type: object
+          nullable: true
           readOnly: true
           description: |-
-            A human-readable reason provided by the DAF when rejecting the Donor Account. Only set when `status` is `rejected`.
-          example: "Donor could not be located in our records."
+            Details about the rejection decision. Present when `status` is `rejected`; otherwise `null`.
+          properties:
+            rejected_at:
+              type: string
+              readOnly: true
+              format: date-time
+              description: Time when the Donor Account was rejected. Expressed in RFC 3339 format.
+              example: "2026-04-02T18:30:00Z"
+            rejected_by:
+              type: string
+              readOnly: true
+              description: |-
+                Identifier of the actor that rejected this Donor Account. For DAF-initiated rejections, this is the DAF's API key principal.
+              example: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+            rejection_reason:
+              type: string
+              readOnly: true
+              description: |-
+                A human-readable reason provided by the DAF when rejecting the Donor Account.
+              example: "Donor could not be located in our records."
+        disabled:
+          type: boolean
+          readOnly: true
+          description: |-
+            Whether this Donor Account is currently disabled. A disabled Donor Account remains `approved` but cannot submit new Grant Requests — call [Enable Donor Account](/api/donor-accounts/enable) to re-enable it. Disabling is only available for accounts in `approved` status.
+          default: false
+          example: false
         created_at:
           type: string
           readOnly: true
@@ -4505,13 +4734,13 @@ components:
       type: string
       description: |-
         The status of a [Donor Authorization Token](/api/authorization-tokens).
-          * pending: The token has been issued but not yet consumed.
-          * consumed: The token has been verified and can no longer be used.
-          * revoked: The token was explicitly revoked before being consumed.
-          * expired: The token's `expiresAt` has passed and it can no longer be consumed.
+          * `pending`: The token has been issued but not yet verified.
+          * `verified`: The token has been verified and can no longer be used.
+          * `revoked`: The token was explicitly revoked before being verified.
+          * `expired`: The token's `expires_at` has passed and it can no longer be verified.
       enum:
         - pending
-        - consumed
+        - verified
         - revoked
         - expired
       example: pending
@@ -4525,7 +4754,7 @@ components:
         - **DAF-Initiated Setup**: The DAF creates a Donor Account and then a token, surfaces the token's `code` to the donor via their portal, and the donor enters the `code` into DAFpay to approve their account.
         - **Donor-Initiated Verification**: After a donor submits a Grant Request without an approved Donor Account, DAFpay automatically creates a token and emails the `code` to the donor. The DAF later receives the `code` from the donor and calls [Verify Authorization Token](/api/authorization-tokens/verify) to approve the linked Donor Account.
 
-        Tokens are single-use: once verified, the token's status becomes `consumed` and the `code` cannot be used again.
+        Tokens are single-use: once verified, the token's status becomes `verified` and the `code` cannot be used again.
       required:
         - id
         - donor_account_id
@@ -4571,12 +4800,12 @@ components:
           description: |-
             Time at which this token will expire and can no longer be verified. Defaults to 30 days after creation; configurable via the `expires_in` parameter on [Create Authorization Token](/api/authorization-tokens/create).
           example: "2026-05-01T12:00:00Z"
-        consumed_at:
+        verified_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            Time at which the token was verified. Only set when `status` is `consumed`.
+            Time at which the token was verified. Only set when `status` is `verified`.
           example: "2026-04-02T18:30:00Z"
         revoked_at:
           type: string
@@ -4593,17 +4822,17 @@ components:
     GrantRequestStatus:
       type: string
       enum:
-        - awaiting_account_approval
-        - awaiting_daf_submission
-        - initiated
-        - canceled
+        - awaiting_account_decision
+        - pending
+        - submitted
+        - rejected
       description: |-
         The lifecycle status of a Grant Request.
 
-        - `awaiting_account_approval`: The linked Donor Account is not yet `approved`. Advances automatically when the account is approved.
-        - `awaiting_daf_submission`: The account is approved and the Grant Request is ready for you to submit in your system.
-        - `initiated`: You have submitted the grant in your system. Terminal.
-        - `canceled`: The grant was rejected and will not be processed. Terminal.
+        - `awaiting_account_decision`: The linked Donor Account is not yet `approved`. Advances automatically when the account is approved.
+        - `pending`: The Donor Account is approved and the Grant Request is awaiting your decision.
+        - `submitted`: You have submitted the grant in your system. Terminal.
+        - `rejected`: You have rejected the grant and it will not be processed. Terminal.
     GrantRequestFrequency:
       type: string
       enum:
@@ -4646,7 +4875,7 @@ components:
       description: |-
         A Grant Request is a donation intent submitted by a donor through the DAFpay payment option, addressed to a specific nonprofit.
 
-        The DAF Provider is responsible for processing it in their own system and reporting the outcome back to DAFpay via the [Approve](/api/grant-requests/approve) or [Reject](/api/grant-requests/reject) endpoints.
+        The DAF Provider is responsible for processing it in their own system and reporting the outcome back to DAFpay via the [Submit](/api/grant-requests/submit) or [Reject](/api/grant-requests/reject) endpoints.
 
         All amounts are in US dollars.
       required:
@@ -4706,10 +4935,10 @@ components:
           description: An optional note from the donor to the nonprofit.
         donor_contact:
           $ref: "#/components/schemas/GrantRequestDonorContact"
-        cancellation_reason:
+        rejection_reason:
           type: string
           nullable: true
-          description: The reason provided when the Grant Request was canceled. Set when status transitions to `canceled`.
+          description: The reason provided when the Grant Request was rejected. Set when status transitions to `rejected`.
         created_at:
           type: string
           readOnly: true
@@ -4743,7 +4972,7 @@ components:
           example: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
         name:
           type: string
-          description: The display name of the Giving Pool.
+          description: The display name of the Giving Pool. This is the name that the Donor will see when they are selecting a Giving Pool in DAFpay.
           example: "Smith Family Fund"
         donor_account_id:
           type: string
@@ -6384,15 +6613,19 @@ components:
       type: string
       description: |
         The category of the event. This is useful for filtering events.
+
+        Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
       enum:
         - "grant.created"
-        - "grant.updated"
         - "grant.updated"
         - "unintegrated_grant.created"
         - "unintegrated_grant.updated"
         - "donor_account.created"
         - "donor_account.updated"
-        - "donor_account.rejected"
+        - "authorization_token.created"
+        - "authorization_token.updated"
+        - "grant_request.created"
+        - "grant_request.updated"
         - "disbursement.created"
         - "disbursement.updated"
         - "inbound_transfer.created"
@@ -7264,7 +7497,7 @@ components:
                   type: string
     VerifyDonorAuthorizationTokenRequest:
       description: |-
-        The request to verify (consume) an Authorization Token by its `code` value.
+        The request to verify an Authorization Token by its `code` value.
       required: true
       content:
         application/json:
@@ -7283,9 +7516,9 @@ components:
                 description: |-
                   The DAF's internal identifier for this donor. If provided, will be set on the Donor Account as part of the verification. Maximum length: 255 characters.
                 example: "ACME-DAF-DONOR-1042"
-    ApproveGrantRequest:
+    SubmitGrantRequest:
       description: |-
-        The request to approve a Grant.
+        The request to submit a Grant Request.
         All fields are optional — an empty body is valid.
       required: false
       content:
@@ -7296,15 +7529,15 @@ components:
               external_grant_id:
                 type: string
                 description: |-
-                  The DAF's internal identifier for this grant. Setting this at approval time provides a useful audit trail and reconciliation key. Maximum length: 255 characters.
+                  The DAF's internal identifier for this grant. Setting this at submission time provides a useful audit trail and reconciliation key. Maximum length: 255 characters.
                 example: "ACME-GRANT-2026-00481"
               comment:
                 type: string
                 description: |-
-                  An optional comment recorded with the approval. Maximum length: 400 characters.
+                  An optional comment recorded with the submission. Maximum length: 400 characters.
     RejectGrantRequest:
       description: |-
-        The request to reject a Grant.
+        The request to reject a Grant Request.
       required: false
       content:
         application/json:
@@ -7417,8 +7650,11 @@ components:
                     last_name: "Buffet"
                     phone: "+12125550100"
                     external_id: "ACME-DAF-DONOR-1042"
-                    decisioned_at: "2026-04-02T18:30:00Z"
-                    decisioned_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                    approval:
+                      approved_at: "2026-04-02T18:30:00Z"
+                      approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                    rejection: null
+                    disabled: false
                     created_at: "2026-04-01T12:00:00Z"
                     updated_at: "2026-04-02T18:30:00Z"
                 next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
@@ -7429,6 +7665,9 @@ components:
                     giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
                     status: "pending"
                     email: "warrenBuffet@example.com"
+                    approval: null
+                    rejection: null
+                    disabled: false
                     created_at: "2026-04-01T12:00:00Z"
                     updated_at: "2026-04-01T12:00:00Z"
                 next_page_token: null
@@ -7457,10 +7696,10 @@ components:
                 results:
                   - id: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
                     donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "consumed"
+                    status: "verified"
                     created_at: "2026-04-01T12:00:00Z"
                     expires_at: "2026-05-01T12:00:00Z"
-                    consumed_at: "2026-04-02T18:30:00Z"
+                    verified_at: "2026-04-02T18:30:00Z"
                 next_page_token: null
     ListGrantsResponse:
       description: The response for Grants.list
@@ -8865,6 +9104,9 @@ components:
         id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
         status: "pending"
         external_id: "ACME-DAF-DONOR-1042"
+        approval: null
+        rejection: null
+        disabled: false
         created_at: "2026-04-01T12:00:00Z"
         updated_at: "2026-04-01T12:00:00Z"
     DonorAccountApprovedOutput:
@@ -8878,10 +9120,157 @@ components:
         last_name: "Buffet"
         phone: "+12125550100"
         external_id: "ACME-DAF-DONOR-1042"
-        decisioned_at: "2026-04-02T18:30:00Z"
-        decisioned_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        approval:
+          approved_at: "2026-04-02T18:30:00Z"
+          approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        rejection: null
+        disabled: false
         created_at: "2026-04-01T12:00:00Z"
         updated_at: "2026-04-02T18:30:00Z"
+    DonorAccountDisabledOutput:
+      summary: Approved donor account that has been disabled
+      value:
+        id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status: "approved"
+        email: "warrenBuffet@example.com"
+        first_name: "Warren"
+        last_name: "Buffet"
+        phone: "+12125550100"
+        external_id: "ACME-DAF-DONOR-1042"
+        approval:
+          approved_at: "2026-04-02T18:30:00Z"
+          approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        rejection: null
+        disabled: true
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-05T09:00:00Z"
+    DonorAccountEnabledOutput:
+      summary: Previously-disabled donor account that has been re-enabled
+      value:
+        id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status: "approved"
+        email: "warrenBuffet@example.com"
+        first_name: "Warren"
+        last_name: "Buffet"
+        phone: "+12125550100"
+        external_id: "ACME-DAF-DONOR-1042"
+        approval:
+          approved_at: "2026-04-02T18:30:00Z"
+          approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+        rejection: null
+        disabled: false
+        created_at: "2026-04-01T12:00:00Z"
+        updated_at: "2026-04-06T11:00:00Z"
+    GrantRequestPendingOutput:
+      summary: Grant Request awaiting your decision
+      value:
+        id: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status: "pending"
+        ein: "53-0196605"
+        nonprofit_name: "American Red Cross"
+        amount_cents: 10000
+        frequency: "one_time"
+        form_url: "https://example.org/donate"
+        purpose: "Disaster relief"
+        note: "Thank you for your service."
+        donor_contact:
+          name: "Warren Buffet"
+          email: "warrenBuffet@example.com"
+          phone: "+12125550100"
+          address:
+            line1: "3555 Farnam Street"
+            line2: null
+            city: "Omaha"
+            state: "NE"
+            zip: "68131"
+        rejection_reason: null
+        created_at: "2026-04-03T14:22:00Z"
+        updated_at: "2026-04-03T14:22:00Z"
+    GrantRequestAwaitingAccountDecisionOutput:
+      summary: Grant Request waiting on Donor Account approval
+      value:
+        id: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: null
+        status: "awaiting_account_decision"
+        ein: "53-0196605"
+        nonprofit_name: "American Red Cross"
+        amount_cents: 10000
+        frequency: "one_time"
+        form_url: "https://example.org/donate"
+        purpose: null
+        note: null
+        donor_contact:
+          name: "Warren Buffet"
+          email: "warrenBuffet@example.com"
+          phone: "+12125550100"
+          address:
+            line1: "3555 Farnam Street"
+            line2: null
+            city: "Omaha"
+            state: "NE"
+            zip: "68131"
+        rejection_reason: null
+        created_at: "2026-04-01T11:55:00Z"
+        updated_at: "2026-04-01T11:55:00Z"
+    GrantRequestSubmittedOutput:
+      summary: Grant Request you have submitted in your system
+      value:
+        id: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status: "submitted"
+        ein: "53-0196605"
+        nonprofit_name: "American Red Cross"
+        amount_cents: 10000
+        frequency: "one_time"
+        form_url: "https://example.org/donate"
+        purpose: "Disaster relief"
+        note: "Thank you for your service."
+        donor_contact:
+          name: "Warren Buffet"
+          email: "warrenBuffet@example.com"
+          phone: "+12125550100"
+          address:
+            line1: "3555 Farnam Street"
+            line2: null
+            city: "Omaha"
+            state: "NE"
+            zip: "68131"
+        rejection_reason: null
+        created_at: "2026-04-03T14:22:00Z"
+        updated_at: "2026-04-04T09:15:00Z"
+    GrantRequestRejectedOutput:
+      summary: Grant Request you have rejected
+      value:
+        id: "grant_req_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        giving_pool_id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+        status: "rejected"
+        ein: "53-0196605"
+        nonprofit_name: "American Red Cross"
+        amount_cents: 10000
+        frequency: "one_time"
+        form_url: "https://example.org/donate"
+        purpose: "Disaster relief"
+        note: "Thank you for your service."
+        donor_contact:
+          name: "Warren Buffet"
+          email: "warrenBuffet@example.com"
+          phone: "+12125550100"
+          address:
+            line1: "3555 Farnam Street"
+            line2: null
+            city: "Omaha"
+            state: "NE"
+            zip: "68131"
+        rejection_reason: "Grant amount exceeds donor's available balance."
+        created_at: "2026-04-03T14:22:00Z"
+        updated_at: "2026-04-04T09:15:00Z"
     DonorAuthorizationTokenCreatedOutput:
       summary: Newly created authorization token (code is only present on creation)
       value:
@@ -8896,7 +9285,7 @@ components:
       value:
         id: "auth_token_01jpjenf5q6cawy43yxfcrxhct"
         donor_account_id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        status: "consumed"
+        status: "verified"
         created_at: "2026-04-01T12:00:00Z"
         expires_at: "2026-05-01T12:00:00Z"
-        consumed_at: "2026-04-02T18:30:00Z"
+        verified_at: "2026-04-02T18:30:00Z"

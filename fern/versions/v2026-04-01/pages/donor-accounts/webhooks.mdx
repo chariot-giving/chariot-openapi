@@ -6,20 +6,28 @@ hidden: false
 
 Subscribe to these events via an [Event Subscription](/api/event-subscriptions) to drive your internal workflows. All events include an `associated_object_id` you can use to fetch the full object.
 
-## Account Events
+Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions are delivered as `{resource}.updated` events — fetch the object to read its current status.
+
+## Donor Account Events
 
 | Event | When it fires |
 |---|---|
-| `donor_account.created` | A new Donor Account has been created. In the Donor-Initiated Verification flow, this is your signal that a donor has submitted a grant and is waiting for verification. |
-| `donor_account.updated` | The Donor Account was updated — including when it transitions to `approved` or `rejected`. Fetch the Donor Account to get its current status. |
-| `donor_account.rejected` | The Donor Account transitioned to `rejected`. All open Grant Requests tied to it are automatically canceled. |
+| `donor_account.created` | A new Donor Account has been created. In the Donor-Initiated Verification flow, this is your signal that a donor has submitted a Grant Request and is waiting for verification. |
+| `donor_account.updated` | The Donor Account was updated — including when it transitions to `approved`, `rejected`, or `disabled`. Fetch the Donor Account to get its current status. |
+
+## Authorization Token Events
+
+| Event | When it fires |
+|---|---|
+| `authorization_token.created` | A new Authorization Token was issued for a Donor Account. |
+| `authorization_token.updated` | The Authorization Token was updated — including when it transitions to `verified`, `revoked`, or `expired`. Fetch the token to get its current status. |
 
 ## Grant Request Events
 
 | Event | When it fires |
 |---|---|
-| `grant.created` | A new Grant Request was submitted via DAFpay. May arrive before `donor_account.created` if both are created in the same flow. |
-| `grant.updated` | A Grant Request was updated — including when it transitions to `initiated` or `canceled`. Fetch the Grant Request to get its current status. |
+| `grant_request.created` | A new Grant Request was submitted via DAFpay. May arrive before `donor_account.created` if both are created in the same flow. |
+| `grant_request.updated` | A Grant Request was updated — including when it transitions to `pending`, `submitted`, or `rejected`. Fetch the Grant Request to get its current status. |
 
 ## Setting up an Event Subscription
 
@@ -33,9 +41,10 @@ curl -X POST https://api.givechariot.com/v1/event_subscriptions \
     "enabled_events": [
       "donor_account.created",
       "donor_account.updated",
-      "donor_account.rejected",
-      "grant.created",
-      "grant.updated"
+      "authorization_token.created",
+      "authorization_token.updated",
+      "grant_request.created",
+      "grant_request.updated"
     ]
   }'
 ```
@@ -45,9 +54,10 @@ await chariot.eventSubscriptions.create({
   enabled_events: [
     "donor_account.created",
     "donor_account.updated",
-    "donor_account.rejected",
-    "grant.created",
-    "grant.updated",
+    "authorization_token.created",
+    "authorization_token.updated",
+    "grant_request.created",
+    "grant_request.updated",
   ],
 });
 ```

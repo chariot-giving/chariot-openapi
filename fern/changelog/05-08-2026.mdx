@@ -13,15 +13,16 @@ Donors authenticate with their DAFpay Identity (email-verified, DAFpay-managed) 
 
 ### New APIs
 
-- [Donor Accounts](/api/donor-accounts) — create, list, get, update.
+- [Donor Accounts](/api/donor-accounts) — create, list, get, update, disable, enable.
 - [Authorization Tokens](/api/authorization-tokens) — create, list, get, revoke, verify.
-- [Funds](/api/funds) — list, get.
-- [Grant Requests](/api/grant-requests) — approve, reject (DAF decisioning on Grant Requests).
+- [Giving Pools](/api/giving-pools) — list, get.
+- [Grant Requests](/api/grant-requests) — list, get, submit, reject (DAF decisioning on Grant Requests).
 
 ### New webhook events
 
-- `donor_account.created`, `donor_account.updated`, `donor_account.approved`, `donor_account.rejected`
-- `grant.approved`, `grant.rejected`
+- `donor_account.created`, `donor_account.updated`
+- `authorization_token.created`, `authorization_token.updated`
+- `grant_request.created`, `grant_request.updated`
 
 ### New guides
 

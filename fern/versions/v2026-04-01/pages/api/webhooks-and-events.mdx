@@ -26,12 +26,20 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
 
   ### Event Types
 
-  These events represent specific occurrences within our system that you can subscribe to and receive notifications for. 
+  These events represent specific occurrences within our system that you can subscribe to and receive notifications for.
+
+  Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are delivered as `{resource}.updated` events — fetch the object to read its current status.
 
   - `grant.created`: This event is triggered when a grant is created.
   - `grant.updated`: This event is triggered when a grant is updated. This can happen when the status changes for example.
   - `unintegrated_grant.created`: This event is triggered when an unintegrated grant is created.
   - `unintegrated_grant.updated`: This event is triggered when an unintegrated grant is updated.
+  - `donor_account.created`: This event is triggered when a [Donor Account](/api/donor-accounts) is created.
+  - `donor_account.updated`: This event is triggered when a Donor Account is updated. This can happen when the status transitions to `approved`, `rejected`, or `disabled`.
+  - `authorization_token.created`: This event is triggered when an [Authorization Token](/api/authorization-tokens) is created.
+  - `authorization_token.updated`: This event is triggered when an Authorization Token is updated. This can happen when the status transitions to `verified`, `revoked`, or `expired`.
+  - `grant_request.created`: This event is triggered when a [Grant Request](/api/grant-requests) is created.
+  - `grant_request.updated`: This event is triggered when a Grant Request is updated. This can happen when the status transitions to `pending`, `submitted`, or `rejected`.
   - `disbursement.created`: This event is triggered when a disbursement is created.
   - `disbursement.updated`: This event is triggered when a disbursement is updated. This can happen when the lifecycle status of the disbursement changes.
   - `inbound_transfer.created`: This event is triggered when an inbound transfer is created.

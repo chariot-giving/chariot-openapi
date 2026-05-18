@@ -10,22 +10,22 @@ When a donor submits a grant via DAFpay, a Grant Request is created and tied to 
 
 | Status | Meaning | Your action |
 |---|---|---|
-| `awaiting_account_approval` | The parent Donor Account isn't `approved` yet. | Advances automatically when the Donor Account is approved. You may cancel if needed. |
-| `awaiting_daf_submission` | Ready for you to submit in your system. | Submit, then mark `initiated`. Or `canceled` if you can't process it. |
-| `initiated` | You've submitted the grant. **Final.** | None. |
-| `canceled` | You've canceled the grant. **Final.** | None. |
+| `awaiting_account_decision` | The parent Donor Account isn't `approved` yet. | Advances automatically when the Donor Account is approved. You may reject if needed. |
+| `pending` | The Donor Account is approved and the Grant Request is awaiting your decision. | Submit it in your system, then call Submit. Or call Reject if you can't process it. |
+| `submitted` | You've submitted the grant. **Final.** | None. |
+| `rejected` | You've rejected the grant. **Final.** | None. |
 
 <Note>
-A Grant Request in `awaiting_account_approval` cannot be submitted until its linked Donor Account reaches `approved` status. If the Donor Account is rejected, all open Grant Requests tied to it are automatically moved to `canceled`.
+A Grant Request in `awaiting_account_decision` cannot be submitted until its linked Donor Account reaches `approved` status. If the Donor Account is rejected, all open Grant Requests tied to it are automatically moved to `rejected`.
 </Note>
 
 ## Submitting a Grant Request
 
-Once a Grant Request is in `awaiting_daf_submission`, submit it in your internal system and then call [Approve Grant](/api/grants/approve) to mark it as `initiated`. Optionally pass `external_grant_id` to link it to your internal grants ledger.
+Once a Grant Request is in `pending`, submit it in your internal system and then call [Submit Grant Request](/api/grant-requests/submit) to mark it as `submitted`. Optionally pass `external_grant_id` to link it to your internal grants ledger.
 
 <CodeBlocks>
 ```bash cURL
-curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f4d25344/approve \
+curl -X POST https://api.givechariot.com/v1/grant_requests/grant_req_01jpjenf5q6cawy43yxfcrxhct/submit \
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -34,22 +34,22 @@ curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f
   }'
 ```
 ```typescript TypeScript
-await chariot.grants.approve("10229488-08d2-4629-b70c-a2f4f4d25344", {
+await chariot.grantRequests.submit("grant_req_01jpjenf5q6cawy43yxfcrxhct", {
   external_grant_id: "ACME-GRANT-2026-00481",
   comment: "Submitted per donor schedule",
 });
 ```
 </CodeBlocks>
 
-The Grant Request moves to `initiated` and a `grant.updated` webhook is emitted — fetch the Grant Request to confirm its current status.
+The Grant Request moves to `submitted` and a `grant_request.updated` webhook is emitted — fetch the Grant Request to confirm its current status.
 
-## Cancelling a Grant Request
+## Rejecting a Grant Request
 
-If you cannot process a Grant Request, call [Reject Grant](/api/grants/reject). The `reason` is stored for auditing and is not shown to the donor.
+If you cannot process a Grant Request, call [Reject Grant Request](/api/grant-requests/reject). The `reason` is stored for auditing and is not shown to the donor.
 
 <CodeBlocks>
 ```bash cURL
-curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f4d25344/reject \
+curl -X POST https://api.givechariot.com/v1/grant_requests/grant_req_01jpjenf5q6cawy43yxfcrxhct/reject \
   -H "Authorization: Bearer $CHARIOT_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -57,38 +57,38 @@ curl -X POST https://api.givechariot.com/v1/grants/10229488-08d2-4629-b70c-a2f4f
   }'
 ```
 ```typescript TypeScript
-await chariot.grants.reject("10229488-08d2-4629-b70c-a2f4f4d25344", {
+await chariot.grantRequests.reject("grant_req_01jpjenf5q6cawy43yxfcrxhct", {
   reason: "Grant amount exceeds donor available balance.",
 });
 ```
 </CodeBlocks>
 
-The Grant Request moves to `canceled` and a `grant.updated` webhook is emitted — fetch the Grant Request to confirm its current status. The Donor Account is unaffected — future Grant Requests from the same donor can still be processed.
+The Grant Request moves to `rejected` and a `grant_request.updated` webhook is emitted — fetch the Grant Request to confirm its current status. The Donor Account is unaffected — future Grant Requests from the same donor can still be processed.
 
 ## Bulk processing
 
-Use [List Grants](/api/grants/list) filtered by `status=awaiting_daf_submission` and iterate. There is no bulk endpoint — each action is independent.
+Use [List Grant Requests](/api/grant-requests/list) filtered by `status=pending` and iterate. There is no bulk endpoint — each action is independent.
 
 ```typescript TypeScript
 let pageToken: string | undefined;
 do {
-  const page = await chariot.grants.list({ pageToken, pageLimit: 100 });
-  for (const grant of page.results) {
-    if (grant.status !== "awaiting_daf_submission") continue;
-    if (await passesInternalChecks(grant)) {
-      await chariot.grants.approve(grant.id, {
-        external_grant_id: await ledger.recordGrant(grant),
+  const page = await chariot.grantRequests.list({ pageToken, pageLimit: 100 });
+  for (const grantRequest of page.results) {
+    if (grantRequest.status !== "pending") continue;
+    if (await passesInternalChecks(grantRequest)) {
+      await chariot.grantRequests.submit(grantRequest.id, {
+        external_grant_id: await ledger.recordGrant(grantRequest),
       });
     } else {
-      await chariot.grants.reject(grant.id, {
+      await chariot.grantRequests.reject(grantRequest.id, {
         reason: "Failed automated balance check",
       });
     }
   }
-  pageToken = page.nextPageToken ?? undefined;
+  pageToken = page.next_page_token ?? undefined;
 } while (pageToken);
 ```
 
 ## Idempotency
 
-`initiated` and `canceled` are terminal. Calling approve or reject on an already-decided Grant Request returns `409 Conflict`. To safely retry on network errors, call [Get Grant](/api/grants/get) first and check `status` before retrying.
+`submitted` and `rejected` are terminal. Calling submit or reject on an already-decided Grant Request returns `409 Conflict`. To safely retry on network errors, call [Get Grant Request](/api/grant-requests/get) first and check `status` before retrying.
