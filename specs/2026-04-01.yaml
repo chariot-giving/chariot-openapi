@@ -2782,6 +2782,51 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Payment Source
+      description: |-
+        Create a payment source for your account.
+
+        A Payment Source represents a segregated address for incoming deposits.
+        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
+        which in turn makes reconciliation of money and data seamless.
+      operationId: createPaymentSource
+      tags:
+        - paymentSources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreatePaymentSourceRequest"
+      responses:
+        "201":
+          description: The payment source was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSource"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/payment_sources/{id}:
     get:
       summary: Get a Payment Source
@@ -2889,6 +2934,46 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Donation
+      description: |-
+        Create a donation for a nonprofit-managed payment source.
+      operationId: createDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDonationRequest"
+      responses:
+        "201":
+          description: The donation was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations/{id}:
     get:
       summary: Get a Donation
@@ -2914,6 +2999,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Donation
+      description: |-
+        Update specific fields on a donation. Fields listed in `update_mask` are overridden with the provided value. Fields not in the mask are unchanged.
+      operationId: updateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDonationRequest"
+      responses:
+        "200":
+          description: The donation was updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a Donation
+      description: |-
+        Delete a donation by its unique identifier.
+      operationId: deleteDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "204":
+          description: The donation was deleted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3013,6 +3164,44 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}/reconcile:
+    post:
+      summary: Reconcile a Deposit
+      description: |-
+        Reconciles a deposit to one or more donations for a nonprofit-managed payment source.
+        This links donations to the deposit that settled the funds, establishing the
+        relationship between the money received and the individual donations it represents.
+        This endpoint is only available for deposits and donations belonging to nonprofit-managed payment sources.
+      operationId: reconcileDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to reconcile.
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/ReconcileDepositRequest"
+      responses:
+        "204":
+          description: The deposit was reconciled to the donations
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/properties:
@@ -3833,6 +4022,10 @@ components:
             An informational note from the donor to the nonprofit about the donation.
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
+        external_id:
+          type: string
+          description: An external identifier for the donation, useful for reconciliation against your own systems.
+          example: "INV-12345"
         attribution:
           description: |-
             A subhash containing information about how the donation is attributed.
@@ -4440,6 +4633,10 @@ components:
             - declined
             - accepted
             - returned
+        receiver_id:
+          type: string
+          description: The receiver ID for the ACH transfer. For DAF sponsors like Fidelity Charitable, this corresponds to the ACH Group ID used to identify a batch of grants.
+          example: "123456"
     CheckDeposit:
       type: object
       description: |-
@@ -6894,29 +7091,149 @@ components:
                   email: "ap@worldwildlife.org"
     UpdateDonationRequest:
       description: |-
-        The request to update core donation attributes like purpose, note and attribution.
+        The request to update donation fields using a field mask.
+        Only fields listed in `update_mask` are modified. Fields not in the mask are unchanged.
       required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - update_mask
             properties:
-              reason:
+              update_mask:
                 type: string
                 description: |-
-                  A user-friendly reason or comment about the update.
-                  This is useful to understand why the donation was updated.
-                example: "Donor requested a change to the donation purpose"
+                  A comma-separated list of field paths to update (google.protobuf.FieldMask format). Uses dot notation for nested fields.
+                  Only fields in the mask are modified. Fields not in the mask are unchanged.
+
+                  Allowed paths: `purpose`, `note`,
+                  `attribution.primary_donor.full_name`, `attribution.primary_donor.first_name`,
+                  `attribution.primary_donor.last_name`, `attribution.primary_donor.email`,
+                  `attribution.primary_donor.phone`, `attribution.primary_donor.address.line1`,
+                  `attribution.primary_donor.address.line2`, `attribution.primary_donor.address.city`,
+                  `attribution.primary_donor.address.state`, `attribution.primary_donor.address.postal_code`,
+                  `attribution.primary_donor.address.country`,
+                  `attribution.joint_donor.full_name`, `attribution.joint_donor.first_name`,
+                  `attribution.joint_donor.last_name`, `attribution.joint_donor.email`,
+                  `attribution.joint_donor.phone`, `attribution.joint_donor.address.line1`,
+                  `attribution.joint_donor.address.line2`, `attribution.joint_donor.address.city`,
+                  `attribution.joint_donor.address.state`, `attribution.joint_donor.address.postal_code`,
+                  `attribution.joint_donor.address.country`,
+                  `donor_advised_fund_grant.organization_name`, `donor_advised_fund_grant.donor_fund_name`, `donor_advised_fund_grant.program_name`,
+                  `corporate_match.company_name`, `corporate_match.program_name`, `corporate_match.source`
+                example: "purpose,attribution.primary_donor.email"
+              purpose:
+                type: string
+                nullable: true
+                description: |-
+                  A description of the donor's intent for the donation.
+              note:
+                type: string
+                nullable: true
+                description: |-
+                  An informational note from the donor to the nonprofit about the donation.
+              attribution:
+                nullable: true
+                allOf:
+                  - $ref: "#/components/schemas/DonationAttribution"
+              donor_advised_fund_grant:
+                type: object
+                nullable: true
+                properties:
+                  organization_name:
+                    type: string
+                    nullable: true
+                    description: The name of the DAF sponsor organization.
+                  donor_fund_name:
+                    type: string
+                    nullable: true
+                    description: The name of the donor's fund at the DAF sponsor.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the program at the DAF sponsor.
+              corporate_match:
+                type: object
+                nullable: true
+                properties:
+                  company_name:
+                    type: string
+                    nullable: true
+                    description: The name of the company that matched the donation.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the corporate matching program.
+                  source:
+                    type: string
+                    nullable: true
+                    description: The source of the corporate match.
+            example:
+              update_mask: "purpose,attribution.primary_donor.email"
+              purpose: "Capital Campaign"
+              attribution:
+                primary_donor:
+                  email: "warrenBuffet@example.com"
+    CreateDonationRequest:
+      description: |-
+        The request to create a donation.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - payment_source_id
+              - amount_gross
+            properties:
+              payment_source_id:
+                type: string
+                description: |-
+                  The unique identifier for the payment source to associate the donation with.
+                example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The effective date of the donation. Defaults to the current date if not provided.
+                  Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
+              amount_gross:
+                type: integer
+                format: int64
+                description: |-
+                  The original amount of the donation as intended by the donor in minor units of the currency.
+                  For dollars, for example, this is cents.
+                example: 10000
+              amount_fee:
+                type: integer
+                format: int64
+                description: |-
+                  The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
+                  For dollars, for example, this is cents. Defaults to 0 if not provided.
+                example: 0
+              currency:
+                type: string
+                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency. Defaults to "USD".
+                example: "USD"
               purpose:
                 type: string
                 description: |-
                   A description of the donor's intent for the donation.
-                  This is useful to understand how the donor intended the donation to be used.
+                example: "Where needed most"
               note:
                 type: string
                 description: |-
                   An informational note from the donor to the nonprofit about the donation.
-                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
+                example: "Please dedicate in memory of grandma"
+              external_id:
+                type: string
+                description: An external identifier for the donation, useful for reconciliation against your own systems.
+                example: "INV-12345"
+              dafpay_tracking_id:
+                type: string
+                description: A DAFpay tracking identifier for reconciliation purposes.
               attribution:
                 allOf:
                   - $ref: "#/components/schemas/DonationAttribution"
@@ -6926,16 +7243,52 @@ components:
               corporate_match:
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatch"
-            example:
-              reason: "Donor requested a change to the donation"
-              purpose: "Capital Campaign"
-              note: "Please dedicate in memory of grandma"
-              attribution:
-                primary_donor:
-                  email: "warrenBuffet@example.com"
-              donor_advised_fund_grant:
-                organization_name: "Fidelity Charitable"
-                fund_name: "Warren Buffet Fund"
+              platform_metadata:
+                type: object
+                description: Arbitrary key-value metadata for the donation.
+                additionalProperties:
+                  type: string
+    ReconcileDepositRequest:
+      description: |-
+        The request to reconcile a deposit to one or more donations.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - donation_ids
+            properties:
+              donation_ids:
+                type: array
+                description: The unique identifiers for the donations to reconcile with the deposit.
+                items:
+                  type: string
+                example:
+                  - "donation_01j8rs605a4gctmbm58d87mvsj"
+                  - "donation_02k9st716b5hdunco69e98nwtk"
+    CreatePaymentSourceRequest:
+      description: |-
+        The request to create a nonprofit-managed payment source with an electronic bank address.
+        This creates a manual payment source that can be used to track and reconcile
+        incoming deposits from sources outside of Chariot's integrated network.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - financial_account_id
+              - name
+            properties:
+              financial_account_id:
+                type: string
+                description: The unique identifier for the financial account that the payment source belongs to.
+                example: "fa_01j8rs605a4gctmbm58d87mvsj"
+              name:
+                type: string
+                description: A human-readable name for the payment source.
+                example: "Main Payment Source"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
