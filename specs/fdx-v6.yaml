@@ -193,6 +193,30 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
+  /customers/current:
+    get:
+      summary: Get current customer
+      description: >-
+        Get the organization-level identity for the current authenticated
+        customer. Returns org-level data (nonprofit name, EIN, address).
+        Individual control-person data is excluded because consent is org-level.
+      operationId: getCurrentCustomer
+      tags:
+        - Customers
+      responses:
+        "200":
+          description: The current authenticated customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /accounts/{id}/customers:
     get:
       summary: List account customers
@@ -524,6 +548,12 @@ components:
       required:
         - accounts
       properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: >-
+            The organization that owns the accounts. Equivalent to the
+            customerId returned by GET /customers/current.
         page:
           $ref: "#/components/schemas/Page"
         accounts:
