@@ -283,60 +283,11 @@ components:
   securitySchemes:
     oauth2:
       type: oauth2
-      description: >
+      description: >-
         OAuth 2.0 Bearer token. A client may hold both scopes, but each
         FDX authorization must contain exactly one — they are mutually
         exclusive per authorization. An authorization containing both will
-        be rejected.
-
-
-        ## Authentication
-
-
-        ### 1. Authorize
-
-        Redirect the user to the authorization URL with your `client_id`,
-        `redirect_uri`, `scope`, and `state`. The user grants consent and is
-        redirected back with an authorization `code`.
-
-
-        ### 2. Exchange code for token
-
-        `POST https://api.givechariot.com/auth/oauth/token`
-
-
-        **Header** — authenticate with HTTP Basic using your client credentials.
-        Requests without this header will be rejected with 403 Unauthorized.
-
-        `Authorization: Basic base64(client_id:client_secret)`
-
-
-        **Body** (`application/x-www-form-urlencoded`):
-
-        | Field | Required | Description |
-        |-------|----------|-------------|
-        | `grant_type` | Yes | `authorization_code` |
-        | `code` | Yes | The authorization code from step 1 |
-        | `code_verifier` | No | PKCE code verifier, if PKCE was used |
-
-
-        ### 3. Refresh token
-
-        `POST https://api.givechariot.com/auth/oauth/token`
-
-
-        **Header** — authenticate with HTTP Basic using your client credentials.
-        Requests without this header will be rejected with 403 Unauthorized.
-
-        `Authorization: Basic base64(client_id:client_secret)`
-
-
-        **Body** (`application/x-www-form-urlencoded`):
-
-        | Field | Required | Description |
-        |-------|----------|-------------|
-        | `grant_type` | Yes | `refresh_token` |
-        | `refresh_token` | Yes | The refresh token from the original token exchange |
+        be rejected. See the Authentication page for token exchange details.
       flows:
         authorizationCode:
           authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
