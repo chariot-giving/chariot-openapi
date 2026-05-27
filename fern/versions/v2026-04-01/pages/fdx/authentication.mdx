@@ -25,7 +25,14 @@ All requests must include a valid OAuth 2.0 Bearer token in the `Authorization` 
 Authorization: Bearer <access_token>
 ```
 
-Tokens must include the `read:bank_accounts` scope. Requests without a valid token receive a `401 Unauthorized` response.
+Tokens must include exactly one of the following scopes — they are mutually exclusive per authorization. An authorization containing both will be rejected.
+
+| Scope | Description |
+|-------|-------------|
+| `read:bank_accounts` | Read access to bank account data |
+| `sync:connected_accounts` | Sync access to connected account data |
+
+A client may hold both scopes, but each FDX authorization must contain exactly one. Requests without a valid token receive a `401 Unauthorized` response.
 
 ## Token Exchange
 
@@ -68,17 +75,26 @@ After the user authorizes, the browser redirects to your `redirect_uri` with an 
 
 ### 2. Exchange code for token
 
-Exchange the authorization code for an access token and refresh token:
+Exchange the authorization code for an access token and refresh token.
 
-```bash
-curl -X POST https://api.givechariot.com/auth/oauth/token \
-  -u "<client_id>:<client_secret>" \
-  -d "grant_type=authorization_code" \
-  -d "code=<authorization_code>" \
-  -d "redirect_uri=<redirect_uri>"
+`POST https://api.givechariot.com/auth/oauth/token`
+
+**Header** — authenticate with HTTP Basic using your client credentials. Requests without this header will be rejected with 403 Unauthorized.
+
+```
+Authorization: Basic base64(client_id:client_secret)
 ```
 
-The response includes an `access_token` and `refresh_token`:
+**Body** (`application/x-www-form-urlencoded`):
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `grant_type` | Yes | `authorization_code` |
+| `code` | Yes | The authorization code from step 1 |
+| `redirect_uri` | Yes | Must match the URI used in step 1 |
+| `code_verifier` | No | PKCE code verifier, if PKCE was used |
+
+**Response**:
 
 ```json
 {
@@ -91,14 +107,22 @@ The response includes an `access_token` and `refresh_token`:
 
 ### 3. Refresh token
 
-When the access token expires, use the refresh token to obtain a new one:
+When the access token expires, use the refresh token to obtain a new one.
 
-```bash
-curl -X POST https://api.givechariot.com/auth/oauth/token \
-  -u "<client_id>:<client_secret>" \
-  -d "grant_type=refresh_token" \
-  -d "refresh_token=<refresh_token>"
+`POST https://api.givechariot.com/auth/oauth/token`
+
+**Header** — authenticate with HTTP Basic using your client credentials. Requests without this header will be rejected with 403 Unauthorized.
+
 ```
+Authorization: Basic base64(client_id:client_secret)
+```
+
+**Body** (`application/x-www-form-urlencoded`):
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `grant_type` | Yes | `refresh_token` |
+| `refresh_token` | Yes | The refresh token from the original token exchange |
 
 ## IP Whitelisting
 

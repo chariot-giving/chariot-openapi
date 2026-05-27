@@ -193,6 +193,30 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
+  /customers/current:
+    get:
+      summary: Get current customer
+      description: >-
+        Get the organization-level identity for the current authenticated
+        customer. Returns org-level data (nonprofit name, EIN, address).
+        Individual control-person data is excluded because consent is org-level.
+      operationId: getCurrentCustomer
+      tags:
+        - Customers
+      responses:
+        "200":
+          description: The current authenticated customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /accounts/{id}/customers:
     get:
       summary: List account customers
@@ -259,13 +283,18 @@ components:
   securitySchemes:
     oauth2:
       type: oauth2
-      description: OAuth 2.0 Bearer token with the `read:bank_accounts` scope
+      description: >-
+        OAuth 2.0 Bearer token. A client may hold both scopes, but each
+        FDX authorization must contain exactly one — they are mutually
+        exclusive per authorization. An authorization containing both will
+        be rejected. See the Authentication page for token exchange details.
       flows:
         authorizationCode:
           authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
           tokenUrl: https://api.givechariot.com/auth/oauth/token
           scopes:
             "read:bank_accounts": Read access to bank account data
+            "sync:connected_accounts": Sync access to connected account data
 
   parameters:
     AccountId:
@@ -524,6 +553,12 @@ components:
       required:
         - accounts
       properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: >-
+            The organization that owns the accounts. Equivalent to the
+            customerId returned by GET /customers/current.
         page:
           $ref: "#/components/schemas/Page"
         accounts:
