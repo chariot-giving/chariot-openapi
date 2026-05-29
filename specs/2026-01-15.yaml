@@ -4289,14 +4289,14 @@ components:
       description: |-
         The status of the verification request.
         Possible values include:
-          - `needs_review`: The request has been submitted and is awaiting review by Chariot's compliance team
-          - `verified`: The organization has been verified as tax-exempt and eligible for disbursements
-          - `failed`: Chariot's compliance team determined the organization is not eligible
-      example: "needs_review"
+          - `VERIFICATION_REQUEST_STATUS_NEEDS_REVIEW`: The request has been submitted and is awaiting review by Chariot's compliance team
+          - `VERIFICATION_REQUEST_STATUS_VERIFIED`: The organization has been verified as tax-exempt and eligible for disbursements
+          - `VERIFICATION_REQUEST_STATUS_FAILED`: Chariot's compliance team determined the organization is not eligible
+      example: "VERIFICATION_REQUEST_STATUS_NEEDS_REVIEW"
       enum:
-        - needs_review
-        - verified
-        - failed
+        - VERIFICATION_REQUEST_STATUS_NEEDS_REVIEW
+        - VERIFICATION_REQUEST_STATUS_VERIFIED
+        - VERIFICATION_REQUEST_STATUS_FAILED
     VerificationRequestAddress:
       type: object
       description: A mailing address for the organization being verified.
