@@ -1511,6 +1511,13 @@ paths:
         from an externally linked bank account.
         In Production, this requires that an external bank account has been setup
         and verified for your account through the Chariot Dashboard.
+
+        **Settlement timing:** ACH debits typically take 3-4 business days to settle.
+        Once the transfer completes, the funds are added to the financial account's available balance
+        and can be used to fund disbursements. Funds are not earmarked for any specific disbursement;
+        they increase the shared balance pool.
+
+        For funding best practices, see the [Flow of Funds](/guides/disbursements/flow-of-funds) guide.
       operationId: createInboundTransfer
       tags:
         - inboundTransfers
@@ -3162,6 +3169,9 @@ components:
       type: object
       description: |-
         An inbound transfer represents a transfer of funds from an external bank account to a financial account.
+        ACH debits typically take 3-4 business days to settle, while ACH credits take 1-2 business days.
+        Once the transfer completes, the funds are added to the financial account's available balance
+        and can be used to fund any disbursement in `awaiting_balance` status.
       required:
         - id
         - amount
@@ -3188,8 +3198,8 @@ components:
           type: string
           description: |-
             The status of the inbound transfer.
-            An Inbound Transfer is `pending` if it created and the funds haven't been received yet.
-            The status changes to `completed` when the funds have been received and the balance of the financial account has been updated.
+            An Inbound Transfer is `pending` if it has been created and the funds haven't been received yet. ACH debits typically take 3-4 business days to settle.
+            The status changes to `completed` when the funds have been received and the available balance of the financial account has been updated.
             The status changes to `canceled` if the transfer is canceled.
             The status changes to `failed` if the transfer fails.
           example: "pending"

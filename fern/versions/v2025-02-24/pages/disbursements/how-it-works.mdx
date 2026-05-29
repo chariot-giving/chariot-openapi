@@ -40,10 +40,19 @@ This section provides the steps required to send a disbursement via API. Note, y
 First, you'll need to fund your Chariot Deposit Account with the amount of money you'd like to send in disbursements.
 
 You can do this by creating an [Inbound Transfer](/api/inbound-transfers/create).
-Note that the funds will need to be available in your Chariot Deposit Account before you can create and send disbursements.
 You can use the [GET Financial Account Balance](/api/financial-accounts/get-balance) endpoint to check the balance of the account.
 
 <EndpointRequestSnippet endpoint="POST /v1/inbound_transfers" example="CreateInboundTransfer" />
+
+<Note>
+**Inbound transfer settlement times:** ACH debits take **3-4 business days** to settle and ACH credits take **1-2 business days**. Funds are not available for disbursements until the transfer completes.
+</Note>
+
+<Tip>
+**Pre-funding recommendation:** We recommend maintaining a rolling balance of **1-4 weeks** of expected disbursement volume in your Chariot Deposit Account. This allows disbursements to execute immediately without waiting for inbound transfers to settle. Even a 1-week buffer can significantly reduce grant timelines.
+</Tip>
+
+If pre-funding isn't feasible, you can use [Just-In-Time (JIT) funding](/guides/disbursements/disbursement-lifecycle#just-in-time-jit-disbursements) to automatically create an inbound transfer when a disbursement is approved. Note that JIT disbursements still incur the ACH settlement delay before funds are available.
 
 ### Find an Organization
 
