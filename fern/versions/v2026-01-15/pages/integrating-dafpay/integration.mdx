@@ -3,6 +3,78 @@ title: Integrating Connect
 hidden: false
 ---
 
+## Content Security Policy
+
+DAFpay is distributed as a cross-origin web component. The button renders inline on your page, but the checkout itself runs in either a cross-origin **iframe** embedded in your page (most desktop browsers, when the viewport supports the modal) or a cross-origin **popup window** at `https://secure.dafpay.com` (mobile devices, Safari, or when the parent viewport is too small for the modal).
+
+In both modes, the DAFpay JavaScript bundle is loaded from Chariot's CDN and the web component injects `@font-face` declarations and inline styles into your page's document. If your site sends a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) (CSP) header — via either `Content-Security-Policy` or `Content-Security-Policy-Report-Only` — you must allow the directives below or the integration will silently fail to load.
+
+### Required Directives
+
+| Directive    | Add to allowlist                              | Why it's needed                                                                                                                                                            |
+|--------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` (and the lightweight `initialize-dafpay.js` loader plus its versioned `chariot-connect-vX.Y.Z.umd.js` bundle) from Chariot's CDN.           |
+| `frame-src`  | `https://secure.dafpay.com`                   | Embeds the DAFpay checkout in a cross-origin iframe. If `frame-src` is not set, browsers fall back to `child-src`, then `default-src`.                                     |
+| `font-src`   | `https://cdn.givechariot.com`                 | The DAFpay web component injects `@font-face` rules into your document referencing Chariot-hosted fonts (e.g., `CircularStd`, `Matter`, `Poppins`).                         |
+| `style-src`  | `'unsafe-inline'` (or a matching nonce/hash)  | The Vue-based web component and Zoid both inject inline `<style>` blocks (font-face declarations and modal overlay styles) into the parent document.                       |
+| `img-src`    | `https://cdn.givechariot.com`                 | DAFpay tile and extended button themes reference DAF provider logos and other imagery hosted on Chariot's CDN.                                                             |
+
+The parent page does **not** need to allow `connect-src` for Chariot — all DAFpay API traffic originates inside the iframe (`secure.dafpay.com`), which has its own CSP that we manage.
+
+<Warning title="style-src 'unsafe-inline'">
+The DAFpay web component currently relies on inline `<style>` injection. If your CSP forbids `'unsafe-inline'` and you need to use nonces or hashes, contact Chariot support before integrating — your CSP will block the modal styles even though the script and iframe load successfully.
+</Warning>
+
+### Example Header
+
+A minimal CSP that permits a DAFpay integration alongside your existing `'self'` policy:
+
+```http
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' https://cdn.givechariot.com;
+  frame-src   https://secure.dafpay.com;
+  font-src    'self' https://cdn.givechariot.com;
+  style-src   'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src     'self' https://cdn.givechariot.com data:;
+```
+
+Merge each directive into your existing policy — do not replace your full CSP with the example above.
+
+<Tip title="Meta Tag Limitation">
+If you deliver CSP via a `<meta http-equiv="Content-Security-Policy">` tag instead of an HTTP header, the same directives apply, but `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are silently ignored from meta tags. Use a response header whenever possible.
+</Tip>
+
+### Staging / Sandbox
+
+If you are testing with a Connect ID that begins with `staging_`, the checkout loads from a different origin and you must also allow:
+
+- `frame-src https://staging.dafpay.com`
+
+(`script-src` for the CDN is the same as production.)
+
+### Permissions-Policy and Passkey Authentication
+
+DAFpay uses WebAuthn (passkeys) for returning-donor authentication inside the checkout iframe. For passkey auth to work in a cross-origin iframe, your page must also delegate the credential permissions to `secure.dafpay.com` via the `Permissions-Policy` response header:
+
+```http
+Permissions-Policy:
+  publickey-credentials-create=(self "https://secure.dafpay.com"),
+  publickey-credentials-get=(self "https://secure.dafpay.com")
+```
+
+Without this delegation, passkey auth will fail inside the iframe and donors will be downgraded to SMS one-time-passcode flows.
+
+### Troubleshooting
+
+If the DAFpay button does not render, or clicking it does nothing:
+
+1. Open your browser's developer console. CSP violations are logged as errors prefixed with `Refused to load the script/frame/font/style` and name the directive that blocked the request.
+2. Check the **Network** tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
+3. If you ship a `Content-Security-Policy-Report-Only` header alongside your live policy, your reporting endpoint will receive `csp-violation` events naming the affected URLs.
+
+If you cannot relax your CSP — for example because of PCI scope or a vendor security policy — reach out to Chariot support to discuss alternative integration paths.
+
 ## Collecting Form Data
 DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest.
 
