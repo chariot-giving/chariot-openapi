@@ -2512,6 +2512,79 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/grants:
+    post:
+      summary: "Sandbox: Simulate a Grant"
+      description: |
+        Creates a simulated grant against a Connect using the test DAF.
+        The grant is recorded exactly as a real DAFpay grant submission and a donation
+        materializes asynchronously through the standard processing pipeline, parking in
+        the `incoming_to_chariot` payment status until it is settled.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateGrant
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - connect_id
+                - amount
+              properties:
+                connect_id:
+                  type: string
+                  description: The `id` of the Connect the simulated grant is created against. The Connect must belong to your organization.
+                  example: "test_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+                amount:
+                  type: integer
+                  description: The grant amount in cents. Must be a whole-dollar amount.
+                  example: 10000
+                donor_first_name:
+                  type: string
+                  description: The donor's first name. Defaults to "Test" if not provided.
+                  example: "Jane"
+                donor_last_name:
+                  type: string
+                  description: The donor's last name. Defaults to "Donor" if not provided.
+                  example: "Giver"
+                donor_email:
+                  type: string
+                  description: The donor's email address.
+                  example: "jane@example.com"
+      responses:
+        "200":
+          description: The simulated grant was created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grant_id:
+                    type: string
+                    description: The unique identifier for the created grant
+                    example: "f5e9aae0-cf95-4614-8a37-2b54d6f6e4a1"
+                  workflow_session_id:
+                    type: string
+                    description: The unique identifier for the workflow session the grant was recorded against
+                    example: "8e2f64f4-9e09-4f8b-9b9a-71c2b1ab44d0"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/inbound_transfers:
     post:
       summary: Create an Inbound transfer
