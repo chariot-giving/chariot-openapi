@@ -2093,6 +2093,14 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: |-
+            A client-generated identifier for the request. Replays with the same key return `409 Conflict`. The successfully created disbursement can later be located via `GET /v1/disbursements?idempotency_key=...`.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/CreateDisbursementRequest"
       responses:
@@ -2159,6 +2167,14 @@ paths:
           schema:
             type: string
             example: "organization"
+        - name: idempotency_key
+          in: query
+          description: |-
+            Filter to the disbursement created with this exact `Idempotency-Key` header on `POST /v1/disbursements`. Useful for recovering the result of a create request when the response was lost (e.g. network timeout). Returns at most one disbursement. Disbursements created via `POST /v1/disbursements/bulk` cannot be looked up this way.
+          required: false
+          schema:
+            type: string
+            example: "8e91b2f3-d7c4-4a59-9a91-72a40b1f2c3d"
       responses:
         "200":
           $ref: "#/components/responses/ListDisbursementsResponse"
