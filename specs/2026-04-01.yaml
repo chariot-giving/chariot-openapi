@@ -2195,6 +2195,8 @@ paths:
 
         All disbursements in the request will be created together. If any disbursement fails validation,
         the entire request will fail and no disbursements will be created.
+
+        **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`. If you need to recover individual disbursements by idempotency key, create them one at a time via `POST /v1/disbursements`.
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
