@@ -2099,7 +2099,7 @@ paths:
           description: |-
             A client-generated identifier for the request. Replays with the same key return `409 Conflict`. The successfully created disbursement can later be located via `GET /v1/disbursements?idempotency_key=...`.
 
-            We recommend supplying your own unique identifier for the disbursement (e.g. your internal grant/transaction ID) so you can later look the disbursement up by an ID you already track.
+            We recommend supplying your own unique identifier for the disbursement so you can later look it up by an ID you already track.
           required: false
           schema:
             type: string
