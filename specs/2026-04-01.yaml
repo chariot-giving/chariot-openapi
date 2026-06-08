@@ -2098,6 +2098,8 @@ paths:
           in: header
           description: |-
             A client-generated identifier for the request. Replays with the same key return `409 Conflict`. The successfully created disbursement can later be located via `GET /v1/disbursements?idempotency_key=...`.
+
+            We recommend supplying your own unique identifier for the disbursement (e.g. your internal grant/transaction ID) so you can later look the disbursement up by an ID you already track.
           required: false
           schema:
             type: string
@@ -2196,7 +2198,7 @@ paths:
         All disbursements in the request will be created together. If any disbursement fails validation,
         the entire request will fail and no disbursements will be created.
 
-        **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`. If you have a unique key per disbursement, create them one at a time via `POST /v1/disbursements` with an `Idempotency-Key` header so each row remains queryable.
+        **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`.
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
