@@ -5642,6 +5642,12 @@ components:
           description: The list of transactions for the disbursement
           items:
             $ref: "#/components/schemas/Transaction"
+        idempotency_key:
+          type: string
+          description: |-
+            The `Idempotency-Key` header value the disbursement was created with. Only set for single-create disbursements; bulk-created disbursements omit this field.
+          example: "8e91b2f3-d7c4-4a59-9a91-72a40b1f2c3d"
+          readOnly: true
     DisbursementStatus:
       type: string
       description: |-
