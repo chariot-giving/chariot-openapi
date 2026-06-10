@@ -86,6 +86,9 @@ navigation:
               - page: API Endpoints
                 slug: api-endpoints
                 path: ./pages/oauth/api-endpoints.mdx
+              - page: Security Best Practices
+                slug: security
+                path: ./pages/oauth/security.mdx
               - page: Integration Checklist
                 slug: integration-checklist
                 path: ./pages/oauth/integration-checklist.mdx
