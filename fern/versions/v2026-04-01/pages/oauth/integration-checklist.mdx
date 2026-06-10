@@ -1,0 +1,96 @@
+---
+title: "Integration Checklist"
+subtitle: "Everything required to go from kickoff to live, and how the certification process works."
+hidden: false
+---
+
+## Build checklist
+
+### Authorization server
+
+* [ ]  OAuth 2.0 / OIDC authorization server reachable at a public issuer URL (Okta, Auth0, Cognito, or custom)
+* [ ]  Hosted login page that renders at popup dimensions (~460×720) and on mobile web
+* [ ]  Confidential client registered for Chariot with staging and production redirect URIs
+* [ ]  Authorization Code flow with PKCE (S256) and `state` round-trip
+* [ ]  Scopes: `openid profile email offline_access` (plus any custom scopes you require)
+* [ ]  ID Token with stable `sub` and `email` claims
+* [ ]  **Refresh tokens valid ≥ 12 months (recommended: until revoked) — see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)**
+* [ ]  Error redirects on cancel/failure (`error`, `error_description`)
+* [ ]  Token revocation endpoint (recommended)
+
+### Resource APIs
+
+* [ ]  Get Current Donor
+* [ ]  List Funds (with **grantable** balances)
+* [ ]  Search Organizations by EIN
+* [ ]  Create Grant — idempotent, with the Chariot ID carried onto the grant letter
+* [ ]  Get Grant Status (and/or status webhooks)
+* [ ]  Bearer token validation on every endpoint
+
+### Environments
+
+* [ ]  Sandbox/staging environment mirroring production behavior
+* [ ]  At least 2 test donor accounts (including one with multiple funds)
+* [ ]  A test fund with a small balance (for over-balance rejection testing)
+
+## Exchange of information
+
+**You send Chariot** (via the secure channel we provide — never email secrets):
+
+| Item | |
+|---|---|
+| `ISSUER_BASE_URL` | OIDC issuer, ideally with `/.well-known/openid-configuration` |
+| `client_id` / `client_secret` | Per environment |
+| API base URLs + docs | For the five resource endpoints |
+| Refresh token policy | Lifetime, idle timeout, rotation on/off |
+| Sandbox credentials | Test donor logins |
+| Technical contact | For integration support and incident escalation |
+
+**Chariot sends you:**
+
+| Item | |
+|---|---|
+| Redirect URIs | Staging and production callback URLs |
+| Webhook URL + signing secret | If you implement status webhooks |
+| Static IP range | If you require allowlisting |
+| Integration contact | Your dedicated Chariot engineer |
+
+## Certification
+
+Before launch, Chariot runs a certification pass against your sandbox:
+
+1. **Auth flows** — happy path, donor cancellation, error redirects, mobile web
+2. **Token lifecycle** — refresh after access-token expiry; rotation grace window (if rotating); behavior after revocation (`invalid_grant`)
+3. **Connection persistence** — refresh succeeds after a simulated dormancy period; this is a launch blocker if refresh tokens expire early
+4. **Grant lifecycle** — create, duplicate-submission idempotency, status polling/webhooks, rejection with `status_description`
+5. **Edge cases** — multi-fund donors, insufficient balance, unknown EIN, expired access token mid-flow
+
+Once certified, we launch your DAF in DAFpay production behind a flag, run a small set of live test grants together, then enable you for all donors.
+
+## Timeline
+
+| Phase | Owner | Typical duration |
+|---|---|---|
+| Kickoff & credential exchange | Both | 1–3 days |
+| Your build (if using Okta/Auth0 + existing APIs) | You | 3–5 days |
+| Your build (from scratch) | You | 4–8 weeks |
+| Chariot integration build & certification | Chariot | ~2 weeks |
+| Production launch & live verification | Both | 2–3 days |
+
+## FAQ
+
+**Do grants still go through the Donor Accounts decisioning API?**
+
+No. In the OAuth model, grants are created directly in your system via your Create Grant API and flow through your normal internal review pipeline. The [Donor Accounts](/guides/dafpay/donor-accounts/overview) decisioning API is for DAFs without their own APIs.
+
+**Can we support both integrations?**
+
+Yes — but a given donor connection uses one model. Most DAFs choose one; OAuth is the better donor experience if you can support it.
+
+**What happens if a donor's refresh token is revoked?**
+
+On their next donation, DAFpay prompts them to re-link your DAF — they go through your login flow once more, and a fresh long-lived connection is established. Their DAFpay account, history, and Donor Account are unaffected.
+
+**Do you support FDX?**
+
+The endpoint shapes in this guide are intentionally simpler than full FDX, scoped to what a DAF donation flow needs. If you already expose FDX-aligned endpoints, share your documentation — Chariot can adapt to FDX resource shapes during the integration build.

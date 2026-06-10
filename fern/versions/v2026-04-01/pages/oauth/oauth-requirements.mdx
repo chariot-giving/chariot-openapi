@@ -1,0 +1,156 @@
+---
+title: "OAuth & Token Requirements"
+subtitle: "What your authorization server must support — including the long-lived connection that makes one-time linking possible."
+hidden: false
+---
+
+## Summary of requirements
+
+| Requirement | Level |
+|---|---|
+| OAuth 2.0 Authorization Code flow | **Required** |
+| OIDC ID Token with stable `sub` claim | **Required** |
+| Refresh tokens (`offline_access`) with **≥ 12-month validity** | **Required** |
+| PKCE (S256) | **Required** |
+| `state` parameter round-trip | **Required** |
+| TLS 1.2+ on all endpoints | **Required** |
+| OIDC Discovery (`/.well-known/openid-configuration`) | Recommended |
+| Refresh token rotation | Optional |
+| Token revocation endpoint (RFC 7009) | Recommended |
+| Consent management portal for donors | Optional |
+
+If you use Okta, Auth0, AWS Cognito, or another standards-compliant identity provider, every required item above is available out of the box — you mainly need to register Chariot as a client and configure token lifetimes.
+
+## Client registration
+
+Register Chariot as a **confidential client** (server-side code exchange) in your authorization server, with redirect URIs for each environment:
+
+| Environment | Callback URL |
+|---|---|
+| Production | `https://api.givechariot.com/oauth/callback` |
+| Staging | `https://devapi.givechariot.com/oauth/callback` |
+
+You'll provide Chariot with the resulting `client_id` and `client_secret` through a secure channel (we'll share a secure link during onboarding — never email secrets).
+
+## Authorization request
+
+Chariot launches your authorization endpoint in a popup window:
+
+```
+GET https://auth.{your-domain}.com/authorize
+  ?response_type=code
+  &client_id={CHARIOT_CLIENT_ID}
+  &redirect_uri=https://api.givechariot.com/oauth/callback
+  &scope=openid profile email offline_access
+  &state={opaque-csrf-token}
+  &code_challenge={S256-challenge}
+  &code_challenge_method=S256
+```
+
+Your server must:
+
+- Authenticate the donor on **your** hosted login page (your branding, your MFA policy).
+- Display a consent step (or pre-configured consent) covering the scopes requested.
+- Redirect back to `redirect_uri` with `code` and the unmodified `state`.
+- On failure or donor cancellation, redirect back with standard `error` and `error_description` parameters (`access_denied`, `login_required`, etc.) rather than dead-ending the donor.
+
+<Tip title="Popup-friendly login page">
+The authorization page opens in a **popup window**, not an iframe — so `X-Frame-Options` restrictions are fine. It must, however, render correctly at popup dimensions (~460×720) and on mobile web, where the flow runs as a full-page redirect.
+</Tip>
+
+## Token exchange
+
+Chariot exchanges the authorization code server-to-server:
+
+```
+POST https://auth.{your-domain}.com/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code={code}
+&redirect_uri=https://api.givechariot.com/oauth/callback
+&client_id={CHARIOT_CLIENT_ID}
+&client_secret={CHARIOT_CLIENT_SECRET}
+&code_verifier={pkce-verifier}
+```
+
+Expected response:
+
+```json
+{
+  "access_token": "eyJ...",
+  "id_token": "eyJ...",
+  "refresh_token": "v1.MjAy...",
+  "token_type": "Bearer",
+  "expires_in": 1800,
+  "scope": "openid profile email offline_access"
+}
+```
+
+### ID Token claims
+
+The `id_token` must include:
+
+| Claim | Requirement |
+|---|---|
+| `sub` | **Stable, unique, and permanent** identifier for the donor. Chariot uses `sub` to bind your donor to their DAFpay Donor Account. It must never change for a given donor and must never be reused for another donor. |
+| `email` | Donor's email address |
+| `email_verified` | Recommended |
+| `name` / `given_name` / `family_name` | Recommended |
+
+### Access token
+
+- Lifetime: **10–60 minutes** recommended.
+- JWT access tokens are preferred (validatable by your resource APIs without a network hop), but opaque tokens with introspection are acceptable.
+
+## Connection Lifetime
+
+<Warning title="The single most important requirement in this guide">
+**Your refresh tokens must be long-lived.** Donors set up a DAFpay account and link your DAF to it **once**. That connection must survive across sessions, devices, and months of inactivity — exactly like linking a bank account to a payments app. A donor who returns six months later and is forced to re-authenticate with your login page is, for practical purposes, a broken integration.
+</Warning>
+
+Specifically:
+
+- **Refresh tokens must remain valid for at least 12 months**, and we strongly recommend **non-expiring tokens that remain valid until explicitly revoked** by the donor, by you, or by Chariot.
+- If your identity provider enforces an **inactivity (idle) timeout** on refresh tokens, it must be **≥ 12 months**. Chariot only refreshes tokens when the donor is actively donating, so short idle timeouts will silently sever connections for your less-frequent donors.
+- **Do not bind refresh token validity to browser sessions, IP addresses, or device fingerprints.** Token refresh happens server-to-server from Chariot's infrastructure, not from the donor's browser.
+- **Refresh token rotation is supported but optional.** If you rotate, return the new refresh token in every refresh response, and honor the previous token for a short grace window (≥ 60 seconds) to tolerate concurrent refresh races. Chariot always persists the newest token it receives.
+- A donor changing their password **should not** invalidate the refresh token unless your security policy requires it (e.g., suspected account compromise). Routine credential rotation severing donation connections creates support burden on both sides.
+
+### Refresh request
+
+```
+POST https://auth.{your-domain}.com/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token
+&refresh_token={refresh_token}
+&client_id={CHARIOT_CLIENT_ID}
+&client_secret={CHARIOT_CLIENT_SECRET}
+```
+
+### When connections end
+
+A connection should end in exactly three ways:
+
+1. **Donor-initiated** — the donor unlinks your DAF inside DAFpay. Chariot calls your revocation endpoint (RFC 7009) if available, then deletes its stored tokens.
+2. **You revoke** — e.g., the donor closes their DAF account, or requests disconnection through your support team or consent portal. Subsequent refresh attempts should return `invalid_grant`.
+3. **Chariot revokes** — fraud or risk signals on our side.
+
+When Chariot receives `invalid_grant` on refresh (or a hard `401` on resource calls that a refresh doesn't fix), we mark the connection as disconnected and prompt the donor to re-link on their next donation. This should be the exception, not the routine.
+
+<Note>
+Like Plaid's Permissions Manager model, you may optionally offer donors a consent-management view in your portal listing their active DAFpay connection with the ability to revoke it. This is good practice but not required for launch.
+</Note>
+
+## Token storage on Chariot's side
+
+Chariot stores refresh tokens encrypted at rest (envelope encryption, per-token data keys), never logs token values, and scopes each token to a single Donor Account. Tokens are used exclusively for the donor-authorized operations described in [API Endpoints](/guides/dafpay/oauth/api-endpoints).
+
+## What Chariot needs from you
+
+- `ISSUER_BASE_URL` — your OIDC issuer (ideally with a discovery document)
+- `client_id` and `client_secret` for each environment
+- API base URLs and documentation for the [resource endpoints](/guides/dafpay/oauth/api-endpoints)
+- Sandbox environment details and at least 2 test donor accounts (one with multiple funds)
+- Configured refresh-token lifetime policy (so we can verify it meets the Connection Lifetime requirements)
