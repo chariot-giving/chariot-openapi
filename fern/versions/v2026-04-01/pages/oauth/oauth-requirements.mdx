@@ -1,6 +1,6 @@
 ---
 title: "OAuth & Token Requirements"
-subtitle: "What your authorization server must support — including the long-lived connection that makes one-time linking possible."
+subtitle: "What your authorization server must support — including the token lifecycle that keeps donors connected between donations."
 hidden: false
 ---
 
@@ -10,12 +10,12 @@ hidden: false
 |---|---|
 | OAuth 2.0 Authorization Code flow | **Required** |
 | OIDC ID Token with stable `sub` claim | **Required** |
-| Refresh tokens (`offline_access`) with **≥ 12-month validity** | Strongly recommended |
+| Refresh tokens (`offline_access`) | **Required** |
+| Refresh token rotation on each use — or **13+ month expiry** | Strongly recommended |
 | PKCE (S256) | **Required** |
 | `state` parameter round-trip | **Required** |
 | TLS 1.2+ on all endpoints | **Required** |
 | OIDC Discovery (`/.well-known/openid-configuration`) | Recommended |
-| Refresh token rotation | Optional |
 | Token revocation endpoint (RFC 7009) | Recommended |
 | Consent management portal for donors | Optional |
 
@@ -82,7 +82,7 @@ Expected response:
   "id_token": "eyJ...",
   "refresh_token": "v1.MjAy...",
   "token_type": "Bearer",
-  "expires_in": 1800,
+  "expires_in": 900,
   "scope": "openid profile email offline_access"
 }
 ```
@@ -100,21 +100,25 @@ The `id_token` must include:
 
 ### Access token
 
-- Lifetime: **10–60 minutes** recommended.
+- Lifetime: **15 minutes**.
 - JWT access tokens are preferred (validatable by your resource APIs without a network hop), but opaque tokens with introspection are acceptable.
 
 ## Connection Lifetime
 
-<Warning title="Long-lived refresh tokens are strongly recommended">
-You are not required to issue long-lived refresh tokens — but we strongly recommend it. Donors set up a DAFpay account and link your DAF to it **once**. Ideally that connection survives across sessions, devices, and months of inactivity — exactly like linking a bank account to a payments app. A donor who returns six months later and is forced to re-authenticate with your login page has a meaningfully degraded experience.
+<Warning title="Keep connections durable">
+A donor's connection to your DAF should persist across sessions, devices, and months of inactivity — like linking a bank account to a payments app. Donors will periodically re-authenticate to meet reauthorization requirements, but a donor who is forced through your login flow on every donation has a meaningfully degraded experience.
 </Warning>
 
-Specifically, we recommend:
+The **refresh token** is a long-lived token used to obtain new access tokens. It should be either:
 
-- **Refresh tokens that remain valid for at least 12 months** — ideally **non-expiring tokens that remain valid until explicitly revoked** by the donor, by you, or by Chariot.
-- If your identity provider enforces an **inactivity (idle) timeout** on refresh tokens, it should be **≥ 12 months**. Chariot only refreshes tokens when the donor is actively donating, so short idle timeouts will silently sever connections for your less-frequent donors.
+- **Rotated with each use (preferred)** — every refresh response returns a new refresh token, restarting its validity window. Active donors stay connected without re-authenticating, and dormant connections age out naturally.
+- **Or set to expire after 13+ months** — long enough that a donor who gives annually can return without re-linking, while still meeting reauthorization requirements.
+
+Additionally:
+
+- If your identity provider enforces an **inactivity (idle) timeout** on refresh tokens, it should be **≥ 13 months**. Chariot only refreshes tokens when the donor is actively donating, so short idle timeouts will silently sever connections for your less-frequent donors.
 - **Do not bind refresh token validity to browser sessions, IP addresses, or device fingerprints.** Token refresh happens server-to-server from Chariot's infrastructure, not from the donor's browser.
-- **Refresh token rotation is supported but optional.** If you rotate, return the new refresh token in every refresh response, and honor the previous token for a short grace window (≥ 60 seconds) to tolerate concurrent refresh races. Chariot always persists the newest token it receives.
+- **If you rotate**, return the new refresh token in every refresh response, and honor the previous token for a short grace window (≥ 60 seconds) to tolerate concurrent refresh races. Chariot always persists the newest token it receives.
 - A donor changing their password **should not** invalidate the refresh token unless your security policy requires it (e.g., suspected account compromise). Routine credential rotation severing donation connections creates support burden on both sides.
 
 ### Refresh request
@@ -131,13 +135,14 @@ grant_type=refresh_token
 
 ### When connections end
 
-A connection should end in exactly three ways:
+A connection ends in one of four ways:
 
-1. **Donor-initiated** — the donor unlinks your DAF inside DAFpay. Chariot calls your revocation endpoint (RFC 7009) if available, then deletes its stored tokens.
-2. **You revoke** — e.g., the donor closes their DAF account, or requests disconnection through your support team or consent portal. Subsequent refresh attempts should return `invalid_grant`.
-3. **Chariot revokes** — fraud or risk signals on our side.
+1. **Expiry** — the refresh token reaches the end of its validity window without being rotated. The donor reauthorizes on their next donation. This is the normal reauthorization path for dormant connections.
+2. **Donor-initiated** — the donor unlinks your DAF inside DAFpay. Chariot calls your revocation endpoint (RFC 7009) if available, then deletes its stored tokens.
+3. **You revoke** — e.g., the donor closes their DAF account, or requests disconnection through your support team or consent portal. Subsequent refresh attempts should return `invalid_grant`.
+4. **Chariot revokes** — fraud or risk signals on our side.
 
-When Chariot receives `invalid_grant` on refresh (or a hard `401` on resource calls that a refresh doesn't fix), we mark the connection as disconnected and prompt the donor to re-link on their next donation. This should be the exception, not the routine.
+When Chariot receives `invalid_grant` on refresh (or a hard `401` on resource calls that a refresh doesn't fix), we mark the connection as disconnected and prompt the donor to re-link on their next donation. Re-linking is lightweight — the donor signs in on your login page once more and a fresh connection is established.
 
 <Note>
 Like Plaid's Permissions Manager model, you may optionally offer donors a consent-management view in your portal listing their active DAFpay connection with the ability to revoke it. This is good practice but not required for launch.
@@ -153,4 +158,4 @@ Chariot stores refresh tokens encrypted at rest (envelope encryption, per-token 
 - `client_id` and `client_secret` for each environment
 - API base URLs and documentation for the [resource endpoints](/guides/dafpay/oauth/api-endpoints)
 - Sandbox environment details and at least 2 test donor accounts (one with multiple funds)
-- Configured refresh-token lifetime policy (so we can verify it meets the Connection Lifetime requirements)
+- Configured refresh-token policy — rotation on/off, lifetime, idle timeout (so we can verify it meets the Connection Lifetime guidance)

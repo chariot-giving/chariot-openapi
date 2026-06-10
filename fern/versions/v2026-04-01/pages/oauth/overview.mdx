@@ -20,7 +20,7 @@ This is the same model used across open finance (e.g., Plaid's FDX-aligned Core 
 
 - They sign in with the credentials they already have — on your branded login page. You control the authentication experience, including MFA.
 - They see their real fund names and grantable balances inside the donation flow.
-- **They link once.** DAFpay donors have persistent Donor Accounts. After the first connection, returning donors authenticate with DAFpay only — they are not asked to re-link their DAF. (See [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).)
+- **They rarely re-link.** DAFpay donors have persistent Donor Accounts. While their connection to your DAF is active, returning donors authenticate with DAFpay only — they're asked to re-link only when the connection expires or is revoked. (See [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).)
 
 **For you:**
 
@@ -38,7 +38,7 @@ This is the same model used across open finance (e.g., Plaid's FDX-aligned Core 
 | Grant creation | You decision Grant Requests via Chariot's API | Chariot creates grants via your API |
 | Best for | DAFs without API infrastructure | DAFs with (or building) OAuth + APIs |
 
-Both integrations result in the same thing for donors: a one-time setup, after which giving via DAFpay is instant.
+Both integrations result in the same thing for donors: after the initial setup, giving via DAFpay is instant.
 
 ## The flow
 
@@ -73,7 +73,7 @@ Donor                      DAFpay (Chariot)                 DAF (you)
   │                          │ ◄──────────────────────────────│
 ```
 
-**On every future donation**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the long-lived refresh token from step 5 and proceeds straight to steps 6–9. Your login page is never shown again unless the connection has been revoked.
+**On future donations**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the refresh token from step 5 and proceeds straight to steps 6–9. Your login page reappears only when the connection ends — when the donor's refresh token expires (reauthorization) or the connection is revoked.
 
 ## What you'll build
 
