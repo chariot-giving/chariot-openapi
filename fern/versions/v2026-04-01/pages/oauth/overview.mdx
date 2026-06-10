@@ -1,16 +1,16 @@
 ---
 title: "OAuth Integration"
-subtitle: "Donors connect their DAF with the credentials they already have — and give seamlessly at checkout."
+subtitle: "Let donors link their DAF account to DAFpay once — and give seamlessly at checkout."
 hidden: false
 ---
 
 <Note title="Audience">
-This guide is for **Donor Advised Fund (DAF) providers** who operate (or are willing to build) their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a single API call, see [Donor Accounts](/guides/dafpay/donor-accounts/overview) instead.
+This guide is for **Donor Advised Fund (DAF) providers** who operate their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a few API calls, see [Donor Accounts](/guides/dafpay/donor-accounts/overview) instead.
 </Note>
 
 ## Overview
 
-The OAuth Integration is the deepest way to connect your DAF to DAFpay. Instead of verifying donors with one-time codes, donors authenticate **directly on your login page** and are redirected back to DAFpay to complete their donation. DAFpay then communicates with your APIs to display fund balances, create grants, and track grant status — all under the donor's authorization.
+The OAuth Integration is an alternative way to connect your DAF to DAFpay. Instead of verifying donors with one-time codes, donors authenticate **directly on your login page** and are redirected back to DAFpay to complete their donation. DAFpay then communicates with your APIs to display fund balances, create grants, and track grant status — all under the donor's authorization.
 
 This is the same model used across open finance — it's how banks connect customer accounts to payment apps through aggregators like Plaid — scoped down to the handful of endpoints a DAF actually needs. If you already run Okta, Auth0, Cognito, or a custom OIDC-compliant identity provider, most of the authentication work is configuration rather than code.
 
