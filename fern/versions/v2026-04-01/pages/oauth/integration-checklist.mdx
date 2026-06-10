@@ -15,7 +15,7 @@ hidden: false
 * [ ]  Scopes: `openid profile email offline_access` (plus any custom scopes you require)
 * [ ]  Tokens scoped to DAF granting only — never to investment, banking, or brokerage systems (see [Scope of access](/guides/dafpay/oauth/security#scope-of-access))
 * [ ]  ID Token with stable `sub` and `email` claims
-* [ ]  Long-lived refresh tokens — 13+ months (or rotating with no fixed expiry) strongly recommended; see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)
+* [ ]  Refresh tokens rotated with each use (preferred) or expiring after 13+ months — see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)
 * [ ]  Error redirects on cancel/failure (`error`, `error_description`)
 * [ ]  Token revocation endpoint (recommended)
 
@@ -86,6 +86,6 @@ No. In the OAuth model, grants are created directly in your system via your Crea
 
 Yes — but a given donor connection uses one model. Most DAFs choose one; OAuth is the better donor experience if you can support it.
 
-**What happens if a donor's refresh token is revoked?**
+**What happens if a donor's refresh token expires or is revoked?**
 
-On their next donation, DAFpay prompts them to re-link your DAF — they go through your login flow once more, and a fresh long-lived connection is established. Their DAFpay account, history, and Donor Account are unaffected.
+On their next donation, DAFpay prompts them to re-link your DAF — they go through your login flow once more, and a fresh connection is established. Their DAFpay account, history, and Donor Account are unaffected. For expiry, this is the expected reauthorization path; rotation-on-use keeps active donors connected without it.
