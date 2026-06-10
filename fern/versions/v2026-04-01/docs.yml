@@ -74,6 +74,24 @@ navigation:
               - page: FAQ
                 slug: faq
                 path: ./pages/donor-accounts/faq.mdx
+          - section: OAuth Integration (for DAFs)
+            slug: oauth
+            contents:
+              - page: Overview
+                slug: overview
+                path: ./pages/oauth/overview.mdx
+              - page: OAuth & Token Requirements
+                slug: oauth-requirements
+                path: ./pages/oauth/oauth-requirements.mdx
+              - page: API Endpoints
+                slug: api-endpoints
+                path: ./pages/oauth/api-endpoints.mdx
+              - page: Security Best Practices
+                slug: security
+                path: ./pages/oauth/security.mdx
+              - page: Integration Checklist
+                slug: integration-checklist
+                path: ./pages/oauth/integration-checklist.mdx
       - section: Disbursements
         slug: disbursements
         contents:
