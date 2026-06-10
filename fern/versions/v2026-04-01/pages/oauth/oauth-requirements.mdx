@@ -10,7 +10,7 @@ hidden: false
 |---|---|
 | OAuth 2.0 Authorization Code flow | **Required** |
 | OIDC ID Token with stable `sub` claim | **Required** |
-| Refresh tokens (`offline_access`) with **≥ 12-month validity** | **Required** |
+| Refresh tokens (`offline_access`) with **≥ 12-month validity** | Strongly recommended |
 | PKCE (S256) | **Required** |
 | `state` parameter round-trip | **Required** |
 | TLS 1.2+ on all endpoints | **Required** |
@@ -105,14 +105,14 @@ The `id_token` must include:
 
 ## Connection Lifetime
 
-<Warning title="The single most important requirement in this guide">
-**Your refresh tokens must be long-lived.** Donors set up a DAFpay account and link your DAF to it **once**. That connection must survive across sessions, devices, and months of inactivity — exactly like linking a bank account to a payments app. A donor who returns six months later and is forced to re-authenticate with your login page is, for practical purposes, a broken integration.
+<Warning title="Long-lived refresh tokens are strongly recommended">
+You are not required to issue long-lived refresh tokens — but we strongly recommend it. Donors set up a DAFpay account and link your DAF to it **once**. Ideally that connection survives across sessions, devices, and months of inactivity — exactly like linking a bank account to a payments app. A donor who returns six months later and is forced to re-authenticate with your login page has a meaningfully degraded experience.
 </Warning>
 
-Specifically:
+Specifically, we recommend:
 
-- **Refresh tokens must remain valid for at least 12 months**, and we strongly recommend **non-expiring tokens that remain valid until explicitly revoked** by the donor, by you, or by Chariot.
-- If your identity provider enforces an **inactivity (idle) timeout** on refresh tokens, it must be **≥ 12 months**. Chariot only refreshes tokens when the donor is actively donating, so short idle timeouts will silently sever connections for your less-frequent donors.
+- **Refresh tokens that remain valid for at least 12 months** — ideally **non-expiring tokens that remain valid until explicitly revoked** by the donor, by you, or by Chariot.
+- If your identity provider enforces an **inactivity (idle) timeout** on refresh tokens, it should be **≥ 12 months**. Chariot only refreshes tokens when the donor is actively donating, so short idle timeouts will silently sever connections for your less-frequent donors.
 - **Do not bind refresh token validity to browser sessions, IP addresses, or device fingerprints.** Token refresh happens server-to-server from Chariot's infrastructure, not from the donor's browser.
 - **Refresh token rotation is supported but optional.** If you rotate, return the new refresh token in every refresh response, and honor the previous token for a short grace window (≥ 60 seconds) to tolerate concurrent refresh races. Chariot always persists the newest token it receives.
 - A donor changing their password **should not** invalidate the refresh token unless your security policy requires it (e.g., suspected account compromise). Routine credential rotation severing donation connections creates support burden on both sides.

@@ -14,7 +14,7 @@ hidden: false
 * [ ]  Authorization Code flow with PKCE (S256) and `state` round-trip
 * [ ]  Scopes: `openid profile email offline_access` (plus any custom scopes you require)
 * [ ]  ID Token with stable `sub` and `email` claims
-* [ ]  **Refresh tokens valid ≥ 12 months (recommended: until revoked) — see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)**
+* [ ]  Long-lived refresh tokens — ≥ 12 months strongly recommended, ideally until revoked; see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)
 * [ ]  Error redirects on cancel/failure (`error`, `error_description`)
 * [ ]  Token revocation endpoint (recommended)
 
@@ -61,7 +61,7 @@ Before launch, Chariot runs a certification pass against your sandbox:
 
 1. **Auth flows** — happy path, donor cancellation, error redirects, mobile web
 2. **Token lifecycle** — refresh after access-token expiry; rotation grace window (if rotating); behavior after revocation (`invalid_grant`)
-3. **Connection persistence** — refresh succeeds after a simulated dormancy period; this is a launch blocker if refresh tokens expire early
+3. **Connection persistence** — refresh succeeds after a simulated dormancy period, verified against your stated refresh-token policy
 4. **Grant lifecycle** — create, duplicate-submission idempotency, status polling/webhooks, rejection with `status_description`
 5. **Edge cases** — multi-fund donors, insufficient balance, unknown EIN, expired access token mid-flow
 
