@@ -317,6 +317,10 @@ paths:
       x-fern-sdk-group-name:
         - mailItems
       x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - mailItems
+      x-fern-sdk-method-name: create
   /v1/mail_items/{id}:
     get:
       x-fern-sdk-group-name:

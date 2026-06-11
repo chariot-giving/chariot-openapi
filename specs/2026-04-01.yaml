@@ -2764,8 +2764,8 @@ paths:
       description: |-
         List payment sources for your Chariot account.
 
-        Payment Sources represent segregated addresses for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        Payment Sources represent segregated electronic bank addresses (account + routing numbers)
+        used to receive incoming deposits from a specific payer.
         Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
         which in turn makes reconciliation of money and data seamless.
         Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
@@ -2807,8 +2807,8 @@ paths:
       description: |-
         Create a payment source for your account.
 
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        A Payment Source represents a segregated electronic bank address (account + routing numbers)
+        used to receive incoming deposits from a specific payer.
         Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
         which in turn makes reconciliation of money and data seamless.
       operationId: createPaymentSource
@@ -2853,8 +2853,8 @@ paths:
       description: |-
         Get a payment source by its unique identifier.
 
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        A Payment Source represents a segregated electronic bank address (account + routing numbers)
+        used to receive incoming deposits from a specific payer.
         Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
         which in turn makes reconciliation of money and data seamless.
         Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
@@ -3037,6 +3037,55 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Mail Item
+      description: |-
+        Create a mail item.
+
+        Use this endpoint to register physical mail that was received outside of Chariot's
+        integrated lockbox channel (for example, mail you received and scanned yourself).
+        Attach previously uploaded files (envelope and check images, accompanying paperwork)
+        via `file_ids`. To create a mail item from mail received through a Chariot-managed
+        lockbox, include the corresponding `lockbox_id`; otherwise leave it unset.
+
+        Mail items created this way enter the processing pipeline the same way lockbox-originated
+        mail items do — Chariot will attempt to extract Donations and Deposits from the attached files.
+      operationId: createMailItem
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateMailItemRequest"
+      responses:
+        "201":
+          description: The mail item was created.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailItem"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/mail_items/{id}:
@@ -4301,12 +4350,14 @@ components:
     PaymentSource:
       type: object
       description: |-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
+        A Payment Source represents a segregated electronic bank address (account + routing numbers)
+        used to receive incoming deposits from a specific payer.
         Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
         which in turn makes reconciliation of money and data seamless.
         Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
         Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+
+        Physical mail receipts are modeled separately as Lockboxes and Mail Items, not as Payment Sources.
       properties:
         id:
           type: string
@@ -4328,12 +4379,9 @@ components:
           enum:
             - manual
             - portal
-            - lockbox
             - grantmaker
         financial_address:
           $ref: "#/components/schemas/FinancialAddress"
-        lockbox:
-          $ref: "#/components/schemas/Lockbox"
         created_at:
           type: string
           format: date-time
@@ -4403,13 +4451,16 @@ components:
     MailItem:
       type: object
       description: |-
-        A Mail Item represents a unit of physical mail received at a Lockbox. Each Mail Item has
-        its own lifecycle and is the operational unit that reviewers act on.
-        A Mail Item may produce zero or more Donations and zero or one Deposit, and carries the
-        scanned artifacts (envelopes, checks, accompanying paperwork) associated with the receipt.
+        A Mail Item represents a unit of physical mail. It has its own lifecycle and is the
+        operational unit that reviewers act on. A Mail Item may produce zero or more Donations
+        and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
+        paperwork) associated with the receipt.
+
+        Mail Items are typically created automatically when Chariot processes a batch uploaded by
+        a lockbox provider. They can also be created directly via the API for physical mail
+        received outside of Chariot's integrated lockbox channel (in which case `lockbox_id` may be unset).
       required:
         - id
-        - lockbox_id
         - status
         - received_at
         - created_at
@@ -4477,7 +4528,6 @@ components:
       type: object
       description: |-
         A subhash containing information about the electronic bank address payment rail details.
-        This is only available for manual and connected_account payment sources.
       properties:
         ach:
           $ref: "#/components/schemas/AchAddress"
@@ -7668,6 +7718,39 @@ components:
                   last_name: "Johnson"
                 - ein: "530196605"
                   email: "ap@worldwildlife.org"
+    CreateMailItemRequest:
+      description: |-
+        The request to create a mail item for physical mail received outside of Chariot's
+        integrated lockbox channel. Files referenced by `file_ids` must be uploaded ahead of time
+        via `POST /v1/files`.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lockbox_id:
+                type: string
+                description: |-
+                  The unique identifier for the lockbox that received the mail item.
+                  Leave unset if the mail was received outside of Chariot's lockbox channel.
+                example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+              received_at:
+                type: string
+                format: date-time
+                description: |-
+                  The date and time when the mail item was physically received.
+                  Expressed in RFC 3339 format. Defaults to the current date and time if not provided.
+                example: "2026-01-15T00:00:00Z"
+              file_ids:
+                type: array
+                description: |-
+                  The unique identifiers for previously uploaded files associated with this mail item.
+                  Should include scanned images of the envelope, check images, and any accompanying paperwork.
+                items:
+                  type: string
+                example:
+                  - "file_01j8rs605a4gctmbm58d87mvsj"
     CreateFileRequest:
       description: |-
         The multipart/form-data request to upload a file to Chariot. The file's binary contents
