@@ -294,6 +294,34 @@ paths:
       x-fern-sdk-group-name:
         - paymentSources
       x-fern-sdk-method-name: get
+  /v1/lockboxes:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - lockboxes
+      x-fern-sdk-method-name: list
+  /v1/lockboxes/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - lockboxes
+      x-fern-sdk-method-name: get
+  /v1/mail_items:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - mailItems
+      x-fern-sdk-method-name: list
+  /v1/mail_items/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - mailItems
+      x-fern-sdk-method-name: get
   /v1/donations:
     get:
       x-fern-pagination:
@@ -334,11 +362,29 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
-  /v1/reconcile:
+  /v1/files:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: list
     post:
       x-fern-sdk-group-name:
-        - deposits
-      x-fern-sdk-method-name: reconcile
+        - files
+      x-fern-sdk-method-name: create
+  /v1/files/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: get
+  /v1/files/{id}/links:
+    post:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: createLink
   /v1/properties:
     get:
       x-fern-pagination:

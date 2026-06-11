@@ -2891,6 +2891,191 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes:
+    get:
+      summary: List Lockboxes
+      description: |-
+        List lockboxes for your account.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot.
+      operationId: listLockboxes
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListLockboxesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes/{id}:
+    get:
+      summary: Get a Lockbox
+      description: |-
+        Get a lockbox by its unique identifier.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+      operationId: getLockbox
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the lockbox
+          required: true
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the lockbox.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lockbox"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items:
+    get:
+      summary: List Mail Items
+      description: |-
+        List mail items for your account.
+
+        A Mail Item is a unit of physical mail received at a Lockbox. It has its own lifecycle
+        and is the operational unit reviewers act on. Each Mail Item may produce zero or more
+        Donations and zero or one Deposit.
+      operationId: listMailItems
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: lockbox_id
+          in: query
+          description: The unique identifier for the lockboxes to filter mail items by. Comma separated list of lockbox IDs.
+          required: false
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        - name: status
+          in: query
+          description: Filter mail items by status.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MailItemStatus"
+          example:
+            - "needs_review"
+        - name: created_at.after
+          in: query
+          description: Return mail items created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return mail items created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMailItemsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items/{id}:
+    get:
+      summary: Get a Mail Item
+      description: |-
+        Get a mail item by its unique identifier.
+
+        A Mail Item is a unit of physical mail received at a Lockbox.
+      operationId: getMailItem
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the mail item
+          required: true
+          schema:
+            type: string
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the mail item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailItem"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
@@ -2922,6 +3107,20 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: lockbox_id
+          in: query
+          description: The unique identifier for the lockboxes to filter donations by. Comma separated list of lockbox IDs.
+          required: false
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        - name: mail_item_id
+          in: query
+          description: The unique identifier for the mail item to filter donations by.
+          required: false
+          schema:
+            type: string
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3126,6 +3325,32 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: lockbox_id
+          in: query
+          description: The unique identifier for the lockboxes to filter deposits by. Comma separated list of lockbox IDs.
+          required: false
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        - name: mail_item_id
+          in: query
+          description: The unique identifier for the mail item to filter deposits by.
+          required: false
+          schema:
+            type: string
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+        - name: type
+          in: query
+          description: Filter deposits by the type of transfer that produced them.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/TransferType"
+          example:
+            - "check_deposit"
         - name: settled_at.after
           in: query
           description: Return deposits with a settled date and time after the given date and time.
@@ -3222,6 +3447,184 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files for your account.
+
+        A File represents a file uploaded to Chariot. Files are referenced by Donations
+        (as `artifact_file_ids`) and by Mail Items (as `file_ids`).
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: purpose
+          in: query
+          description: Filter files by purpose. Comma separated list of purposes.
+          required: false
+          schema:
+            type: string
+          example: "inbound_mail_item"
+        - name: created_at.after
+          in: query
+          description: Return files created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return files created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a File
+      description: |-
+        Upload a file to Chariot.
+
+        Send the file's binary contents and metadata in a single `multipart/form-data` request.
+        The returned File can be referenced by its `id` from Donations (via `artifact_file_ids`) and from Mail Items (via `file_ids`).
+      operationId: createFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFileRequest"
+      responses:
+        "201":
+          description: The file was uploaded.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a File
+      description: |-
+        Get a file by its unique identifier.
+
+        A File represents a file uploaded to Chariot. To download the file's contents,
+        create a File Link with the `POST /v1/files/{id}/links` endpoint.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/links:
+    post:
+      summary: Create a File Link
+      description: |-
+        Create a short-lived, unauthenticated URL that can be used to download the file's contents.
+
+        File Links expire after a short period. To download the file again after a link expires,
+        create a new File Link.
+      operationId: createFileLink
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "201":
+          description: The file link was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/properties:
@@ -3946,11 +4349,130 @@ components:
     Lockbox:
       type: object
       description: |-
-        A US mailing address to process incoming physical mail and checks.
-        This is only available for lockbox payment sources.
+        A Lockbox represents a physical mailing address operated by a third-party provider (e.g., Stable, CDS)
+        that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot in partnership with the provider.
+      required:
+        - id
+        - provider
+        - created_at
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the lockbox.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
         address:
-          $ref: "#/components/schemas/PostalAddress"
+          description: The physical mailing address for the lockbox.
+          allOf:
+            - $ref: "#/components/schemas/PostalAddress"
+        provider:
+          description: Information about the third-party provider that operates this lockbox.
+          allOf:
+            - $ref: "#/components/schemas/LockboxProvider"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was last updated.
+          example: "2020-01-31T23:59:59Z"
+    LockboxProvider:
+      type: object
+      description: |-
+        Information about the third-party provider that operates a Lockbox on Chariot's behalf
+        (e.g., Stable, CDS). Provided for display purposes.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the lockbox provider.
+          example: "Stable"
+        logo_url:
+          type: string
+          format: uri
+          description: A URL to the provider's logo, suitable for display in customer dashboards.
+          example: "https://assets.givechariot.com/lockbox-providers/stable.png"
+    MailItem:
+      type: object
+      description: |-
+        A Mail Item represents a unit of physical mail received at a Lockbox. Each Mail Item has
+        its own lifecycle and is the operational unit that reviewers act on.
+        A Mail Item may produce zero or more Donations and zero or one Deposit, and carries the
+        scanned artifacts (envelopes, checks, accompanying paperwork) associated with the receipt.
+      required:
+        - id
+        - lockbox_id
+        - status
+        - received_at
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the mail item.
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+        lockbox_id:
+          type: string
+          description: The unique identifier for the lockbox that received the mail item.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        status:
+          $ref: "#/components/schemas/MailItemStatus"
+        received_at:
+          type: string
+          format: date-time
+          description: The date and time when the mail item was physically received at the lockbox.
+          example: "2020-01-31T23:59:59Z"
+        file_ids:
+          type: array
+          description: |-
+            The unique identifiers for the scanned source files associated with the mail item.
+            These include scanned images of the envelope, check images, and any accompanying paperwork.
+          items:
+            type: string
+          example:
+            - "file_01j8rs605a4gctmbm58d87mvsj"
+        properties:
+          type: array
+          description: A list of custom properties assigned to the mail item.
+          items:
+            $ref: "#/components/schemas/PropertyAssignment"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItemStatus:
+      type: string
+      description: |-
+        The processing status of a Mail Item.
+
+        - `received`: The mail item has been logged at the lockbox but not yet processed.
+        - `processing`: The mail item is being scanned and parsed.
+        - `needs_review`: Extraction completed but produced ambiguous results that require human review.
+        - `processed`: The mail item was successfully parsed into one or more Donations and (optionally) a Deposit.
+        - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
+      enum:
+        - received
+        - processing
+        - needs_review
+        - processed
+        - rejected
+      example: "processed"
     FinancialAddress:
       type: object
       description: |-
@@ -4000,7 +4522,22 @@ components:
           type: string
           description: |-
             The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
+            Identifies the payer bucket for this donation. May be set independently of `lockbox_id` / `mail_item_id`
+            (for example, a Benevity grant that arrives by check is associated with both the Benevity payment source
+            and the lockbox that received it).
           example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
+        lockbox_id:
+          type: string
+          description: |-
+            The unique identifier for the lockbox that physically received the mail this donation was extracted from.
+            Set for donations originating from physical mail. May be set independently of `payment_source_id`.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        mail_item_id:
+          type: string
+          description: |-
+            The unique identifier for the specific mail item this donation was extracted from.
+            Set whenever `lockbox_id` is set.
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
         amount_gross:
           type: integer
           format: int64
@@ -4081,13 +4618,15 @@ components:
             A list of custom properties for the donation.
           items:
             $ref: "#/components/schemas/PropertyAssignment"
-        artifacts:
+        artifact_file_ids:
           type: array
           description: |-
-            A list of source artifacts that were used to create the donation.
+            The unique identifiers for the source files that were used to create the donation.
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
-            $ref: "#/components/schemas/Artifact"
+            type: string
+          example:
+            - "file_01j8rs605a4gctmbm58d87mvsj"
         created_at:
           type: string
           format: date-time
@@ -4121,30 +4660,6 @@ components:
             - RECEIVED_IN_CHARIOT
             - RECEIVED_OUTSIDE_CHARIOT
             - CANCELED
-    Artifact:
-      type: object
-      description: |-
-        An artifact is a source file that was used to create the donation.
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the artifact.
-          example: "artifact_01j8rs605a4gctmbm58d87mvsj"
-        name:
-          type: string
-          description: The name of the artifact.
-          example: "donation_receipt.pdf"
-        file_id:
-          type: string
-          description: The unique identifier for the file that the artifact is associated with.
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the artifact was created.
-          example: "2020-01-31T23:59:59Z"
     File:
       type: object
       description: |-
@@ -4166,13 +4681,15 @@ components:
           example: "Donation receipt for donation to the nonprofit"
         purpose:
           type: string
-          description: The purpose of the file.
+          description: |-
+            The categorization of the file. Additional values may be added over time;
+            clients should handle unknown values gracefully.
           enum:
-            - integration_download
             - inbound_mail_item
+            - donation_artifact
             - inbound_email
-            - grant_letter
-            - manual_upload
+            - other
+          example: "donation_artifact"
         content_type:
           type: string
           description: The MIME type of the file.
@@ -4518,8 +5035,24 @@ components:
           example: deposit_01j8rs605a4gctmbm58d87mvsj
         payment_source_id:
           type: string
-          description: The unique identifier for the payment source that contains the money for the deposit.
+          description: |-
+            The unique identifier for the payment source that contains the money for the deposit.
+            Identifies the payer bucket. May be set independently of `lockbox_id` / `mail_item_id` —
+            for example, a deposit from a Benevity check that arrived at a lockbox is associated with
+            both the Benevity payment source and the lockbox that received it.
           example: payment_source_01j8rs605a4gctmbm58d87mvsj
+        lockbox_id:
+          type: string
+          description: |-
+            The unique identifier for the lockbox that physically received the mail this deposit was created from.
+            Set for deposits originating from physical mail. May be set independently of `payment_source_id`.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        mail_item_id:
+          type: string
+          description: |-
+            The unique identifier for the specific mail item this deposit was created from.
+            Set whenever `lockbox_id` is set.
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
         settled_at:
           type: string
           format: date-time
@@ -4567,10 +5100,13 @@ components:
       type: object
       description: A subhash containing information about the transfer associated with the deposit.
       required:
+        - type
         - amount
         - currency
         - financial_account_id
       properties:
+        type:
+          $ref: "#/components/schemas/TransferType"
         amount:
           type: integer
           format: int64
@@ -4589,17 +5125,34 @@ components:
           description: A description of the transfer.
           example: "Disbursement to nonprofit"
         inbound_account_transfer:
-          description: A subhash containing information about the inbound account transfer associated with the deposit.
+          description: A subhash containing information about the inbound account transfer associated with the deposit. Populated when `type` is `inbound_account_transfer`.
           allOf:
             - $ref: "#/components/schemas/InboundAccountTransfer"
         inbound_ach_transfer:
-          description: A subhash containing information about the inbound ACH transfer associated with the deposit.
+          description: A subhash containing information about the inbound ACH transfer associated with the deposit. Populated when `type` is `inbound_ach_transfer`.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
         check_deposit:
-          description: A subhash containing information about the check deposit associated with the deposit.
+          description: A subhash containing information about the check deposit associated with the deposit. Populated when `type` is `check_deposit`.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+    TransferType:
+      type: string
+      description: |-
+        The type of transfer that produced the deposit. Acts as a discriminator
+        indicating which of `inbound_account_transfer`, `inbound_ach_transfer`,
+        or `check_deposit` is populated on the Transfer. The enum value matches
+        the name of the populated sub-object.
+
+        - `inbound_account_transfer`: An internal transfer between Chariot-held financial accounts.
+        - `inbound_ach_transfer`: An external inbound ACH transfer.
+        - `check_deposit`: A physical check that was deposited.
+      # TODO: add `inbound_real_time_payments_transfer` once the RTP rail is supported.
+      enum:
+        - inbound_account_transfer
+        - inbound_ach_transfer
+        - check_deposit
+      example: "inbound_ach_transfer"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -7115,6 +7668,39 @@ components:
                   last_name: "Johnson"
                 - ein: "530196605"
                   email: "ap@worldwildlife.org"
+    CreateFileRequest:
+      description: |-
+        The multipart/form-data request to upload a file to Chariot. The file's binary contents
+        are sent in the `file` part; categorization and metadata are sent as additional form fields.
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+              - purpose
+            properties:
+              file:
+                type: string
+                format: binary
+                description: The file's binary contents.
+              purpose:
+                type: string
+                description: |-
+                  The categorization of the file. Determines how Chariot treats the file internally
+                  and where it can be referenced from. Additional values may be added over time;
+                  clients should handle unknown values gracefully.
+                enum:
+                  - inbound_mail_item
+                  - donation_artifact
+                  - inbound_email
+                  - other
+                example: "donation_artifact"
+              description:
+                type: string
+                description: An optional human-readable description of the file.
+                example: "Donation receipt for donation to the nonprofit"
     UpdateDonationRequest:
       description: |-
         The request to update donation fields using a field mask.
@@ -8484,6 +9070,48 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentSource"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListLockboxesResponse:
+      description: The response for Lockboxes.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lockbox"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailItemsResponse:
+      description: The response for MailItems.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailItem"
               next_page_token:
                 type: string
                 description: |-
