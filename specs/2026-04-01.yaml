@@ -3002,9 +3002,12 @@ paths:
           schema:
             type: string
           example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-        - name: status
+        - name: status.in
           in: query
-          description: Filter mail items by status.
+          description: |-
+            Filter Mail Items to only those with the specified status.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?status.in=needs_review,processing`.
           required: false
           style: form
           explode: false
@@ -3388,9 +3391,12 @@ paths:
           schema:
             type: string
           example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
-        - name: type
+        - name: type.in
           in: query
-          description: Filter deposits by the type of transfer that produced them.
+          description: |-
+            Filter Deposits to only those produced by the specified transfer types.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?type.in=check_deposit,inbound_ach_transfer`.
           required: false
           style: form
           explode: false
@@ -5196,22 +5202,27 @@ components:
           description: A subhash containing information about the check deposit associated with the deposit. Populated when `type` is `check_deposit`.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A subhash containing information about the inbound Real-Time Payments (RTP) transfer associated with the deposit. Populated when `type` is `inbound_real_time_payments_transfer`.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
     TransferType:
       type: string
       description: |-
         The type of transfer that produced the deposit. Acts as a discriminator
         indicating which of `inbound_account_transfer`, `inbound_ach_transfer`,
-        or `check_deposit` is populated on the Transfer. The enum value matches
-        the name of the populated sub-object.
+        `check_deposit`, or `inbound_real_time_payments_transfer` is populated on
+        the Transfer. The enum value matches the name of the populated sub-object.
 
         - `inbound_account_transfer`: An internal transfer between Chariot-held financial accounts.
         - `inbound_ach_transfer`: An external inbound ACH transfer.
         - `check_deposit`: A physical check that was deposited.
-      # TODO: add `inbound_real_time_payments_transfer` once the RTP rail is supported.
+        - `inbound_real_time_payments_transfer`: An inbound Real-Time Payments (RTP) transfer.
       enum:
         - inbound_account_transfer
         - inbound_ach_transfer
         - check_deposit
+        - inbound_real_time_payments_transfer
       example: "inbound_ach_transfer"
     InboundAccountTransfer:
       type: object
@@ -5301,6 +5312,46 @@ components:
             - deposited
             - rejected
             - returned
+    InboundRealTimePaymentsTransfer:
+      type: object
+      description: |-
+        An inbound Real-Time Payments (RTP) transfer settling into your financial account.
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: The status of the RTP transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+            - declined
+        debtor_name:
+          type: string
+          description: The name of the debtor (sender) of the RTP transfer.
+          example: "Acme Foundation"
+        debtor_routing_number:
+          type: string
+          description: The routing number of the debtor's bank.
+          example: "021000021"
+        debtor_account_number:
+          type: string
+          description: The account number of the debtor.
+          example: "1234567890"
+        transaction_identification:
+          type: string
+          description: The RTP transaction identifier issued by the network.
+          example: "20260612A1B2C3D4E5F6"
+        remittance_information:
+          type: string
+          description: Free-form remittance / memo information sent with the RTP transfer.
+          example: "Grant payment Q1"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the RTP transfer was confirmed. Populated when `status` is `confirmed`.
+          example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
       description: |-
