@@ -3505,7 +3505,7 @@ paths:
         List files for your account.
 
         A File represents a file uploaded to Chariot. Files are referenced by Donations
-        (as `artifact_file_ids`) and by Mail Items (as `file_ids`).
+        (via `artifacts`) and by Mail Items (via `file_ids`).
       operationId: listFiles
       tags:
         - files
@@ -3563,7 +3563,7 @@ paths:
         Upload a file to Chariot.
 
         Send the file's binary contents and metadata in a single `multipart/form-data` request.
-        The returned File can be referenced by its `id` from Donations (via `artifact_file_ids`) and from Mail Items (via `file_ids`).
+        The returned File can be referenced by its `id` from Donations (via `artifacts`) and from Mail Items (via `file_ids`).
       operationId: createFile
       tags:
         - files
@@ -4668,15 +4668,13 @@ components:
             A list of custom properties for the donation.
           items:
             $ref: "#/components/schemas/PropertyAssignment"
-        artifact_file_ids:
+        artifacts:
           type: array
           description: |-
-            The unique identifiers for the source files that were used to create the donation.
+            The source files that were used to create the donation.
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
-            type: string
-          example:
-            - "file_01j8rs605a4gctmbm58d87mvsj"
+            $ref: "#/components/schemas/Artifact"
         created_at:
           type: string
           format: date-time
@@ -4710,6 +4708,18 @@ components:
             - RECEIVED_IN_CHARIOT
             - RECEIVED_OUTSIDE_CHARIOT
             - CANCELED
+    Artifact:
+      type: object
+      description: |-
+        A reference to a source file associated with a Donation. Wraps a `file_id` so
+        per-attachment metadata can be added in the future without breaking clients.
+      required:
+        - file_id
+      properties:
+        file_id:
+          type: string
+          description: The unique identifier for the underlying File.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
     File:
       type: object
       description: |-
