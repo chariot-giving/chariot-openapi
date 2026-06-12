@@ -3042,55 +3042,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-    post:
-      summary: Create a Mail Item
-      description: |-
-        Create a mail item.
-
-        Use this endpoint to register physical mail that was received outside of Chariot's
-        integrated lockbox channel (for example, mail you received and scanned yourself).
-        Attach previously uploaded files (envelope and check images, accompanying paperwork)
-        via `file_ids`. To create a mail item from mail received through a Chariot-managed
-        lockbox, include the corresponding `lockbox_id`; otherwise leave it unset.
-
-        Mail items created this way enter the processing pipeline the same way lockbox-originated
-        mail items do — Chariot will attempt to extract Donations and Deposits from the attached files.
-      operationId: createMailItem
-      tags:
-        - mailItems
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          description: The idempotency key for the request
-          required: false
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/CreateMailItemRequest"
-      responses:
-        "201":
-          description: The mail item was created.
-          headers:
-            Location:
-              $ref: "#/components/headers/Location"
-            Idempotency-Key:
-              $ref: "#/components/headers/Idempotency-Key"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MailItem"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/mail_items/{id}:
     get:
       summary: Get a Mail Item
@@ -4462,11 +4413,12 @@ components:
         and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
         paperwork) associated with the receipt.
 
-        Mail Items are typically created automatically when Chariot processes a batch uploaded by
-        a lockbox provider. They can also be created directly via the API for physical mail
-        received outside of Chariot's integrated lockbox channel (in which case `lockbox_id` may be unset).
+        Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
+        They are not created via the public API — to bring donation data and money in directly,
+        use the Donations and Deposits APIs.
       required:
         - id
+        - lockbox_id
         - status
         - received_at
         - created_at
@@ -7779,39 +7731,6 @@ components:
                   last_name: "Johnson"
                 - ein: "530196605"
                   email: "ap@worldwildlife.org"
-    CreateMailItemRequest:
-      description: |-
-        The request to create a mail item for physical mail received outside of Chariot's
-        integrated lockbox channel. Files referenced by `file_ids` must be uploaded ahead of time
-        via `POST /v1/files`.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              lockbox_id:
-                type: string
-                description: |-
-                  The unique identifier for the lockbox that received the mail item.
-                  Leave unset if the mail was received outside of Chariot's lockbox channel.
-                example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-              received_at:
-                type: string
-                format: date-time
-                description: |-
-                  The date and time when the mail item was physically received.
-                  Expressed in RFC 3339 format. Defaults to the current date and time if not provided.
-                example: "2026-01-15T00:00:00Z"
-              file_ids:
-                type: array
-                description: |-
-                  The unique identifiers for previously uploaded files associated with this mail item.
-                  Should include scanned images of the envelope, check images, and any accompanying paperwork.
-                items:
-                  type: string
-                example:
-                  - "file_01j8rs605a4gctmbm58d87mvsj"
     CreateFileRequest:
       description: |-
         The multipart/form-data request to upload a file to Chariot. The file's binary contents
