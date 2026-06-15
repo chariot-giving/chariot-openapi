@@ -6418,6 +6418,11 @@ components:
                 description: "A note to the recipient. Maximum length: 600 characters."
                 maxLength: 600
                 example: "Allocate to education"
+              recipient_name:
+                type: string
+                description: "The intended recipient of the grant (for example, a fiscal sponsor's project). Maximum length: 255 characters."
+                maxLength: 255
+                example: "Clean Water Project"
               donors:
                 $ref: "#/components/schemas/TransactionDonors"
               daf_grant:
@@ -6538,6 +6543,11 @@ components:
           description: "A note to the recipient."
           nullable: true
           example: "Allocate to education"
+        recipient_name:
+          type: string
+          description: "The intended recipient of the grant (for example, a fiscal sponsor's project)."
+          nullable: true
+          example: "Clean Water Project"
         donors:
           $ref: "#/components/schemas/TransactionDonors"
         daf_grant:
