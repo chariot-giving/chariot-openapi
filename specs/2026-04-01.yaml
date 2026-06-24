@@ -2997,7 +2997,7 @@ paths:
             type: string
         - name: lockbox_id
           in: query
-          description: The unique identifier for the lockboxes to filter mail items by. Comma separated list of lockbox IDs.
+          description: The unique identifier for the lockbox to filter mail items by.
           required: false
           schema:
             type: string
@@ -3061,7 +3061,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: Successfully retrieved the mail item.
@@ -3112,7 +3112,7 @@ paths:
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
         - name: lockbox_id
           in: query
-          description: The unique identifier for the lockboxes to filter donations by. Comma separated list of lockbox IDs.
+          description: The unique identifier for the lockbox to filter donations by.
           required: false
           schema:
             type: string
@@ -3123,7 +3123,7 @@ paths:
           required: false
           schema:
             type: string
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3330,7 +3330,7 @@ paths:
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
         - name: lockbox_id
           in: query
-          description: The unique identifier for the lockboxes to filter deposits by. Comma separated list of lockbox IDs.
+          description: The unique identifier for the lockbox to filter deposits by.
           required: false
           schema:
             type: string
@@ -3341,7 +3341,7 @@ paths:
           required: false
           schema:
             type: string
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         - name: type.in
           in: query
           description: |-
@@ -4360,7 +4360,6 @@ components:
         Lockboxes are provisioned and managed by Chariot in partnership with the provider.
       required:
         - id
-        - provider
         - created_at
       properties:
         id:
@@ -4372,10 +4371,6 @@ components:
           description: The physical mailing address for the lockbox.
           allOf:
             - $ref: "#/components/schemas/PostalAddress"
-        provider:
-          description: Information about the third-party provider that operates this lockbox.
-          allOf:
-            - $ref: "#/components/schemas/LockboxProvider"
         created_at:
           type: string
           format: date-time
@@ -4388,23 +4383,6 @@ components:
           readOnly: true
           description: The date and time when the lockbox was last updated.
           example: "2020-01-31T23:59:59Z"
-    LockboxProvider:
-      type: object
-      description: |-
-        Information about the third-party provider that operates a Lockbox on Chariot's behalf
-        (e.g., Stable, CDS). Provided for display purposes.
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          description: The name of the lockbox provider.
-          example: "Stable"
-        logo_url:
-          type: string
-          format: uri
-          description: A URL to the provider's logo, suitable for display in customer dashboards.
-          example: "https://assets.givechariot.com/lockbox-providers/stable.png"
     MailItem:
       type: object
       description: |-
@@ -4427,7 +4405,7 @@ components:
           type: string
           readOnly: true
           description: The unique identifier for the mail item.
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         lockbox_id:
           type: string
           description: The unique identifier for the lockbox that received the mail item.
@@ -4545,7 +4523,7 @@ components:
           description: |-
             The unique identifier for the specific mail item this donation was extracted from.
             Set whenever `lockbox_id` is set.
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         amount_gross:
           type: integer
           format: int64
@@ -5070,7 +5048,7 @@ components:
           description: |-
             The unique identifier for the specific mail item this deposit was created from.
             Set whenever `lockbox_id` is set.
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         settled_at:
           type: string
           format: date-time
@@ -5158,23 +5136,30 @@ components:
           description: A subhash containing information about the inbound Real-Time Payments (RTP) transfer associated with the deposit. Populated when `type` is `inbound_real_time_payments_transfer`.
           allOf:
             - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A subhash containing information about the inbound wire transfer associated with the deposit. Populated when `type` is `inbound_wire_transfer`.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
     TransferType:
       type: string
       description: |-
         The type of transfer that produced the deposit. Acts as a discriminator
         indicating which of `inbound_account_transfer`, `inbound_ach_transfer`,
-        `check_deposit`, or `inbound_real_time_payments_transfer` is populated on
-        the Transfer. The enum value matches the name of the populated sub-object.
+        `check_deposit`, `inbound_real_time_payments_transfer`, or
+        `inbound_wire_transfer` is populated on the Transfer. The enum value
+        matches the name of the populated sub-object.
 
         - `inbound_account_transfer`: An internal transfer between Chariot-held financial accounts.
         - `inbound_ach_transfer`: An external inbound ACH transfer.
         - `check_deposit`: A physical check that was deposited.
         - `inbound_real_time_payments_transfer`: An inbound Real-Time Payments (RTP) transfer.
+        - `inbound_wire_transfer`: An inbound wire transfer.
       enum:
         - inbound_account_transfer
         - inbound_ach_transfer
         - check_deposit
         - inbound_real_time_payments_transfer
+        - inbound_wire_transfer
       example: "inbound_ach_transfer"
     InboundAccountTransfer:
       type: object
@@ -5303,6 +5288,37 @@ components:
           type: string
           format: date-time
           description: The date and time the RTP transfer was confirmed. Populated when `status` is `confirmed`.
+          example: "2020-01-31T23:00:00Z"
+    InboundWireTransfer:
+      type: object
+      description: |-
+        An inbound wire transfer settling into your financial account.
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: The status of the wire transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+        originator_name:
+          type: string
+          description: The name of the originator (sender) of the wire transfer.
+          example: "Acme Foundation"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originating bank.
+          example: "021000021"
+        originator_account_number:
+          type: string
+          description: The account number of the originator.
+          example: "1234567890"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the wire transfer was confirmed. Populated when `status` is `confirmed`.
           example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
