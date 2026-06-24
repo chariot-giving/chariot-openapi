@@ -1672,6 +1672,347 @@ paths:
           $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/contributions:
+    post:
+      summary: Create Contribution
+      description: |-
+        Record a contribution into a [Donor Account](/api/donor-accounts). When the contribution settles, its
+        amount is credited to the account's `balance`. Available for Donor Accounts whose assets are held by
+        Chariot.
+      operationId: create-contribution
+      tags:
+        - Contributions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: A client-generated identifier for the request. Replays with the same key return `409 Conflict`.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - donor_account_id
+                - amount
+                - source
+              properties:
+                donor_account_id:
+                  type: string
+                  description: The Donor Account to credit.
+                  example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                amount:
+                  type: integer
+                  format: int64
+                  description: The contribution amount, in cents (USD).
+                  example: 500000
+                source:
+                  $ref: "#/components/schemas/ContributionSource"
+                metadata:
+                  type: object
+                  description: A map of arbitrary string keys and values to store information about the object.
+                  additionalProperties:
+                    type: string
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contribution"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List Contributions
+      description: Returns contributions, optionally filtered by Donor Account and status.
+      operationId: list-contributions
+      tags:
+        - Contributions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: donor_account_id
+          in: query
+          description: Filter contributions by the ID of the associated [Donor Account](/api/donor-accounts).
+          required: false
+          schema:
+            type: string
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        - name: status
+          in: query
+          description: Filter contributions by status.
+          required: false
+          schema:
+            $ref: "#/components/schemas/ContributionStatus"
+        - name: page_limit
+          in: query
+          description: The number of results to return. Defaults to 10, max is 100.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page_token
+          in: query
+          description: A token to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contribution"
+                  next_page_token:
+                    type: string
+                    description: A token to retrieve the next page of results. Absent when there are no more results.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/contributions/{id}:
+    get:
+      summary: Get Contribution
+      description: Retrieve a Contribution with the given ID.
+      operationId: get-contribution
+      tags:
+        - Contributions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the Contribution.
+          required: true
+          schema:
+            type: string
+          example: "contribution_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contribution"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donor_onboarding_sessions:
+    post:
+      summary: Create Donor Onboarding Session
+      description: |-
+        Create a hosted onboarding session for a donor and receive a `session_url` to redirect them to. The
+        donor completes Chariot-hosted onboarding (identity verification and required details); when they finish,
+        Chariot creates the [Donor Account](/api/donor-accounts) and redirects them to your `redirect_url` with
+        `donor_onboarding_session_id` and `donor_account_id` query parameters.
+
+        This is how Donor Accounts are created for accounts whose assets are held by Chariot — in that model the
+        [Create Donor Account](/api/donor-accounts/create) endpoint is not used.
+      operationId: create-donor-onboarding-session
+      tags:
+        - Donor Onboarding Sessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: A client-generated identifier for the request. Replays with the same key return `409 Conflict`.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - redirect_url
+              properties:
+                redirect_url:
+                  type: string
+                  format: uri
+                  description: The URL to redirect the donor to after they finish onboarding.
+                  example: "https://acme.example.com/daf/onboarding/complete"
+                donor:
+                  type: object
+                  description: Optional donor details used to prefill the onboarding form.
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: "warrenBuffet@example.com"
+                    first_name:
+                      type: string
+                      example: "Warren"
+                    last_name:
+                      type: string
+                      example: "Buffet"
+                external_id:
+                  type: string
+                  description: Your internal identifier for this donor, carried onto the created Donor Account.
+                  example: "ACME-DAF-DONOR-1042"
+                metadata:
+                  type: object
+                  description: A map of arbitrary string keys and values to store information about the object.
+                  additionalProperties:
+                    type: string
+      responses:
+        "201":
+          description: Created
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorOnboardingSession"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List Donor Onboarding Sessions
+      description: Returns donor onboarding sessions, optionally filtered by status.
+      operationId: list-donor-onboarding-sessions
+      tags:
+        - Donor Onboarding Sessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter sessions by status.
+          required: false
+          schema:
+            $ref: "#/components/schemas/DonorOnboardingSessionStatus"
+        - name: page_limit
+          in: query
+          description: The number of results to return. Defaults to 10, max is 100.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page_token
+          in: query
+          description: A token to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DonorOnboardingSession"
+                  next_page_token:
+                    type: string
+                    description: A token to retrieve the next page of results. Absent when there are no more results.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donor_onboarding_sessions/{id}:
+    get:
+      summary: Get Donor Onboarding Session
+      description: Retrieve a Donor Onboarding Session with the given ID.
+      operationId: get-donor-onboarding-session
+      tags:
+        - Donor Onboarding Sessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the Donor Onboarding Session.
+          required: true
+          schema:
+            type: string
+          example: "donor_onboarding_session_01jpjenf5q6cawy43yxfcrxhct"
+      responses:
+        "200":
+          description: OK
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DonorOnboardingSession"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/events:
     get:
       summary: List Events
@@ -3345,6 +3686,172 @@ components:
       type: http
       scheme: bearer
   schemas:
+    DonorOnboardingSessionStatus:
+      type: string
+      description: |-
+        The status of a [Donor Onboarding Session](/api/donor-onboarding-sessions).
+          * `active`: The session is open; the donor can complete onboarding via `session_url`.
+          * `expired`: The session's `expires_at` has passed and it can no longer be used.
+      enum:
+        - active
+        - expired
+      example: active
+    DonorOnboardingSession:
+      type: object
+      description: |-
+        A hosted onboarding session used to create a Chariot-custodied [Donor Account](/api/donor-accounts).
+        Redirect the donor to `session_url`; when they complete onboarding, Chariot creates the Donor Account
+        and populates `donor_account_id`.
+      required:
+        - id
+        - status
+        - session_url
+        - redirect_url
+        - created_at
+        - expires_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this Donor Onboarding Session.
+          example: "donor_onboarding_session_01jpjenf5q6cawy43yxfcrxhct"
+        status:
+          $ref: "#/components/schemas/DonorOnboardingSessionStatus"
+        session_url:
+          type: string
+          format: uri
+          readOnly: true
+          description: The Chariot-hosted onboarding link to redirect the donor to.
+          example: "https://onboard.givechariot.com/s/9f3c1a2b"
+        redirect_url:
+          type: string
+          format: uri
+          description: The URL the donor is returned to after finishing onboarding.
+          example: "https://acme.example.com/daf/onboarding/complete"
+        donor_account_id:
+          type: string
+          nullable: true
+          readOnly: true
+          description: The [Donor Account](/api/donor-accounts) created when the donor completes onboarding. Null until then.
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        external_id:
+          type: string
+          nullable: true
+          description: Your internal identifier provided at creation, carried onto the created Donor Account.
+          example: "ACME-DAF-DONOR-1042"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time when this object was created, expressed in RFC 3339 format.
+          example: "2026-04-01T12:00:00Z"
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time when the session expires and can no longer be used, expressed in RFC 3339 format.
+          example: "2026-04-08T12:00:00Z"
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object.
+          additionalProperties:
+            type: string
+    ContributionStatus:
+      type: string
+      description: |-
+        The lifecycle status of a [Contribution](/api/contributions).
+          * `pending`: Recorded; not yet settled.
+          * `settled`: Funds credited to the Donor Account balance. Terminal.
+          * `failed`: The contribution could not be completed. Terminal.
+          * `refunded`: A previously settled contribution was reversed. Terminal.
+      enum:
+        - pending
+        - settled
+        - failed
+        - refunded
+      example: settled
+    ContributionSource:
+      type: object
+      description: Where the contributed funds originated.
+      required:
+        - method
+      properties:
+        method:
+          type: string
+          description: The payment method the funds arrived by.
+          enum:
+            - card
+            - ach
+            - wire
+            - check
+            - daf
+            - stock
+            - crypto
+            - other
+          example: ach
+        description:
+          type: string
+          nullable: true
+          description: Free-text origin detail (e.g. originating bank or payer name).
+          example: "ACH from Berkshire Hathaway operating account"
+    Contribution:
+      type: object
+      description: |-
+        A contribution that funds a [Donor Account](/api/donor-accounts). All amounts are in cents (USD).
+      required:
+        - id
+        - donor_account_id
+        - amount
+        - currency
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for this Contribution.
+          example: "contribution_01jpjenf5q6cawy43yxfcrxhct"
+        donor_account_id:
+          type: string
+          description: The ID of the [Donor Account](/api/donor-accounts) this contribution funds.
+          example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        amount:
+          type: integer
+          format: int64
+          description: The contribution amount, in cents (USD).
+          example: 500000
+        currency:
+          type: string
+          default: usd
+          example: usd
+        status:
+          $ref: "#/components/schemas/ContributionStatus"
+        source:
+          $ref: "#/components/schemas/ContributionSource"
+        transfer_id:
+          type: string
+          nullable: true
+          readOnly: true
+          description: The Transfer backing this contribution.
+          example: "transfer_01jpjenf5q6cawy43yxfcrxhct"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time when this object was created, expressed in RFC 3339 format.
+          example: "2026-04-01T12:00:00Z"
+        settled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: Time when the contribution settled and funds were credited. Present when `status` is `settled`.
+          example: "2026-04-01T18:00:00Z"
+        metadata:
+          type: object
+          description: A map of arbitrary string keys and values to store information about the object.
+          additionalProperties:
+            type: string
     OrganizationSummary:
       type: object
       description: |-
@@ -4759,6 +5266,17 @@ components:
           format: date-time
           description: Time when this object was last updated. Expressed in RFC 3339 format.
           example: "2026-04-02T18:30:00Z"
+        balance:
+          type: integer
+          format: int64
+          nullable: true
+          readOnly: true
+          description: |-
+            The account's available balance, in cents (USD). Populated only for accounts whose assets are
+            held by Chariot; `null` otherwise. When present, the balance is funded by
+            [Donor Contributions](/api/donor-contributions) and drawn down by
+            [Grant Requests](/api/grant-requests).
+          example: 450000
         metadata:
           type: object
           description: A map of arbitrary string keys and values to store information about the object.

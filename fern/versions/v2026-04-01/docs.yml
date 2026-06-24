@@ -220,6 +220,10 @@ navigation:
                   title: Giving Pools
               - grantRequests:
                   title: Grant Requests
+              - contributions:
+                  title: Contributions
+              - donorOnboardingSessions:
+                  title: Donor Onboarding Sessions
           - section: Disbursements
             skip-slug: true
             icon: money-check
