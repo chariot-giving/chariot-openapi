@@ -1700,7 +1700,6 @@ paths:
               required:
                 - donor_account_id
                 - amount
-                - source
               properties:
                 donor_account_id:
                   type: string
@@ -1711,8 +1710,6 @@ paths:
                   format: int64
                   description: The contribution amount, in cents (USD).
                   example: 500000
-                source:
-                  $ref: "#/components/schemas/ContributionSource"
                 metadata:
                   type: object
                   description: A map of arbitrary string keys and values to store information about the object.
@@ -3770,30 +3767,6 @@ components:
         - failed
         - refunded
       example: settled
-    ContributionSource:
-      type: object
-      description: Where the contributed funds originated.
-      required:
-        - method
-      properties:
-        method:
-          type: string
-          description: The payment method the funds arrived by.
-          enum:
-            - card
-            - ach
-            - wire
-            - check
-            - daf
-            - stock
-            - crypto
-            - other
-          example: ach
-        description:
-          type: string
-          nullable: true
-          description: Free-text origin detail (e.g. originating bank or payer name).
-          example: "ACH from Berkshire Hathaway operating account"
     Contribution:
       type: object
       description: |-
@@ -3826,8 +3799,6 @@ components:
           example: usd
         status:
           $ref: "#/components/schemas/ContributionStatus"
-        source:
-          $ref: "#/components/schemas/ContributionSource"
         transfer_id:
           type: string
           nullable: true
