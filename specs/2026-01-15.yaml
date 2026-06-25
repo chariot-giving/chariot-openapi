@@ -6515,11 +6515,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Bad Request"
-            status: 400
-            detail: "The request is invalid or contains invalid parameters."
+          examples:
+            BadRequest:
+              value:
+                type: about:blank
+                title: "Bad Request"
+                status: 400
+                detail: "The request is invalid or contains invalid parameters."
     AuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
@@ -6529,11 +6531,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Unauthorized"
-            status: 401
-            detail: "Authentication credentials were missing or invalid."
+          examples:
+            Unauthorized:
+              value:
+                type: about:blank
+                title: "Unauthorized"
+                status: 401
+                detail: "Authentication credentials were missing or invalid."
     ForbiddenError:
       description: Access denied
       headers:
@@ -6543,11 +6547,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Forbidden"
-            status: 403
-            detail: "You do not have permission to access this resource."
+          examples:
+            Forbidden:
+              value:
+                type: about:blank
+                title: "Forbidden"
+                status: 403
+                detail: "You do not have permission to access this resource."
     NotFoundError:
       description: Resource Not Found
       headers:
@@ -6557,11 +6563,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Not Found"
-            status: 404
-            detail: "The requested resource was not found."
+          examples:
+            NotFound:
+              value:
+                type: about:blank
+                title: "Not Found"
+                status: 404
+                detail: "The requested resource was not found."
     ConflictError:
       description: Resource Conflicts
       headers:
@@ -6571,11 +6579,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Conflict"
-            status: 409
-            detail: "The request conflicts with the current state of the resource."
+          examples:
+            Conflict:
+              value:
+                type: about:blank
+                title: "Conflict"
+                status: 409
+                detail: "The request conflicts with the current state of the resource."
     GoneError:
       description: Resource Gone or Expired
       headers:
@@ -6585,11 +6595,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Gone"
-            status: 410
-            detail: "The resource is no longer available."
+          examples:
+            Gone:
+              value:
+                type: about:blank
+                title: "Gone"
+                status: 410
+                detail: "The resource is no longer available."
     PreconditionFailedError:
       description: Precondition Failed
       headers:
@@ -6599,11 +6611,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Precondition Failed"
-            status: 412
-            detail: "A precondition for the request was not met."
+          examples:
+            PreconditionFailed:
+              value:
+                type: about:blank
+                title: "Precondition Failed"
+                status: 412
+                detail: "A precondition for the request was not met."
     InternalServerError:
       description: Internal Server Error
       headers:
@@ -6613,11 +6627,13 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetails"
-          example:
-            type: about:blank
-            title: "Internal server error"
-            status: 500
-            detail: "The server encountered an error processing your request."
+          examples:
+            InternalServerError:
+              value:
+                type: about:blank
+                title: "Internal server error"
+                status: 500
+                detail: "The server encountered an error processing your request."
     ConnectBadRequestError:
       description: The request is invalid or contains invalid parameters
       headers:
@@ -6627,9 +6643,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: invalid_argument
-            message: "The request is invalid or contains invalid parameters."
+          examples:
+            BadRequest:
+              value:
+                code: invalid_argument
+                message: "The request is invalid or contains invalid parameters."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectAuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
@@ -6639,9 +6662,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: unauthenticated
-            message: "Authentication credentials were missing or invalid."
+          examples:
+            Unauthorized:
+              value:
+                code: unauthenticated
+                message: "Authentication credentials were missing or invalid."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectForbiddenError:
       description: Access denied
       headers:
@@ -6651,9 +6681,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: permission_denied
-            message: "You do not have permission to access this resource."
+          examples:
+            Forbidden:
+              value:
+                code: permission_denied
+                message: "You do not have permission to access this resource."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectNotFoundError:
       description: Resource Not Found
       headers:
@@ -6663,9 +6700,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: not_found
-            message: "The requested resource was not found."
+          examples:
+            NotFound:
+              value:
+                code: not_found
+                message: "The requested resource was not found."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectConflictError:
       description: Resource Conflicts
       headers:
@@ -6675,9 +6719,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: aborted
-            message: "The request conflicts with the current state of the resource."
+          examples:
+            Conflict:
+              value:
+                code: aborted
+                message: "The request conflicts with the current state of the resource."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectGoneError:
       description: Resource Gone or Expired
       headers:
@@ -6687,9 +6738,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: not_found
-            message: "The resource is no longer available."
+          examples:
+            Gone:
+              value:
+                code: not_found
+                message: "The resource is no longer available."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectPreconditionFailedError:
       description: Precondition Failed
       headers:
@@ -6699,9 +6757,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: failed_precondition
-            message: "A precondition for the request was not met."
+          examples:
+            PreconditionFailed:
+              value:
+                code: failed_precondition
+                message: "A precondition for the request was not met."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectInternalServerError:
       description: Internal Server Error
       headers:
@@ -6711,9 +6776,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ConnectError"
-          example:
-            code: internal
-            message: "The server encountered an error processing your request."
+          examples:
+            InternalServerError:
+              value:
+                code: internal
+                message: "The server encountered an error processing your request."
+                details:
+                  - type: google.rpc.ErrorInfo
+                    debug:
+                      metadata:
+                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
   examples:
     NonprofitRedCross:
       summary: American Red Cross
