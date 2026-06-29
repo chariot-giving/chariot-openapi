@@ -1814,10 +1814,10 @@ components:
     ProblemDetails:
       type: object
       description: >-
-        RFC 7807 problem-details error (media type application/problem+json),
-        returned by resource and DAFpay endpoints. The `status` field is an
-        integer HTTP status code; it is unrelated to a resource's `status`
-        string (e.g. a grant's "Initiated"). Parse a body as a resource only on 2xx.
+        RFC 7807 problem-details error (media type application/problem+json).
+        The `status` field is an integer HTTP status code; it is unrelated to a
+        resource's `status` string (e.g. a grant's "Initiated"). Parse a body as
+        a resource only on 2xx.
       required:
         - type
         - title
@@ -1848,8 +1848,8 @@ components:
     ConnectError:
       type: object
       description: >-
-        Connect (gRPC) error returned by the grantmaker read and query endpoints.
-        The `code` field is a machine-readable string code (not a number).
+        Connect (gRPC) error format. The `code` field is a machine-readable
+        string code (not a number).
       required:
         - code
         - message
@@ -1862,30 +1862,9 @@ components:
           type: string
           description: A human-readable description of the error.
           example: The request was invalid.
-        details:
-          type: array
-          description: Optional structured error details (e.g. google.rpc.ErrorInfo entries carrying the request id).
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                description: The fully-qualified type of the detail entry.
-                example: google.rpc.ErrorInfo
-              value:
-                type: string
-                description: Base64-encoded protobuf payload for the detail entry.
-              debug:
-                type: object
-                description: Human-readable debug metadata (omitted in production).
       example:
         code: invalid_argument
         message: The request is invalid or contains invalid parameters.
-        details:
-          - type: google.rpc.ErrorInfo
-            debug:
-              metadata:
-                X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -2478,11 +2457,6 @@ components:
               value:
                 code: invalid_argument
                 message: "The request is invalid or contains invalid parameters."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectAuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
@@ -2497,11 +2471,6 @@ components:
               value:
                 code: unauthenticated
                 message: "Authentication credentials were missing or invalid."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectForbiddenError:
       description: Access denied
       headers:
@@ -2516,11 +2485,6 @@ components:
               value:
                 code: permission_denied
                 message: "You do not have permission to access this resource."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectNotFoundError:
       description: Resource Not Found
       headers:
@@ -2535,11 +2499,6 @@ components:
               value:
                 code: not_found
                 message: "The requested resource was not found."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectConflictError:
       description: Resource Conflicts
       headers:
@@ -2554,11 +2513,6 @@ components:
               value:
                 code: aborted
                 message: "The request conflicts with the current state of the resource."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectGoneError:
       description: Resource Gone or Expired
       headers:
@@ -2573,11 +2527,6 @@ components:
               value:
                 code: not_found
                 message: "The resource is no longer available."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectPreconditionFailedError:
       description: Precondition Failed
       headers:
@@ -2592,11 +2541,6 @@ components:
               value:
                 code: failed_precondition
                 message: "A precondition for the request was not met."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
     ConnectInternalServerError:
       description: Internal Server Error
       headers:
@@ -2611,11 +2555,6 @@ components:
               value:
                 code: internal
                 message: "The server encountered an error processing your request."
-                details:
-                  - type: google.rpc.ErrorInfo
-                    debug:
-                      metadata:
-                        X-Request-ID: 2d46f73e-24b6-43c6-bcbd-fa22415f697a
   examples:
     NonprofitRedCross:
       summary: American Red Cross

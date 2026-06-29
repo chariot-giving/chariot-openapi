@@ -39,22 +39,12 @@ An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object, re
 
 ## Connect (gRPC) errors
 
-A Connect (gRPC) error, returned with the `application/json` media type, whose `code` is a machine-readable **string** (not a number). The optional `details` array carries structured entries such as `google.rpc.ErrorInfo`, which may include the request id.
+A Connect (gRPC) error, returned with the `application/json` media type, whose `code` is a machine-readable **string** (not a number). The request id is returned in the `X-Request-Id` response header.
 
 ```json Connect Error
 {
   "code": "invalid_argument",
-  "message": "The request is invalid or contains invalid parameters.",
-  "details": [
-    {
-      "type": "google.rpc.ErrorInfo",
-      "debug": {
-        "metadata": {
-          "X-Request-ID": "2d46f73e-24b6-43c6-bcbd-fa22415f697a"
-        }
-      }
-    }
-  ]
+  "message": "The request is invalid or contains invalid parameters."
 }
 ```
 
