@@ -5382,9 +5382,7 @@ components:
       type: object
       description: >-
         RFC 7807 problem-details error (media type application/problem+json).
-        The `status` field is an integer HTTP status code; it is unrelated to a
-        resource's `status` string (e.g. a grant's "Initiated"). Parse a body as
-        a resource only on 2xx.
+        The `status` field is an integer HTTP status code.
       required:
         - type
         - title
