@@ -59,13 +59,13 @@ paths:
         "200":
           $ref: "#/components/responses/SearchOrganizationsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/{id}:
     get:
       summary: Get organization
@@ -95,15 +95,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Organization"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/programs:
     get:
       summary: List Programs
@@ -133,13 +133,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListProgramsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/programs/{id}:
     get:
       summary: Get Program
@@ -169,15 +169,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Program"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects:
     post:
       summary: Create Connect
@@ -227,15 +227,15 @@ paths:
                 Simple:
                   $ref: "#/components/examples/ConnectOutput"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/connects/{id}:
     get:
       summary: Get Connect
@@ -265,15 +265,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Connect"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/grants:
     get:
       summary: List Grants
@@ -308,13 +308,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListGrantsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create Grant
       description: |-
@@ -413,15 +413,15 @@ paths:
                 Simple:
                   $ref: "#/components/examples/GrantOutput"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/recurring_grants:
     get:
       summary: List Recurring Grants
@@ -456,13 +456,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListRecurringGrantsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create Recurring Grant
       description: |-
@@ -551,15 +551,15 @@ paths:
                 Simple:
                   $ref: "#/components/examples/RecurringGrantOutput"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/unintegrated_grants:
     get:
       summary: List Unintegrated Grants
@@ -594,13 +594,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListUnintegratedGrantsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/unintegrated_grants/{id}:
     get:
       summary: Get Unintegrated Grant
@@ -636,15 +636,15 @@ paths:
                 Simple:
                   $ref: "#/components/examples/UnintegratedGrantOutput"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/dafs:
     get:
       summary: List Donor Advised Funds
@@ -689,11 +689,11 @@ paths:
         "200":
           $ref: "#/components/responses/ListDafsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/dafs/{id}:
     get:
       summary: Get Donor Advised Fund
@@ -729,13 +729,13 @@ paths:
                 Npt:
                   $ref: "#/components/examples/DafOutput"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/events:
     get:
       summary: List Events
@@ -771,13 +771,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListEventsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/events/{id}:
     get:
       summary: Get Event
@@ -803,15 +803,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Event"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/event_subscriptions:
     post:
       summary: Create an Event Subscription
@@ -835,15 +835,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventSubscription"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
     get:
       summary: List Event Subscriptions
       description: |-
@@ -871,13 +871,13 @@ paths:
         "200":
           $ref: "#/components/responses/ListEventSubscriptionsResponse"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/event_subscriptions/{id}:
     get:
       summary: Get an Event Subscription
@@ -903,15 +903,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventSubscription"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
     patch:
       summary: Update an Event Subscription
       description: |-
@@ -938,15 +938,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventSubscription"
         "400":
-          $ref: "#/components/responses/ConnectBadRequestError"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/ConnectAuthenticationError"
+          $ref: "#/components/responses/AuthenticationError"
         "403":
-          $ref: "#/components/responses/ConnectForbiddenError"
+          $ref: "#/components/responses/ForbiddenError"
         "404":
-          $ref: "#/components/responses/ConnectNotFoundError"
+          $ref: "#/components/responses/NotFoundError"
         "500":
-          $ref: "#/components/responses/ConnectInternalServerError"
+          $ref: "#/components/responses/InternalServerError"
   /v1/financial_accounts:
     get:
       summary: List financial accounts
@@ -3503,7 +3503,7 @@ components:
         title:
           type: string
           description: A short, human-readable summary of the problem type.
-          example: Bad Request
+          example: API Error
         status:
           type: integer
           description: The HTTP status code for this error.
@@ -3514,29 +3514,9 @@ components:
           example: The request is invalid or contains invalid parameters.
       example:
         type: about:blank
-        title: Bad Request
+        title: "API Error"
         status: 400
         detail: The request is invalid or contains invalid parameters.
-    ConnectError:
-      type: object
-      description: >-
-        Connect (gRPC) error format. The `code` field is a machine-readable
-        string code (not a number).
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: string
-          description: The machine-readable Connect error code.
-          example: invalid_argument
-        message:
-          type: string
-          description: A human-readable description of the error.
-          example: The request was invalid.
-      example:
-        code: invalid_argument
-        message: The request is invalid or contains invalid parameters.
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -4189,7 +4169,7 @@ components:
             BadRequest:
               value:
                 type: about:blank
-                title: "Bad Request"
+                title: "API Error"
                 status: 400
                 detail: "The request is invalid or contains invalid parameters."
     AuthenticationError:
@@ -4205,7 +4185,7 @@ components:
             Unauthorized:
               value:
                 type: about:blank
-                title: "Unauthorized"
+                title: "API Error"
                 status: 401
                 detail: "Authentication credentials were missing or invalid."
     ForbiddenError:
@@ -4221,7 +4201,7 @@ components:
             Forbidden:
               value:
                 type: about:blank
-                title: "Forbidden"
+                title: "API Error"
                 status: 403
                 detail: "You do not have permission to access this resource."
     NotFoundError:
@@ -4237,7 +4217,7 @@ components:
             NotFound:
               value:
                 type: about:blank
-                title: "Not Found"
+                title: "API Error"
                 status: 404
                 detail: "The requested resource was not found."
     ConflictError:
@@ -4253,7 +4233,7 @@ components:
             Conflict:
               value:
                 type: about:blank
-                title: "Conflict"
+                title: "API Error"
                 status: 409
                 detail: "The request conflicts with the current state of the resource."
     GoneError:
@@ -4269,7 +4249,7 @@ components:
             Gone:
               value:
                 type: about:blank
-                title: "Gone"
+                title: "API Error"
                 status: 410
                 detail: "The resource is no longer available."
     PreconditionFailedError:
@@ -4285,7 +4265,7 @@ components:
             PreconditionFailed:
               value:
                 type: about:blank
-                title: "Precondition Failed"
+                title: "API Error"
                 status: 412
                 detail: "A precondition for the request was not met."
     InternalServerError:
@@ -4301,121 +4281,9 @@ components:
             InternalServerError:
               value:
                 type: about:blank
-                title: "Internal server error"
+                title: "API Error"
                 status: 500
                 detail: "The server encountered an error processing your request."
-    ConnectBadRequestError:
-      description: The request is invalid or contains invalid parameters
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            BadRequest:
-              value:
-                code: invalid_argument
-                message: "The request is invalid or contains invalid parameters."
-    ConnectAuthenticationError:
-      description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            Unauthorized:
-              value:
-                code: unauthenticated
-                message: "Authentication credentials were missing or invalid."
-    ConnectForbiddenError:
-      description: Access denied
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            Forbidden:
-              value:
-                code: permission_denied
-                message: "You do not have permission to access this resource."
-    ConnectNotFoundError:
-      description: Resource Not Found
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            NotFound:
-              value:
-                code: not_found
-                message: "The requested resource was not found."
-    ConnectConflictError:
-      description: Resource Conflicts
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            Conflict:
-              value:
-                code: aborted
-                message: "The request conflicts with the current state of the resource."
-    ConnectGoneError:
-      description: Resource Gone or Expired
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            Gone:
-              value:
-                code: not_found
-                message: "The resource is no longer available."
-    ConnectPreconditionFailedError:
-      description: Precondition Failed
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            PreconditionFailed:
-              value:
-                code: failed_precondition
-                message: "A precondition for the request was not met."
-    ConnectInternalServerError:
-      description: Internal Server Error
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ConnectError"
-          examples:
-            InternalServerError:
-              value:
-                code: internal
-                message: "The server encountered an error processing your request."
   examples:
     NonprofitRedCross:
       summary: American Red Cross

@@ -22,40 +22,20 @@ The Chariot API uses standard HTTP status response codes
 | 502  | Bad Gateway: The server received an invalid response from an upstream server.                                                                                                             |
 | 503  | Service Unavailable: The server is not ready to handle the request.                                                                                                                       |
 
-The Chariot API returns errors in one of two body formats. The exact format for a given operation is shown in that operation's response examples in the API Reference. Both formats include an `X-Request-Id` response header you can quote when contacting support.
-
-## RFC 7807 problem details
-
-An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object, returned with the `application/problem+json` media type. The `status` field is the integer HTTP status code; it is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`).
+All error responses use the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details format, returned with the `application/problem+json` media type. Every error response includes an `X-Request-Id` header you can quote when contacting support.
 
 ```json Problem Details
 {
   "type": "about:blank",
-  "title": "Bad Request",
+  "title": "API Error",
   "status": 400,
   "detail": "The request is invalid or contains invalid parameters."
 }
 ```
 
-## Connect (gRPC) errors
+The fields are:
 
-A Connect (gRPC) error, returned with the `application/json` media type, whose `code` is a machine-readable **string** (not a number). The request id is returned in the `X-Request-Id` response header.
-
-```json Connect Error
-{
-  "code": "invalid_argument",
-  "message": "The request is invalid or contains invalid parameters."
-}
-```
-
-For this format, the `code` string maps to the HTTP status as follows.
-
-| HTTP status | Connect code          |
-| :---------- | :-------------------- |
-| 400         | `invalid_argument`    |
-| 401         | `unauthenticated`     |
-| 403         | `permission_denied`   |
-| 404         | `not_found`           |
-| 409         | `aborted`             |
-| 412         | `failed_precondition` |
-| 500         | `internal`            |
+- `type` — a URI reference identifying the problem type (currently always `about:blank`).
+- `title` — a short, constant summary (`API Error`).
+- `status` — the integer HTTP status code. This is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`); only parse a response body as a resource on a 2xx status.
+- `detail` — a human-readable explanation specific to this error.
