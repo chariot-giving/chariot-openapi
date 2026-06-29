@@ -5099,7 +5099,7 @@ components:
         status:
           type: string
           description: The status of the grant
-          example: awaiting_daf_submission
+          example: Initiated
         feeDetail:
           type: object
           readOnly: true
@@ -6820,30 +6820,38 @@ components:
           example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
         total:
           type: integer
-    Error:
+    ProblemDetails:
       type: object
+      description: >-
+        RFC 7807 problem-details error (media type application/problem+json).
+        The `status` field is an integer HTTP status code.
       required:
-        - timestamp
-        - code
-        - error
-        - message
+        - type
+        - title
+        - status
+        - detail
       properties:
-        timestamp:
+        type:
           type: string
-          description: time when the error was reported. Expressed in RFC 3339 format.
-          example: "2020-01-31T23:00:00Z"
-        code:
-          type: number
-          description: HTTP status code of the error
+          description: A URI reference identifying the problem type.
+          example: about:blank
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type.
+          example: API Error
+        status:
+          type: integer
+          description: The HTTP status code for this error.
           example: 400
-        error:
+        detail:
           type: string
-          description: A short name of the error; usually the HTTP status.
-          example: Bad Request
-        message:
-          type: string
-          description: The description of the error
-          example: Expected an API key to be provided in the header `x-chariot-api-key`
+          description: A human-readable explanation specific to this occurrence.
+          example: The request is invalid or contains invalid parameters.
+      example:
+        type: about:blank
+        title: "API Error"
+        status: 400
+        detail: The request is invalid or contains invalid parameters.
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -7684,34 +7692,19 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
+          example:
+            results:
+              - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                orgName: "National Philanthropic Trust"
+                address: "123 Main St."
+                address2: "Apt 100"
+                city: "New York"
+                state: "NY"
+                zip: "12345"
+                supported: true
+                minimumGrantAmount: 5000
+                institutionDown: false
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAccountsResponse:
       description: The response for DonorAccounts.list
       headers:
@@ -7731,43 +7724,24 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the page_token). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "approved"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: "Warren"
-                      last_name: "Buffet"
-                      phone: "+12125550100"
-                    external_id: "ACME-DAF-DONOR-1042"
-                    approval:
-                      approved_at: "2026-04-02T18:30:00Z"
-                      approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-02T18:30:00Z"
-                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "pending"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: null
-                      last_name: null
-                      phone: null
-                    external_id: null
-                    approval: null
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-01T12:00:00Z"
-                next_page_token: null
+          example:
+            results:
+              - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                status: "approved"
+                donor:
+                  email: "warrenBuffet@example.com"
+                  first_name: "Warren"
+                  last_name: "Buffet"
+                  phone: "+12125550100"
+                external_id: "ACME-DAF-DONOR-1042"
+                approval:
+                  approved_at: "2026-04-02T18:30:00Z"
+                  approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                rejection: null
+                disabled: false
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-02T18:30:00Z"
+            next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAuthorizationTokensResponse:
       description: The response for DonorAccounts.listAuthorizationTokens
       headers:
@@ -7817,29 +7791,16 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    status: "awaiting_daf_submission"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
-                    status: "Received"
-                nextPageToken: null
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                status: "Initiated"
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListRecurringGrantsResponse:
       description: The response for RecurringGrants.list
       headers:
@@ -7858,28 +7819,16 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
-                    workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    frequency: MONTHLY
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "579e2864-d65a-4a21-a056-1c91d0a95b5c"
-                    workflowSessionId: "ee27b65b-22f5-42fa-b966-0f83cac8fd2c"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 16:00:00.000"
-                    updatedAt: "2021-08-11 15:25:00.000"
-                    amount: 20000
-                    frequency: MONTHLY
+          example:
+            results:
+              - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
+                workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                frequency: MONTHLY
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
       headers:
@@ -7901,26 +7850,15 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListEventsResponse:
       description: The response for Events.list
       headers:
@@ -8230,112 +8168,128 @@ components:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 400
-            error: "Bad Request"
-            message: "Expected an API key to be provided in the header `x-chariot-api-key`"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            BadRequest:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 400
+                detail: "The request is invalid or contains invalid parameters."
     AuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 401
-            error: "Unauthorized"
-            message: "Unauthorized"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Unauthorized:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 401
+                detail: "Authentication credentials were missing or invalid."
     ForbiddenError:
       description: Access denied
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 403
-            error: "Forbidden"
-            message: "User is not allowed to access this resource"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Forbidden:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 403
+                detail: "You do not have permission to access this resource."
     NotFoundError:
       description: Resource Not Found
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 404
-            error: "Not Found"
-            message: "Resource is not found"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            NotFound:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 404
+                detail: "The requested resource was not found."
     ConflictError:
       description: Resource Conflicts
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 409
-            error: "Conflict"
-            message: "Request conflicts with an already existing resource"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Conflict:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 409
+                detail: "The request conflicts with the current state of the resource."
     GoneError:
       description: Resource Gone or Expired
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 410
-            error: "Gone"
-            message: "The resource has expired"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Gone:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 410
+                detail: "The resource is no longer available."
     PreconditionFailedError:
       description: Precondition Failed
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 412
-            error: "Precondition Failed"
-            message: "The requested action has a failed precondition"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            PreconditionFailed:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 412
+                detail: "A precondition for the request was not met."
     InternalServerError:
       description: Internal Server Error
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 500
-            error: "Internal server error"
-            message: "The server encountered an error processing your request"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            InternalServerError:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 500
+                detail: "The server encountered an error processing your request."
   examples:
     DafGrantDisbursement:
       summary: Disbursement with DAF grant transactions

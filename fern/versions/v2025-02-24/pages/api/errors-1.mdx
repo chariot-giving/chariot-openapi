@@ -22,15 +22,20 @@ The Chariot API uses standard HTTP status response codes
 | 502  | Bad Gateway: The server received an invalid response from an upstream server.                                                                                                             |
 | 503  | Service Unavailable: The server is not ready to handle the request.                                                                                                                       |
 
-<Aside>
-  All error responses come with the following standard shape.
+All error responses use the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details format, returned with the `application/problem+json` media type. Every error response includes an `X-Request-Id` header you can quote when contacting support.
 
-  ```json Error Response
-  {
-    "timestamp": "2020-07-10 15:00:00.000",
-    "code": 400,
-    "error" : "Bad Request",
-    "message": "a descriptive, yet terse snippet explaining what went wrong"
-  }
-  ```
-</Aside>
+```json Problem Details
+{
+  "type": "about:blank",
+  "title": "API Error",
+  "status": 400,
+  "detail": "The request is invalid or contains invalid parameters."
+}
+```
+
+The fields are:
+
+- `type` — a URI reference identifying the problem type (currently always `about:blank`).
+- `title` — a short, constant summary (`API Error`).
+- `status` — the integer HTTP status code.
+- `detail` — a human-readable explanation specific to this error.
