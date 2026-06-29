@@ -24,9 +24,9 @@ The Chariot API uses standard HTTP status response codes
 
 The Chariot API returns errors in one of two body formats. The exact format for a given operation is shown in that operation's response examples in the API Reference. Both formats include an `X-Request-Id` response header you can quote when contacting support.
 
-## Problem details (`application/problem+json`)
+## RFC 7807 problem details
 
-An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object. The `status` field is the integer HTTP status code; it is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`).
+An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object, returned with the `application/problem+json` media type. The `status` field is the integer HTTP status code; it is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`).
 
 ```json Problem Details
 {
@@ -37,9 +37,9 @@ An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object. Th
 }
 ```
 
-## Connect errors (`application/json`)
+## Connect (gRPC) errors
 
-A Connect (gRPC) error whose `code` is a machine-readable **string** (not a number). The optional `details` array carries structured entries such as `google.rpc.ErrorInfo`, which may include the request id.
+A Connect (gRPC) error, returned with the `application/json` media type, whose `code` is a machine-readable **string** (not a number). The optional `details` array carries structured entries such as `google.rpc.ErrorInfo`, which may include the request id.
 
 ```json Connect Error
 {
