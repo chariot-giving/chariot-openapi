@@ -22,11 +22,11 @@ The Chariot API uses standard HTTP status response codes
 | 502  | Bad Gateway: The server received an invalid response from an upstream server.                                                                                                             |
 | 503  | Service Unavailable: The server is not ready to handle the request.                                                                                                                       |
 
-The Chariot API returns one of two error body formats depending on the endpoint. Both carry an `X-Request-Id` response header you can quote when contacting support.
+The Chariot API returns errors in one of two body formats. The exact format for a given operation is shown in that operation's response examples in the API Reference. Both formats include an `X-Request-Id` response header you can quote when contacting support.
 
-## Resource and DAFpay endpoints
+## Problem details (`application/problem+json`)
 
-Resource and DAFpay endpoints return an [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object with the media type `application/problem+json`. The `status` field is the integer HTTP status code; it is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`).
+An [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem-details object. The `status` field is the integer HTTP status code; it is unrelated to a resource's own `status` string (e.g. a grant's `"Initiated"`).
 
 ```json Problem Details
 {
@@ -37,9 +37,9 @@ Resource and DAFpay endpoints return an [RFC 7807](https://www.rfc-editor.org/rf
 }
 ```
 
-## Grantmaker read and query endpoints
+## Connect errors (`application/json`)
 
-The grantmaker read and query endpoints are served over Connect (gRPC) and return a JSON body whose `code` is a machine-readable **string** (not a number). The optional `details` array carries structured entries such as `google.rpc.ErrorInfo`, which may include the request id.
+A Connect (gRPC) error whose `code` is a machine-readable **string** (not a number). The optional `details` array carries structured entries such as `google.rpc.ErrorInfo`, which may include the request id.
 
 ```json Connect Error
 {
@@ -58,7 +58,7 @@ The grantmaker read and query endpoints are served over Connect (gRPC) and retur
 }
 ```
 
-The Connect `code` string maps to the HTTP status as follows.
+For this format, the `code` string maps to the HTTP status as follows.
 
 | HTTP status | Connect code          |
 | :---------- | :-------------------- |
@@ -67,6 +67,5 @@ The Connect `code` string maps to the HTTP status as follows.
 | 403         | `permission_denied`   |
 | 404         | `not_found`           |
 | 409         | `aborted`             |
-| 410         | `not_found`           |
 | 412         | `failed_precondition` |
 | 500         | `internal`            |
