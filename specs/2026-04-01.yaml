@@ -7735,34 +7735,19 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
+          example:
+            results:
+              - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                orgName: "National Philanthropic Trust"
+                address: "123 Main St."
+                address2: "Apt 100"
+                city: "New York"
+                state: "NY"
+                zip: "12345"
+                supported: true
+                minimumGrantAmount: 5000
+                institutionDown: false
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAccountsResponse:
       description: The response for DonorAccounts.list
       headers:
@@ -7782,43 +7767,24 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the page_token). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "approved"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: "Warren"
-                      last_name: "Buffet"
-                      phone: "+12125550100"
-                    external_id: "ACME-DAF-DONOR-1042"
-                    approval:
-                      approved_at: "2026-04-02T18:30:00Z"
-                      approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-02T18:30:00Z"
-                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "pending"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: null
-                      last_name: null
-                      phone: null
-                    external_id: null
-                    approval: null
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-01T12:00:00Z"
-                next_page_token: null
+          example:
+            results:
+              - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                status: "approved"
+                donor:
+                  email: "warrenBuffet@example.com"
+                  first_name: "Warren"
+                  last_name: "Buffet"
+                  phone: "+12125550100"
+                external_id: "ACME-DAF-DONOR-1042"
+                approval:
+                  approved_at: "2026-04-02T18:30:00Z"
+                  approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                rejection: null
+                disabled: false
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-02T18:30:00Z"
+            next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAuthorizationTokensResponse:
       description: The response for DonorAccounts.listAuthorizationTokens
       headers:
@@ -7868,29 +7834,16 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    status: "awaiting_daf_submission"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
-                    status: "Received"
-                nextPageToken: null
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                status: "Initiated"
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListRecurringGrantsResponse:
       description: The response for RecurringGrants.list
       headers:
@@ -7909,28 +7862,16 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
-                    workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    frequency: MONTHLY
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "579e2864-d65a-4a21-a056-1c91d0a95b5c"
-                    workflowSessionId: "ee27b65b-22f5-42fa-b966-0f83cac8fd2c"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 16:00:00.000"
-                    updatedAt: "2021-08-11 15:25:00.000"
-                    amount: 20000
-                    frequency: MONTHLY
+          example:
+            results:
+              - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
+                workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                frequency: MONTHLY
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
       headers:
@@ -7952,26 +7893,15 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListEventsResponse:
       description: The response for Events.list
       headers:
