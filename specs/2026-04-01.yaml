@@ -5075,6 +5075,11 @@ components:
             Present on grants submitted by donors who authenticated through the DAFpay Donor Account flow.
             Grants submitted without a linked Donor Account will not have this field set.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        donation_id:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists.
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
         externalGrantId:
           type: string
           description: ID of the grant associated with the donor advised fund
@@ -5352,6 +5357,11 @@ components:
           readOnly: true
           description: ID of the donor advised fund
           example: daf-id
+        donation_id:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists.
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
         createdAt:
           type: string
           readOnly: true
