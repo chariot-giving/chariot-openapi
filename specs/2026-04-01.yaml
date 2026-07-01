@@ -5078,7 +5078,9 @@ components:
         donation_id:
           type: string
           readOnly: true
-          description: The ID of the donation initiated by this grant, if one exists.
+          description: |-
+            The ID of the donation initiated by this grant, if one exists.
+            The donation is created asynchronously shortly after the grant is created, so this field is typically absent immediately after grant creation and populated a short time later.
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
         externalGrantId:
           type: string
@@ -5360,7 +5362,9 @@ components:
         donation_id:
           type: string
           readOnly: true
-          description: The ID of the donation initiated by this grant, if one exists.
+          description: |-
+            The ID of the donation initiated by this grant, if one exists.
+            The donation is created asynchronously shortly after the grant is created, so this field is typically absent immediately after grant creation and populated a short time later.
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
         createdAt:
           type: string
