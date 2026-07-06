@@ -294,19 +294,19 @@ paths:
       x-fern-sdk-group-name:
         - paymentSources
       x-fern-sdk-method-name: get
-  /v1/lockboxes:
+  /v1/payment_entities:
     get:
       x-fern-pagination:
         cursor: $request.page_token
         next_cursor: $response.next_page_token
         results: $response.results
       x-fern-sdk-group-name:
-        - lockboxes
+        - paymentEntities
       x-fern-sdk-method-name: list
-  /v1/lockboxes/{id}:
+  /v1/payment_entities/{id}:
     get:
       x-fern-sdk-group-name:
-        - lockboxes
+        - paymentEntities
       x-fern-sdk-method-name: get
   /v1/mail_items:
     get:
@@ -357,11 +357,20 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: list
+  /v1/deposits/check_deposits:
+    post:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: depositCheck
   /v1/deposits/{id}:
     get:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: update
   /v1/files:
     get:
       x-fern-pagination:

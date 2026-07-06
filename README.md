@@ -7,4 +7,4 @@ This provides for a consistent typing experience across our external interfaces.
 ## Code Generation
 
 You can find examples on the official [OpenApiGenerator docs](https://github.com/OpenAPITools/openapi-generator#3---usage)
-for how to automatically generate client libraries from the provided specs.
+for how to automatically generate client libraries from the provided specs.L

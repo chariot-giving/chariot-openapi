@@ -240,12 +240,12 @@ navigation:
                   title: Deposits
               - donations:
                   title: Donations
-              - lockboxes:
-                  title: Lockboxes
-              - mailItems:
-                  title: Mail Items
               - paymentSources:
                   title: Payment Sources
+              - paymentEntities:
+                  title: Payment Entities
+              - mailItems:
+                  title: Mail Items
               - properties:
                   title: Properties
           - section: Lockbox Providers

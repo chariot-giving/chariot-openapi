@@ -2762,16 +2762,12 @@ paths:
     get:
       summary: List Payment Sources
       description: |-
-        List payment sources for your Chariot account.
+        List payment sources for your account.
 
-        Payment Sources represent segregated electronic bank addresses (account + routing numbers)
-        used to receive incoming deposits from a specific payer.
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
       operationId: listPaymentSources
       tags:
         - paymentSources
@@ -2791,6 +2787,20 @@ paths:
           required: false
           schema:
             type: string
+        - name: payment_entity_id
+          in: query
+          description: Filter payment sources by the payment entity that sends payments through them.
+          required: false
+          schema:
+            type: string
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
+        - name: name
+          in: query
+          description: Filter payment sources by name (case-insensitive substring match).
+          required: false
+          schema:
+            type: string
+          example: "Paypal"
       responses:
         "200":
           $ref: "#/components/responses/ListPaymentSourcesResponse"
@@ -2807,10 +2817,10 @@ paths:
       description: |-
         Create a payment source for your account.
 
-        A Payment Source represents a segregated electronic bank address (account + routing numbers)
-        used to receive incoming deposits from a specific payer.
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
       operationId: createPaymentSource
       tags:
         - paymentSources
@@ -2853,14 +2863,10 @@ paths:
       description: |-
         Get a payment source by its unique identifier.
 
-        A Payment Source represents a segregated electronic bank address (account + routing numbers)
-        used to receive incoming deposits from a specific payer.
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
       operationId: getPaymentSource
       tags:
         - paymentSources
@@ -2891,18 +2897,16 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/lockboxes:
+  /v1/payment_entities:
     get:
-      summary: List Lockboxes
+      summary: List Payment Entities
       description: |-
-        List lockboxes for your account.
+        List payment entities for your account.
 
-        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
-        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
-        Lockboxes are provisioned and managed by Chariot.
-      operationId: listLockboxes
+        A Payment Entity is the legal business that sent you a Donation.
+      operationId: listPaymentEntities
       tags:
-        - lockboxes
+        - paymentEntities
       security:
         - bearerAuth: []
       parameters:
@@ -2919,9 +2923,16 @@ paths:
           required: false
           schema:
             type: string
+        - name: payment_source_id
+          in: query
+          description: Filter payment entities by the payment source they send payments through.
+          required: false
+          schema:
+            type: string
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
-          $ref: "#/components/responses/ListLockboxesResponse"
+          $ref: "#/components/responses/ListPaymentEntitiesResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2930,33 +2941,33 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/lockboxes/{id}:
+  /v1/payment_entities/{id}:
     get:
-      summary: Get a Lockbox
+      summary: Get a Payment Entity
       description: |-
-        Get a lockbox by its unique identifier.
+        Get a payment entity by its unique identifier.
 
-        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
-      operationId: getLockbox
+        A Payment Entity is the legal business that sent you a Donation.
+      operationId: getPaymentEntity
       tags:
-        - lockboxes
+        - paymentEntities
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the lockbox
+          description: The unique identifier for the payment entity
           required: true
           schema:
             type: string
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
-          description: Successfully retrieved the lockbox.
+          description: Successfully retrieved the payment entity.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Lockbox"
+                $ref: "#/components/schemas/PaymentEntity"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2973,7 +2984,7 @@ paths:
       description: |-
         List mail items for your account.
 
-        A Mail Item is a unit of physical mail received at a Lockbox. It has its own lifecycle
+        A Mail Item is a unit of physical mail received at a Mailing Address. It has its own lifecycle
         and is the operational unit reviewers act on. Each Mail Item may produce zero or more
         Donations and zero or one Deposit.
       operationId: listMailItems
@@ -2995,13 +3006,13 @@ paths:
           required: false
           schema:
             type: string
-        - name: lockbox_id
+        - name: mailing_address_id
           in: query
-          description: The unique identifier for the lockbox to filter mail items by.
+          description: The unique identifier for the mailing address to filter mail items by.
           required: false
           schema:
             type: string
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
         - name: status.in
           in: query
           description: |-
@@ -3048,7 +3059,7 @@ paths:
       description: |-
         Get a mail item by its unique identifier.
 
-        A Mail Item is a unit of physical mail received at a Lockbox.
+        A Mail Item is a unit of physical mail received at a Mailing Address.
       operationId: getMailItem
       tags:
         - mailItems
@@ -3084,6 +3095,9 @@ paths:
       summary: List Donations
       description: |-
         List donations for your account.
+
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       operationId: listDonations
       tags:
         - donations
@@ -3110,20 +3124,13 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-        - name: lockbox_id
+        - name: payment_entity_id
           in: query
-          description: The unique identifier for the lockbox to filter donations by.
+          description: Filter donations by the payment entity that sent them.
           required: false
           schema:
             type: string
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-        - name: mail_item_id
-          in: query
-          description: The unique identifier for the mail item to filter donations by.
-          required: false
-          schema:
-            type: string
-          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3201,6 +3208,9 @@ paths:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       operationId: getDonation
       tags:
         - donations
@@ -3302,6 +3312,9 @@ paths:
       summary: List Deposits
       description: |-
         List deposits for your account.
+
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       operationId: listDeposits
       tags:
         - deposits
@@ -3328,13 +3341,6 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-        - name: lockbox_id
-          in: query
-          description: The unique identifier for the lockbox to filter deposits by.
-          required: false
-          schema:
-            type: string
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
         - name: mail_item_id
           in: query
           description: The unique identifier for the mail item to filter deposits by.
@@ -3382,11 +3388,55 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/check_deposits:
+    post:
+      summary: Deposit a Check
+      description: |-
+        Deposit a check from a front and back image. Upload the check images as Files first, then provide
+        their file IDs along with the amount and the financial account to credit. Returns the unique
+        identifier of the created deposit; fetch the full resource via [Get a Deposit](/api-reference/deposits/get).
+      operationId: depositCheck
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/DepositCheckRequest"
+      responses:
+        "200":
+          description: The check deposit was created.
+          headers:
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositCheckResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/deposits/{id}:
     get:
       summary: Get a Deposit
       description: |-
         Get a deposit by its unique identifier.
+
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       operationId: getDeposit
       tags:
         - deposits
@@ -3403,6 +3453,42 @@ paths:
       responses:
         "200":
           description: The deposit was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deposit"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Deposit
+      description: |-
+        Update a deposit. Use this to assign or reassign the payment source for a deposit.
+      operationId: updateDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDepositRequest"
+      responses:
+        "200":
+          description: The deposit was updated.
           content:
             application/json:
               schema:
@@ -4306,15 +4392,21 @@ components:
           description: The URL of the organization's logo
     PaymentSource:
       type: object
+      required:
+        - id
+        - financial_account_id
+        - name
+        - status
+        - created_by
+        - created_at
       description: |-
-        A Payment Source represents a segregated electronic bank address (account + routing numbers)
-        used to receive incoming deposits from a specific payer.
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
 
-        Physical mail receipts are modeled separately as Lockboxes and Mail Items, not as Payment Sources.
+        Payment Sources can be Chariot-created (e.g. for integrated DAF sponsors and platforms) or user-created for
+        tracking payments from sources outside of Chariot's network.
       properties:
         id:
           type: string
@@ -4328,17 +4420,43 @@ components:
         name:
           type: string
           description: The name of the payment source
-          example: "Main Payment Source"
-        source_type:
+          example: "Paypal Grant Payments"
+        status:
           type: string
-          description: The type of the payment source
-          example: "portal"
+          readOnly: true
+          description: |-
+            The status of the payment source.
+
+            - `pending`: A deposit has not been received by this payment source.
+            - `active`: A deposit has been received by this payment source.
           enum:
-            - manual
-            - portal
-            - grantmaker
-        financial_address:
-          $ref: "#/components/schemas/FinancialAddress"
+            - pending
+            - active
+          example: "active"
+        created_by:
+          type: string
+          readOnly: true
+          description: Whether this payment source was created by Chariot or by the user.
+          enum:
+            - chariot
+            - user
+          example: "chariot"
+        logo:
+          type: string
+          description: A URL to the logo for the payment source.
+          example: "https://cdn.givechariot.com/logos/benevity.png"
+        account_address:
+          description: |-
+            The electronic bank address generated for this payment source. Incoming electronic payments
+            (ACH, Wire, FedNow) to this address are attributed to this payment source.
+          allOf:
+            - $ref: "#/components/schemas/AccountAddress"
+        mailing_address:
+          description: |-
+            The mailing address (lockbox) generated for this payment source. Incoming checks mailed to
+            this address are attributed to this payment source.
+          allOf:
+            - $ref: "#/components/schemas/MailingAddress"
         created_at:
           type: string
           format: date-time
@@ -4351,37 +4469,73 @@ components:
           readOnly: true
           description: The date and time when the payment source was last updated
           example: "2020-01-31T23:59:59Z"
-    Lockbox:
+    MailingAddress:
       type: object
       description: |-
-        A Lockbox represents a physical mailing address operated by a third-party provider (e.g., Stable, CDS)
-        that receives physical mail and scans checks on Chariot's behalf.
-        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
-        Lockboxes are provisioned and managed by Chariot in partnership with the provider.
+        A Mailing Address is a lockbox address used to receive Mail. It is an address for receiving payments over the
+        check rail. Physical mail sent to a Mailing Address is received and scanned on Chariot's behalf by a third-party
+        provider (e.g., Stable, CDS), producing Mail Items, which in turn produce Donations and Deposits.
+
+        Financial Accounts with the Lockbox feature enabled come with a default Mailing Address that can't be changed
+        (indicated by `default: true`). Mailing Addresses are provisioned and managed by Chariot in partnership with the provider.
       required:
         - id
+        - status
         - created_at
       properties:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for the lockbox.
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+          description: The unique identifier for the mailing address.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
         address:
-          description: The physical mailing address for the lockbox.
+          description: The physical mailing address that receives the mail.
           allOf:
             - $ref: "#/components/schemas/PostalAddress"
+        description:
+          type: string
+          description: A human-readable description of the mailing address.
+          example: "Benevity check lockbox"
+        status:
+          type: string
+          description: |-
+            The status of the mailing address.
+
+            - `pending`: Chariot is generating this lockbox address.
+            - `active`: This lockbox address is active.
+            - `disabled`: This lockbox address is disabled.
+            - `canceled`: This lockbox address is permanently disabled.
+          example: "active"
+          enum:
+            - pending
+            - active
+            - disabled
+            - canceled
+        provider:
+          type: string
+          description: The lockbox provider that operates this mailing address.
+          example: "stable"
+          enum:
+            - stable
+            - cds
+        default:
+          type: boolean
+          readOnly: true
+          description: |-
+            Whether this is the default mailing address for the financial account.
+            A financial account's default mailing address can't be changed.
+          example: true
         created_at:
           type: string
           format: date-time
           readOnly: true
-          description: The date and time when the lockbox was created.
+          description: The date and time when the mailing address was created.
           example: "2020-01-31T23:59:59Z"
         updated_at:
           type: string
           format: date-time
           readOnly: true
-          description: The date and time when the lockbox was last updated.
+          description: The date and time when the mailing address was last updated.
           example: "2020-01-31T23:59:59Z"
     MailItem:
       type: object
@@ -4396,7 +4550,7 @@ components:
         use the Donations and Deposits APIs.
       required:
         - id
-        - lockbox_id
+        - mailing_address_id
         - status
         - received_at
         - created_at
@@ -4406,10 +4560,10 @@ components:
           readOnly: true
           description: The unique identifier for the mail item.
           example: "mail_01j8rs605a4gctmbm58d87mvsj"
-        lockbox_id:
+        mailing_address_id:
           type: string
-          description: The unique identifier for the lockbox that received the mail item.
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+          description: The unique identifier for the mailing address that received the mail item.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
         status:
           $ref: "#/components/schemas/MailItemStatus"
         received_at:
@@ -4460,34 +4614,103 @@ components:
         - processed
         - rejected
       example: "processed"
-    FinancialAddress:
+    AccountAddress:
       type: object
       description: |-
-        A subhash containing information about the electronic bank address payment rail details.
-      properties:
-        ach:
-          $ref: "#/components/schemas/AchAddress"
-    AchAddress:
-      type: object
-      description: |-
-        A subhash containing information about the electronic bank address payment rail details.
+        An Account Address is an address for receiving payments over electronic rails: ACH, Wire, and FedNow.
+        Every Financial Account comes with a default Account Address that can't be changed (indicated by `default: true`).
+        Additional Account Addresses are generated per Payment Source so that the originator of an incoming payment can
+        always be identified.
       required:
-        - institution_name
+        - id
         - account_number
         - routing_number
+        - status
+        - created_at
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the account address.
+          example: "account_address_01j8rs605a4gctmbm58d87mvsj"
         account_number:
           type: string
-          description: The account number of that uniquely identifies the account at the institution
+          description: The account number that uniquely identifies the account at the institution.
           example: "987654321"
         routing_number:
           type: string
-          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
+          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the account.
           example: "101050001"
+        status:
+          type: string
+          description: |-
+            The status of the account address.
+
+            - `active`: The account address is active.
+            - `disabled`: The account address is temporarily disabled.
+            - `canceled`: The account address is permanently disabled.
+          example: "active"
+          enum:
+            - active
+            - disabled
+            - canceled
+        default:
+          type: boolean
+          readOnly: true
+          description: |-
+            Whether this is the default account address for the financial account.
+            A financial account's default account address can't be changed.
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the account address was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the account address was last updated.
+          example: "2020-01-31T23:59:59Z"
+    PaymentEntity:
+      type: object
+      description: |-
+        A Payment Entity is the legal business that sent you a Donation.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the payment entity.
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
+        ein:
+          type: string
+          description: The Employer Identification Number (EIN) of the payment entity.
+          example: "12-3456789"
+        name:
+          type: string
+          description: The legal name of the payment entity.
+          example: "Benevity, Inc."
+        logo:
+          type: string
+          description: A URL to the logo for the payment entity.
+          example: "https://cdn.givechariot.com/logos/benevity.png"
+        website:
+          type: string
+          description: The website of the payment entity.
+          example: "https://www.benevity.com"
+        organization_id:
+          type: string
+          description: The unique identifier for the Chariot Organization associated with this payment entity, if any.
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
     Donation:
       type: object
       description: |-
-        A Donation is a gift of money to a nonprofit organization.
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       required:
         - id
         - payment_source_id
@@ -4508,22 +4731,12 @@ components:
           type: string
           description: |-
             The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
-            Identifies the payer bucket for this donation. May be set independently of `lockbox_id` / `mail_item_id`
-            (for example, a Benevity grant that arrives by check is associated with both the Benevity payment source
-            and the lockbox that received it).
           example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
-        lockbox_id:
+        payment_entity_id:
           type: string
           description: |-
-            The unique identifier for the lockbox that physically received the mail this donation was extracted from.
-            Set for donations originating from physical mail. May be set independently of `payment_source_id`.
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-        mail_item_id:
-          type: string
-          description: |-
-            The unique identifier for the specific mail item this donation was extracted from.
-            Set whenever `lockbox_id` is set.
-          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+            The unique identifier for the Payment Entity (the legal business) that sent this donation.
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
         amount_gross:
           type: integer
           format: int64
@@ -5015,7 +5228,8 @@ components:
     Deposit:
       type: object
       description: |-
-        A Deposit is a transfer of money for a charitable donation or a batch of donations.
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       required:
         - id
         - payment_source_id
@@ -5032,22 +5246,14 @@ components:
         payment_source_id:
           type: string
           description: |-
-            The unique identifier for the payment source that contains the money for the deposit.
-            Identifies the payer bucket. May be set independently of `lockbox_id` / `mail_item_id` —
-            for example, a deposit from a Benevity check that arrived at a lockbox is associated with
-            both the Benevity payment source and the lockbox that received it.
+            The unique identifier for the payment source this deposit belongs to.
+            Identifies which payment source's account or mailing address the funds arrived at.
           example: payment_source_01j8rs605a4gctmbm58d87mvsj
-        lockbox_id:
-          type: string
-          description: |-
-            The unique identifier for the lockbox that physically received the mail this deposit was created from.
-            Set for deposits originating from physical mail. May be set independently of `payment_source_id`.
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
         mail_item_id:
           type: string
           description: |-
             The unique identifier for the specific mail item this deposit was created from.
-            Set whenever `lockbox_id` is set.
+            Set for deposits that arrived via a mailing address.
           example: "mail_01j8rs605a4gctmbm58d87mvsj"
         settled_at:
           type: string
@@ -5220,9 +5426,30 @@ components:
           example: "123456"
     CheckDeposit:
       type: object
+      required:
+        - status
       description: |-
         A check deposit represents a physical check that is deposited into a financial account.
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the check deposit.
+          example: "check_deposit_01j8rs605a4gctmbm58d87mvsj"
+        check_front_file_id:
+          type: string
+          description: The unique identifier for the scanned image of the front of the check.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        check_back_file_id:
+          type: string
+          description: The unique identifier for the scanned image of the back of the check.
+          example: "file_02k9st716b5hdunco69e98nwtk"
+        mailing_address_id:
+          type: string
+          description: |-
+            The unique identifier for the mailing address this check came from. Used to resolve the payment source on
+            the parent Deposit. Only populated by Chariot's lockbox service; empty when the check deposit is created by a user.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
         auxiliary_on_us:
           type: string
           description: |-
@@ -5249,6 +5476,18 @@ components:
             - deposited
             - rejected
             - returned
+    DepositCheckResponse:
+      type: object
+      description: The response from depositing a check.
+      required:
+        - deposit_id
+      properties:
+        deposit_id:
+          type: string
+          description: |-
+            The unique identifier of the created deposit. Fetch the full resource via
+            [Get a Deposit](/api-reference/deposits/get) (`GET /v1/deposits/{id}`).
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
     InboundRealTimePaymentsTransfer:
       type: object
       description: |-
@@ -7939,6 +8178,54 @@ components:
                 description: Arbitrary key-value metadata for the donation.
                 additionalProperties:
                   type: string
+    UpdateDepositRequest:
+      description: The request to update a deposit.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payment_source_id:
+                type: string
+                description: The unique identifier of the payment source to assign to this deposit.
+                example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+    DepositCheckRequest:
+      description: |-
+        The request to deposit a check from its front and back images.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - check_front_file_id
+              - check_back_file_id
+              - amount
+              - financial_account_id
+              - payment_source_id
+            properties:
+              check_front_file_id:
+                type: string
+                description: The unique identifier for the File holding the front image of the check. Must belong to your account.
+                example: "file_01j8rs605a4gctmbm58d87mvsj"
+              check_back_file_id:
+                type: string
+                description: The unique identifier for the File holding the back image of the check. Must belong to your account.
+                example: "file_02k9st716b5hdunco69e98nwtk"
+              amount:
+                type: integer
+                format: int64
+                description: The check amount in minor units of the currency (for dollars, this is cents). Must be positive.
+                example: 10000
+              financial_account_id:
+                type: string
+                description: The unique identifier for the financial account the funds should credit.
+                example: "fa_01j8rs605a4gctmbm58d87mvsj"
+              payment_source_id:
+                type: string
+                description: The unique identifier for the payment source to attribute this deposit to.
+                example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
     ReconcileDepositRequest:
       description: |-
         The request to reconcile a deposit to one or more donations.
@@ -7979,7 +8266,12 @@ components:
               name:
                 type: string
                 description: A human-readable name for the payment source.
-                example: "Main Payment Source"
+                example: "Paypal Grant Payments"
+              logo:
+                type: string
+                format: uri
+                description: A URL pointing to the logo image for the payment source.
+                example: "https://example.com/logo.png"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
@@ -9156,8 +9448,8 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-    ListLockboxesResponse:
-      description: The response for Lockboxes.list
+    ListAccountAddressesResponse:
+      description: The response for AccountAddresses.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -9169,7 +9461,49 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Lockbox"
+                  $ref: "#/components/schemas/AccountAddress"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListPaymentEntitiesResponse:
+      description: The response for PaymentEntities.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentEntity"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailingAddressesResponse:
+      description: The response for MailingAddresses.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailingAddress"
               next_page_token:
                 type: string
                 description: |-
