@@ -2532,6 +2532,86 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/grants/{id}/complete:
+    post:
+      summary: "Sandbox: Complete a grant"
+      description: |
+        Simulates the DAF sponsor completing a grant. Transitions the grant status to `completed`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateGrantCompletion
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the grant.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
+      responses:
+        "200":
+          description: The updated grant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/grants/{id}/cancel:
+    post:
+      summary: "Sandbox: Cancel a grant"
+      description: |
+        Simulates the DAF sponsor canceling the grant. Transitions the grant status to `canceled`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateGrantCancellation
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the grant.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
+      responses:
+        "200":
+          description: The updated grant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/inbound_transfers:
     post:
       summary: Create an Inbound transfer
