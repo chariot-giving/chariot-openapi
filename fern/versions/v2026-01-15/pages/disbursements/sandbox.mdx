@@ -14,15 +14,32 @@ These APIs allow you to quickly test financial related events that might take lo
 
 If you have a sandbox Event Subscription configured, calling these APIs will also result in the appropriate webhooks being sent to your endpoint.
 
-## Sandbox Lifecycle
+## Testing disbursement payment rails
 
-To adequately test the various [disbursement payment rails](/guides/disbursements/disbursement-lifecycle#payment-rail-lifecycle) (Account, ACH, Check), 
-you'll need to make use of a fixed set of test nonprofit Organizations that have been pre-configured in the Sandbox environment.
+Which [payment rail](/guides/disbursements/disbursement-lifecycle#payment-rail-lifecycle) a disbursement settles on depends on whether the recipient
+organization has a Chariot account. An organization without a Chariot account is paid by [mailed check](/guides/disbursements/disbursement-lifecycle#mailed-check);
+an organization with one is paid electronically.
 
-The following Organizations will allow you test the various disbursement payment rails:
+In Sandbox, an organization you disburse to has no Chariot account by default, so its disbursements settle as a check. To test the electronic rails,
+onboard the organization first with the [Onboard Organization](/api/organizations/onboard) simulation. Onboarding provisions a Chariot account for the
+organization and lets you choose which electronic rail its disbursements settle on:
 
-| EIN | Transfer Type |
-| --- | ------------ |
-| 752456162 | [Account transfer](/guides/disbursements/disbursement-lifecycle#account-transfer) |
-| 861649851 | [ACH transfer](/guides/disbursements/disbursement-lifecycle#ach) |
-| 132555281 | [Check transfer](/guides/disbursements/disbursement-lifecycle#mailed-check) |
+| `settlement` | Payment rail |
+| --- | --- |
+| `SANDBOX_SETTLEMENT_ACCOUNT_TRANSFER` | [Account transfer](/guides/disbursements/disbursement-lifecycle#account-transfer) |
+| `SANDBOX_SETTLEMENT_ACH` | [ACH transfer](/guides/disbursements/disbursement-lifecycle#ach) |
+
+<EndpointRequestSnippet endpoint="POST /v1/simulations/organizations/onboard/{id}" />
+
+To test the [check](/guides/disbursements/disbursement-lifecycle#mailed-check) rail, simply disburse to an organization you have not onboarded.
+
+<Note>
+The `settlement` is fixed the first time you onboard an organization. Once an organization has been onboarded, its disbursements settle on the chosen
+rail even if you later intend to test a different one. To exercise another rail, onboard a different organization.
+</Note>
+
+<Warning title="Deprecated">
+Earlier versions of the Sandbox relied on a fixed set of pre-configured test organizations (EINs `752456162`, `861649851`, and `132555281`) to
+exercise the different payment rails. These are being deprecated in favor of onboarding organizations programmatically with the
+[Onboard Organization](/api/organizations/onboard) simulation, which works for any organization and any tenant.
+</Warning>
