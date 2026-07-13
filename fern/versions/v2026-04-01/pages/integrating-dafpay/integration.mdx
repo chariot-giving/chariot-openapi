@@ -13,17 +13,13 @@ In both modes, the DAFpay JavaScript bundle is loaded from Chariot's CDN and the
 
 | Directive    | Add to allowlist                              | Why it's needed                                                                                                                                                            |
 |--------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` (and the lightweight `initialize-dafpay.js` loader plus its versioned `chariot-connect-vX.Y.Z.umd.js` bundle) from Chariot's CDN.           |
+| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` from Chariot's CDN.           |
 | `frame-src`  | `https://secure.dafpay.com`                   | Embeds the DAFpay checkout in a cross-origin iframe. If `frame-src` is not set, browsers fall back to `child-src`, then `default-src`.                                     |
-| `font-src`   | `https://cdn.givechariot.com`                 | The DAFpay web component injects `@font-face` rules into your document referencing Chariot-hosted fonts (e.g., `CircularStd`, `Matter`, `Poppins`).                         |
-| `style-src`  | `'unsafe-inline'` (or a matching nonce/hash)  | The Vue-based web component and Zoid both inject inline `<style>` blocks (font-face declarations and modal overlay styles) into the parent document.                       |
+| `font-src`   | `https://cdn.givechariot.com`                 | The DAFpay web component injects `@font-face` rules into your document referencing Chariot-hosted fonts.                         |
+| `style-src`  | `'unsafe-inline'` (or a matching nonce/hash)  | The web component injects inline `<style>` blocks into the parent document.                       |
 | `img-src`    | `https://cdn.givechariot.com`                 | DAFpay tile and extended button themes reference DAF provider logos and other imagery hosted on Chariot's CDN.                                                             |
 
 The parent page does **not** need to allow `connect-src` for Chariot — all DAFpay API traffic originates inside the iframe (`secure.dafpay.com`), which has its own CSP that we manage.
-
-<Warning title="style-src 'unsafe-inline'">
-The DAFpay web component currently relies on inline `<style>` injection. If your CSP forbids `'unsafe-inline'` and you need to use nonces or hashes, contact Chariot support before integrating — your CSP will block the modal styles even though the script and iframe load successfully.
-</Warning>
 
 ### Example Header
 
@@ -44,26 +40,6 @@ Merge each directive into your existing policy — do not replace your full CSP 
 <Tip title="Meta Tag Limitation">
 If you deliver CSP via a `<meta http-equiv="Content-Security-Policy">` tag instead of an HTTP header, the same directives apply, but `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are silently ignored from meta tags. Use a response header whenever possible.
 </Tip>
-
-### Staging / Sandbox
-
-If you are testing with a Connect ID that begins with `staging_`, the checkout loads from a different origin and you must also allow:
-
-- `frame-src https://staging.dafpay.com`
-
-(`script-src` for the CDN is the same as production.)
-
-### Permissions-Policy and Passkey Authentication
-
-DAFpay uses WebAuthn (passkeys) for returning-donor authentication inside the checkout iframe. For passkey auth to work in a cross-origin iframe, your page must also delegate the credential permissions to `secure.dafpay.com` via the `Permissions-Policy` response header:
-
-```http
-Permissions-Policy:
-  publickey-credentials-create=(self "https://secure.dafpay.com"),
-  publickey-credentials-get=(self "https://secure.dafpay.com")
-```
-
-Without this delegation, passkey auth will fail inside the iframe and donors will be downgraded to SMS one-time-passcode flows.
 
 ### Troubleshooting
 
