@@ -104,6 +104,68 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/organizations/onboard/{id}:
+    post:
+      summary: "Sandbox: Onboard an organization"
+      description: |
+        Creates a Chariot account for a sandbox recipient organization so that
+        disbursements to it settle electronically instead of via a mailed check.
+
+        By default a sandbox organization has no Chariot account, so disbursements
+        to it are mailed as a physical check. Call this endpoint to provision an
+        account for the organization and choose which electronic rail its
+        disbursements should settle on.
+
+        The `settlement` is fixed on the first successful call. Onboarding the same
+        organization again with a different `settlement` returns an error.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: onboardOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the organization to onboard.
+          required: true
+          schema:
+            type: string
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - settlement
+              properties:
+                settlement:
+                  $ref: "#/components/schemas/SandboxSettlement"
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/programs:
     get:
       summary: List Programs
@@ -2419,6 +2481,16 @@ components:
           type: string
           description: The state of the organization.
           example: NY
+    SandboxSettlement:
+      type: string
+      description: |-
+        The electronic rail on which disbursements to an onboarded sandbox
+        organization settle. `SANDBOX_SETTLEMENT_ACCOUNT_TRANSFER` settles as an
+        in-network transfer between accounts on the same bank. `SANDBOX_SETTLEMENT_ACH`
+        settles via ACH across banks.
+      enum:
+        - SANDBOX_SETTLEMENT_ACCOUNT_TRANSFER
+        - SANDBOX_SETTLEMENT_ACH
     Organization:
       type: object
       description: |-

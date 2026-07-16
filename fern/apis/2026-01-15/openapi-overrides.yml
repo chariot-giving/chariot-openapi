@@ -13,6 +13,11 @@ paths:
       x-fern-sdk-group-name:
         - organizations
       x-fern-sdk-method-name: get
+  /v1/simulations/organizations/onboard/{id}:
+    post:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: onboard
   /v1/programs:
     get:
       x-fern-pagination:
