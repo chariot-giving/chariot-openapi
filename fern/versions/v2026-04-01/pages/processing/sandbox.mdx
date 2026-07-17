@@ -8,10 +8,6 @@ In production, a gift shows up on a payment source as two things that have to li
 
 In the sandbox you can drive that same flow on demand, without waiting on a real donor or bank. The Simulate a Donation and Simulate a Deposit endpoints create each half through the same pipeline a real gift uses, and a shared handle ties them together.
 
-<Note title="Sandbox Only" icon="fa-light fa-atom-simple">
-These endpoints are only available in the sandbox environment.
-</Note>
-
 ## The simulation batch id
 
 `simulation_batch_id` is the handle that links a donation to the deposit that funds it. In production, incoming money and its donations are matched by an identifier the bank or platform assigns to a batch of transactions; in the sandbox you set that identifier yourself.
