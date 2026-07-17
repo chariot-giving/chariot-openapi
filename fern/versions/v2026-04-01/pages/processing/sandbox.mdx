@@ -6,20 +6,15 @@ hidden: false
 
 In production, a gift shows up on a payment source as two things that have to line up: a donation (who gave, how much, and why) and a deposit (the money itself landing in your account). Chariot reconciles them and the donation settles.
 
-In the sandbox you can drive that same flow on demand, without waiting on a real donor or bank. The Simulate a Donation and Simulate a Deposit endpoints create each half through the same pipeline a real gift uses, and a shared handle ties them together.
+In the sandbox, you can drive that same flow on demand. The Simulate a Donation and Simulate a Deposit endpoints create each half, and a shared identifier ties them together.
 
 ## The simulation batch id
 
-`simulation_batch_id` is the handle that links a donation to the deposit that funds it. In production, incoming money and its donations are matched by an identifier the bank or platform assigns to a batch of transactions; in the sandbox you set that identifier yourself.
+The `simulation_batch_id` is the identifier that links a donation to the deposit that funds it. In production, incoming money and its donations are matched automatically by our system; in the sandbox you set that identifier yourself.
 
-A few things to know:
+When you simulate a donation or a deposit, the response returns a `simulation_batch_id`. If you did not pass one, Chariot generates it for you. Pass the same value to the other half of the flow to reconcile them together. Persist the value when you get it back. It cannot be read off the donation or deposit afterward, and you need it to link the two halves.
 
-- When you simulate a donation or a deposit, the response returns a `simulation_batch_id`. If you did not pass one, Chariot generates it for you.
-- Pass the same value to the other half of the flow to reconcile them together. A donation and a deposit that share a batch id settle against each other.
-- Order does not matter. You can simulate the deposit first and the donation second, or the other way around; they reconcile whenever both exist.
-- You can group several donations under one batch id so a single deposit settles all of them at once.
-- Persist the value when you get it back. It cannot be read off the donation or deposit afterward, and you need it to link the two halves.
-- It is capped at 17 characters.
+The order of operations does not matter. You can simulate the deposit first and the donation second, or the other way around. They reconcile whenever both exist. You can group several donations under one batch id so a single deposit settles all of them at once.
 
 ## Walkthrough
 
