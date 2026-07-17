@@ -1,0 +1,58 @@
+---
+title: "Sandbox"
+subtitle: "Simulate donations and deposits so a sandbox account looks and settles like a real one."
+hidden: false
+---
+
+In production, a gift shows up on a payment source as two things that have to line up: a donation (who gave, how much, and why) and a deposit (the money itself landing in your account). Chariot reconciles them and the donation settles.
+
+In the sandbox you can drive that same flow on demand, without waiting on a real donor or bank. The Simulate a Donation and Simulate a Deposit endpoints create each half through the same pipeline a real gift uses, and a shared handle ties them together.
+
+<Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+These endpoints are only available in the sandbox environment.
+</Note>
+
+## The simulation batch id
+
+`simulation_batch_id` is the handle that links a donation to the deposit that funds it. In production, incoming money and its donations are matched by an identifier the bank or platform assigns to a batch of transactions; in the sandbox you set that identifier yourself.
+
+A few things to know:
+
+- When you simulate a donation or a deposit, the response returns a `simulation_batch_id`. If you did not pass one, Chariot generates it for you.
+- Pass the same value to the other half of the flow to reconcile them together. A donation and a deposit that share a batch id settle against each other.
+- Order does not matter. You can simulate the deposit first and the donation second, or the other way around; they reconcile whenever both exist.
+- You can group several donations under one batch id so a single deposit settles all of them at once.
+- Persist the value when you get it back. It cannot be read off the donation or deposit afterward, and you need it to link the two halves.
+- It is capped at 17 characters.
+
+## Walkthrough
+
+### 1. Simulate a donation
+
+Create the donation half of the gift. The only required fields are the payment source it arrives on and the gross amount; everything else (donor, DAF grant, corporate match, note) is optional detail that makes the record look realistic.
+
+<EndpointRequestSnippet endpoint="POST /v1/simulations/donations" />
+
+The response includes a `donation_id` and a `simulation_batch_id`. Hold onto the batch id for the next step.
+
+### 2. Simulate the deposit that funds it
+
+Create the deposit half, passing the `simulation_batch_id` from step 1 so the money lands against the donation you just made. The deposit arrives in a pending state, the same as a real one that has not cleared yet.
+
+<EndpointRequestSnippet endpoint="POST /v1/simulations/deposits" />
+
+### 3. Clear or bounce the deposit
+
+A pending deposit sits until its funds either clear or come back. Simulate whichever outcome you want to test.
+
+Completing it makes the funds available and marks the reconciled donations as received:
+
+<EndpointRequestSnippet endpoint="POST /v1/simulations/deposits/{id}/complete" />
+
+Failing it acts like a returned payment (for example, a bounced check) and reverses the reconciled donations:
+
+<EndpointRequestSnippet endpoint="POST /v1/simulations/deposits/{id}/fail" />
+
+<Note>
+If you have a sandbox Event Subscription configured, these simulations emit the same webhooks a real donation and deposit would, so you can test your event handling end to end.
+</Note>
