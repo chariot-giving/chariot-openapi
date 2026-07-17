@@ -2900,6 +2900,133 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits:
+    post:
+      summary: "Sandbox: Simulate a Deposit"
+      description: |-
+        Simulate a deposit arriving on a payment source.
+        The deposit is created asynchronously through the standard processing pipeline.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payment_source_id
+                - amount
+              properties:
+                payment_source_id:
+                  type: string
+                  description: The payment source the deposit should arrive on.
+                  example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+                amount:
+                  type: string
+                  format: int64
+                  description: The deposit amount in cents. Must be positive.
+                  example: "5000"
+                idempotency_key:
+                  type: string
+                  description: Optional idempotency key. When set, repeating the call does not create a second deposit. When empty, every call creates a new deposit.
+                simulation_batch_id:
+                  type: string
+                  description: Groups this deposit with simulated donations so it reconciles against them, standing in for the ACH batch the bank would otherwise assign. Leave empty to mint a fresh one, or set it to the simulation_batch_id of one or more simulated donations. Capped at 17 characters.
+      responses:
+        "202":
+          description: The deposit simulation request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits/{id}/complete:
+    post:
+      summary: "Sandbox: Complete a Deposit"
+      description: |-
+        Advances a pending deposit to complete, as though the bank cleared its incoming transfer (e.g. a mailed check clearing).
+        Its funds become available and its donations become received.
+        The state change settles asynchronously through the standard processing pipeline.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDepositCompletion
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The deposit completion request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits/{id}/fail:
+    post:
+      summary: "Sandbox: Fail a Deposit"
+      description: |-
+        Advances a pending deposit to failed, as though its incoming transfer was returned (e.g. a mailed check bouncing).
+        Its donations are reversed.
+        The state change settles asynchronously through the standard processing pipeline.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDepositFailure
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The deposit failure request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/payment_sources:
     get:
       summary: List Payment Sources
