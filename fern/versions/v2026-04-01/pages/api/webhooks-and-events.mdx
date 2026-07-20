@@ -9,6 +9,10 @@ When something interesting happens on the nonprofit's Chariot account, such as a
 
 The first step is to create an Event Subscription via the [API](/api/event-subscriptions/create). As part of this, you specify a URL for a server endpoint that will receive real-time events. Chariot will then send HTTPS requests to that URL to notify you of activity for certain events.
 
+<Note>
+An Event Subscription only receives events for the account of the API key that creates it. If you integrate with a single organization API key, that key receives all of your organization's events, including both grant and donation events. Create the subscription with the same key you use to call the API, and do not expect a subscription created with one key to receive another key's events.
+</Note>
+
 When a noteworthy event happens, Chariot first generates an [Event](/api/events/get). Next, we'll send a POST request to your endpoint.
 
 <Aside>
