@@ -2904,16 +2904,12 @@ paths:
     get:
       summary: List Payment Sources
       description: |-
-        List payment sources for your Chariot account.
+        List payment sources for your account.
 
-        Payment Sources represent segregated addresses for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
       operationId: listPaymentSources
       tags:
         - paymentSources
@@ -2933,6 +2929,20 @@ paths:
           required: false
           schema:
             type: string
+        - name: payment_entity_id
+          in: query
+          description: Filter payment sources by the payment entity that sends payments through them.
+          required: false
+          schema:
+            type: string
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
+        - name: name
+          in: query
+          description: Filter payment sources by name (case-insensitive substring match).
+          required: false
+          schema:
+            type: string
+          example: "Paypal"
       responses:
         "200":
           $ref: "#/components/responses/ListPaymentSourcesResponse"
@@ -2944,20 +2954,61 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Payment Source
+      description: |-
+        Create a payment source for your account.
+
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
+      operationId: createPaymentSource
+      tags:
+        - paymentSources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreatePaymentSourceRequest"
+      responses:
+        "201":
+          description: The payment source was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSource"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/payment_sources/{id}:
     get:
       summary: Get a Payment Source
       description: |-
         Get a payment source by its unique identifier.
 
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
       operationId: getPaymentSource
       tags:
         - paymentSources
@@ -2988,11 +3039,207 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/payment_entities:
+    get:
+      summary: List Payment Entities
+      description: |-
+        List payment entities for your account.
+
+        A Payment Entity is the legal business that sent you a Donation.
+      operationId: listPaymentEntities
+      tags:
+        - paymentEntities
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: payment_source_id
+          in: query
+          description: Filter payment entities by the payment source they send payments through.
+          required: false
+          schema:
+            type: string
+          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPaymentEntitiesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/payment_entities/{id}:
+    get:
+      summary: Get a Payment Entity
+      description: |-
+        Get a payment entity by its unique identifier.
+
+        A Payment Entity is the legal business that sent you a Donation.
+      operationId: getPaymentEntity
+      tags:
+        - paymentEntities
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the payment entity
+          required: true
+          schema:
+            type: string
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the payment entity.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentEntity"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items:
+    get:
+      summary: List Mail Items
+      description: |-
+        List mail items for your account.
+
+        A Mail Item is a unit of physical mail received at a Mailing Address. It has its own lifecycle
+        and is the operational unit reviewers act on. Each Mail Item may produce zero or more
+        Donations and zero or one Deposit.
+      operationId: listMailItems
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: mailing_address_id
+          in: query
+          description: The unique identifier for the mailing address to filter mail items by.
+          required: false
+          schema:
+            type: string
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
+        - name: status.in
+          in: query
+          description: |-
+            Filter Mail Items to only those with the specified status.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?status.in=needs_review,processing`.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MailItemStatus"
+          example:
+            - "needs_review"
+        - name: created_at.after
+          in: query
+          description: Return mail items created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return mail items created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMailItemsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items/{id}:
+    get:
+      summary: Get a Mail Item
+      description: |-
+        Get a mail item by its unique identifier.
+
+        A Mail Item is a unit of physical mail received at a Mailing Address.
+      operationId: getMailItem
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the mail item
+          required: true
+          schema:
+            type: string
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the mail item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailItem"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
       description: |-
         List donations for your account.
+
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       operationId: listDonations
       tags:
         - donations
@@ -3019,6 +3266,13 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: payment_entity_id
+          in: query
+          description: Filter donations by the payment entity that sent them.
+          required: false
+          schema:
+            type: string
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3051,11 +3305,54 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Donation
+      description: |-
+        Create a donation for a nonprofit-managed payment source.
+      operationId: createDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDonationRequest"
+      responses:
+        "201":
+          description: The donation was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations/{id}:
     get:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       operationId: getDonation
       tags:
         - donations
@@ -3086,11 +3383,80 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Donation
+      description: |-
+        Update specific fields on a donation. Fields listed in `update_mask` are overridden with the provided value. Fields not in the mask are unchanged.
+      operationId: updateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDonationRequest"
+      responses:
+        "200":
+          description: The donation was updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a Donation
+      description: |-
+        Delete a donation by its unique identifier.
+      operationId: deleteDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "204":
+          description: The donation was deleted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
     get:
       summary: List Deposits
       description: |-
         List deposits for your account.
+
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       operationId: listDeposits
       tags:
         - deposits
@@ -3117,6 +3483,28 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+        - name: mail_item_id
+          in: query
+          description: The unique identifier for the mail item to filter deposits by.
+          required: false
+          schema:
+            type: string
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+        - name: type.in
+          in: query
+          description: |-
+            Filter Deposits to only those produced by the specified transfer types.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?type.in=check_deposit,inbound_ach_transfer`.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/TransferType"
+          example:
+            - "check_deposit"
         - name: settled_at.after
           in: query
           description: Return deposits with a settled date and time after the given date and time.
@@ -3142,11 +3530,55 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/check_deposits:
+    post:
+      summary: Deposit a Check
+      description: |-
+        Deposit a check from a front and back image. Upload the check images as Files first, then provide
+        their file IDs along with the amount and the financial account to credit. Returns the unique
+        identifier of the created deposit; fetch the full resource via [Get a Deposit](/api-reference/deposits/get).
+      operationId: depositCheck
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/DepositCheckRequest"
+      responses:
+        "200":
+          description: The check deposit was created.
+          headers:
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositCheckResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/deposits/{id}:
     get:
       summary: Get a Deposit
       description: |-
         Get a deposit by its unique identifier.
+
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       operationId: getDeposit
       tags:
         - deposits
@@ -3167,6 +3599,258 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deposit"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Deposit
+      description: |-
+        Update a deposit. Use this to assign or reassign the payment source for a deposit.
+      operationId: updateDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDepositRequest"
+      responses:
+        "200":
+          description: The deposit was updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deposit"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}/reconcile:
+    post:
+      summary: Reconcile a Deposit
+      description: |-
+        Reconciles a deposit to one or more donations for a nonprofit-managed payment source.
+        This links donations to the deposit that settled the funds, establishing the
+        relationship between the money received and the individual donations it represents.
+        This endpoint is only available for deposits and donations belonging to nonprofit-managed payment sources.
+      operationId: reconcileDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to reconcile.
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/ReconcileDepositRequest"
+      responses:
+        "204":
+          description: The deposit was reconciled to the donations
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files for your account.
+
+        A File represents a file uploaded to Chariot. Files are referenced by Donations
+        (via `artifacts`) and by Mail Items (via `file_ids`).
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: purpose
+          in: query
+          description: Filter files by purpose. Comma separated list of purposes.
+          required: false
+          schema:
+            type: string
+          example: "inbound_mail_item"
+        - name: created_at.after
+          in: query
+          description: Return files created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return files created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a File
+      description: |-
+        Upload a file to Chariot.
+
+        Send the file's binary contents and metadata in a single `multipart/form-data` request.
+        The returned File can be referenced by its `id` from Donations (via `artifacts`) and from Mail Items (via `file_ids`).
+      operationId: createFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFileRequest"
+      responses:
+        "201":
+          description: The file was uploaded.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a File
+      description: |-
+        Get a file by its unique identifier.
+
+        A File represents a file uploaded to Chariot. To download the file's contents,
+        create a File Link with the `POST /v1/files/{id}/links` endpoint.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/links:
+    post:
+      summary: Create a File Link
+      description: |-
+        Create a short-lived, unauthenticated URL that can be used to download the file's contents.
+
+        File Links expire after a short period. To download the file again after a link expires,
+        create a new File Link.
+      operationId: createFileLink
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "201":
+          description: The file link was created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3860,13 +4544,21 @@ components:
           description: The URL of the organization's logo
     PaymentSource:
       type: object
+      required:
+        - id
+        - financial_account_id
+        - name
+        - status
+        - created_by
+        - created_at
       description: |-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
+        A Payment Source is a platform that stores your electronic or mailing address to send you payments. Unique
+        payment addresses are generated per Payment Source. This is similar to how you use different passwords for
+        different websites — generating a unique payment address per vendor ensures you always know where an incoming
+        payment came from.
+
+        Payment Sources can be Chariot-created (e.g. for integrated DAF sponsors and platforms) or user-created for
+        tracking payments from sources outside of Chariot's network.
       properties:
         id:
           type: string
@@ -3880,20 +4572,43 @@ components:
         name:
           type: string
           description: The name of the payment source
-          example: "Main Payment Source"
-        source_type:
+          example: "Paypal Grant Payments"
+        status:
           type: string
-          description: The type of the payment source
-          example: "portal"
+          readOnly: true
+          description: |-
+            The status of the payment source.
+
+            - `pending`: A deposit has not been received by this payment source.
+            - `active`: A deposit has been received by this payment source.
           enum:
-            - manual
-            - portal
-            - lockbox
-            - grantmaker
-        financial_address:
-          $ref: "#/components/schemas/FinancialAddress"
-        lockbox:
-          $ref: "#/components/schemas/Lockbox"
+            - pending
+            - active
+          example: "active"
+        created_by:
+          type: string
+          readOnly: true
+          description: Whether this payment source was created by Chariot or by the user.
+          enum:
+            - chariot
+            - user
+          example: "chariot"
+        logo:
+          type: string
+          description: A URL to the logo for the payment source.
+          example: "https://cdn.givechariot.com/logos/benevity.png"
+        account_address:
+          description: |-
+            The electronic bank address generated for this payment source. Incoming electronic payments
+            (ACH, Wire, FedNow) to this address are attributed to this payment source.
+          allOf:
+            - $ref: "#/components/schemas/AccountAddress"
+        mailing_address:
+          description: |-
+            The mailing address (lockbox) generated for this payment source. Incoming checks mailed to
+            this address are attributed to this payment source.
+          allOf:
+            - $ref: "#/components/schemas/MailingAddress"
         created_at:
           type: string
           format: date-time
@@ -3906,43 +4621,248 @@ components:
           readOnly: true
           description: The date and time when the payment source was last updated
           example: "2020-01-31T23:59:59Z"
-    Lockbox:
+    MailingAddress:
       type: object
       description: |-
-        A US mailing address to process incoming physical mail and checks.
-        This is only available for lockbox payment sources.
-      properties:
-        address:
-          $ref: "#/components/schemas/PostalAddress"
-    FinancialAddress:
-      type: object
-      description: |-
-        A subhash containing information about the electronic bank address payment rail details.
-        This is only available for manual and connected_account payment sources.
-      properties:
-        ach:
-          $ref: "#/components/schemas/AchAddress"
-    AchAddress:
-      type: object
-      description: |-
-        A subhash containing information about the electronic bank address payment rail details.
+        A Mailing Address is a lockbox address used to receive Mail. It is an address for receiving payments over the
+        check rail. Physical mail sent to a Mailing Address is received and scanned on Chariot's behalf by a third-party
+        provider (e.g., Stable, CDS), producing Mail Items, which in turn produce Donations and Deposits.
+
+        Financial Accounts with the Lockbox feature enabled come with a default Mailing Address that can't be changed
+        (indicated by `default: true`). Mailing Addresses are provisioned and managed by Chariot in partnership with the provider.
       required:
-        - institution_name
+        - id
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the mailing address.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
+        address:
+          description: The physical mailing address that receives the mail.
+          allOf:
+            - $ref: "#/components/schemas/PostalAddress"
+        description:
+          type: string
+          description: A human-readable description of the mailing address.
+          example: "Benevity check lockbox"
+        status:
+          type: string
+          description: |-
+            The status of the mailing address.
+
+            - `pending`: Chariot is generating this lockbox address.
+            - `active`: This lockbox address is active.
+            - `disabled`: This lockbox address is disabled.
+            - `canceled`: This lockbox address is permanently disabled.
+          example: "active"
+          enum:
+            - pending
+            - active
+            - disabled
+            - canceled
+        provider:
+          type: string
+          description: The lockbox provider that operates this mailing address.
+          example: "stable"
+          enum:
+            - stable
+            - cds
+        default:
+          type: boolean
+          readOnly: true
+          description: |-
+            Whether this is the default mailing address for the financial account.
+            A financial account's default mailing address can't be changed.
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mailing address was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mailing address was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItem:
+      type: object
+      description: |-
+        A Mail Item represents a unit of physical mail. It has its own lifecycle and is the
+        operational unit that reviewers act on. A Mail Item may produce zero or more Donations
+        and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
+        paperwork) associated with the receipt.
+
+        Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
+        They are not created via the public API — to bring donation data and money in directly,
+        use the Donations and Deposits APIs.
+      required:
+        - id
+        - mailing_address_id
+        - status
+        - received_at
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the mail item.
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+        mailing_address_id:
+          type: string
+          description: The unique identifier for the mailing address that received the mail item.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
+        status:
+          $ref: "#/components/schemas/MailItemStatus"
+        received_at:
+          type: string
+          format: date-time
+          description: The date and time when the mail item was physically received at the lockbox.
+          example: "2020-01-31T23:59:59Z"
+        file_ids:
+          type: array
+          description: |-
+            The unique identifiers for the scanned source files associated with the mail item.
+            These include scanned images of the envelope, check images, and any accompanying paperwork.
+          items:
+            type: string
+          example:
+            - "file_01j8rs605a4gctmbm58d87mvsj"
+        properties:
+          type: array
+          description: A list of custom properties assigned to the mail item.
+          items:
+            $ref: "#/components/schemas/PropertyAssignment"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItemStatus:
+      type: string
+      description: |-
+        The processing status of a Mail Item.
+
+        - `received`: The mail item has been logged at the lockbox but not yet processed.
+        - `processing`: The mail item is being scanned and parsed.
+        - `needs_review`: Extraction completed but produced ambiguous results that require human review.
+        - `processed`: The mail item was successfully parsed into one or more Donations and (optionally) a Deposit.
+        - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
+      enum:
+        - received
+        - processing
+        - needs_review
+        - processed
+        - rejected
+      example: "processed"
+    AccountAddress:
+      type: object
+      description: |-
+        An Account Address is an address for receiving payments over electronic rails: ACH, Wire, and FedNow.
+        Every Financial Account comes with a default Account Address that can't be changed (indicated by `default: true`).
+        Additional Account Addresses are generated per Payment Source so that the originator of an incoming payment can
+        always be identified.
+      required:
+        - id
         - account_number
         - routing_number
+        - status
+        - created_at
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the account address.
+          example: "account_address_01j8rs605a4gctmbm58d87mvsj"
         account_number:
           type: string
-          description: The account number of that uniquely identifies the account at the institution
+          description: The account number that uniquely identifies the account at the institution.
           example: "987654321"
         routing_number:
           type: string
-          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
+          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the account.
           example: "101050001"
+        status:
+          type: string
+          description: |-
+            The status of the account address.
+
+            - `active`: The account address is active.
+            - `disabled`: The account address is temporarily disabled.
+            - `canceled`: The account address is permanently disabled.
+          example: "active"
+          enum:
+            - active
+            - disabled
+            - canceled
+        default:
+          type: boolean
+          readOnly: true
+          description: |-
+            Whether this is the default account address for the financial account.
+            A financial account's default account address can't be changed.
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the account address was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the account address was last updated.
+          example: "2020-01-31T23:59:59Z"
+    PaymentEntity:
+      type: object
+      description: |-
+        A Payment Entity is the legal business that sent you a Donation.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the payment entity.
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
+        ein:
+          type: string
+          description: The Employer Identification Number (EIN) of the payment entity.
+          example: "12-3456789"
+        name:
+          type: string
+          description: The legal name of the payment entity.
+          example: "Benevity, Inc."
+        logo:
+          type: string
+          description: A URL to the logo for the payment entity.
+          example: "https://cdn.givechariot.com/logos/benevity.png"
+        website:
+          type: string
+          description: The website of the payment entity.
+          example: "https://www.benevity.com"
+        organization_id:
+          type: string
+          description: The unique identifier for the Chariot Organization associated with this payment entity, if any.
+          example: "org_01j8rs605a4gctmbm58d87mvsj"
     Donation:
       type: object
       description: |-
-        A Donation is a gift of money to a nonprofit organization.
+        A Donation represents the canonical unit that a nonprofit deals with. A Donation with a `deposit_id` means the
+        funds for that Donation have been received.
       required:
         - id
         - payment_source_id
@@ -3964,6 +4884,11 @@ components:
           description: |-
             The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
           example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
+        payment_entity_id:
+          type: string
+          description: |-
+            The unique identifier for the Payment Entity (the legal business) that sent this donation.
+          example: "payment_entity_01j8rs605a4gctmbm58d87mvsj"
         amount_gross:
           type: integer
           format: int64
@@ -4005,6 +4930,10 @@ components:
             An informational note from the donor to the nonprofit about the donation.
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
+        external_id:
+          type: string
+          description: An external identifier for the donation, useful for reconciliation against your own systems.
+          example: "INV-12345"
         attribution:
           description: |-
             A subhash containing information about how the donation is attributed.
@@ -4043,7 +4972,7 @@ components:
         artifacts:
           type: array
           description: |-
-            A list of source artifacts that were used to create the donation.
+            The source files that were used to create the donation.
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
             $ref: "#/components/schemas/Artifact"
@@ -4083,27 +5012,15 @@ components:
     Artifact:
       type: object
       description: |-
-        An artifact is a source file that was used to create the donation.
+        A reference to a source file associated with a Donation. Wraps a `file_id` so
+        per-attachment metadata can be added in the future without breaking clients.
+      required:
+        - file_id
       properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the artifact.
-          example: "artifact_01j8rs605a4gctmbm58d87mvsj"
-        name:
-          type: string
-          description: The name of the artifact.
-          example: "donation_receipt.pdf"
         file_id:
           type: string
-          description: The unique identifier for the file that the artifact is associated with.
+          description: The unique identifier for the underlying File.
           example: "file_01j8rs605a4gctmbm58d87mvsj"
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the artifact was created.
-          example: "2020-01-31T23:59:59Z"
     File:
       type: object
       description: |-
@@ -4125,13 +5042,15 @@ components:
           example: "Donation receipt for donation to the nonprofit"
         purpose:
           type: string
-          description: The purpose of the file.
+          description: |-
+            The categorization of the file. Additional values may be added over time;
+            clients should handle unknown values gracefully.
           enum:
-            - integration_download
             - inbound_mail_item
+            - donation_artifact
             - inbound_email
-            - grant_letter
-            - manual_upload
+            - other
+          example: "donation_artifact"
         content_type:
           type: string
           description: The MIME type of the file.
@@ -4461,7 +5380,8 @@ components:
     Deposit:
       type: object
       description: |-
-        A Deposit is a transfer of money for a charitable donation or a batch of donations.
+        A Deposit represents inbound funds to your financial account. Deposits arrive from a specific account or mailing
+        address, which identify the Payment Source the Deposit came from.
       required:
         - id
         - payment_source_id
@@ -4477,8 +5397,16 @@ components:
           example: deposit_01j8rs605a4gctmbm58d87mvsj
         payment_source_id:
           type: string
-          description: The unique identifier for the payment source that contains the money for the deposit.
+          description: |-
+            The unique identifier for the payment source this deposit belongs to.
+            Identifies which payment source's account or mailing address the funds arrived at.
           example: payment_source_01j8rs605a4gctmbm58d87mvsj
+        mail_item_id:
+          type: string
+          description: |-
+            The unique identifier for the specific mail item this deposit was created from.
+            Set for deposits that arrived via a mailing address.
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         settled_at:
           type: string
           format: date-time
@@ -4526,10 +5454,13 @@ components:
       type: object
       description: A subhash containing information about the transfer associated with the deposit.
       required:
+        - type
         - amount
         - currency
         - financial_account_id
       properties:
+        type:
+          $ref: "#/components/schemas/TransferType"
         amount:
           type: integer
           format: int64
@@ -4548,17 +5479,46 @@ components:
           description: A description of the transfer.
           example: "Disbursement to nonprofit"
         inbound_account_transfer:
-          description: A subhash containing information about the inbound account transfer associated with the deposit.
+          description: A subhash containing information about the inbound account transfer associated with the deposit. Populated when `type` is `inbound_account_transfer`.
           allOf:
             - $ref: "#/components/schemas/InboundAccountTransfer"
         inbound_ach_transfer:
-          description: A subhash containing information about the inbound ACH transfer associated with the deposit.
+          description: A subhash containing information about the inbound ACH transfer associated with the deposit. Populated when `type` is `inbound_ach_transfer`.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
         check_deposit:
-          description: A subhash containing information about the check deposit associated with the deposit.
+          description: A subhash containing information about the check deposit associated with the deposit. Populated when `type` is `check_deposit`.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A subhash containing information about the inbound Real-Time Payments (RTP) transfer associated with the deposit. Populated when `type` is `inbound_real_time_payments_transfer`.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A subhash containing information about the inbound wire transfer associated with the deposit. Populated when `type` is `inbound_wire_transfer`.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
+    TransferType:
+      type: string
+      description: |-
+        The type of transfer that produced the deposit. Acts as a discriminator
+        indicating which of `inbound_account_transfer`, `inbound_ach_transfer`,
+        `check_deposit`, `inbound_real_time_payments_transfer`, or
+        `inbound_wire_transfer` is populated on the Transfer. The enum value
+        matches the name of the populated sub-object.
+
+        - `inbound_account_transfer`: An internal transfer between Chariot-held financial accounts.
+        - `inbound_ach_transfer`: An external inbound ACH transfer.
+        - `check_deposit`: A physical check that was deposited.
+        - `inbound_real_time_payments_transfer`: An inbound Real-Time Payments (RTP) transfer.
+        - `inbound_wire_transfer`: An inbound wire transfer.
+      enum:
+        - inbound_account_transfer
+        - inbound_ach_transfer
+        - check_deposit
+        - inbound_real_time_payments_transfer
+        - inbound_wire_transfer
+      example: "inbound_ach_transfer"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -4612,11 +5572,36 @@ components:
             - declined
             - accepted
             - returned
+        receiver_id:
+          type: string
+          description: The receiver ID for the ACH transfer. For DAF sponsors like Fidelity Charitable, this corresponds to the ACH Group ID used to identify a batch of grants.
+          example: "123456"
     CheckDeposit:
       type: object
+      required:
+        - status
       description: |-
         A check deposit represents a physical check that is deposited into a financial account.
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the check deposit.
+          example: "check_deposit_01j8rs605a4gctmbm58d87mvsj"
+        check_front_file_id:
+          type: string
+          description: The unique identifier for the scanned image of the front of the check.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        check_back_file_id:
+          type: string
+          description: The unique identifier for the scanned image of the back of the check.
+          example: "file_02k9st716b5hdunco69e98nwtk"
+        mailing_address_id:
+          type: string
+          description: |-
+            The unique identifier for the mailing address this check came from. Used to resolve the payment source on
+            the parent Deposit. Only populated by Chariot's lockbox service; empty when the check deposit is created by a user.
+          example: "mailing_address_01j8rs605a4gctmbm58d87mvsj"
         auxiliary_on_us:
           type: string
           description: |-
@@ -4643,6 +5628,89 @@ components:
             - deposited
             - rejected
             - returned
+    DepositCheckResponse:
+      type: object
+      description: The response from depositing a check.
+      required:
+        - deposit_id
+      properties:
+        deposit_id:
+          type: string
+          description: |-
+            The unique identifier of the created deposit. Fetch the full resource via
+            [Get a Deposit](/api-reference/deposits/get) (`GET /v1/deposits/{id}`).
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+    InboundRealTimePaymentsTransfer:
+      type: object
+      description: |-
+        An inbound Real-Time Payments (RTP) transfer settling into your financial account.
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: The status of the RTP transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+            - declined
+        debtor_name:
+          type: string
+          description: The name of the debtor (sender) of the RTP transfer.
+          example: "Acme Foundation"
+        debtor_routing_number:
+          type: string
+          description: The routing number of the debtor's bank.
+          example: "021000021"
+        debtor_account_number:
+          type: string
+          description: The account number of the debtor.
+          example: "1234567890"
+        transaction_identification:
+          type: string
+          description: The RTP transaction identifier issued by the network.
+          example: "20260612A1B2C3D4E5F6"
+        remittance_information:
+          type: string
+          description: Free-form remittance / memo information sent with the RTP transfer.
+          example: "Grant payment Q1"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the RTP transfer was confirmed. Populated when `status` is `confirmed`.
+          example: "2020-01-31T23:00:00Z"
+    InboundWireTransfer:
+      type: object
+      description: |-
+        An inbound wire transfer settling into your financial account.
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: The status of the wire transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+        originator_name:
+          type: string
+          description: The name of the originator (sender) of the wire transfer.
+          example: "Acme Foundation"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originating bank.
+          example: "021000021"
+        originator_account_number:
+          type: string
+          description: The account number of the originator.
+          example: "1234567890"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the wire transfer was confirmed. Populated when `status` is `confirmed`.
+          example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
       description: |-
@@ -7088,31 +8156,184 @@ components:
                   last_name: "Johnson"
                 - ein: "530196605"
                   email: "ap@worldwildlife.org"
+    CreateFileRequest:
+      description: |-
+        The multipart/form-data request to upload a file to Chariot. The file's binary contents
+        are sent in the `file` part; categorization and metadata are sent as additional form fields.
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+              - purpose
+            properties:
+              file:
+                type: string
+                format: binary
+                description: The file's binary contents.
+              purpose:
+                type: string
+                description: |-
+                  The categorization of the file. Determines how Chariot treats the file internally
+                  and where it can be referenced from. Additional values may be added over time;
+                  clients should handle unknown values gracefully.
+                enum:
+                  - inbound_mail_item
+                  - donation_artifact
+                  - inbound_email
+                  - other
+                example: "donation_artifact"
+              description:
+                type: string
+                description: An optional human-readable description of the file.
+                example: "Donation receipt for donation to the nonprofit"
     UpdateDonationRequest:
       description: |-
-        The request to update core donation attributes like purpose, note and attribution.
+        The request to update donation fields using a field mask.
+        Only fields listed in `update_mask` are modified. Fields not in the mask are unchanged.
       required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - update_mask
             properties:
-              reason:
+              update_mask:
                 type: string
                 description: |-
-                  A user-friendly reason or comment about the update.
-                  This is useful to understand why the donation was updated.
-                example: "Donor requested a change to the donation purpose"
+                  A comma-separated list of field paths to update (google.protobuf.FieldMask format). Uses dot notation for nested fields.
+                  Only fields in the mask are modified. Fields not in the mask are unchanged.
+
+                  Allowed paths: `purpose`, `note`,
+                  `attribution.primary_donor.full_name`, `attribution.primary_donor.first_name`,
+                  `attribution.primary_donor.last_name`, `attribution.primary_donor.email`,
+                  `attribution.primary_donor.phone`, `attribution.primary_donor.address.line1`,
+                  `attribution.primary_donor.address.line2`, `attribution.primary_donor.address.city`,
+                  `attribution.primary_donor.address.state`, `attribution.primary_donor.address.postal_code`,
+                  `attribution.primary_donor.address.country`,
+                  `attribution.joint_donor.full_name`, `attribution.joint_donor.first_name`,
+                  `attribution.joint_donor.last_name`, `attribution.joint_donor.email`,
+                  `attribution.joint_donor.phone`, `attribution.joint_donor.address.line1`,
+                  `attribution.joint_donor.address.line2`, `attribution.joint_donor.address.city`,
+                  `attribution.joint_donor.address.state`, `attribution.joint_donor.address.postal_code`,
+                  `attribution.joint_donor.address.country`,
+                  `donor_advised_fund_grant.organization_name`, `donor_advised_fund_grant.donor_fund_name`, `donor_advised_fund_grant.program_name`,
+                  `corporate_match.company_name`, `corporate_match.program_name`, `corporate_match.source`
+                example: "purpose,attribution.primary_donor.email"
+              purpose:
+                type: string
+                nullable: true
+                description: |-
+                  A description of the donor's intent for the donation.
+              note:
+                type: string
+                nullable: true
+                description: |-
+                  An informational note from the donor to the nonprofit about the donation.
+              attribution:
+                nullable: true
+                allOf:
+                  - $ref: "#/components/schemas/DonationAttribution"
+              donor_advised_fund_grant:
+                type: object
+                nullable: true
+                properties:
+                  organization_name:
+                    type: string
+                    nullable: true
+                    description: The name of the DAF sponsor organization.
+                  donor_fund_name:
+                    type: string
+                    nullable: true
+                    description: The name of the donor's fund at the DAF sponsor.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the program at the DAF sponsor.
+              corporate_match:
+                type: object
+                nullable: true
+                properties:
+                  company_name:
+                    type: string
+                    nullable: true
+                    description: The name of the company that matched the donation.
+                  program_name:
+                    type: string
+                    nullable: true
+                    description: The name of the corporate matching program.
+                  source:
+                    type: string
+                    nullable: true
+                    description: The source of the corporate match.
+            example:
+              update_mask: "purpose,attribution.primary_donor.email"
+              purpose: "Capital Campaign"
+              attribution:
+                primary_donor:
+                  email: "warrenBuffet@example.com"
+    CreateDonationRequest:
+      description: |-
+        The request to create a donation.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - payment_source_id
+              - amount_gross
+            properties:
+              payment_source_id:
+                type: string
+                description: |-
+                  The unique identifier for the payment source to associate the donation with.
+                example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The effective date of the donation. Defaults to the current date if not provided.
+                  Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
+              amount_gross:
+                type: integer
+                format: int64
+                description: |-
+                  The original amount of the donation as intended by the donor in minor units of the currency.
+                  For dollars, for example, this is cents.
+                example: 10000
+              amount_fee:
+                type: integer
+                format: int64
+                description: |-
+                  The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
+                  For dollars, for example, this is cents. Defaults to 0 if not provided.
+                example: 0
+              currency:
+                type: string
+                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency. Defaults to "USD".
+                example: "USD"
               purpose:
                 type: string
                 description: |-
                   A description of the donor's intent for the donation.
-                  This is useful to understand how the donor intended the donation to be used.
+                example: "Where needed most"
               note:
                 type: string
                 description: |-
                   An informational note from the donor to the nonprofit about the donation.
-                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
+                example: "Please dedicate in memory of grandma"
+              external_id:
+                type: string
+                description: An external identifier for the donation, useful for reconciliation against your own systems.
+                example: "INV-12345"
+              dafpay_tracking_id:
+                type: string
+                description: A DAFpay tracking identifier for reconciliation purposes.
               attribution:
                 allOf:
                   - $ref: "#/components/schemas/DonationAttribution"
@@ -7122,16 +8343,105 @@ components:
               corporate_match:
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatch"
-            example:
-              reason: "Donor requested a change to the donation"
-              purpose: "Capital Campaign"
-              note: "Please dedicate in memory of grandma"
-              attribution:
-                primary_donor:
-                  email: "warrenBuffet@example.com"
-              donor_advised_fund_grant:
-                organization_name: "Fidelity Charitable"
-                fund_name: "Warren Buffet Fund"
+              platform_metadata:
+                type: object
+                description: Arbitrary key-value metadata for the donation.
+                additionalProperties:
+                  type: string
+    UpdateDepositRequest:
+      description: The request to update a deposit.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              payment_source_id:
+                type: string
+                description: The unique identifier of the payment source to assign to this deposit.
+                example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+    DepositCheckRequest:
+      description: |-
+        The request to deposit a check from its front and back images.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - check_front_file_id
+              - check_back_file_id
+              - amount
+              - financial_account_id
+              - payment_source_id
+            properties:
+              check_front_file_id:
+                type: string
+                description: The unique identifier for the File holding the front image of the check. Must belong to your account.
+                example: "file_01j8rs605a4gctmbm58d87mvsj"
+              check_back_file_id:
+                type: string
+                description: The unique identifier for the File holding the back image of the check. Must belong to your account.
+                example: "file_02k9st716b5hdunco69e98nwtk"
+              amount:
+                type: integer
+                format: int64
+                description: The check amount in minor units of the currency (for dollars, this is cents). Must be positive.
+                example: 10000
+              financial_account_id:
+                type: string
+                description: The unique identifier for the financial account the funds should credit.
+                example: "fa_01j8rs605a4gctmbm58d87mvsj"
+              payment_source_id:
+                type: string
+                description: The unique identifier for the payment source to attribute this deposit to.
+                example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+    ReconcileDepositRequest:
+      description: |-
+        The request to reconcile a deposit to one or more donations.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - donation_ids
+            properties:
+              donation_ids:
+                type: array
+                description: The unique identifiers for the donations to reconcile with the deposit.
+                items:
+                  type: string
+                example:
+                  - "donation_01j8rs605a4gctmbm58d87mvsj"
+                  - "donation_02k9st716b5hdunco69e98nwtk"
+    CreatePaymentSourceRequest:
+      description: |-
+        The request to create a nonprofit-managed payment source with an electronic bank address.
+        This creates a manual payment source that can be used to track and reconcile
+        incoming deposits from sources outside of Chariot's integrated network.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - financial_account_id
+              - name
+            properties:
+              financial_account_id:
+                type: string
+                description: The unique identifier for the financial account that the payment source belongs to.
+                example: "fa_01j8rs605a4gctmbm58d87mvsj"
+              name:
+                type: string
+                description: A human-readable name for the payment source.
+                example: "Paypal Grant Payments"
+              logo:
+                type: string
+                format: uri
+                description: A URL pointing to the logo image for the payment source.
+                example: "https://example.com/logo.png"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
@@ -8231,6 +9541,90 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentSource"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListAccountAddressesResponse:
+      description: The response for AccountAddresses.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountAddress"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListPaymentEntitiesResponse:
+      description: The response for PaymentEntities.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentEntity"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailingAddressesResponse:
+      description: The response for MailingAddresses.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailingAddress"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailItemsResponse:
+      description: The response for MailItems.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailItem"
               next_page_token:
                 type: string
                 description: |-

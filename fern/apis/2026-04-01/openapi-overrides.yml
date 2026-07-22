@@ -290,10 +290,42 @@ paths:
       x-fern-sdk-group-name:
         - paymentSources
       x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - paymentSources
+      x-fern-sdk-method-name: create
   /v1/payment_sources/{id}:
     get:
       x-fern-sdk-group-name:
         - paymentSources
+      x-fern-sdk-method-name: get
+  /v1/payment_entities:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - paymentEntities
+      x-fern-sdk-method-name: list
+  /v1/payment_entities/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - paymentEntities
+      x-fern-sdk-method-name: get
+  /v1/mail_items:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - mailItems
+      x-fern-sdk-method-name: list
+  /v1/mail_items/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - mailItems
       x-fern-sdk-method-name: get
   /v1/donations:
     get:
@@ -304,11 +336,23 @@ paths:
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: create
   /v1/donations/{id}:
     get:
       x-fern-sdk-group-name:
         - donations
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: update
+    delete:
+      x-fern-sdk-group-name:
+        - donations
+      x-fern-sdk-method-name: delete
   /v1/deposits:
     get:
       x-fern-pagination:
@@ -318,11 +362,43 @@ paths:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: list
+  /v1/deposits/check_deposits:
+    post:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: depositCheck
   /v1/deposits/{id}:
     get:
       x-fern-sdk-group-name:
         - deposits
       x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - deposits
+      x-fern-sdk-method-name: update
+  /v1/files:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: create
+  /v1/files/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: get
+  /v1/files/{id}/links:
+    post:
+      x-fern-sdk-group-name:
+        - files
+      x-fern-sdk-method-name: createLink
   /v1/properties:
     get:
       x-fern-pagination:

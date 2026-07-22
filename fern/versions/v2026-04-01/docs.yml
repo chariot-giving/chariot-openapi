@@ -194,8 +194,6 @@ navigation:
                   title: Event Subscriptions
               - files:
                   title: Files
-              - fileLinks:
-                  title: File Links
           - section: DAFpay
             skip-slug: true
             icon: box-heart
@@ -238,12 +236,16 @@ navigation:
             skip-slug: true
             icon: gear
             contents:
-              - paymentSources:
-                  title: Payment Sources
-              - donations:
-                  title: Donations
               - deposits:
                   title: Deposits
+              - donations:
+                  title: Donations
+              - paymentSources:
+                  title: Payment Sources
+              - paymentEntities:
+                  title: Payment Entities
+              - mailItems:
+                  title: Mail Items
               - properties:
                   title: Properties
           - section: Lockbox Providers
