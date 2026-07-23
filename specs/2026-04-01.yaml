@@ -3086,6 +3086,90 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/donations:
+    post:
+      summary: "Sandbox: Simulate a Donation"
+      description: |-
+        Simulate a donation arriving on a payment source, the same way a real gift from a connected platform would.
+
+        The response returns a `simulation_batch_id`. Pass that value to the Simulate a Deposit endpoint (or to another Simulate a Donation call) to group them together, so the donation reconciles and settles against that deposit's funds. Order does not matter: you can create the deposit or the donation first.
+
+        See [Simulating gift processing](/guides/processing/sandbox) for a full walkthrough.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payment_source_id
+                - amount_gross
+              properties:
+                payment_source_id:
+                  type: string
+                  description: The payment source the donation is arriving on.
+                  example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+                amount_gross:
+                  type: string
+                  format: int64
+                  description: The gross gift amount, in the smallest currency unit (for example, cents). Must be positive.
+                  example: "5000"
+                amount_fee:
+                  type: string
+                  format: int64
+                  description: The fee deducted by the DAF or platform before the gift reaches you, in the smallest currency unit. Defaults to 0.
+                effective_date:
+                  type: string
+                  format: date-time
+                  description: When the gift was made. Defaults to the current time.
+                primary_donor:
+                  $ref: "#/components/schemas/CreateDonor"
+                donor_advised_fund_grant:
+                  $ref: "#/components/schemas/CreateDafGrant"
+                corporate_match:
+                  $ref: "#/components/schemas/CreateCorporateMatch"
+                dafpay_tracking_id:
+                  type: string
+                  description: A DAFpay tracking identifier for reconciliation.
+                purpose:
+                  type: string
+                  description: The donor-stated purpose of the gift.
+                note:
+                  type: string
+                  description: A free-text note on the gift.
+                platform_metadata:
+                  type: object
+                  additionalProperties: true
+                  description: Arbitrary key-value metadata from the originating platform.
+                simulation_batch_id:
+                  type: string
+                  description: An optional handle that links this donation to a simulated deposit (or to other simulated donations) so they reconcile together. Leave it empty to have Chariot generate one, or pass the simulation_batch_id returned by a simulated deposit or donation. Up to 17 characters.
+      responses:
+        "200":
+          description: The simulated donation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulateDonationResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
     get:
       summary: List Deposits
@@ -3167,6 +3251,130 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deposit"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits:
+    post:
+      summary: "Sandbox: Simulate a Deposit"
+      description: |-
+        Simulate money arriving on a payment source, the same way a real deposit would. The deposit is created shortly after you call this endpoint and lands in a pending state, ready to be completed or failed.
+
+        To settle simulated donations against this deposit, pass the `simulation_batch_id` returned by the Simulate a Donation endpoint (or leave it empty and reuse the value Chariot generates). See [Simulating gift processing](/guides/processing/sandbox) for a full walkthrough.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payment_source_id
+                - amount
+              properties:
+                payment_source_id:
+                  type: string
+                  description: The payment source the deposit is arriving on.
+                  example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+                amount:
+                  type: string
+                  format: int64
+                  description: The deposit amount, in the smallest currency unit (for example, cents). Must be positive.
+                  example: "5000"
+                idempotency_key:
+                  type: string
+                  description: An optional idempotency key. When set, repeating the call will not create a second deposit; when empty, each call creates a new deposit.
+                simulation_batch_id:
+                  type: string
+                  description: An optional handle that links this deposit to simulated donations so they reconcile together. Leave it empty to have Chariot generate one, or pass the simulation_batch_id returned by a simulated donation to settle it against this deposit. Up to 17 characters.
+      responses:
+        "202":
+          description: The deposit simulation request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits/{id}/complete:
+    post:
+      summary: "Sandbox: Complete a Deposit"
+      description: |-
+        Complete a pending deposit, as though its funds cleared (for example, a mailed check clearing). The deposit's funds become available and any donations reconciled against it are marked as received.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDepositCompletion
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The deposit completion request was accepted
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/deposits/{id}/fail:
+    post:
+      summary: "Sandbox: Fail a Deposit"
+      description: |-
+        Fail a pending deposit, as though its funds were returned (for example, a mailed check bouncing). Any donations reconciled against it are reversed.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateDepositFailure
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "202":
+          description: The deposit failure request was accepted
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -4281,6 +4489,73 @@ components:
             A subhash containing information about the joint donor of the donation.
           allOf:
             - $ref: "#/components/schemas/Donor"
+    CreateAddress:
+      type: object
+      description: A mailing address for a simulated donor.
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postal_code:
+          type: string
+        country:
+          type: string
+    CreateDonor:
+      type: object
+      description: Donor information for a simulated donation.
+      properties:
+        full_name:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          $ref: "#/components/schemas/CreateAddress"
+    CreateDafGrant:
+      type: object
+      description: DAF grant information, when a simulated gift came from a donor-advised fund.
+      properties:
+        organization_name:
+          type: string
+        donor_fund_name:
+          type: string
+        program_name:
+          type: string
+    CreateCorporateMatch:
+      type: object
+      description: Corporate match information, when a simulated gift was matched by an employer.
+      properties:
+        amount:
+          type: string
+          format: int64
+          description: The amount of the corporate match, in the smallest currency unit (for example, cents).
+        company_name:
+          type: string
+        program_name:
+          type: string
+        source:
+          type: string
+    SimulateDonationResponse:
+      type: object
+      description: The result of simulating a donation.
+      properties:
+        donation_id:
+          type: string
+          description: The identifier of the created donation. On a repeated idempotent call, the identifier of the existing donation.
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        simulation_batch_id:
+          type: string
+          description: The handle this donation was grouped under. Reuse it on a simulated deposit (or another simulated donation) to reconcile them together. Persist it, as it cannot be read back from the donation later.
     CorporateMatch:
       type: object
       description: |-
