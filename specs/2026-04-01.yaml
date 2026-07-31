@@ -3040,6 +3040,12 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: dafpay_tracking_id
+          in: query
+          description: The DAFpay tracking identifier to filter donations by. Use this to reconcile a donation against the DAFpay grant that started it.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           $ref: "#/components/responses/ListDonationsResponse"
@@ -3959,6 +3965,13 @@ components:
           readOnly: true
           description: The unique identifier for the donation
           example: donation_01j8rs605a4gctmbm58d87mvsj
+        external_id:
+          type: string
+          readOnly: true
+          description: |-
+            A short human-readable identifier for the donation, useful for reconciling against your own systems.
+            This is the same identifier shown on the donation in the Chariot dashboard.
+          example: "29247869"
         payment_source_id:
           type: string
           description: |-
