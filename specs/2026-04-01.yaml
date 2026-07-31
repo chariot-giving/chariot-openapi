@@ -3046,20 +3046,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: lockbox_id
-          in: query
-          description: The unique identifier for the lockbox to filter donations by. Returns only donations extracted from mail received at that lockbox.
-          required: false
-          schema:
-            type: string
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-        - name: mail_item_id
-          in: query
-          description: The unique identifier for the piece of mail to filter donations by.
-          required: false
-          schema:
-            type: string
-          example: "mail_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           $ref: "#/components/responses/ListDonationsResponse"
@@ -3991,21 +3977,6 @@ components:
           description: |-
             The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
           example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
-        lockbox_id:
-          type: string
-          nullable: true
-          description: |-
-            The unique identifier for the lockbox that physically received the mail this donation was extracted from.
-            This is set for donations that arrived as physical mail, and is null for electronic donations.
-            It can be set alongside `payment_source_id`, as is the case for a platform check that arrives at a lockbox.
-          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
-        mail_item_id:
-          type: string
-          nullable: true
-          description: |-
-            The unique identifier for the individual piece of mail this donation was extracted from.
-            This is set whenever `lockbox_id` is set.
-          example: "mail_01j8rs605a4gctmbm58d87mvsj"
         amount_gross:
           type: integer
           format: int64
