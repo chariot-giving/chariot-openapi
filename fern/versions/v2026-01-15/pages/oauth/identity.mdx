@@ -1,0 +1,151 @@
+---
+title: "Identity"
+subtitle: "Use Chariot as an identity provider to authenticate nonprofit users in your application"
+hidden: false
+createdAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+
+Chariot supports OpenID Connect (OIDC) on top of its OAuth 2.0 implementation. This allows your application to verify the identity of a nonprofit user during the authorization flow, enabling single sign-on (SSO) with Chariot.
+
+## How It Works
+
+When your application includes the `profile` scope in the authorization request, the token response will include an `id_token` — a signed JWT containing identity claims about the authenticated user.
+
+This works within the same [Authorization Code Flow](/guides/oauth). No additional endpoints or flows are required.
+
+## Requesting Identity
+
+Add the `profile` scope to your authorization request:
+
+```
+https://dashboard.givechariot.com/oauth/authorize
+  ?client_id=YOUR_CLIENT_ID
+  &redirect_uri=https://example.com/callback
+  &response_type=code
+  &scope=profile
+  &state=RANDOM_CSRF_TOKEN
+  &nonce=RANDOM_NONCE
+  &code_challenge=YOUR_CODE_CHALLENGE
+  &code_challenge_method=S256
+```
+
+The `nonce` is a cryptographically random string that your application generates. It is included in the ID token so you can verify the token was issued in response to your specific authorization request, preventing [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
+
+<CodeBlocks>
+```javascript NodeJS
+const crypto = require("crypto");
+
+function generateNonce() {
+return crypto.randomBytes(32).toString("base64url");
+}
+
+````
+```python Python
+import os
+import base64
+
+def generate_nonce():
+    return base64.urlsafe_b64encode(os.urandom(32)).rstrip(b"=").decode()
+````
+
+```go Go
+import (
+	"crypto/rand"
+	"encoding/base64"
+)
+
+func generateNonce() string {
+	b := make([]byte, 32)
+	rand.Read(b)
+	return base64.RawURLEncoding.EncodeToString(b)
+}
+```
+
+```java Java
+import java.security.SecureRandom;
+import java.util.Base64;
+
+public static String generateNonce() {
+    SecureRandom random = new SecureRandom();
+    byte[] bytes = new byte[32];
+    random.nextBytes(bytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+}
+```
+
+</CodeBlocks>
+
+The token response will then include an `id_token` alongside the access and refresh tokens:
+
+```json
+{
+  "access_token": "ACCESS_TOKEN",
+  "refresh_token": "REFRESH_TOKEN",
+  "id_token": "ID_TOKEN_JWT",
+  "expires_in": 900,
+  "token_type": "Bearer"
+}
+```
+
+## ID Token Claims
+
+The `id_token` is a signed JWT containing standard OIDC claims:
+
+| Claim         | Description                            |
+| ------------- | -------------------------------------- |
+| `iss`         | Issuer (Chariot's auth server URL)     |
+| `sub`         | Subject identifier for the user        |
+| `aud`         | Your `client_id`                       |
+| `iat`         | Time the token was issued              |
+| `exp`         | Expiration time                        |
+| `nonce`       | Echoed from your authorization request |
+| `name`        | Full name                              |
+| `given_name`  | First name                             |
+| `family_name` | Last name                              |
+| `email`       | Email address                          |
+
+## Verifying ID Tokens
+
+ID tokens are signed with Chariot's private key. Verify them using the public keys from the JWKS endpoint:
+
+```
+GET https://api.givechariot.com/.well-known/jwks.json
+```
+
+Your JWT library should handle signature verification automatically given the JWKS URI. In addition, your application **must** validate:
+
+- **`aud`** — Confirm the audience matches your `client_id`. This ensures the token was issued for your application and not another client.
+- **`iss`** — Confirm the issuer matches Chariot's auth server URL from the discovery endpoint.
+- **`nonce`** — Confirm the nonce matches the value you sent in the authorization request. This prevents [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
+
+## UserInfo Endpoint
+
+You can also fetch user identity on demand using the UserInfo endpoint with a valid access token:
+
+```curl
+curl https://api.givechariot.com/auth/oauth/userinfo \
+  -H "Authorization: Bearer ACCESS_TOKEN"
+```
+
+**Response:**
+
+```json
+{
+  "sub": "user_abcd1234",
+  "name": "Jane Doe",
+  "given_name": "Jane",
+  "family_name": "Doe",
+  "email": "jane@example.com"
+}
+```
+
+## Discovery
+
+Chariot publishes its OIDC configuration at the standard discovery endpoint:
+
+```
+GET https://api.givechariot.com/.well-known/openid-configuration
+```
+
+This returns the issuer, supported scopes, endpoint URLs, and signing key references needed to configure your OIDC client library.
