@@ -128,6 +128,9 @@ navigation:
           - page: Getting Started
             slug: getting-started
             path: ./pages/processing/getting-started.mdx
+          - page: Sandbox
+            slug: sandbox
+            path: ./pages/processing/sandbox.mdx
           - page: FAQ
             slug: faq
             path: ./pages/processing/faq.mdx
