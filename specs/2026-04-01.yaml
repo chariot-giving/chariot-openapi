@@ -2988,6 +2988,118 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items:
+    get:
+      summary: List Mail Items
+      description: |-
+        List mail items for your account.
+
+        A Mail Item is a unit of physical mail received at a Lockbox. It has its own lifecycle
+        and is the operational unit reviewers act on. Each Mail Item may produce zero or more
+        Donations and zero or one Deposit.
+      operationId: listMailItems
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: lockbox_id
+          in: query
+          description: The unique identifier for the lockbox to filter mail items by.
+          required: false
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        - name: status.in
+          in: query
+          description: |-
+            Filter Mail Items to only those with the specified status.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?status.in=needs_review,processing`.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MailItemStatus"
+          example:
+            - "needs_review"
+        - name: created_at.after
+          in: query
+          description: Return mail items created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return mail items created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMailItemsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items/{id}:
+    get:
+      summary: Get a Mail Item
+      description: |-
+        Get a mail item by its unique identifier.
+
+        A Mail Item is a unit of physical mail received at a Lockbox.
+      operationId: getMailItem
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the mail item
+          required: true
+          schema:
+            type: string
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the mail item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailItem"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
@@ -3920,6 +4032,81 @@ components:
       properties:
         address:
           $ref: "#/components/schemas/PostalAddress"
+    MailItem:
+      type: object
+      description: |-
+        A Mail Item represents a unit of physical mail. It has its own lifecycle and is the
+        operational unit that reviewers act on. A Mail Item may produce zero or more Donations
+        and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
+        paperwork) associated with the receipt.
+
+        Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
+        They are not created via the public API — to bring donation data and money in directly,
+        use the Donations and Deposits APIs.
+      required:
+        - id
+        - lockbox_id
+        - status
+        - received_at
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the mail item.
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+        lockbox_id:
+          type: string
+          description: The unique identifier for the lockbox that received the mail item.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        status:
+          $ref: "#/components/schemas/MailItemStatus"
+        received_at:
+          type: string
+          format: date-time
+          description: The date and time when the mail item was physically received at the lockbox.
+          example: "2020-01-31T23:59:59Z"
+        file_ids:
+          type: array
+          description: |-
+            The unique identifiers for the scanned source files associated with the mail item.
+            These include scanned images of the envelope, check images, and any accompanying paperwork.
+          items:
+            type: string
+          example:
+            - "file_01j8rs605a4gctmbm58d87mvsj"
+        properties:
+          type: array
+          description: A list of custom properties assigned to the mail item.
+          items:
+            $ref: "#/components/schemas/PropertyAssignment"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItemStatus:
+      type: string
+      description: |-
+        The processing status of a Mail Item.
+
+        - `processing`: The mail item is being scanned and parsed.
+        - `needs_review`: Extraction completed but produced ambiguous results that require human review.
+        - `completed`: The mail item was successfully parsed into one or more Donations and (optionally) a Deposit.
+        - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
+      enum:
+        - processing
+        - needs_review
+        - completed
+        - rejected
+      example: "completed"
     FinancialAddress:
       type: object
       description: |-
@@ -8160,6 +8347,27 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Donation"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailItemsResponse:
+      description: The response for MailItems.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailItem"
               next_page_token:
                 type: string
                 description: |-
