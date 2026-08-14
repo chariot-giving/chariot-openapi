@@ -2988,6 +2988,82 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes:
+    get:
+      summary: List Lockboxes
+      description: |-
+        List lockboxes for your account.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot.
+      operationId: listLockboxes
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListLockboxesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes/{id}:
+    get:
+      summary: Get a Lockbox
+      description: |-
+        Get a lockbox by its unique identifier.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+      operationId: getLockbox
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the lockbox
+          required: true
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the lockbox.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lockbox"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/mail_items:
     get:
       summary: List Mail Items
@@ -4027,11 +4103,35 @@ components:
     Lockbox:
       type: object
       description: |-
-        A US mailing address to process incoming physical mail and checks.
-        This is only available for lockbox payment sources.
+        A Lockbox represents a physical mailing address operated by a third-party provider (e.g., Stable, CDS)
+        that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot in partnership with the provider.
+      required:
+        - id
+        - created_at
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the lockbox.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
         address:
-          $ref: "#/components/schemas/PostalAddress"
+          description: The physical mailing address for the lockbox.
+          allOf:
+            - $ref: "#/components/schemas/PostalAddress"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was last updated.
+          example: "2020-01-31T23:59:59Z"
     MailItem:
       type: object
       description: |-
@@ -8347,6 +8447,27 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Donation"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListLockboxesResponse:
+      description: The response for Lockboxes.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lockbox"
               next_page_token:
                 type: string
                 description: |-
