@@ -4147,7 +4147,7 @@ components:
         - id
         - status
         - received_at
-        - file_scan_id
+        - scans
         - created_at
         - updated_at
       properties:
@@ -4167,14 +4167,13 @@ components:
           format: date-time
           description: The date and time when the mail item was physically received at the lockbox.
           example: "2020-01-31T23:59:59Z"
-        file_scan_id:
-          type: string
-          description: The unique identifier for the scanned document file. Fetch contents via the File API.
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
-        preview_file_id:
-          type: string
-          description: The unique identifier for the preview thumbnail file, when available. Fetch contents via the File API.
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        scans:
+          type: array
+          description: |-
+            The scans taken of the mail item, newest first. A mail item typically has one scan;
+            a second scan appears after an admin requests a rescan of the physical mail.
+          items:
+            $ref: "#/components/schemas/MailItemScan"
         created_at:
           type: string
           format: date-time
@@ -4186,6 +4185,23 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the mail item record was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItemScan:
+      type: object
+      description: A single scan of a Mail Item. Multiple entries represent rescans.
+      required:
+        - file_id
+        - created_at
+      properties:
+        file_id:
+          type: string
+          description: The unique identifier for the scanned document file. Fetch contents via the File API.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the scan was taken.
           example: "2020-01-31T23:59:59Z"
     MailItemStatus:
       type: string
