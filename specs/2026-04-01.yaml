@@ -4145,10 +4145,11 @@ components:
         use the Donations and Deposits APIs.
       required:
         - id
-        - lockbox_id
         - status
         - received_at
+        - file_scan_id
         - created_at
+        - updated_at
       properties:
         id:
           type: string
@@ -4166,20 +4167,14 @@ components:
           format: date-time
           description: The date and time when the mail item was physically received at the lockbox.
           example: "2020-01-31T23:59:59Z"
-        file_ids:
-          type: array
-          description: |-
-            The unique identifiers for the scanned source files associated with the mail item.
-            These include scanned images of the envelope, check images, and any accompanying paperwork.
-          items:
-            type: string
-          example:
-            - "file_01j8rs605a4gctmbm58d87mvsj"
-        properties:
-          type: array
-          description: A list of custom properties assigned to the mail item.
-          items:
-            $ref: "#/components/schemas/PropertyAssignment"
+        file_scan_id:
+          type: string
+          description: The unique identifier for the scanned document file. Fetch contents via the File API.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        preview_file_id:
+          type: string
+          description: The unique identifier for the preview thumbnail file, when available. Fetch contents via the File API.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
         created_at:
           type: string
           format: date-time
