@@ -4210,14 +4210,14 @@ components:
 
         - `processing`: The mail item is being scanned and parsed.
         - `needs_review`: Extraction completed but produced ambiguous results that require human review.
-        - `completed`: The mail item was successfully parsed into one or more Donations and (optionally) a Deposit.
+        - `processed`: The mail item is fully classified and settled in Chariot; downstream flows (Donations, Deposits) can act on it.
         - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
       enum:
         - processing
         - needs_review
-        - completed
+        - processed
         - rejected
-      example: "completed"
+      example: "processed"
     FinancialAddress:
       type: object
       description: |-
