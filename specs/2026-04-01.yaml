@@ -4210,7 +4210,7 @@ components:
 
         - `processing`: The mail item is being scanned and parsed.
         - `needs_review`: Extraction completed but produced ambiguous results that require human review.
-        - `processed`: The mail item is fully classified and settled in Chariot; downstream flows (Donations, Deposits) can act on it.
+        - `processed`: The mail item has been successfully parsed and classified, and is ready for any downstream automations or workflows to run on it.
         - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
       enum:
         - processing
