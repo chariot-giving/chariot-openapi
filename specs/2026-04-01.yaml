@@ -7318,7 +7318,6 @@ components:
             type: object
             required:
               - organization_id
-              - contact
             properties:
               organization_id:
                 type: string
@@ -7326,8 +7325,6 @@ components:
                 example: "org_1234567890"
               contact:
                 type: object
-                required:
-                  - email
                 properties:
                   email:
                     type: string
