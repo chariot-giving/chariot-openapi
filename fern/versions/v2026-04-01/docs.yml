@@ -240,6 +240,10 @@ navigation:
             contents:
               - paymentSources:
                   title: Payment Sources
+              - lockboxes:
+                  title: Lockboxes
+              - mailItems:
+                  title: Mail Items
               - donations:
                   title: Donations
               - deposits:
