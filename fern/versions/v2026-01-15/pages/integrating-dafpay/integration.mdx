@@ -14,6 +14,12 @@ Chariot offers "Express Checkout" where the Chariot Connect modal pulls the dono
 DAFpay's Express Checkout feature only works when the button is placed at the top of a donation form (before the donor’s contact details are collected).
 </Warning>
 
+<Error title="Empty strings count as 'provided'">
+Chariot populates any field you pass in the `onDonationRequest`, **including empty strings**. Sending `email: ""` or `firstName: ""` tells Chariot the donor's email and first name are blank, and the donor will be asked to enter their contact details by hand instead of having them prefilled.
+
+To get DAF prefill, **omit `firstName`, `lastName`, `email`, `phone`, and `address` entirely**. Do not send them set to `""`.
+</Error>
+
 <Tip title="Automatically Active">
 No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider.
 
@@ -160,6 +166,18 @@ When a user completes a Chariot Connect session you will receive a grant intent.
 <Warning title="Create Grant Route">
 After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to initiate the grant.
 </Warning>
+
+<Error title="CHARIOT_SUCCESS does not create a grant">
+API connects **authorize** a grant intent and stop. Receiving `CHARIOT_SUCCESS` with a valid `trackingId` does not mean a grant was created. The grant does not exist until your backend calls Create Grant.
+
+If you never call it, the browser flow looks entirely successful and [List Grants](/api/grants/list) returns nothing.
+</Error>
+
+<Note title="Component connects work differently">
+The no-code DAFpay component submits the grant from the modal itself, since there is no backend to do it. That is a different connect from the one you integrate against.
+
+Use your API connect's CID. Initializing with a component connect's CID means the modal submits the grant *and* your backend submits it, which is why a single checkout can yield two grants. Contact [support@givechariot.com](mailto:support@givechariot.com) if you are unsure which CID you hold.
+</Note>
 
 Most workflows proceed as follows:
 

@@ -26,6 +26,7 @@ logo:
 
 favicon: assets/favicon.png
 css: assets/styles.css
+js: assets/scripts.js
 
 layout:
   page-width: full
