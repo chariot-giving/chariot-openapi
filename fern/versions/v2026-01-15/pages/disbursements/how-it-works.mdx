@@ -51,6 +51,8 @@ Next, search for the nonprofit organization using their name or EIN:
 
 <EndpointRequestSnippet endpoint="GET /v1/organizations/search" />
 
+If the organization cannot be found through Chariot's search, you can submit a [Verification Request](/api/verification-requests/create) to have Chariot's compliance team review and verify the organization. See [Disbursing to Unlisted Organizations](#disbursing-to-unlisted-organizations) below.
+
 ### Create a Disbursement
 
 Finally, create a `Disbursement` to the Organization with the amount that you want to send.
@@ -69,6 +71,42 @@ You can call the [GET Disbursement](/api/disbursements/get) endpoint to see the 
 
 To learn more about how to handle errors, please refer to the [FAQ](/guides/disbursements/faq).
 
+
+</Steps>
+
+## Disbursing to Unlisted Organizations
+
+If the organization you want to disburse to is not found through Chariot's [Search Organizations](/api/organizations/search) endpoint,
+you can use the **Verification Request** API to request that Chariot's compliance team verify the organization.
+
+<Steps>
+
+### Create a Verification Request
+
+Submit a verification request with the organization's EIN, name, and mailing address. You can track the status of the request using the [GET Verification Request](/api/verification-requests/get) endpoint.
+
+<EndpointRequestSnippet endpoint="POST /v1/verification_requests" />
+
+### Create a Disbursement
+
+Use the `organization_id` from the verification request response to create a disbursement. By default, the disbursement will wait for Chariot's compliance team to verify the organization before proceeding. You can optionally set `bypass_chariot_organization_verification` to override this behavior:
+
+- **`false`** (default): The disbursement will remain in the `awaiting_verification` status until Chariot's compliance team has verified the nonprofit.
+- **`true`**: The disbursement will proceed through its normal lifecycle without waiting for Chariot to verify the organization. Only set this if you have independently verified the organization and do not want to wait for or rely on Chariot's verification.
+
+### Monitor Verification Status
+
+You can track the progress of the verification by polling the [GET Verification Request](/api/verification-requests/get) endpoint or by subscribing to `verification_request.updated` [webhook events](/api/webhooks). The status will transition through:
+
+| Status | Description |
+|--------|-------------|
+| `needs_review` | The request has been submitted and is awaiting review by Chariot's compliance team |
+| `verified` | The organization has been verified as tax-exempt and eligible for disbursements |
+| `failed` | The compliance team determined the organization is not eligible |
+
+Disbursements without bypass_chariot_organization_verification enabled will remain in awaiting_verification until the verification request status is verified.
+
+Once the verification request is verified, eligible disbursements will progress as usual. However, some disbursements may not move out of awaiting_verification immediately, as additional review steps may be required on a per-disbursement basis.
 
 </Steps>
 

@@ -1,0 +1,198 @@
+---
+title: "API Endpoints"
+subtitle: "The resource APIs Chariot calls — authorized by the donor's access token — to power the donation flow."
+hidden: false
+---
+
+## Capabilities, not contracts
+
+Chariot does not require you to implement an exact API specification. What Chariot requires is a set of **capabilities** — the data and operations the donation flow depends on. The endpoint paths, names, and field shapes on this page are **recommended shapes**: if you have existing APIs with different paths or field names, share your documentation and Chariot will adapt during the integration build.
+
+| Capability | Requirement |
+|---|---|
+| [Get Current Donor](#1-get-current-donor) | Required |
+| [List Funds](#2-list-funds) with grantable balances | Required |
+| [Search Organizations](#3-search-organizations) | Only if your grant API can't accept an EIN directly |
+| [Create Grant](#4-create-grant) with idempotency | Required |
+| [Get Grant Status](#5-get-grant-status) | Required |
+
+## Conventions
+
+- All endpoints are served over **TLS 1.2+** and authorized by **Bearer access tokens** issued by your authorization server — see [Security Best Practices](/guides/dafpay/oauth/security#token-security).
+- All requests and responses are `application/json`.
+- All monetary amounts are **integer cents in USD** (e.g., `25000` = $250.00) unless we agree otherwise during onboarding.
+- Error responses should use conventional HTTP status codes (`401` invalid/expired token, `403` insufficient scope, `404` not found, `422` validation, `429` rate limited). RFC 7807 Problem Details bodies are recommended but not required.
+
+---
+
+## 1. Get Current Donor
+
+Returns the authenticated donor's profile. Chariot displays this in the grant review pane and uses it to populate the donor's DAFpay profile.
+
+```
+GET /customers/current
+Authorization: Bearer {access_token}
+```
+
+```json
+{
+  "id": "usr_8f2k1",
+  "first_name": "Dana",
+  "last_name": "Levy",
+  "email": "dana@example.com",
+  "phone": "+12125550123",
+  "address": {
+    "line1": "350 5th Ave",
+    "line2": "Suite 7200",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10118"
+  }
+}
+```
+
+`id` should equal (or be deterministically linked to) the `sub` claim in your ID Token.
+
+---
+
+## 2. List Funds
+
+Returns the giving funds the donor is authorized to grant from. If the donor has advisory privileges on multiple funds, return all of them — DAFpay lets the donor choose.
+
+```
+GET /funds
+Authorization: Bearer {access_token}
+```
+
+```json
+{
+  "funds": [
+    {
+      "id": "fund_a91x",
+      "name": "The Levy Family Charitable Fund",
+      "grantable_balance": 18250000,
+      "currency": "USD"
+    }
+  ]
+}
+```
+
+<Note>
+`grantable_balance` is the amount **available to grant right now** — net of pending grants and any holds — not the total fund value. This is what DAFpay displays to the donor and uses to prevent over-balance grant submissions.
+</Note>
+
+---
+
+## 3. Search Organizations
+
+**Only required if your systems don't uniquely identify nonprofits by EIN.** Chariot identifies every nonprofit by its EIN. If your [Create Grant](#4-create-grant) endpoint can accept an EIN directly, skip this endpoint — Chariot will supply the EIN in the grant request. Otherwise, expose a lookup that resolves an EIN to your internal organization ID:
+
+```
+GET /organizations?ein=133441466
+Authorization: Bearer {access_token}
+```
+
+```json
+{
+  "organizations": [
+    {
+      "id": "org_77fq",
+      "ein": "13-3441466",
+      "name": "Example Charity Inc.",
+      "address": {
+        "line1": "123 Main St",
+        "city": "Brooklyn",
+        "state": "NY",
+        "zip": "11201"
+      }
+    }
+  ]
+}
+```
+
+If the organization is not yet in your system, either return an empty list (Chariot will surface a fallback to the donor) or — preferably — support on-demand creation from IRS records, which maximizes donation completion.
+
+---
+
+## 4. Create Grant
+
+Creates a grant recommendation on the donor's behalf. The grant enters **your normal review and disbursement pipeline** — Chariot does not bypass your compliance process.
+
+```
+POST /grants
+Authorization: Bearer {access_token}
+Idempotency-Key: {chariot_grant_request_id}
+Content-Type: application/json
+```
+
+```json
+{
+  "fund_id": "fund_a91x",
+  "organization_id": "org_77fq",
+  "amount": 25000,
+  "purpose": "Wherever needed most",
+  "note": "DAFpay Grant Request: grant_req_01jpjenf5q6cawy43yxfcrxhct",
+  "anonymous": false
+}
+```
+
+```json
+{
+  "id": "grant_3kd02",
+  "status": "pending",
+  "created_at": "2026-06-10T14:30:00Z"
+}
+```
+
+If you don't implement [Search Organizations](#3-search-organizations), accept an `ein` field here in place of `organization_id`.
+
+<Warning title="Idempotency is required">
+Create Grant **must be idempotent**. Honor the `Idempotency-Key` header: a retried request with the same key must return the original grant, never create a second one. Chariot retries on network failures and timeouts, and a duplicate grant means a donor gives twice — this is the single most important behavior on this page.
+</Warning>
+
+Additional requirements:
+
+- **Chariot ID on the grant letter.** The Chariot Grant Request ID passed in `note` must appear on the grant letter / remittance advice sent to the nonprofit. This is how nonprofits and Chariot reconcile incoming grants — it is essential to the DAFpay experience.
+- `anonymous: true` means the donor's name and contact details are withheld from the nonprofit, per your standard anonymity handling.
+
+---
+
+## 5. Get Grant Status
+
+Chariot polls this endpoint to keep donors and nonprofits informed of grant progress.
+
+```
+GET /grants/{grant_id}
+Authorization: Bearer {access_token}
+```
+
+```json
+{
+  "id": "grant_3kd02",
+  "status": "approved",
+  "status_description": null,
+  "created_at": "2026-06-10T14:30:00Z",
+  "updated_at": "2026-06-11T09:12:00Z"
+}
+```
+
+### Status values
+
+Map your internal statuses onto this set:
+
+| Status | Meaning |
+|---|---|
+| `pending` | Received, awaiting review |
+| `approved` | Approved, payment not yet sent |
+| `paid` | Payment sent to the nonprofit |
+| `rejected` | Declined — include a donor-safe reason in `status_description` |
+| `canceled` | Canceled by the donor or by you before payment |
+
+---
+
+## Performance and availability
+
+- Target **99.9% availability** on these endpoints (99.5% minimum), measured monthly and excluding maintenance windows announced to Chariot in advance. An outage during a donation attempt means an abandoned gift.
+- Keep response times under **~3.5 seconds** (ideally P95 under 2 seconds) — donors are waiting on these calls inside the checkout flow.
+- Support at least **10 requests/second** from Chariot per environment, or share your limits so we can configure client-side throttling.
+- Chariot's calls originate from a static IP range (provided during onboarding) if you require allowlisting — see [Security Best Practices](/guides/dafpay/oauth/security#ip-allowlisting).

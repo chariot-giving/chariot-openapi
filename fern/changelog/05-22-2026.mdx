@@ -1,0 +1,13 @@
+## Summary
+
+FDX API updates
+
+### What's new?
+
+- **`GET /customers/current`** — New endpoint to retrieve the authenticated customer's organization-level identity (nonprofit name, EIN, address) directly from the OAuth token, without requiring an account ID.
+- **`organizationId` on list accounts** — The `GET /accounts` response now documents the `organizationId` field, which identifies the organization that owns the accounts. This value is equivalent to the `customerId` returned by `GET /customers/current`.
+
+### Authentication updates
+
+- **Scope documentation** — Clarified that `read:bank_accounts` and `sync:connected_accounts` are mutually exclusive per FDX authorization. A client may hold both scopes, but each authorization must contain exactly one.
+- **Token exchange details** — Added explicit `Authorization: Basic base64(client_id:client_secret)` header format and request body field tables for both token exchange and refresh flows.

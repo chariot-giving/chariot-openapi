@@ -4,13 +4,13 @@ instances:
 title: Chariot
 
 versions:
+  - display-name: v2026-04-01
+    path: versions/v2026-04-01/docs.yml
+    slug: v2026-04-01
+    availability: beta
   - display-name: v2026-01-15
     path: versions/v2026-01-15/docs.yml
     slug: v2026-01-15
-    availability: beta
-  - display-name: v2025-02-24
-    path: versions/v2025-02-24/docs.yml
-    slug: v2025-02-24
     availability: stable
   - display-name: v2023-01-01
     path: versions/v2023-01-01/docs.yml
@@ -20,13 +20,17 @@ versions:
 
 logo:
   href: /
-  light: assets/logo.png
-  dark: assets/logo.png
+  light: assets/chariot_full-logo_glacier.png
+  dark: assets/chariot_full-logo_white.png
   height: 24
 
 favicon: assets/favicon.png
 css: assets/styles.css
 js: assets/scripts.js
+
+settings:
+  hide-404-page: true
+  http-snippets: false
 
 layout:
   page-width: full
@@ -61,14 +65,14 @@ typography:
 
 colors:
   accentPrimary:
-    light: "#35BBF4"
-    dark: "#35BBF4"
+    light: "#209AE5"
+    dark: "#6DC7FF"
   background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: "#F5F5F5"
+    dark: "#051A2E"
   sidebar-background:
-    light: "#F6F8FA"
-    dark: "#212121"
+    light: "#F5F5F5"
+    dark: "#051A2E"
   header-background:
-    light: '#F6F8FA'
-    dark: "#212121"
+    light: '#F5F5F5'
+    dark: "#051A2E"

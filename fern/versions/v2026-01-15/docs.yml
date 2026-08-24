@@ -103,6 +103,19 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
+      - section: Lockbox Providers
+        slug: lockbox-providers
+        hidden: true
+        contents:
+          - page: Lockbox Provisioning
+            slug: provisioning
+            path: ./pages/lockbox-providers/provisioning.mdx
+          - page: Mail Uploads
+            slug: mail-uploads
+            path: ./pages/lockbox-providers/mail-uploads.mdx
+          - page: Batch Format
+            slug: batch-format
+            path: ./pages/lockbox-providers/batch-format.mdx
   - tab: api
     layout:
       - api: API Reference
@@ -143,6 +156,7 @@ navigation:
             icon: network-wired
             contents:
               - organizations
+              - programs
               - financialAccounts:
                   title: Financial Accounts
               - outboundTransfers:
@@ -170,12 +184,16 @@ navigation:
             skip-slug: true
             icon: money-check
             contents:
-              - financialAccounts:
-                  title: Financial Accounts
               - inboundTransfers:
                   title: Inbound Transfers
               - disbursements:
                   title: Disbursements
+              - verificationRequests:
+                  title: Verification Requests
+              - nonprofitAddresses:
+                  title: Nonprofit Addresses
+              - nonprofitContacts:
+                  title: Nonprofit Contacts
           - section: Gift Processing
             skip-slug: true
             icon: gear
@@ -188,4 +206,11 @@ navigation:
                   title: Deposits
               - properties:
                   title: Properties
+          - section: Lockbox Providers
+            skip-slug: true
+            icon: mailbox
+            hidden: true
+            contents:
+              - mailbox:
+                  title: Lockbox Providers
   - tab: changelog
