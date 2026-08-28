@@ -4643,14 +4643,23 @@ components:
     FilePurpose:
       type: string
       description: |-
-        What the file is for. This list grows over time, so treat it as open ended and
-        handle a purpose your client does not recognize rather than rejecting the file.
+        The file's purpose. Note that entries may be added to this list without notice.
       enum:
         - manual_upload
         - grant_letter
         - integration_download
         - inbound_mail_item
+        - inbound_mail_item_thumbnail
         - inbound_email
+        - inbound_email_attachment
+        - bank_check_image_front
+        - bank_check_image_back
+        - check_attachment
+        - bank_statement
+        - bank_account_verification_letter
+        - automation_output
+        - export
+        - other
       example: "manual_upload"
     FileLink:
       type: object
