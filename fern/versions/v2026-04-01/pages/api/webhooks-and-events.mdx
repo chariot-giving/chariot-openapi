@@ -58,7 +58,7 @@ Note that you can create Event Subscriptions in Production and Sandbox. Sandbox 
 
 Individual Events don’t contain very much information on their own. This is by design, as the API structure can remain extremely stable and avoid difficult webhook migrations in the future as the Chariot API changes. If you need additional metadata, such as the amount or status of the Grant in the above example, make a GET request to the API for that information.
 
-If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). Events are retained and are not deleted. The delivery history shown in the dashboard covers the last 30 days.
+If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). Events will remain accessible from Chariot for up to 30 days.
 
 ## Secure your webhooks
 
@@ -124,7 +124,9 @@ Webhook endpoints might occasionally receive the same event more than once. You 
 
 Configure your webhook endpoints to receive only the types of events required by your integration. Listening for extra events (or all events) puts undue strain on your server and we don’t recommend it.
 
-An Event Subscription's `categories` field holds the full list of event categories it receives. The original `category` field is still present and populated with the first entry in `categories`, so it keeps working for existing integrations. You can [Update an Event Subscription](/api/event-subscriptions/update) to change its list of categories or its status with the API. The URL can't be changed after creation. Creating a subscription for a URL that already has an active subscription returns a 409 error naming the existing one. Update that subscription's categories instead of creating a duplicate.
+Use the `categories` field to choose which events a subscription receives. You can [Update an Event Subscription](/api/event-subscriptions/update) to change its categories or its status. A subscription's URL is set when you create it and can't be changed.
+
+Each URL can have one active subscription. Creating another for the same URL returns a 409 with the ID of the existing subscription.
 
 ### Receive events with an HTTPS server
 
