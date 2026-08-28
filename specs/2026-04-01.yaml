@@ -3416,8 +3416,8 @@ paths:
         Upload a file and get back the File that represents it.
 
         The request is `multipart/form-data`. Send the bytes in a `file` part and the
-        purpose in a `purpose` part; a `description` part is optional.
-        The maximum size of a single upload is 100 MiB.
+        purpose in a `purpose` part; a `description` part is optional. The maximum size
+        of a single upload is 100 MiB.
 
         Send an `Idempotency-Key` header to make the upload safe to retry: a repeat of the
         same key and the same file returns the File the first call created, with a `200`
@@ -3455,7 +3455,7 @@ paths:
     get:
       summary: Get a File
       description: |-
-        Retrieve a File your account owns. A file owned by another account reads as not found.
+        Retrieve a File by its identifier.
       operationId: getFile
       tags:
         - files
@@ -3536,9 +3536,9 @@ paths:
       description: |-
         Redirect to the file's bytes.
 
-        This is Create a File Link in one hop: the response is
-        a `302` to a freshly signed URL, for clients that can only follow a redirect. The
-        redirect is never cached, because the URL it points at expires.
+        This is Create a File Link in one hop, for clients that can only follow a
+        redirect. The response is a `302` to a temporary download URL. Do not cache the
+        redirect: the URL it points at expires.
       operationId: getFileContents
       tags:
         - files
@@ -4661,28 +4661,14 @@ components:
     FilePurpose:
       type: string
       description: |-
-        What the file is for. The purpose decides where Chariot stores the file and who
-        may write it: the purposes Chariot itself produces are readable but not writable
-        by an API client, and uploading one returns a `403`.
+        What the file is for. This list grows over time, so treat it as open ended and
+        handle a purpose your client does not recognize rather than rejecting the file.
       enum:
         - manual_upload
         - grant_letter
         - integration_download
         - inbound_mail_item
-        - inbound_mail_item_thumbnail
         - inbound_email
-        - inbound_email_attachment
-        - artifact_thumbnail_image
-        - bank_check_image_front
-        - bank_check_image_back
-        - check_attachment
-        - lockbox_extract
-        - bank_statement
-        - bank_account_verification_letter
-        - policy_document
-        - automation_output
-        - export
-        - other
       example: "manual_upload"
     FileLink:
       type: object
