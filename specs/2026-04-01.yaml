@@ -3375,11 +3375,8 @@ paths:
     get:
       summary: List Files
       description: |-
-        List the files your account owns, newest first.
-
-        A File is any object Chariot stores on your behalf: a scanned mail item, a grant
-        letter, an integration download, a document you uploaded. The bytes are never
-        returned here. To download one, create a File Link or fetch the file contents.
+        A File is any object Chariot stores on your behalf. Use File Link to download
+        the file's contents.
       operationId: listFiles
       tags:
         - files
@@ -3453,9 +3450,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/files/{id}:
     get:
-      summary: Get a File
+      summary: Get a file
       description: |-
-        Retrieve a File by its identifier.
+        Retrieve a file's metadata.
       operationId: getFile
       tags:
         - files
@@ -3493,10 +3490,8 @@ paths:
     get:
       summary: Create a File Link
       description: |-
-        Mint a temporary URL that downloads the file's bytes without a Chariot credential.
-
-        The link expires an hour after it is issued, so fetch it when you are about to use
-        it rather than storing it. Anyone holding an unexpired link can read the file.
+        Creates an unauthenticated temporary URL to download the file's contents. Note
+        that this link expires and therefore should not be cached.
       operationId: createFileLink
       tags:
         - files
@@ -3534,11 +3529,8 @@ paths:
     get:
       summary: Get File Contents
       description: |-
-        Redirect to the file's bytes.
-
-        This is Create a File Link in one hop, for clients that can only follow a
-        redirect. The response is a `302` to a temporary download URL. Do not cache the
-        redirect: the URL it points at expires.
+        Creates an unauthenticated temporary URL and returns a 302, allowing clients to
+        download content directly.
       operationId: getFileContents
       tags:
         - files
