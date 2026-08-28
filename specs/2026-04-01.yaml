@@ -3375,7 +3375,7 @@ paths:
     get:
       summary: List Files
       description: |-
-        A File is any object Chariot stores on your behalf. Use File Link to download
+        List files that Chariot stores on your behalf. [Create a File Link](/api/files/create-link) to download
         the file's contents.
       operationId: listFiles
       tags:
@@ -3410,15 +3410,7 @@ paths:
     post:
       summary: Upload a File
       description: |-
-        Upload a file and get back the File that represents it.
-
-        The request is `multipart/form-data`. Send the bytes in a `file` part and the
-        purpose in a `purpose` part; a `description` part is optional. The maximum size
-        of a single upload is 100 MiB.
-
-        Send an `Idempotency-Key` header to make the upload safe to retry: a repeat of the
-        same key and the same file returns the File the first call created, with a `200`
-        instead of a `201`. Reusing a key for a different file is a `409`.
+        Upload a file with a given purpose to Chariot as `multipart/form-data`.
       operationId: uploadFile
       tags:
         - files
@@ -3427,7 +3419,6 @@ paths:
       parameters:
         - name: Idempotency-Key
           in: header
-          description: A key that makes the upload safe to retry. Reusing it for a different file is a conflict.
           required: false
           schema:
             type: string
@@ -3529,8 +3520,7 @@ paths:
     get:
       summary: Get File Contents
       description: |-
-        Creates an unauthenticated temporary URL and returns a 302, allowing clients to
-        download content directly.
+        Returns a 302 to a temporary, unauthenticated URL, allowing clients to download file contents directly
       operationId: getFileContents
       tags:
         - files
