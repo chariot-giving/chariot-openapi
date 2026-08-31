@@ -4923,6 +4923,10 @@ components:
             - declined
             - accepted
             - returned
+        company_discretionary_data:
+          type: string
+          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          example: "GRANT-2024-001"
     CheckDeposit:
       type: object
       description: |-
