@@ -5075,6 +5075,14 @@ components:
           description: A subhash containing information about the check deposit associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A subhash containing information about the inbound real-time payments transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A subhash containing information about the inbound wire transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -5163,6 +5171,74 @@ components:
             - deposited
             - rejected
             - returned
+    InboundRealTimePaymentsTransfer:
+      type: object
+      description: |-
+        A Real-Time Payments transfer initiated outside of Chariot to your financial account.
+        Inbound Real-Time Payments transfers settle immediately.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound real-time payments transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+            - declined
+        debtor_name:
+          type: string
+          description: The name of the debtor who sent the transfer.
+          example: "Charity Good"
+        debtor_routing_number:
+          type: string
+          description: The routing number of the debtor's financial account.
+          example: "1234567890"
+        debtor_account_number:
+          type: string
+          description: The account number of the debtor's financial account.
+          example: "9876543210"
+        transaction_identification:
+          type: string
+          description: The transaction identification assigned by the sender.
+          example: "20240101ABC123"
+        remittance_information:
+          type: string
+          description: Unstructured remittance information sent with the transfer.
+          example: "Grant payment"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
+    InboundWireTransfer:
+      type: object
+      description: |-
+        A wire transfer initiated outside of Chariot to your financial account.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound wire transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+        originator_name:
+          type: string
+          description: The name of the originator who sent the transfer.
+          example: "Charity Good"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originator's financial account.
+          example: "1234567890"
+        originator_account_number:
+          type: string
+          description: The account number of the originator's financial account.
+          example: "9876543210"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
       description: |-
