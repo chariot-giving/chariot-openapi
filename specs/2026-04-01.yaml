@@ -5144,55 +5144,6 @@ components:
           type: string
           description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
           example: "GRANT-2024-001"
-    AchTransfer:
-      type: object
-      description: |-
-        An ACH transfer initiated by Chariot to move funds to or from your financial account.
-        This funds an inbound transfer when a grantmaker pushes an ACH debit from an external bank account.
-      properties:
-        status:
-          type: string
-          description: The status of the ACH transfer.
-          example: "submitted"
-          enum:
-            - initiated
-            - pending_submission
-            - rejected
-            - submitted
-            - completed
-            - returned
-            - canceled
-        standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
-        company_entry_description:
-          type: string
-          description: The company entry description for the ACH transfer.
-          example: "GRANTPMT"
-        settlement_schedule:
-          type: string
-          description: The settlement schedule for the ACH transfer.
-          example: "same_day"
-        trace_number:
-          type: string
-          description: The trace number for the ACH transfer.
-          example: "1234567890"
-        effective_date:
-          type: string
-          format: date-time
-          description: The effective date for the ACH transfer.
-          example: "2020-01-31T23:00:00Z"
-        submitted_at:
-          type: string
-          format: date-time
-          description: The date and time the ACH transfer was submitted.
-          example: "2020-01-31T23:00:00Z"
-        settled_at:
-          type: string
-          format: date-time
-          description: The date and time the ACH transfer settled.
-          example: "2020-01-31T23:00:00Z"
     CheckDeposit:
       type: object
       description: |-
