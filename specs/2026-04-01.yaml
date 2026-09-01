@@ -5964,17 +5964,15 @@ components:
         status:
           type: string
           enum:
-            - awaiting_account_approval
-            - awaiting_daf_submission
-            - initiated
-            - canceled
+            - Initiated
+            - Completed
+            - Canceled
           description: |
             The status of the grant.
-              * awaiting_account_approval: The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved.
-              * awaiting_daf_submission: The Account is approved and the grant is ready for the DAF to submit in their system.
-              * initiated: The DAF has submitted the grant. Terminal.
-              * canceled: The DAF has canceled the grant. Terminal.
-          example: awaiting_daf_submission
+              * Initiated: The grant was submitted to the DAF provider and the provider is still processing it.
+              * Completed: The nonprofit has the funds. This is the success status.
+              * Canceled: The grant was canceled by the donor, or the DAF provider did not approve it.
+          example: Initiated
         comment:
           type: string
           description: The user comment for the update
