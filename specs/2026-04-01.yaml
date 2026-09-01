@@ -5128,9 +5128,9 @@ components:
           example: "1234567890"
         effective_date:
           type: string
-          format: date-time
+          format: date
           description: The effective date for the ACH transfer.
-          example: "2020-01-31T23:00:00Z"
+          example: "2020-01-31"
         status:
           type: string
           description: The status of the ACH transfer.
@@ -6799,17 +6799,21 @@ components:
             The lifecycle status of the ACH transfer.
             Possible values include:
               - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
+              - `pending_submission`: The ACH transfer is queued for submission to the Federal Reserve.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
               - `completed`: The ACH transfer has been completed. Funds should be settled.
               - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
+              - `canceled`: The ACH transfer was canceled before submission.
           example: "initiated"
           enum:
             - initiated
+            - pending_submission
             - submitted
             - completed
             - rejected
             - returned
+            - canceled
         direction:
           type: string
           description: |-
@@ -6826,7 +6830,9 @@ components:
           enum:
             - corporate_credit_or_debit
             - prearranged_payments_and_deposit
+            - international_ach_transaction
             - internet_initiated
+            - corporate_trade_exchange
         company_entry_description:
           type: string
           description: |-
@@ -7218,6 +7224,7 @@ components:
         An inbound transfer represents a transfer of funds from an external bank account to a financial account.
       required:
         - id
+        - program_id
         - amount
         - created_at
       properties:
@@ -7226,6 +7233,10 @@ components:
           description: The unique identifier for the inbound transfer
           example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
           readOnly: true
+        program_id:
+          type: string
+          description: The unique identifier for the program that the inbound transfer belongs to.
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
         amount:
           type: integer
           format: int64
