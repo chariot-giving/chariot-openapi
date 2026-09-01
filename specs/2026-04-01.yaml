@@ -5072,7 +5072,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
         ach_transfer:
-          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot initiates an ACH debit to fund the account.
+          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot debits an external bank account to fund the account.
           allOf:
             - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
