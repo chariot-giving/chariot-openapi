@@ -3248,9 +3248,8 @@ paths:
     post:
       summary: Create a Donation
       description: |-
-        Manually record a donation for a nonprofit-managed payment source. Use this endpoint when funds
-        arrive outside Chariot's integrated network (for example, a payroll wire from a corporate donor)
-        and you want to attribute the individual gifts that make up a deposit.
+        Creates a new donation. Include `payment_source_id` to scope the donation to a specific
+        payment source.
       operationId: createDonation
       tags:
         - donations
@@ -7975,15 +7974,13 @@ components:
           schema:
             type: object
             required:
-              - payment_source_id
               - amount_gross
             properties:
               payment_source_id:
                 type: string
                 description: |-
-                  The unique identifier for the payment source to associate the donation with. Callers
-                  must create the payment source ahead of the donation; the donation is anchored to it
-                  from the moment it's recorded.
+                  The identifier of the payment source to associate with the donation. If provided,
+                  the referenced payment source must already exist.
                 example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
               effective_date:
                 type: string
@@ -8022,12 +8019,18 @@ components:
                 type: string
                 description: An external identifier for the donation, useful for reconciliation against your own systems.
                 example: "INV-12345"
-              primary_donor:
-                allOf:
-                  - $ref: "#/components/schemas/DonorInput"
-              joint_donor:
-                allOf:
-                  - $ref: "#/components/schemas/DonorInput"
+              attribution:
+                type: object
+                description: |-
+                  A subhash containing information about how the donation is attributed. Mirrors
+                  the shape of the `attribution` object on the donation response.
+                properties:
+                  primary_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+                  joint_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
               recipient:
                 allOf:
                   - $ref: "#/components/schemas/RecipientInput"
@@ -8057,10 +8060,11 @@ components:
               currency: "USD"
               purpose: "General Operating Support"
               external_id: "PAYROLL-2026-01-EMP-1234"
-              primary_donor:
-                first_name: "Jane"
-                last_name: "Rivera"
-                email: "jrivera@example.com"
+              attribution:
+                primary_donor:
+                  first_name: "Jane"
+                  last_name: "Rivera"
+                  email: "jrivera@example.com"
     ReconcileDepositRequest:
       description: |-
         Record the donations that make up a deposit. Non-destructive: the linkage is added atomically
