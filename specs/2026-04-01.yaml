@@ -5128,9 +5128,9 @@ components:
           example: "1234567890"
         effective_date:
           type: string
-          format: date
-          description: The effective date for the ACH transfer.
-          example: "2020-01-31"
+          format: date-time
+          description: The effective date for the ACH transfer. The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         status:
           type: string
           description: The status of the ACH transfer.
@@ -6852,7 +6852,8 @@ components:
           description: |-
             The ACH transfer's effective date as sent to the Federal Reserve.
             This is the date the funds will be available to the receiving organization.
-          example: "2020-01-31T23:00:00Z"
+            The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         submitted_at:
           type: string
           format: date-time
