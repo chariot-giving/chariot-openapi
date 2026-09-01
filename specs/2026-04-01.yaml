@@ -7172,22 +7172,10 @@ components:
             - completed
             - canceled
             - failed
-        ach:
-          type: object
-          description: ACH details of the transfer that funded this inbound transfer. Present only for inbound transfers funded by an inbound ACH transfer.
-          properties:
-            trace_number:
-              type: string
-              description: The ACH trace number. Useful for reconciling against the ACH transfer you initiated.
-              example: "1234567890"
-            company_entry_description:
-              type: string
-              description: The company entry description of the ACH transfer.
-              example: "GRANTPMT"
-            company_discretionary_data:
-              type: string
-              description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
-              example: "GRANT-2024-001"
+        transfer:
+          description: A subhash containing information about the transfer associated with the inbound transfer.
+          allOf:
+            - $ref: "#/components/schemas/Transfer"
         created_at:
           type: string
           format: date-time
