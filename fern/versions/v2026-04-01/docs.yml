@@ -134,7 +134,7 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
-      - section: For DAF Providers
+      - section: For Grantmakers
         skip-slug: true
         contents:
           - section: Donor Accounts

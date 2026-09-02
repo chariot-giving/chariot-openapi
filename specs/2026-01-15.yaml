@@ -3847,6 +3847,11 @@ components:
             - dafpay_network
             - direct
           example: direct
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
         address:
           $ref: "#/components/schemas/GrantAddress"
     RecurringGrant:
@@ -4100,6 +4105,11 @@ components:
           enum:
             - offline
           example: offline
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
     FinancialAccount:
       type: object
       description: |-

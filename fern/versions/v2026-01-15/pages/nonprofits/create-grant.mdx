@@ -34,7 +34,7 @@ Receiving `CHARIOT_SUCCESS` does not create a grant. If nothing calls Create Gra
 
 ## Finding the donation
 
-`donation_id` on [Get Grant](/api/grants/get) links a grant to its donation, and that ID is where [Retrieve Donations](/guides/nonprofits/donations) picks up.
+`donationId` on [Get Grant](/api/grants/get) links a grant to its donation, and that ID is where [Retrieve Donations](/guides/nonprofits/donations) picks up.
 
 <Warning title="The donation is created asynchronously">
 It doesn't exist when Create Grant returns. Over a recent 30-day sample the ID appeared in half a second at the median and within 1.3 seconds for 95% of grants, but a few took over 5 seconds and one took nearly an hour. Retry Get Grant with a short backoff rather than calling it once.
@@ -72,7 +72,7 @@ Choose whether to accept these in your [connect setup](/guides/nonprofits/initia
 * [ ] Recurring intents branch to Create Recurring Grant
 * [ ] Grants created with the amount from `CHARIOT_SUCCESS`
 * [ ] One checkout produces one grant
-* [ ] `donation_id` read from Get Grant with a retry, not matched on tracking ID
+* [ ] `donationId` read from Get Grant with a retry, not matched on tracking ID
 * [ ] Confirmation page renders tracking ID, EIN, organization name, and provider link
 * [ ] Popup timing checked on mobile, under 1000ms from click to popup
 * [ ] Everything downstream built on [Retrieve Donations](/guides/nonprofits/donations)

@@ -42,7 +42,7 @@ The no-code component submits from the modal itself, having no backend. Contact 
 
 ## A grant has no donation ID
 
-The donation is created asynchronously, so `donation_id` isn't on the Create Grant response and isn't always there the first time you call [Get Grant](/api/grants/get). Retry with a short backoff. Don't fall back to matching on the DAFpay tracking ID; about 8% of grants don't have one.
+The donation is created asynchronously, so `donationId` isn't on the Create Grant response and isn't always there the first time you call [Get Grant](/api/grants/get). Retry with a short backoff. Don't fall back to matching on the DAFpay tracking ID; about 8% of grants don't have one.
 
 ## A donation never settles
 

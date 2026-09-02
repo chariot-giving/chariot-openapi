@@ -9,10 +9,10 @@ A grant carries one of three statuses.
 | Status | Meaning |
 | --- | --- |
 | `Initiated` | The grant request was submitted successfully and the DAF provider is still processing it. Every DAFpay grant from an integrated provider starts here. |
-| `Completed` | The nonprofit received the funds and marked the gift received in the Chariot dashboard, having identified the line item by its tracking ID or external grant ID. |
+| `Completed` | The nonprofit has the money. Covers both a gift received into their Chariot Account and one they marked received offline, having identified the line item by its tracking ID or external grant ID. |
 | `Canceled` | The grant will not be paid. |
 
-Match on these values exactly; the dashboard's wording for an action does not always match the value the API returns.
+Match on these values exactly. The dashboard says "received", but the API returns `Completed` for that and for received-offline alike.
 
 Subscribe to the `grant.updated` [webhook event](/api/webhooks) so you can show the current status on your own dashboard. If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
 
