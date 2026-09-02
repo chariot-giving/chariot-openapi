@@ -80,7 +80,7 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/nonprofits/faq.mdx
-      - section: DAFpay
+      - section: For Fundraising Platforms
         slug: dafpay
         contents:
           - page: Overview
@@ -134,7 +134,10 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
-          - section: Donor Accounts (for DAFs)
+      - section: For DAF Providers
+        skip-slug: true
+        contents:
+          - section: Donor Accounts
             slug: donor-accounts
             contents:
               - page: Overview
@@ -149,7 +152,7 @@ navigation:
               - page: FAQ
                 slug: faq
                 path: ./pages/donor-accounts/faq.mdx
-          - section: OAuth Integration (for DAFs)
+          - section: OAuth Integration
             slug: oauth
             contents:
               - page: Overview
@@ -167,30 +170,30 @@ navigation:
               - page: Integration Checklist
                 slug: integration-checklist
                 path: ./pages/oauth/integration-checklist.mdx
-      - section: Disbursements
-        slug: disbursements
-        contents:
-          - page: Overview
-            slug: /
-            path: ./pages/disbursements/overview.mdx
-          - page: How It Works
-            slug: how-it-works
-            path: ./pages/disbursements/how-it-works.mdx
-          - page: Disbursement Lifecycle
-            slug: disbursement-lifecycle
-            path: ./pages/disbursements/disbursement-lifecycle.mdx
-          - page: Compliance
-            slug: compliance
-            path: ./pages/disbursements/compliance.mdx
-          - page: Sandbox
-            slug: sandbox
-            path: ./pages/disbursements/sandbox.mdx
-          - page: How Chariot Compares
-            slug: comparisons
-            path: ./pages/disbursements/how-chariot-compares.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/disbursements/faq.mdx
+          - section: Disbursements
+            slug: disbursements
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/disbursements/overview.mdx
+              - page: How It Works
+                slug: how-it-works
+                path: ./pages/disbursements/how-it-works.mdx
+              - page: Disbursement Lifecycle
+                slug: disbursement-lifecycle
+                path: ./pages/disbursements/disbursement-lifecycle.mdx
+              - page: Compliance
+                slug: compliance
+                path: ./pages/disbursements/compliance.mdx
+              - page: Sandbox
+                slug: sandbox
+                path: ./pages/disbursements/sandbox.mdx
+              - page: How Chariot Compares
+                slug: comparisons
+                path: ./pages/disbursements/how-chariot-compares.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/disbursements/faq.mdx
       - section: Lockbox Providers
         slug: lockbox-providers
         hidden: true
