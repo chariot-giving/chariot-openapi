@@ -1,0 +1,52 @@
+---
+title: "Reconciliation"
+subtitle: "Matching an inbound gift to the grant that started it"
+hidden: false
+---
+
+DAFpay never handles the funds. Each DAF provider pays the nonprofit directly, by transfer or mailed check, and stamps the payment with identifiers you can match back to the grant.
+
+| Identifier | What it is |
+| --- | --- |
+| Tracking ID | A 10-digit code from DAFpay, sent with the grant request. Appears in the provider's data as a `Tracking ID:` string in the grant note or purpose. |
+| External Grant ID | The provider's own grant identifier, returned after a successful initiation. Format varies; usually shows up as "Grant ID". |
+
+Payments also carry a "Gift via DAFpay" callout in the memo.
+
+<Warning title="Make both searchable">
+Display `trackingId` and `externalGrantId` as searchable fields on your transactions dashboard. Without them nobody can match a payment to a grant.
+</Warning>
+
+<Frame caption="Example of how nonprofits will receive check grants initiated via DAFpay. Note that the funds are sent directly to the nonprofit from the DAF provider, not DAFpay.">
+    <img src='../../images/SchwabGrantLetter.png' width="400" height="500"/>
+</Frame>
+
+<Frame caption="Example of how nonprofits will receive Fidelity grants initiated via DAFpay. Note that the funds are sent directly to the nonprofit from the DAF provider, not DAFpay.">
+    <img src='../../images/fidelity.png' />
+</Frame>
+
+
+To show the provider's name, like Fidelity Charitable, pass the grant's `fundId` to [Get DAF](/api/donor-advised-funds/get).
+
+<Warning title="Not every provider sends a tracking ID">
+Fall back to the external grant ID, then to the donor's fund name, amount and other grant details.
+</Warning>
+
+## What to persist
+
+One row per checkout, on your side, is what makes reconciliation possible later.
+
+| Field | When you get it | Notes |
+| --- | --- | --- |
+| Your transaction ID | At checkout | Your key, not ours |
+| `nonprofit_id` | At checkout | Which of your customers this belongs to |
+| `connect_id` (CID) | At nonprofit onboarding | Proves which connect the session ran on |
+| `workflowSessionId` | `CHARIOT_SUCCESS` | Ties the browser session to the capture |
+| Grant `id` | Create Grant response | Stable |
+| `donationId` | Asynchronously, from Get Grant | Absent at first; retry with backoff |
+| Grant status | `grant.updated` webhook | `Initiated` until the nonprofit has the money |
+| Tracking ID, external grant ID | On the grant | What appears on the provider's remittance |
+
+Reconcile on the grant ID and the donation ID. Don't use the tracking ID as a key, since about 8% of grants don't have one.
+
+Next: [Grant Statuses](/guides/dafpay/gifts/statuses).

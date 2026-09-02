@@ -1,0 +1,32 @@
+---
+title: "Grant Statuses"
+subtitle: "What a grant's status means, and cancellations"
+hidden: false
+---
+
+A grant carries one of three statuses.
+
+| Status | Meaning | Money with the nonprofit? | What to show |
+| --- | --- | --- | --- |
+| `Initiated` | Submitted to the DAF provider, which is still processing it. Every DAFpay grant starts here and usually stays here one to two weeks. | No | Submitted or pending, never "received" |
+| `Completed` | The nonprofit has the money, either into their Chariot Account or marked received offline. | Yes | Received |
+| `Canceled` | The grant will not be paid. | No | Canceled |
+
+Chariot sets these, not you. A grant leaves `Initiated` when the money lands and the nonprofit marks the gift received, so subscribe to `grant.updated` rather than polling for it.
+
+Match on these values exactly. The dashboard says "received", but the API returns `Completed` for that and for received-offline alike.
+
+Subscribe to the `grant.updated` [webhook event](/api/webhooks) so you can show the current status on your own dashboard. If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
+
+
+## Cancellations & Refunds
+
+Donors may have the option to cancel their grants from their Donor Advised Fund portal before disbursement, subject to the specific policies of their DAF provider.
+As funds in DAFs are no longer under the donor's direct ownership, the concept of refunds after the money leaves the DAF, does not apply.
+
+Donations made via DAFpay are typically **final and irrevocable** gifts (depending on the specific policies of the DAF provider).
+
+<Info title="Cancellation Procedures">
+    Canceled grants come back with status `Canceled` and do not incur any processing fees.
+    If you believe a grant should be cancelled, please contact the donor first to confirm the cancellation and then send a request to the Chariot support team.
+</Info>

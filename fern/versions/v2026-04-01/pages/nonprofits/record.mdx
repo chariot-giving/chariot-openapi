@@ -1,0 +1,76 @@
+---
+title: "Record the Gift"
+subtitle: "Writing status back to Chariot"
+hidden: false
+---
+
+Write the status back so your finance team sees the same state in the dashboard that your integration sees. This takes three calls, and the first two only once.
+
+<Steps>
+
+### Create the property in the dashboard
+
+Properties are created in the dashboard, not through the API. Make a CRM status property with the states your process uses, plus a state for gifts you received offline. Team members who edit properties need the **Development** permission.
+
+### Find its ID and its option IDs
+
+<EndpointRequestSnippet endpoint="GET /v1/properties" />
+
+Filter by `resource_type` to get the donation properties. Each one comes back with an `id` like `prop_01j8rs…` and, for a status property, its first 25 `options`. If `total_option_count` is higher than that, page through them with [List Property Options](/api/properties/list-options).
+
+Store the property ID and the option ID for each state. Neither changes.
+
+### Assign the value to donations
+
+<EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
+
+The `{id}` in the path is the **property** ID, not the donation. The donations go in the body:
+
+```json
+{
+  "value": { "type": "ENUM", "enum_value_id": "propopt_01j8rs605a4gctmbm58d87mvsj" },
+  "resources": { "ids": ["donation_01j8rs605a4gctmbm58d87mvsj"] }
+}
+```
+
+You can assign one value to up to 100 donations per call, so batch a poll's worth rather than calling once per gift. Passing `"empty": true` in `value` clears the property instead.
+
+</Steps>
+
+Saved views per status let your team work the exceptions. Properties also carry your CRM record ID, internal campaign or fund codes, and processing notes.
+
+## Payment status
+
+Every donation carries one of four payment statuses, set from whether its payment source is connected to your account.
+
+| `payment_status` | Meaning |
+| --- | --- |
+| `INCOMING_TO_CHARIOT` | Money is expected to arrive in your Chariot Account |
+| `RECEIVED_IN_CHARIOT` | Money landed in your Chariot Account |
+| `INCOMING_OUTSIDE_CHARIOT` | Money is expected to arrive outside Chariot |
+| `RECEIVED_OUTSIDE_CHARIOT` | Money arrived outside Chariot, for example a check sent to your office |
+| `CANCELED` | The donation will not arrive |
+
+Only `RECEIVED_IN_CHARIOT` means the funds are in your Chariot Account and the donation has a deposit. Do not treat an incoming status as banked.
+
+The dashboard shows friendlier labels for these, so match on the values above rather than on what the screen says.
+
+## Gifts that arrive outside Chariot
+
+A donation only gets a deposit once the funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so those donations stay at `INCOMING_OUTSIDE_CHARIOT` and never get one.
+
+When the money turns up, find the donation by its tracking ID, external ID, or the donor and amount, then set its payment status on the donations table. That's a manual step in the dashboard, and linking the payer takes it away.
+
+## Which system owns what
+
+| Chariot is the source of truth for | Your CRM or ERP is the source of truth for |
+| --- | --- |
+| The donation, deposit and payment source IDs | Your donor and household records |
+| Amounts, fees and settlement state | Campaign, fund and appeal coding |
+| Donor attribution as the payer reported it | Your own gift ID and accounting classification |
+
+Store Chariot's donation ID on your gift record. It's the key you reconcile on, and it's stable.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

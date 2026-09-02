@@ -9,6 +9,12 @@ When building your application, you'll likely want to fully test functionality i
 Chariot provides a set of Simulation APIs, which are only available in Sandbox.
 These APIs allow you to quickly test financial related events that might take long periods of time to occur in the real world (Production).
 
+<Warning title="Simulations cover disbursements and inbound transfers only">
+Simulation APIs exist for **disbursements** and **inbound transfers**. There are no simulation endpoints for donations or deposits. `/v1/simulations/donations` and `/v1/simulations/deposits` do not exist.
+
+To generate test donations, run a DAFpay checkout in sandbox, or create a simulated deposit from the sandbox dashboard and add donations to it. [Sandbox Testing](/guides/nonprofits/sandbox) covers what sandbox does and does not support.
+</Warning>
+
 You'll see Sandbox Simulation APIs are prefixed with `/v1/simulations` path, have the `Sandbox:` prefix as part of the title, and
 should always contain the following callout in the description:
 

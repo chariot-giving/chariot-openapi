@@ -1,0 +1,91 @@
+---
+title: "Send Donor Data"
+subtitle: "What to pass in onDonationRequest, and what to leave out"
+hidden: false
+---
+
+Return what you know about the donor from `onDonationRequest`. Anything you leave out, DAFpay fills in from their DAF account.
+
+<CodeBlocks>
+```javascript JavaScript
+const chariot = document.getElementById("chariot")
+
+chariot.onDonationRequest(async () => {
+  return {
+    amount: 25000, //this is $250.00 USD
+    designation: "My Special Designation",
+    metadata: {
+      fundraiserTag: "marathon"
+    },
+  }
+})
+```
+```javascript React
+const onDonationRequest = () => {
+    return {
+        amount: 25000, //this is $250.00 USD
+        designation: "My Special Designation",
+        metadata: {
+            fundraiserTag: "marathon"
+        },
+    }
+}
+
+<ChariotConnect
+    cid="GENERATED_CONNECT_IDENTIFIER"
+    onDonationRequest={onDonationRequest}
+/>
+```
+</CodeBlocks>
+
+<Error title="Empty strings count as provided">
+Chariot treats any value you pass as provided, including an empty string. Sending `email: ""` tells us the donor's email is blank, and the donor types it by hand instead of having it prefilled.
+
+To get DAF prefill, omit `firstName`, `lastName`, `email`, `phone` and `address` entirely. Don't send them set to `""`.
+</Error>
+
+Omit the donor fields you want DAFpay to prefill. Pass what your form has already collected and needs to keep: campaign and source IDs, a designation, and an amount if you want to force one.
+
+## Schema
+
+| Parameter   | Description                                                                                                                                                                                                                                           | Type              |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| amount      | The donation amount in cents. e.g., for a $20 donation, enter 2000.  <br /><br />If this value is not passed in, Chariot will use the donor's account balance to recommend a donation amount. This can lead to significantly larger donation amounts.  | number (optional) |
+| firstName   | The donor's first name. Maximum length: 255 characters.                                                                                                                                                                                               | string (optional) |
+| lastName    | The donor's last name. Maximum length: 255 characters.                                                                                                                                                                                                | string (optional) |
+| email       | The donor's email address. Must be in email format. Maximum length: 255 characters.                                                                                                                                                                   | string (optional) |
+| phone       | The donor's phone number. Provide the country code and no special characters. Maximum length: 255 characters.                                                                                                                                         | string (optional) |
+| note        | A note the donor wants to send to your organization. Maximum length: 400 characters.                                                                                                                                                                  | string (optional) |
+| anonymous   | Indicates if this donation should be sent anonymously (default: false). Pass this when a donor chooses to give anonymously on your form, so the DAF provider anonymizes it properly.                                                                   | boolean (optional)|
+| designation | The designation to include on the grant. If this is left blank, "Where needed most" will be used. A custom designation may make the grant approval process take longer. Designations over 100 characters will be truncated. Maximum length: 255 characters. | string (optional) |
+| address     | The donor's address: line1, line2, city, state, postalCode. Maximum length: 255 characters.                                                                                                                                                           | object (optional) |
+| metadata    | Any name-value pairs you want tied to the session, such as a form ID or campaign name. They come back on the grant intent.                                                                                                                            | object (optional) |
+| fundId      | The ID of a preselected DAF provider. <br /><br /> If you provide it, the donor skips the DAF dropdown and goes straight to that provider's login.                                                                                                    | string (optional) |
+| frequency   | The recurring frequency of the grant. `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. See [recurring gifts](/guides/nonprofits/initiate/create-grant#recurring-gifts).                                                                               | string (optional) |
+
+Anything longer than its maximum is truncated rather than rejected.
+
+<Note title="Pass your form metadata">
+Whatever identifiers your form already carries, like a form or campaign ID, a source, an appeal code or a designation code, belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
+</Note>
+
+## Blocking the button until your form validates
+
+To keep the window from opening until your own validation passes, return `false` from `onDonationRequest`.
+
+<img src='../../images/on-donation-false.png' />
+
+## Popup timing
+
+Mobile browsers block popups they consider decoupled from the click that asked for one, which is what happens when something slow runs in between.
+
+<Tip title="Open the popup within one second">
+- Keep the gap between the donor's click and the popup under 1000ms.
+- Don't make blocking API calls before launching the popup.
+- Avoid long-running async work anywhere in the donation request flow.
+- Prefetch what you need before the donor clicks.
+</Tip>
+
+Forms usually break this in one of two ways. Either a custom button calls your own server before triggering the popup, or `onDonationRequest` goes off to fetch something like giving history. Move that work earlier, before the donor clicks.
+
+Next: [Handle the Result](/guides/nonprofits/initiate/events).

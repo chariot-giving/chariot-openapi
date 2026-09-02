@@ -1,0 +1,65 @@
+---
+title: "Overview"
+subtitle: "Chariot for nonprofits"
+hidden: false
+---
+
+Chariot collects your gifts from every source: DAF sponsors, fundraising platforms, workplace giving, checks. It codes them in one place, and the API moves them into your CRM or ERP.
+
+<Warning title="If you use a fundraising platform, you don't need to integrate DAFpay">
+DAFpay is available on 70+ fundraising platforms. If your donation form is hosted by one of them, turn DAFpay on there instead of building against our API. [Find your platform](https://www.givechariot.com/dafpay-setup#integration-search), or see [Do I Need to Integrate?](/guides/nonprofits/start-here).
+
+You would still use the API to pull the gifts you receive into your CRM or ERP. That's [Retrieve Donations](/guides/nonprofits/donations), and it applies however DAFpay got onto your form.
+</Warning>
+
+## Which APIs you'll use
+
+<Steps>
+
+### Capture the gift
+
+Only if you built and run your own donation form. DAFpay authorizes the donor's gift in the browser, your server calls the Grants API to capture it, and a donation follows from that.
+
+If a fundraising platform hosts your form, you don't need this step. See [Initiate Gifts](/guides/nonprofits/initiate).
+
+### Retrieve donations
+
+Pull donations with donor attribution and your codes already applied, create the records in your system, and mark them recorded in Chariot.
+
+See [Retrieve Donations](/guides/nonprofits/donations).
+
+</Steps>
+
+## What each stage means
+
+```
+DAFpay session → grant intent → Grant → Donation → Deposit
+```
+
+The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the funds arrive in.
+
+A successful DAFpay session means the donor authorized an intent. It doesn't mean a grant exists, and a donation that exists doesn't mean the funds have arrived. These are four separate stages.
+
+## How gifts reach Chariot
+
+| Source | What you do |
+| --- | --- |
+| DAFpay on your fundraising platform | No API call to start the gift. It reaches Chariot on its own. |
+| The DAFpay component on your site | No API call to start the gift. It reaches Chariot on its own. |
+| A linked DAF sponsor, platform, or lockbox | Link it once in the dashboard, then nothing per gift. |
+| DAFpay on a donation form you built | Your server captures each gift with the Grants API. |
+
+Either way you retrieve and record the donations. The difference is whether your own server creates the grant or the gift reaches Chariot another way.
+
+## What lives in the dashboard
+
+Two things are configured in the dashboard, not through the API:
+
+- **Payment source linking.** Connecting each DAF sponsor, platform, or lockbox so their funds flow into your Chariot Account<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>.
+- **Donation coding.** The properties, views, and policies that categorize gifts. Your integration reads the result.
+
+Not sure which path is yours? Start with [Do I Need to Integrate?](/guides/nonprofits/start-here). If you do need the API, [Set Up Your Account](/guides/nonprofits/setup) comes next, then [sandbox](/guides/nonprofits/sandbox).
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

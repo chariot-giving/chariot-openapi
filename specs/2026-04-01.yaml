@@ -815,7 +815,7 @@ paths:
         Create a new Donor Account.
 
         This endpoint is intended for DAF providers who want to set up a Donor Account on behalf of a donor before that donor uses DAFpay for the first time.
-        See the [DAF-Initiated Setup guide](/guides/dafpay/donor-accounts/daf-initiated-setup) for the most common use of this endpoint.
+        See the [DAF-Initiated Setup guide](/guides/donor-accounts/account-lifecycle) for the most common use of this endpoint.
 
         On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor enters the code in DAFpay, the Donor Account is automatically approved.
       operationId: create-donor-account
@@ -4468,6 +4468,7 @@ components:
           description: |-
             The original amount of the donation as intended by the donor in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 25000
         amount_net:
           type: integer
           format: int64
@@ -4475,12 +4476,14 @@ components:
             The amount of the donation that the nonprofit will receive after DAF and/or
             platform processing fees are deducted in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 24500
         amount_fee:
           type: integer
           format: int64
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 500
         individual_gift_amount:
           type: integer
           format: int64
@@ -4763,14 +4766,14 @@ components:
         options:
           type: array
           description: |-
-            The first 25 options for enum and user properties. Use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The first 25 options for enum and user properties. Use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
           items:
             $ref: "#/components/schemas/PropertyOptionValue"
         total_option_count:
           type: integer
           format: int32
           description: |-
-            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
     PropertyOptionValue:
       type: object
       description: |-
@@ -5399,7 +5402,7 @@ components:
         - **Donor-Initiated Verification**: After a donor submits a Grant Request, DAFpay issues a one-time [Authorization Token](/api/authorization-tokens) and emails the `code` to the donor. The donor provides the code to the DAF, who calls [Verify Authorization Token](/api/authorization-tokens/verify) to approve the account.
         - **DAF-Initiated Setup**: The DAF creates the Donor Account and an Authorization Token in advance (e.g. when a donor opts in via the DAF portal). The donor enters the token's `code` into DAFpay during profile setup, automatically approving the account.
 
-        See the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for a full discussion of these flows.
+        See the [Donor Accounts overview](/guides/donor-accounts/overview) for a full discussion of these flows.
       required:
         - id
         - status
@@ -5915,6 +5918,11 @@ components:
             - dafpay_network
             - direct
           example: direct
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
         address:
           $ref: "#/components/schemas/GrantAddress"
     RecurringGrant:
@@ -6173,6 +6181,11 @@ components:
           enum:
             - offline
           example: offline
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
     FinancialAccount:
       type: object
       description: |-
@@ -6872,21 +6885,21 @@ components:
           description: |-
             The date and time at which the ACH transfer was settled.
             If the transfer is not settled, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         rejected_at:
           type: string
           format: date-time
           description: |-
             The date and time at which the ACH transfer was rejected.
             If the transfer is not rejected, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         returned_at:
           type: string
           format: date-time
           description: |-
             The date and time at which the ACH transfer was returned.
             If the transfer is not returned, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         created_at:
           type: string
           format: date-time
@@ -7803,7 +7816,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Capturing Grant Intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                  See [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
               amount:
                 type: number
                 example: 15000
@@ -7872,7 +7885,7 @@ components:
                 type: string
                 description: |-
                   The identifier of the donor's DAFpay Workflow Session.
-                  See [Capturing Grant Intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
+                  See [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant) for how to get this value from the DAFpay `CHARIOT_SUCCESS` event.
               frequency:
                 type: string
                 description: |-

@@ -1,0 +1,92 @@
+---
+title: "Set Up"
+hidden: false
+---
+
+A **connect** is one configuration of DAFpay for one nonprofit on one source: the config, the source, and the nonprofit's EIN together. Creating one gives you the Connect ID (CID) that initializes the button for that nonprofit on your platform.
+
+Nonprofits have several. A nonprofit on four platforms has four connects, plus the ones from its own Chariot account, and yours is only ever yours. That's why the CID is what tells Chariot whose gift this is and where it came from.
+
+It takes two calls. Search for the nonprofit by name or EIN, then create a connect with the ID that comes back. Any real EIN works in sandbox, so American Red Cross (`53-0196605`) is a good one to test with.
+
+## Search Organization
+
+[Search Organization](/api/organizations/search) covers Chariot's verified nonprofit database. If a nonprofit isn't there, email support@givechariot.com to have it added.
+
+<CodeBlocks>
+```curl cURL
+curl --request GET \
+     --url https://sandboxapi.givechariot.com/v1/organizations/search?ein=123456789 \
+     --header 'accept: application/json' \
+     --header 'authorization: Bearer API_KEY' \
+```
+```javascript JavaScript
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    authorization: 'Bearer <API_KEY>'
+  }
+};
+
+fetch('https://sandboxapi.givechariot.com/v1/organizations/search?ein=123456789', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+</CodeBlocks>
+
+## Create Connect
+<Warning title="Nonprofit Contact Requirement">
+This route requires a contact email address for the organization. Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com). This email will be used for important messaging related to the organization's Chariot account and can be updated later.
+</Warning>
+
+[Create Connect](/api/connects/create) takes the organization's `id` and returns the connect, or the existing one if there already is one. Save the CID, since you only need this call once per nonprofit.
+
+<CodeBlocks>
+```curl cURL
+curl --request POST \
+     --url 'https://sandboxapi.givechariot.com/v1/connects' \
+     --header 'accept: application/json' \
+     --header 'authorization: Bearer API_KEY' \
+     --header 'content-type: application/json' \
+     -d '{
+        "organization_id": "ORGANIZATION_ID",
+        "contact": {
+          "email": "me@example.com"
+        }
+      }'
+```
+```javascript JavaScript
+const options = {
+  method: 'POST',
+  headers: {
+    accept: 'application/json',
+    'content-type': 'application/json',
+    authorization: 'Bearer API_KEY'
+  },
+  body: JSON.stringify({
+    organization_id: 'ORGANIZATION_ID',
+    contact: {
+      email: 'me@example.com',
+    }
+  })
+};
+
+fetch('https://sandboxapi.givechariot.com/v1/connects', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+</CodeBlocks>
+
+## Create a Launch Plan
+Create Connect runs once for every nonprofit on your platform, so decide during development when that call happens. Call it when the nonprofit enables DAFpay, then store the CID against that nonprofit in your own database. Don't call it during a donor checkout, and don't share one CID across nonprofits: the CID is what tells Chariot whose gift this is.
+
+```
+your nonprofit record ──► chariot_connect_id
+```
+
+For nonprofits you already have when you launch, the same call is your backfill. We ask for that plan before issuing [production keys](/guides/dafpay/integrating-dafpay/prod-keys).
+
+Next: [Configure Your Connect](/guides/dafpay/integrating-dafpay/connect-config).

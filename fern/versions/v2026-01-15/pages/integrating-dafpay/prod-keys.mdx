@@ -3,14 +3,69 @@ title: "Requesting Prod Keys"
 hidden: false
 ---
 
-Once you have completed all the steps on the [Integrating DAFpay Checklist](/guides/dafpay/integrating-dafpay/checklist), please send an email to `integrations@givechariot.com` with the following information to request production API keys.
+Once you have completed all the steps on the [Integration Checklist](/guides/dafpay/integrating-dafpay/checklist), email `integrations@givechariot.com` to request production API keys.
 
+Copy the block below, fill in every line, and send it as the body of that email. The checklist covers what our QA would otherwise find in sandbox, and a complete request turns around faster.
 
-|                                          |                                                                 |
-| :-------------------------------------   | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Unintegrated DAF Configuration           | Let us know which [configuration option](/guides/dafpay/integrating-dafpay/integration#unintegrated-daf-providers) to use for unintegrated DAF providers |
-| Test Form URL                            | Provide link to donation form with DAFpay Sandbox instance for Chariot QA.     |
-| End to End Recording                     | Provide a recording of the full end to end flow from nonprofit onboarding (if applicable) through submitting a donation and seeing it in the back end. |
-| Target Go-Live                           | What date are you planning on launching DAFpay in production?   |
-| Launch Plan (fundraising platforms only)     | Outline plan to create the DAFpay connect (instance od DAFpay) for each nonprofit    |
-| Initial Non-Profit (fundraising platforms only)| In order to test on production, we will need to give a real donation to a real nonprofit. Which nonprofit can we use to make the test donation ? |
+## The request
+
+```text
+Organization:
+Platform type: fundraising platform / nonprofit running its own form
+Target go-live date:
+
+CONNECT CONFIGURATION
+Donor fields the modal shows:
+Donor fields the modal requires:
+Monthly recurring gifts: enabled / disabled
+Donors on an unconnected DAF provider: record the grant intent / return to our form
+
+SANDBOX TEST FORM
+Link:
+
+QA CHECKLIST (sandbox, confirm each line)
+[ ] Successful donation: a sandbox gift completes end to end and the grant appears in our records
+[ ] On-donation data: donor name, email, phone and address arrive on the donation, and our metadata (campaign, source, form ID, designation) comes through
+[ ] Button placement: the DAFpay button sits at the top of the form, above the gift amount and ahead of our contact fields
+[ ] Change amount in modal: when a donor changes the amount inside the DAFpay window, we record the amount from CHARIOT_SUCCESS rather than the one from our form
+[ ] Confirmation redirect: the donor lands on our confirmation page once the window closes, with a loading screen in between, and the page does not say the gift is being processed or promise a tax receipt
+[ ] Unintegrated grants: a donor on an unconnected provider ends up where our configuration says, and if we record intents, the confirmation page shows the tracking ID with its "Tracking ID:" prefix and a way to copy it, our EIN, the organization name, and a link to the provider
+[ ] Recurring, if enabled: a monthly intent goes to Create Recurring Grant and records frequency MONTHLY
+[ ] Fees, if we collect them: applicationFeeAmount matches what we charge, final amounts are whole dollars, and the tip option is suppressed when DAFpay is selected
+
+BROWSERS (confirm each, mobile and desktop)
+[ ] Chrome
+[ ] Safari
+[ ] Firefox
+
+FUNDRAISING PLATFORMS ONLY
+Nonprofit we can send the production test donation to:
+Recording of a nonprofit turning DAFpay on in our platform:
+Help article link:
+
+LAUNCH PLAN
+How connects get created for each nonprofit:
+If DAFpay is on by default: how existing nonprofits get backfilled, and how each new one gets it:
+If DAFpay is opt-in: how you check the nonprofit has a Chariot Deposit Account before they can turn it on:
+Where the co-branded Chariot signup link lives on your site:
+Target launch date and what you are announcing:
+```
+
+## Notes on a few lines
+
+**The QA and browser lines are confirmations, not artifacts.** We don't need a recording or a screenshot for each one. If something doesn't apply to your integration, say so on the line instead of deleting it. Check each browser on both mobile and desktop, since popup handling and the redirect back to your confirmation page are where they differ most.
+
+**The recording covers nonprofit onboarding.** Show how a nonprofit turns DAFpay on in your platform, start to finish, the way one of your customers would do it. The sandbox test form already covers the donation itself.
+
+**The launch plan is the part people underestimate.** Turning DAFpay on by default means backfilling every nonprofit you already have, plus a path for each new one that signs up. Opt-in means something has to check that a nonprofit has its Chariot Deposit Account before the button can go live. Write down how each of those actually happens.
+
+We also schedule a go-live review before issuing keys, covering your launch date, your help article, and what each side announces.
+
+**The help article answers four questions** nonprofits ask us constantly and only you can answer:
+
+* How does a nonprofit enable DAFpay?
+* Is it per form or account-wide?
+* Where does the nonprofit claim its Chariot Deposit Account?
+* Do DAFpay gifts sync to their CRM, and how?
+
+Publish it for your customers and send it to us once. Later requests can point at the same article.

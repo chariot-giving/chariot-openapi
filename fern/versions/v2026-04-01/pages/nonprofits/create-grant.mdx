@@ -1,0 +1,75 @@
+---
+title: "Create the Grant"
+subtitle: "Capturing the DAFpay authorization"
+hidden: false
+---
+
+<Steps>
+
+### Listen for `CHARIOT_SUCCESS`
+
+You get a `grantIntent`, or a `recurringGrantIntent` for a monthly gift.
+
+### Save the transaction on your side
+
+Save your pending transaction before you call Chariot, so you can reconcile it if the call fails or times out. Don't mark it as a completed gift yet.
+
+### Call Create Grant
+
+<EndpointRequestSnippet endpoint="POST /v1/grants" />
+
+Use [Create Recurring Grant](/api/recurring-grants/create) for a `recurringGrantIntent`.
+
+Send the amount from `CHARIOT_SUCCESS`, not from your form. It can change inside the window if the donor hits their fund balance or the provider enforces a minimum.
+
+DAF grants have to be whole dollars, so the amount in cents must be divisible by 100: $150 is `15000`. Round before you call if your form total has cents in it. The amount from `CHARIOT_SUCCESS` is already whole.
+
+</Steps>
+
+<Warning title="Capture within 15 minutes">
+A grant intent expires 15 minutes after authorization, and Create Grant then returns `410 Gone` and the donor has to start over. Because of that, don't put a queue, a batch job or a manual approval between `CHARIOT_SUCCESS` and this call.
+</Warning>
+
+Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first successful capture returns `201 Created`, and calling it again with the same session returns `200 OK` with the grant that already exists. You get `409 Conflict` only while a capture for that session is still in flight. Wait for it to finish, then read the grant instead of submitting again.
+
+Receiving `CHARIOT_SUCCESS` does not create a grant. If nothing calls Create Grant, the browser flow looks successful and [List Grants](/api/grants/list) returns nothing.
+
+## Capturing the grant is what creates the donation
+
+Create Grant does two things: it submits the grant to the donor's provider and it creates the donation record behind it. Everything you read later through [Retrieve Donations](/guides/nonprofits/donations) exists because this call succeeded.
+
+So a failed capture doesn't leave a gift half-recorded. There's no grant and no donation, only a workflow session that was authorized and never used.
+
+## Finding the donation
+
+`donationId` on [Get Grant](/api/grants/get) links a grant to its donation, and that ID is where [Retrieve Donations](/guides/nonprofits/donations) picks up.
+
+<Warning title="The donation is created asynchronously">
+It doesn't exist yet when Create Grant returns. Over a recent 30-day sample the ID showed up in about half a second at the median and within 1.3 seconds for 95% of grants, but a few took more than 5 seconds and one took close to an hour. Retry Get Grant with a short backoff instead of calling it once.
+</Warning>
+
+Don't fall back to matching on the DAFpay tracking ID. About 8% of grants don't have one, so integrations built on it end up duplicating those gifts. The tracking ID is there for recognizing a DAFpay gift on a sponsor's remittance when the funds arrive outside Chariot.
+
+## Recurring gifts
+
+A donor can set up a `MONTHLY` gift, which you capture with [Create Recurring Grant](/api/recurring-grants/create).
+
+The provider owns the schedule. Chariot records the initial grant with `frequency: MONTHLY`, doesn't create a new grant each month, and isn't told if the donor cancels or changes it.
+
+Each monthly payment then arrives as its own donation, with nothing linking it back to the original grant. Group them by donor name, provider, fund name and amount. To tell the first gift of a series from a one-time gift, check `initiation.frequency` on the donation. Otherwise process them the same way.
+
+Turn the monthly option on or off in your [connect setup](/guides/nonprofits/initiate/connect-config).
+
+## Donors on an unconnected provider
+
+DAFpay connects to most large DAF providers, but not all. When a donor picks one we're not connected to, Chariot records the intent and emails the donor instructions to finish the gift in their own portal.
+
+Many of these are never completed, and we have no way to tell which. Don't create a CRM record from an intent. Wait for the donation like any other gift.
+
+Your confirmation page has to show the donor what to do next: the tracking ID with its `Tracking ID:` prefix and a way to copy it, your EIN, your organization name, and a link to their provider. Without those they can't finish the gift.
+
+Choose whether to accept these in your [connect setup](/guides/nonprofits/initiate/connect-config).
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

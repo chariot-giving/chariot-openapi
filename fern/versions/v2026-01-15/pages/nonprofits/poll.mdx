@@ -1,0 +1,59 @@
+---
+title: "Poll for Donations"
+subtitle: "Retrieving what arrived"
+hidden: false
+---
+
+Poll for donations on a schedule. A poll reflects what's actually in Chariot, where a webhook can be dropped.
+
+Keep the two passes below in one job. Deposits tell you what settled, and donations by date catch the gifts that never get a deposit at all.
+
+Hold a checkpoint rather than always asking for "the last day". Read from your last successful checkpoint to now, page through everything, process each donation by its Chariot ID so a repeat is harmless, and only move the checkpoint once the whole window succeeded. A job that always looks back a fixed distance loses anything that arrives while it's failing.
+
+<Steps>
+
+### List deposits that settled in your window
+
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+
+Filter with `settled_at.after` and `settled_at.before`.
+
+### List the donations on each deposit
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+Pass `deposit_id`. Pages hold up to 100 records, and each response carries a `next_page_token` you pass back as `page_token` to get the following page.
+
+### Catch the gifts that have no deposit
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+Filter by `created_at.after` and `created_at.before` instead of `deposit_id`.
+
+A donation only gets a deposit when the money reaches your Chariot Account. Gifts from payers you haven't linked arrive by their own route and never get one, so a loop built only on deposits never sees them. This second pass is what surfaces them.
+
+### Get the full record
+
+<EndpointRequestSnippet endpoint="GET /v1/donations/{id}" example="GetDonation" />
+
+</Steps>
+
+## Webhooks
+
+Webhooks tell you sooner, but treat them as a prompt to go look rather than a record of what arrived. Deliveries can fail. In production we retry a non-2xx response up to 10 times with backoff and disable the endpoint after 5 days of failures; in sandbox there are no retries at all.
+
+| Event | Fires when |
+| --- | --- |
+| `donation.created` | A gift is recorded in Chariot |
+| `donation.updated` | A donation changes, including settling against a deposit |
+| `deposit.created`, `deposit.updated` | A transfer lands or changes status |
+
+Subscribe with [Create Event Subscription](/api/event-subscriptions/create). Signature verification is covered in [Webhooks and Events](/api/webhooks).
+
+Subscribe to donation events, not grant events. A donation covers every gift you receive, DAFpay and everything else, so building on donations means building one pipeline instead of two. `grant.created` only fires for gifts you initiated yourself, and initiation is not payment.
+
+If you use webhooks, keep polling as a fallback.
+
+Chariot rate-limits the API. Space out your pages rather than firing them in parallel, back off and retry rather than looping on failures, and contact us if your volume needs more headroom.
+
+Next: [Record the Gift](/guides/nonprofits/donations/record).

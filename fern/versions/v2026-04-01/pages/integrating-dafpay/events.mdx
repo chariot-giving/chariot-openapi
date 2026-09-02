@@ -1,0 +1,116 @@
+---
+title: "Handle the Result"
+subtitle: "The events Connect fires, and what each one means"
+hidden: false
+---
+
+Connect fires three events. Everything your integration does after a donor opens the window hangs off them.
+
+| Event | Fires when | Metadata |
+|---|---|---|
+| `CHARIOT_INIT` | The Connect script is initialized and ready. | None |
+| `CHARIOT_SUCCESS` | The donor authorized a grant intent. No grant exists yet. Pass the intent to [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create). | `OnSuccessMetadata` |
+| `CHARIOT_EXIT` | The donor left without completing, an error occurred, or the donor confirmed an unintegrated grant. | `OnExitMetadata` |
+
+<Note title="Tie the session to your transaction">
+When `CHARIOT_SUCCESS` fires, hand your backend the `workflowSessionId` alongside your own transaction id and the nonprofit it belongs to:
+
+```
+your transaction ── nonprofit_id ── connect_id ── workflowSessionId
+```
+
+Everything downstream, from capturing the grant to reconciling the donation, is keyed off that row.
+</Note>
+
+## Payloads
+
+<CodeBlocks>
+```json onSuccessMetadata
+  {
+    "workflowSessionId":"79e772be-547d-4c9c-8b76-4ac4ed4c441a", //Id of the Connect session
+    "grantIntent": {
+      "userFriendlyId": "100020", //The user-friendly identifier for the grant intent
+      "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
+      "amount": 2000, //The grant amount expressed in units of cents; USD only
+      "metadata": {} // The same metadata object that was passed in the onDonationRequest callback referenced above
+    }
+  }
+```
+
+```json onExitMetadata
+  {
+    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.
+    "nodeId": "consent-node-id", // The id representing the pane where the user exited the Connect flow.
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", // The id of the donor advised fund that the user selected.
+    "reason": "USER_EXIT", // An enum giving a reason to why the modal exited.
+    "description": "User exited the flow" // A human readable string containing a brief sentence explaining the exit reason.
+  }
+```
+</CodeBlocks>
+
+## Exit Reasons
+
+| Exit Reason                | Description                                                                                                                                                                                                                   |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `USER_EXIT`                | User exited the flow.                                                                                                                                                                                                         |
+| `UNINTEGRATED_DAF`         | DAF is not integrated with Chariot.                                                                                                                                                                                           |
+| `UNINTEGRATED_GRANT_CONFIRMED` | Unintegrated grant confirmed with Chariot.                                                                                                                                                                                  |
+| `CID_NOT_FOUND`            | Connect Identifier is not found.                                                                                                                                                                                              |
+| `INELIGIBLE_ORGANIZATION`   | This Organization is not eligible to receive DAF donations.                                                                                                                                                                   |
+| `CREDENTIALS_ERROR`        | Invalid credentials.                                                                                                                                                                                                          |
+| `INVALID_CARD`             | Invalid card number.                                                                                                                                                                                                          |
+| `TFA_ERROR`                | Two-factor authentication error.                                                                                                                                                                                              |
+| `ZERO_AMOUNT`              | Grant amount is zero.                                                                                                                                                                                                         |
+| `SERVICE_DEACTIVATED`      | Nonprofit's Connect is deactivated (active = false).                                                                                                                                                                          |
+| `ACCESS_RESTRICTED`        | User's DAF sponsor account electronic access is restricted.                                                                                                                                                                    |
+| `EIN_NOT_FOUND`            | DAF sponsor does not support grants to the nonprofit.                                                                                                                                                                          |
+| `CONNECTION_FAILED`        | Connection to the DAF sponsor failed.                                                                                                                                                                                          |
+| `SESSION_NOT_FOUND`        | User session is not found and may have expired.                                                                                                                                                                                |
+| `CUSTOM_ERROR`             | Custom error.                                                                                                                                                                                                                 |
+| `INTERNAL_ERROR`           | Internal error.                                                                                                                                                                                                               |
+| `INSTITUTION_DOWN_ERROR`   | DAF sponsor institution is down; user should try again later.                                                                                                                                                                  |
+| `NO_CHARITABLE_ACCOUNTS`   | Donor has no charitable accounts in the logged in account.                                                                                                                                                                      |
+| `INVALID_PRESELECTED_DAF`  | Preselected DAF is invalid.                                                                                                                                                                                                   |
+| `INACTIVE_CARD`            | Inactive card.                                                                                                                                                                                                                |
+| `RECURRING_NOT_SUPPORTED`  | Recurring grants are not supported by this DAF
+| `UNINTEGRATED_DAF_NOT_SUPPORTED` | Unintegrated DAF is not supported by DAFpay
+
+Not every exit is a failure. What you do depends on the reason.
+
+| Reason | What happened | What to do |
+|---|---|---|
+| `USER_EXIT` | The donor closed the window | Return them to your form |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor recorded an intent for a provider we can't submit to | Show them how to finish, and record the intent rather than a gift |
+| `SESSION_NOT_FOUND` | The session expired | Have them start again |
+| `INSTITUTION_DOWN_ERROR`, `CONNECTION_FAILED` | The provider is unreachable | Ask them to try again later |
+| `CREDENTIALS_ERROR`, `TFA_ERROR`, `INVALID_CARD`, `INACTIVE_CARD` | The donor couldn't authenticate at their provider | Let them retry or pick another provider |
+| `EIN_NOT_FOUND`, `INELIGIBLE_ORGANIZATION`, `NO_CHARITABLE_ACCOUNTS`, `RECURRING_NOT_SUPPORTED`, `UNINTEGRATED_DAF_NOT_SUPPORTED` | This gift can't be made this way | Offer another payment method |
+| `CID_NOT_FOUND`, `SERVICE_DEACTIVATED` | Your configuration is wrong | Check the CID you initialized with |
+| `ZERO_AMOUNT`, `INVALID_PRESELECTED_DAF`, `CUSTOM_ERROR`, `INTERNAL_ERROR` | Something in the request or on our side | Log it and contact support if it repeats |
+
+## When the amount changes mid-session
+
+The amount you passed in can change inside the window. If the donor asks for more than their fund holds, Connect suggests their available balance instead, and if their provider has a minimum, Connect suggests that.
+
+Always send the amount from `CHARIOT_SUCCESS` to Create Grant, never the one from your form.
+
+<img src='../../images/15e7e65-Error-handling-picture.png' />
+
+## Between the window closing and your confirmation page
+
+There's a gap while your backend calls Create Grant. Show a loading screen from `CHARIOT_SUCCESS` until that call returns, and tell the donor not to navigate away. Without one, donors refresh the page, and that goes badly.
+
+<Frame caption="Loading screen example">
+    <img src='../../images/dafpay_form_click.png' />
+    <img src='../../images/dafpay_loading_screen.png' />
+</Frame>
+
+Two things come up on almost every review of the confirmation page.
+
+**Don't say the gift is being processed.** DAFpay submits a grant request. The DAF provider decides on it and sends the money, usually one to two weeks later.
+
+**Don't promise a tax receipt.** The donor took their deduction when they funded their DAF, so no receipt is coming for this gift.
+
+If you accept unintegrated grants, that page has more to carry. See [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+
+Next: [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant).

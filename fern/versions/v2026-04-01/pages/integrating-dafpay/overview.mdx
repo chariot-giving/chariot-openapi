@@ -1,27 +1,73 @@
 ---
 title: "Overview"
-subtitle: "DAFpay is a payment option that enables donors to initiate donations using their Donor-Advised Fund (DAF) accounts."
+subtitle: "DAFpay lets donors give from their Donor-Advised Fund without leaving your donation form"
 hidden: false
 ---
+
 <img src='../../images/a080c51-api_doc_image.png' />
+
+This guide is for fundraising platforms adding DAFpay on behalf of the nonprofits they serve. If you are a nonprofit putting DAFpay on your own form, start with [For Nonprofits](/guides/nonprofits).
+
+You integrate once and enable DAFpay for many nonprofits. Each one gets its own connect and its own Connect ID, and your platform is what decides which connect a given donation form initializes.
+
+```
+        your platform
+              │
+    ┌─────────┼─────────┐
+    ▼         ▼         ▼
+Nonprofit A  B         C
+ connect   connect   connect
+    └─────────┼─────────┘
+              ▼
+           DAFpay
+              ▼
+        Grant → Donation
+```
+
+Getting that mapping wrong is the one mistake that misroutes money, so store the Connect ID against the nonprofit it belongs to and never fall back to a single platform-wide CID.
 
 ## How it works
 
+DAFpay handles the whole grant submission: credential verification, multi-factor authentication, error management and fee collection, for every DAF provider we support.
 
-DAFpay manages the entire grant submission process, including credential verification, multi-factor authentication, error management, and fee collection, for each Donor Advised Fund supported.
+<Steps>
 
-The initial step involves **searching** Chariot's database for an organization and **creating** a Connect.
-Once created, you will receive a Connect ID (CID) that can be used to **initialize** Chariot Connect, the web component that renders the DAFpay button.
-Lastly, **query** Chariot's APIs to gather all the data generated through Connect. 
+### Create a connect
+
+Search Chariot's database for the nonprofit and create a connect. You get a Connect ID (CID) back, one per nonprofit.
+
+### Initialize Chariot Connect
+
+Use the CID to render the DAFpay button on the donation form.
+
+### Capture the grant
+
+Your backend turns the donor's authorized intent into a grant, and you query Chariot's APIs for everything Connect produced.
+
+</Steps>
 
 <Frame>
     <img src='../../images/DAFpay_API_Docs_Image.png' />
 </Frame>
 
+## What each stage means
+
+```
+DAFpay session → grant intent → Grant → Donation → Deposit
+```
+
+The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the funds arrive in.
+
+A successful DAFpay session means the donor authorized an intent. It doesn't mean a grant exists, and a donation that exists doesn't mean the funds have arrived. These are four separate stages.
+
+## Where to start
+
+Work through the [Integration Checklist](/guides/dafpay/integrating-dafpay/checklist). Everything is built in [sandbox](/guides/dafpay/sandbox) first, and [production keys](/guides/dafpay/integrating-dafpay/prod-keys) come at the end.
+
 ## Try it out
 
-Try out the [DAFpay Demo](https://secure.dafpay.com/demo) for yourself and see what it might look like on your website after you've completed the integration.
+Try the [DAFpay Demo](https://secure.dafpay.com/demo) and see what it looks like on a live form before you build anything.
 
 ## Are you a DAF provider?
 
-If you are a Donor Advised Fund provider integrating with DAFpay (rather than a nonprofit accepting DAFpay donations), see the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for the API surface and operational flows tailored to DAFs — including manual approval, token verification, and pre-established access flows.
+If you are a Donor Advised Fund provider integrating with DAFpay (rather than a nonprofit accepting DAFpay donations), see the [Donor Accounts overview](/guides/donor-accounts/overview) for the API surface and operational flows tailored to DAFs — including manual approval, token verification, and pre-established access flows.

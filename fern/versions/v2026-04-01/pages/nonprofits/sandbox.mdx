@@ -1,0 +1,83 @@
+---
+title: "Sandbox Testing"
+subtitle: "What you can test"
+hidden: false
+---
+
+Sandbox is isolated from production, with its own data, API key, and dashboard. No real money moves.
+
+<Warning title="Sandbox cannot settle a gift">
+You can test the whole checkout and everything the API returns, but a sandbox donation never settles into a deposit. Confirm the settlement and reconciliation path in production with one small live gift, which we'll run with you.
+</Warning>
+
+You don't have to wait for verification to finish. As soon as you have a dashboard account you can create a sandbox and build against it, while nonprofit status and control person are still being verified.
+
+## Setting up
+
+<Steps>
+
+### Create your sandbox
+
+Create it from your production dashboard. The sandbox uses a separate tenant from production.
+
+### Add your team
+
+Developers and QA each need an account, created by an admin on your organization.
+
+### Generate a sandbox API key
+
+Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, and production keys only against `https://api.givechariot.com`.
+
+Keep one key per environment. Event subscriptions belong to the key that created them, so with several keys you can end up watching one subscription while events are delivered against another, which makes events appear to be missing.
+
+### Request a connect, if you run your own donation form
+
+Chariot creates connects. [Request yours](/guides/nonprofits/initiate/connect-config) and we set up sandbox and production together. Sandbox connect IDs are prefixed `test_`.
+
+Skip this if your gifts arrive through a fundraising platform, the DAFpay component, or a linked payment source.
+
+</Steps>
+
+Any real EIN resolves in [Search Organization](/api/organizations/search). American Red Cross is `53-0196605`.
+
+## What works
+
+| Flow | Notes |
+| --- | --- |
+| Search organization, create connect | |
+| Render the DAFpay button and run a session | Compare against the [demo page](https://secure.dafpay.com/demo) |
+| DAF prefill and `onDonationRequest` | Confirm you send no empty strings |
+| Initiate a gift with Create Grant | Custom donation forms only |
+| Recurring grant intents | Select the monthly option |
+| Unconnected DAF provider flow | Select The Boston Foundation to trigger it |
+| List and get grants, donations, deposits | |
+| Event subscriptions and `donation.created` | Confirm your endpoint and signature verification |
+| Create and assign properties | Your write-back path |
+| Simulated deposits with manual donation entry | From the sandbox dashboard |
+
+### Creating test donations
+
+There's no simulation endpoint for donations or deposits. You can create test data two ways:
+
+- Run a DAFpay checkout in sandbox. A completed session creates a grant, and a donation follows.
+- Create a simulated deposit from the sandbox dashboard and add donations by manual entry. This is how you get arbitrary donation shapes for testing your CRM mapping.
+
+Both are for sandbox only. In production, donations arrive through linked payment sources.
+
+## Current limitations
+
+**You can't settle a donation.** Sandbox donations stay at incoming. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop can't be exercised here. Test that handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
+
+**You can't cancel a donation,** in either environment. Contact us and we'll do it.
+
+**There are no donation or deposit simulation endpoints.** `/v1/simulations/donations` and `/v1/simulations/deposits` don't exist; the ones that do are for Disbursements. See [Sandbox Simulations](/api/sandbox-simulations).
+
+**Webhooks aren't retried here.** Production retries a non-2xx up to 10 times with backoff; sandbox not at all, so a handler that's briefly down misses the event. See [Troubleshooting](/guides/nonprofits/troubleshooting).
+
+## Next
+
+Build the flow you need: [Initiate Gifts](/guides/nonprofits/initiate) for your own donation form, [Retrieve Donations](/guides/nonprofits/donations) for everything else. If you hit a problem, see [Troubleshooting](/guides/nonprofits/troubleshooting).
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

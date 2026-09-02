@@ -1,0 +1,94 @@
+---
+title: "Create the Grant"
+subtitle: "Capturing a grant intent"
+hidden: false
+---
+
+A completed Connect session gives you a grant intent, and your backend is what turns that intent into a grant.
+
+<Error title="CHARIOT_SUCCESS does not create a grant">
+The window authorizes an intent and stops there. Until your backend calls [Create Grant](/api/grants/create), the grant does not exist and [List Grants](/api/grants/list) returns nothing, even though the browser flow looked completely successful.
+</Error>
+
+<Note title="Use your API connect's CID">
+The no-code DAFpay component has no backend, so it submits the grant from the modal itself. It uses a different connect from the one you integrate against. If you initialize with a component CID, the modal submits the grant and your backend submits it too, which is how one checkout ends up producing two grants. Ask [support@givechariot.com](mailto:support@givechariot.com) if you're not sure which CID you hold.
+</Note>
+
+<Warning title="Create Grant runs on your server">
+Your Chariot API key is a server-side credential. The browser sends you the `workflowSessionId` and the authorized amount; your backend looks up which nonprofit and which of your transactions that session belongs to, then calls Create Grant.
+
+Don't take the nonprofit's identity from browser state. The session already belongs to the connect you initialized, so a mismatch between that and your own record means you've mixed up tenants, and it's cheaper to catch it here than in reconciliation.
+</Warning>
+
+Create Grant submits the grant to the donor's provider and creates the donation record behind it. A failed capture leaves neither, just an authorized workflow session that was never used.
+
+## What Create Grant takes
+
+`workflowSessionId` and `amount` are required. `applicationFeeAmount`, `donor`, `note` and `designation` are optional.
+
+Send the amount from `CHARIOT_SUCCESS` rather than the one from your form. DAF grants have to be whole dollars, so the value in cents must be divisible by 100: $150 is `15000`.
+
+<Warning title="Fees are capped at 5% together">
+`applicationFeeAmount` is the fee your platform takes on top of Chariot's, in cents. Chariot collects it from the nonprofit and passes it to you, and only when the grant is actually received.
+
+Chariot's fee plus your `applicationFeeAmount` cannot exceed 5% of the grant amount. Over that, Create Grant returns `400 Bad Request`.
+</Warning>
+
+A donor covering fees means a larger `amount`, not a separate field. Raising the amount also raises the fee, so calculate it, then round to a whole dollar. The formula is in the [FAQ](/guides/dafpay/faq).
+
+## The sequence
+
+Most workflows proceed as follows:
+
+1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
+   - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
+2. Submit your own donation form before converting the grant intent into a grant.
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) to create the grant (i.e., capture the grant intent).
+
+<Error title="Submit your own form first">
+Persist the gift on your side before you call Create Grant, so a failed submission can't leave your records out of step with Chariot's.
+
+Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first capture returns `201 Created`, and the same session again returns `200 OK` with the grant that already exists. `409 Conflict` means a capture for that session is still in flight. Wait for it to finish, then read the grant instead of submitting again.
+
+What you can't recover from is the clock. An intent expires 15 minutes after authorization and then returns `410 Gone`, so nothing slow belongs between `CHARIOT_SUCCESS` and this call.
+</Error>
+
+<CodeBlocks>
+```javascript JavaScript
+// get the element from the DOM
+const chariot = document.getElementById('chariot');
+
+chariot.addEventListener('CHARIOT_SUCCESS', ({ detail }) => {
+    // Record the grant intent information so that you can
+    // capture the transaction once your form is submitted.
+});
+```
+```javascript React
+import React, { useState } from 'react';
+import ChariotConnect from 'react-chariot-connect';
+
+const App = () => {
+  const onSuccess = (r) => {
+		// Record the grant intent information so that you can
+    // complete the transaction once your form is submitted.
+  };
+  const onExit = (e) => console.log('exit', e);
+  const onDonationRequest = () => {
+    // your logic
+  }
+
+  return (
+    <div>
+        <ChariotConnect
+          cid="GENERATED_CONNECT_IDENTIFIER"
+          onDonationRequest={onDonationRequest}
+          onSuccess={onSuccess}
+          onExit={onExit}
+        />
+    </div>
+  );
+};
+```
+</CodeBlocks>
+
+Next: [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring).
