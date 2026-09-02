@@ -47,6 +47,9 @@ navigation:
               - page: Configure and Request Your Connect
                 slug: connect-config
                 path: ./pages/nonprofits/connect-config.mdx
+              - page: Installing the Button
+                slug: install
+                path: ./pages/nonprofits/install.mdx
           - page: Sandbox Testing
             slug: sandbox
             path: ./pages/nonprofits/sandbox.mdx
