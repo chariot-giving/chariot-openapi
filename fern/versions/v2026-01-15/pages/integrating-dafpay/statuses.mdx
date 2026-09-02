@@ -1,0 +1,25 @@
+---
+title: "Grant Statuses"
+subtitle: "What a grant's status means, and cancellations"
+hidden: false
+---
+
+All DAFpay grants from integrated providers will be marked with the `Initiated` status,
+indicating that a grant was successfully submitted (but the DAF provider is still processing the gift).
+
+Once a nonprofit receives the funds from the DAF provider and identifies the specific grant line item using the trackingId/externalId, they can manually update the status  to `Received` on the Chariot dashboard.
+
+Please subscribe to the `grant.updated` [Webhook Event](https://docs.givechariot.com/api/webhooks) to receive notifications when a grant status is updated on the Chariot dashboard so you can display the updated status on the fundraising platform dashboard.
+
+
+## Cancellations & Refunds
+
+Donors may have the option to cancel their grants from their Donor Advised Fund portal before disbursement, subject to the specific policies of their DAF provider.
+As funds in DAFs are no longer under the donor's direct ownership, the concept of refunds after the money leaves the DAF, does not apply.
+
+Donations made via DAFpay are typically **final and irrevocable** gifts (depending on the specific policies of the DAF provider).
+
+<Info title="Cancellation Procedures">
+    Cancelled grants will be marked as `Cancelled` in your platform’s dashboard and will not incur any processing fees.
+    If you believe a grant should be cancelled, please contact the donor first to confirm the cancellation and then send a request to the Chariot support team.
+</Info>

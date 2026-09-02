@@ -1,0 +1,47 @@
+---
+title: "Recurring Grants"
+subtitle: "Monthly gifts from a DAF"
+hidden: false
+---
+
+Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund.
+
+<Tip title="Managing Recurrence Schedule">
+When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, we only record the initial grant with a monthly frequency and do not create a new grant each month in our system.
+</Tip>
+
+When a user completes a Chariot Connect session for a recurring donation, instead of receiving a `grantIntent` as part of the `CHARIOT_SUCCESS` event, you will receive a `recurringGrantIntent`.
+
+<CodeBlocks>
+```json onSuccessMetadata
+  {
+    "workflowSessionId":"79e772be-547d-4c9c-8b76-4ac4ed4c441a", //Id of the Connect session
+    "recurringGrantIntent": {
+      "userFriendlyId": "100020", //The user-friendly identifier for the grant intent
+      "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
+      "amount": 2000, //The grant amount expressed in units of cents; USD only
+      "frequency": "MONTHLY", // The frequency of the recurring schedule for the donation
+      "metadata": {} // The same metadata object that was passed in the onDonationRequest callback referenced above
+    }
+  }
+```
+
+```json onExitMetadata
+  {
+    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.
+    "nodeId": "consent-node-id", // The id representing the pane where the user exited the Connect flow.
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", // The id of the donor advised fund that the user selected.
+    "reason": "USER_EXIT", // An enum giving a reason to why the modal exited.
+    "description": "User exited the flow" // A human readable string containing a brief sentence explaining the exit reason.
+  }
+```
+
+</CodeBlocks>
+
+After you submit your own donation form, don't forget to call the [Create Recurring Grant](/api/recurring-grants/create) API to complete the transaction.
+
+<Note title="Create Recurring Grant API">
+If your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
+</Note>
+
+Next: [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).

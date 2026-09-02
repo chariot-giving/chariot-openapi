@@ -1,0 +1,76 @@
+---
+title: "Create the Grant"
+subtitle: "Capturing a grant intent"
+hidden: false
+---
+
+When a user completes a Chariot Connect session you will receive a grant intent.
+
+<Warning title="Create Grant Route">
+After you submit your own donation form, do not forget to call the [Create Grant](/api/grants/create) API to initiate the grant.
+</Warning>
+
+<Error title="CHARIOT_SUCCESS does not create a grant">
+API connects **authorize** a grant intent and stop. Receiving `CHARIOT_SUCCESS` with a valid `trackingId` does not mean a grant was created. The grant does not exist until your backend calls Create Grant.
+
+If you never call it, the browser flow looks entirely successful and [List Grants](/api/grants/list) returns nothing.
+</Error>
+
+<Note title="Component connects work differently">
+The no-code DAFpay component submits the grant from the modal itself, since there is no backend to do it. That is a different connect from the one you integrate against.
+
+Use your API connect's CID. Initializing with a component connect's CID means the modal submits the grant *and* your backend submits it, which is why a single checkout can yield two grants. Contact [support@givechariot.com](mailto:support@givechariot.com) if you are unsure which CID you hold.
+</Note>
+
+## The sequence
+
+Most workflows proceed as follows:
+
+1. Listen for the `CHARIOT_SUCCESS` event to receive the grant intent after a Chariot Connect session.
+   - If you would like to collect any additional information from the user (i.e., Fee Coverage Prefences) you can do so at this step. However, if the Chariot Connect session is the last step in your donation form this is not necessary.
+2. Submit your own donation form before converting the grant intent into a grant.
+3. Have your backend call Chariot's [Create Grant](/api/grants/create) to create the grant (i.e., capture the grant intent).
+
+<Error>
+  Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
+</Error>
+
+<CodeBlocks>
+```javascript JavaScript
+// get the element from the DOM
+const chariot = document.getElementById('chariot');
+
+chariot.addEventListener('CHARIOT_SUCCESS', ({ detail }) => {
+    // Record the grant intent information so that you can
+    // capture the transaction once your form is submitted.
+});
+```
+```javascript React
+import React, { useState } from 'react';
+import ChariotConnect from 'react-chariot-connect';
+
+const App = () => {
+  const onSuccess = (r) => {
+		// Record the grant intent information so that you can
+    // complete the transaction once your form is submitted.
+  };
+  const onExit = (e) => console.log('exit', e);
+  const onDonationRequest = () => {
+    // your logic
+  }
+
+  return (
+    <div>
+        <ChariotConnect
+          cid="GENERATED_CONNECT_IDENTIFIER"
+          onDonationRequest={onDonationRequest}
+          onSuccess={onSuccess}
+          onExit={onExit}
+        />
+    </div>
+  );
+};
+```
+</CodeBlocks>
+
+Next: [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring).

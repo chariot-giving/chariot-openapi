@@ -82,27 +82,51 @@ navigation:
           - page: Overview
             slug: overview
             path: ./pages/integrating-dafpay/overview.mdx
+          - page: Sandbox Testing
+            slug: sandbox
+            path: ./pages/integrating-dafpay/sandbox.mdx
           - section: Integrating DAFpay
             slug: integrating-dafpay
             contents:
-              - page: Checklist
+              - page: Integration Checklist
                 slug: checklist
                 path: ./pages/integrating-dafpay/checklist.mdx
-              - page: Set Up
-                slug: set-up
-                path: ./pages/integrating-dafpay/set-up.mdx
-              - page: Installing Connect
+              - page: Create Connects
+                slug: connects
+                path: ./pages/integrating-dafpay/connects.mdx
+              - page: Install the Button
                 slug: installation
                 path: ./pages/integrating-dafpay/installation.mdx
-              - page: Integrating Connect
-                slug: integration
-                path: ./pages/integrating-dafpay/integration.mdx
-              - page: Transaction Management
-                slug: transactions
-                path: ./pages/integrating-dafpay/transactions.mdx
+              - page: Content Security Policy
+                slug: csp
+                path: ./pages/integrating-dafpay/csp.mdx
+              - page: Send Donor Data
+                slug: donor-data
+                path: ./pages/integrating-dafpay/donor-data.mdx
+              - page: Handle the Result
+                slug: events
+                path: ./pages/integrating-dafpay/events.mdx
+              - page: Create the Grant
+                slug: create-grant
+                path: ./pages/integrating-dafpay/create-grant.mdx
+              - page: Recurring Grants
+                slug: recurring
+                path: ./pages/integrating-dafpay/recurring.mdx
+              - page: Unconnected DAF Providers
+                slug: unintegrated
+                path: ./pages/integrating-dafpay/unintegrated.mdx
               - page: Production API Keys
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
+          - section: After the Gift
+            slug: gifts
+            contents:
+              - page: Reconciliation
+                slug: reconciliation
+                path: ./pages/integrating-dafpay/reconciliation.mdx
+              - page: Grant Statuses
+                slug: statuses
+                path: ./pages/integrating-dafpay/statuses.mdx
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx

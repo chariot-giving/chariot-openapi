@@ -1,9 +1,9 @@
 ---
-title: Transaction Management
+title: "Reconciliation"
+subtitle: "Matching an inbound gift to the grant that started it"
 hidden: false
 ---
 
-## Reconciliation & Grant Identifiers
 Organizations will receive DAFpay gifts directly from each DAF provider — either via electronic transfer or mailed check.
 
 Because **DAFpay does not handle the funds directly**, when grants are sent from the DAF provider to the nonprofit, they will include a tracking ID and external ID as well as a "Gift via DAFpay" callout in the memo section, which can be used to easily identify and match the grant to the corresponding record in your platform's transactions table.
@@ -34,24 +34,4 @@ you can use the `fundId` from the Grant object to call the [Get DAF](/api/donor-
 Some DAF providers do not send DAFpay Tracking IDs. If the Tracking ID and DAFpay note are not available, first check for an External Grant ID. If you cannot find one, use the donor’s fund name, gift amount, and other grant details to match the inbound gift to the correct DAFpay donation line item.
 </Warning>
 
-## Grant Statuses
-
-All DAFpay grants from integrated providers will be marked with the `Initiated` status,
-indicating that a grant was successfully submitted (but the DAF provider is still processing the gift).
-
-Once a nonprofit receives the funds from the DAF provider and identifies the specific grant line item using the trackingId/externalId, they can manually update the status  to `Received` on the Chariot dashboard.
-
-Please subscribe to the `grant.updated` [Webhook Event](https://docs.givechariot.com/api/webhooks) to receive notifications when a grant status is updated on the Chariot dashboard so you can display the updated status on the fundraising platform dashboard.
-
-
-## Cancellations & Refunds
-
-Donors may have the option to cancel their grants from their Donor Advised Fund portal before disbursement, subject to the specific policies of their DAF provider.
-As funds in DAFs are no longer under the donor's direct ownership, the concept of refunds after the money leaves the DAF, does not apply.
-
-Donations made via DAFpay are typically **final and irrevocable** gifts (depending on the specific policies of the DAF provider).
-
-<Info title="Cancellation Procedures">
-    Cancelled grants will be marked as `Cancelled` in your platform’s dashboard and will not incur any processing fees.
-    If you believe a grant should be cancelled, please contact the donor first to confirm the cancellation and then send a request to the Chariot support team.
-</Info>
+Next: [Grant Statuses](/guides/dafpay/gifts/statuses).

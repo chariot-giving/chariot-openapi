@@ -1,0 +1,163 @@
+---
+title: "Send Donor Data"
+subtitle: "Express Checkout, onDonationRequest, and what not to pass"
+hidden: false
+---
+
+DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest.
+
+## Express Checkout: let DAFpay fill the fields
+Chariot offers "Express Checkout" where the Chariot Connect modal pulls the donor's name, email, phone and address information from their account with the DAF provider. This allows for "one-click" checkout experiences and removes the need for a donor to fill out a lengthy form before making a DAF donation. The user always has the ability to review their information and make changes before submission.
+
+
+<Warning title="Placement Requirement">
+DAFpay's Express Checkout feature only works when the button is placed at the top of a donation form (before the donor’s contact details are collected).
+</Warning>
+
+<Error title="Empty strings count as 'provided'">
+Chariot populates any field you pass in the `onDonationRequest`, **including empty strings**. Sending `email: ""` or `firstName: ""` tells Chariot the donor's email and first name are blank, and the donor will be asked to enter their contact details by hand instead of having them prefilled.
+
+To get DAF prefill, **omit `firstName`, `lastName`, `email`, `phone`, and `address` entirely**. Do not send them set to `""`.
+</Error>
+
+<Tip title="Automatically Active">
+No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider.
+
+To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
+</Tip>
+
+<Note title="Donation Amount">
+If your platform opts for Express Checkout, you will still need to utilize the onDonationRequest to pass in the amount from your donation form to the DAFpay modal. See below for a list of potential onDonationRequest parameters that can be utilized (even when Express Checkout is active).
+</Note>
+
+## Pre-populated data: pass what your form collected
+You can pass form information to Chariot before launching a Connect session.
+To provide this information, leverage the `onDonationRequest` function from the Chariot element.
+
+<Info title="Leveraging The onDonationRequest">
+If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
+</Info>
+
+<CodeBlocks>
+```javascript JavaScript
+// get the element from the DOM
+const chariot = document.getElementById("chariot")
+
+// provide a callback that returns the donation data
+chariot.onDonationRequest(async () => {
+  return {
+    amount: 25000, //this is $250.00 USD
+    firstName: "Michael",
+    lastName: "Scott",
+    email: "michaelScott@theoffice.com",
+    address: {
+      line1: "123 Main St",
+      line2: "Suite 4",
+      city: "New York",
+      state: "NY",
+      postalCode: "12345"
+    },
+    designation: "My Special Designation",
+    metadata: {
+      fundraiserTag: "marathon"
+    },
+  }
+})
+```
+```javascript React
+import React, { useState } from 'react';
+import ChariotConnect from 'react-chariot-connect';
+
+const App = () => {
+    const onDonationRequest = () => {
+        return {
+            amount: 25000, //this is $250.00 USD
+            firstName: "Michael",
+            lastName: "Scott",
+            email: "michaelScott@theoffice.com",
+            metadata: {
+                fundraiserTag: "marathon"
+            },
+        }
+    }
+
+    return (
+        <div>
+            <ChariotConnect
+                cid="GENERATED_CONNECT_IDENTIFIER"
+                onDonationRequest={onDonationRequest}
+            />
+        </div>
+    );
+};
+```
+</CodeBlocks>
+
+The given donation data must match the following schema to be accepted by Chariot:
+
+| Parameter   | Description                                                                                                                                                                                                                                           | Type              |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| amount      | The donation amount in cents. e.g., for a $20 donation, enter 2000.  <br /><br />If this value is not passed in, Chariot will use the user's account balance to recommend a donation amount. This can lead to significantly larger donation amounts.  | number (optional) |
+| firstName   | The donor's first name. Maximum length: 255 characters.                                                                                                                                                                                               | string (optional) |
+| lastName    | The donor's last name. Maximum length: 255 characters.                                                                                                                                                                                                | string (optional) |
+| email       | The donor's email address. Must be in email format. Maximum length: 255 characters.                                                                                                                                                                   | string (optional) |
+| phone       | The donor's phone number. Please provide the phone number with the country code and without special characters. Maximum length: 255 characters.                                                                                                       | string (optional) |
+| note        | A note the donor wants to send to the nonprofit. Maximum length: 400 characters.                                                                                                                                                                      | string (optional) |
+| anonymous   | Indicates if this donation should be sent anonymously (default: false)                                                                                                                                                                                | boolean (optional)|
+| designation | The designation to include on the grant. If this is left blank, "Where needed most" will be used. Note that including a custom designation may cause the grant approval process to take longer. Designations over 100 characters will be truncated. Maximum length: 255 characters. | string (optional) |
+| address     | The donor's address: line1, line2, city, state, postalCode. Maximum length: 255 characters.                                                                                                                                                           | object (optional) |
+| metadata    | An object with a set of name-value pairs. You can use this object to include any miscellaneous information you want to tie to the workflow session.                                                                                                   | object (optional) |
+| fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
+| frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring) | string (optional) |
+
+<Warning title="Data Validation">
+To prevent request failures, any inputs exceeding the maximum allowed length will be automatically truncated.
+</Warning>
+
+<Note title="Popular Parameters">
+- Metadata: Allows you to associate the payment or session with any data in your system (i.e., Form ID, Campaign Name).
+- Anonymous: Indicate if a donor has chosen to give anonymously on your donation form so the donation can be properly anonymized by the DAF provider.
+</Note>
+
+## Preventing Blocked Popups
+Certain mobile browsers impose restrictions on popups if they are considered “decoupled” from the original user action. This often occurs when long-running asynchronous operations are introduced between the user’s action (e.g., a button click) and the popup launch.
+
+To ensure a seamless integration with DAFpay, platforms must be mindful of potential pitfalls when handling donation requests.
+
+<Tip title="General Best Practices">
+- Keep the interval between user action and popup launch under 1000ms.
+- Minimize blocking API calls before launching the popup.
+- Avoid long-running async operations in the donation request flow.
+- Where possible, prefetch necessary data before the user clicks the donation button.
+</Tip>
+
+**Common scenarios where popup blocking occurs**
+<Accordion title="Custom button with Shadow DOM and delayed API calls">
+  If your platform has implemented a custom donation button using a Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
+
+  When a user clicks the platform’s custom button and the platform makes an API call to its own servers before triggering the DAFpay popup, if the delay exceeds 1000ms, the browser may block the popup.
+
+  To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
+</Accordion>
+<Accordion title="Async operations in onDonationRequest callback">
+  Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup.
+
+  However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
+  - fetching user donation history
+  - verifying donor eligibility via API calls
+  - retrieving pre-filled form data
+
+  Since onDonationRequest allows for async operations, any delay beyond 1000ms increases the risk of the popup being blocked.
+
+  To prevent the popup from being blocked, minimize async logic inside onDonationRequest.	If additional data fetching is required, perform it before triggering the donation request or use background loading strategies.
+</Accordion>
+
+Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
+
+## Disabling Connect
+
+To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
+
+<img src='../../images/on-donation-false.png' />
+
+Next: [Handle the Result](/guides/dafpay/integrating-dafpay/events).

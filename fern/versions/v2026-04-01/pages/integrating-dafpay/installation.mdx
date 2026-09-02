@@ -1,9 +1,10 @@
 ---
-title: Installing Connect
+title: "Install the Button"
+subtitle: "Adding Chariot Connect to your donation form"
 hidden: false
 ---
 
-## Install JavaScript Package
+## Install the JavaScript package
 
 Chariot Connect (DAFpay button) comes as a small JavaScript package.
 It can be loaded directly from the Chariot CDN or installed via [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn.
@@ -21,7 +22,7 @@ yarn add react-chariot-connect
 ```
 </CodeBlocks>
 
-## Add Chariot Connect
+## Add the component
 
 Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DAFpay) button with a single line.
 Add Chariot-Connect component where you want the DAFpay button to appear and make sure to add the Connect ID (CID). 
@@ -62,7 +63,7 @@ A nonprofit's `cid` (Connect ID) should be retrieved from your database after th
   ```
 </Tip>
 
-## Button Placement
+## Where to put the button
 
 Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e., credit card, bank transfer, and Apple Pay)
 
@@ -70,7 +71,7 @@ Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e.,
     <img src='../../images/button-placement.png' />
 </Frame>
 
-## Button Themes (Optional)
+## Themes
 
 Choose your theme by adding the theme name as a parameter to the `chariot-connect` component, as below.
 
@@ -159,3 +160,4 @@ chariot.registerTheme("myTheme", alterations);
 | `height`           | The height of the button                                                                 | [height](https://tailwindcss.com/docs/height) at least `9` or `36px` up to `12` or `48px` |
 | `showExtendedText` | Show an extended text (`Give with Donor Advised Fund`) version of the DAFpay button text | `true` or `false` (this value is `false` by default)                                      |
 
+Next: [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
