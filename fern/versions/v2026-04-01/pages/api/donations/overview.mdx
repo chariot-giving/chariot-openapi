@@ -1,0 +1,19 @@
+---
+title: "Donations"
+subtitle: "Individual gifts of money to a nonprofit organization."
+---
+
+A **Donation** represents a single gift from a donor to a nonprofit. Every donation Chariot knows about — whether it flowed through DAFpay, arrived via a connected charitable-giving platform, was captured through mail or the Chariot Data Sync, or was recorded manually — becomes a Donation resource.
+
+Each Donation carries:
+
+- **Amounts.** Gross, net, fee, and the individual gift portion when a donation is part of a larger disbursement.
+- **Attribution.** The primary donor and (optionally) a joint donor.
+- **Initiation.** Where and how the donor initiated the gift — a platform name, the platform's own identifier, the URL the donor gave from, and any metadata the platform passed along.
+- **Settlement.** How the funds are settling to the nonprofit through Chariot.
+- **Payment status.** The current state of the donation in its lifecycle, from incoming to received.
+- **Reconciliation handles.** An `external_id` you can set to link the donation back to your own systems, and a `metadata` map for anything else.
+
+Donations belong to a `payment_source` when one applies, and roll up into a `deposit` once the funds settle to the nonprofit.
+
+See [The Donation object](object) for the full schema.
