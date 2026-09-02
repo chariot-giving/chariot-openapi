@@ -48,7 +48,7 @@ const App = () => {
 ```
 </CodeBlocks>
 
-Chariot gives you the CID when we create your connect, and it doesn't change, so store it rather than fetching it. Sandbox and production have separate CIDs, and sandbox ones are prefixed `test_`.
+We give you the CID when we create your connect and it doesn't change, so store it. Sandbox and production have separate CIDs; sandbox ones are prefixed `test_`.
 
 <Tip title="Sandbox credentials">
 Use these to log in to any DAF provider in sandbox.
@@ -61,9 +61,9 @@ password: password123
 
 ## Where to put the button
 
-List DAFpay directly alongside your primary payment methods, next to credit card, bank transfer and Apple Pay.
+List DAFpay alongside your primary payment methods — credit card, bank transfer, Apple Pay — at the top of the form: after currency and one-time versus monthly, above the gift amount.
 
-Put it at the top of the form: after currency and one-time versus monthly, and above the gift amount. Prefill only works when the button comes before your contact fields, and when you pass no `amount`, DAFpay recommends one from the donor's fund balance, which drives larger gifts.
+Prefill only works when the button comes before your contact fields. And with no `amount` passed, DAFpay recommends one from the donor's fund balance, which drives larger gifts.
 
 <Frame caption="Placement is key!">
     <img src='../../images/button-placement.png' />
@@ -138,6 +138,6 @@ chariot.registerTheme("myTheme", alterations);
 | `height`           | The height of the button                                    | [height](https://tailwindcss.com/docs/height) at least `9` or `36px` up to `12` or `48px` |
 | `showExtendedText` | Show the longer button text, `Give with Donor Advised Fund` | `true` or `false` (`false` by default)                                                    |
 
-The rest of the button's styling is fixed. Allowing more would mean shipping all of Tailwind in the bundle, at a load-time cost to every donor.
+The rest of the styling is fixed; allowing more would mean shipping all of Tailwind, at a load-time cost to every donor.
 
 Next: [Send Donor Data](/guides/nonprofits/initiate/donor-data).

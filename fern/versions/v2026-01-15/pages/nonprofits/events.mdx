@@ -72,21 +72,21 @@ Always record the amount from `CHARIOT_SUCCESS`, never the one from your form.
 
 <img src='../../images/15e7e65-Error-handling-picture.png' />
 
-## The wait before your confirmation page
+## Between the window closing and your confirmation page
 
-There's often a gap between the donor clicking Donate in DAFpay and landing on your confirmation page. Show a loading screen from the moment you receive `CHARIOT_SUCCESS` until Create Grant comes back, and tell the donor not to navigate away.
+There's a gap while your backend calls Create Grant. Show a loading screen from `CHARIOT_SUCCESS` until that call returns, and tell the donor not to navigate away — without one they refresh, and that goes badly.
 
 <Frame caption="Loading screen example">
     <img src='../../images/dafpay_form_click.png' />
     <img src='../../images/dafpay_loading_screen.png' />
 </Frame>
 
-## What your confirmation page should say
+Two things to get right on the page itself:
 
-**Don't say the gift is being processed.** DAFpay submits a grant request. The donor's DAF provider decides on it and sends the money, usually one to two weeks later.
+**Don't say the gift is being processed.** DAFpay submits a grant request. The donor's provider decides on it and sends the money, usually one to two weeks later.
 
-**Don't promise a tax receipt.** The donor took their deduction when they funded their DAF, so no receipt is coming for this gift.
+**Don't promise a tax receipt.** The donor took their deduction when they funded their DAF.
 
-If you accept gifts from donors on an unconnected provider, your confirmation page has more to carry: see [Create the Grant](/guides/nonprofits/initiate/create-grant#donors-on-an-unconnected-provider).
+If you accept gifts from donors on an unconnected provider, the page carries more: see [Create the Grant](/guides/nonprofits/initiate/create-grant#donors-on-an-unconnected-provider).
 
 Next: [Create the Grant](/guides/nonprofits/initiate/create-grant).

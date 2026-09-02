@@ -4,13 +4,11 @@ subtitle: "Monthly gifts from a DAF"
 hidden: false
 ---
 
-Recurring donations are a powerful way to generate consistent revenue streams for nonprofits and they make up a large majority of the DAF grants that are distributed to charity each year. Chariot enables a donor to not only initiate a one-time grant, but also allows donors to initiate `MONTHLY` recurring grants through their Donor Advised Fund.
+A donor can set up a `MONTHLY` gift from their DAF instead of a one-time one.
 
-<Tip title="Managing Recurrence Schedule">
-When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, we only record the initial grant with a monthly frequency and do not create a new grant each month in our system.
-</Tip>
+The DAF provider owns the schedule. Chariot records the initial grant with `frequency: MONTHLY` and doesn't create a new grant each month, and we aren't notified if the donor cancels or changes it — that happens in their provider's portal.
 
-When a user completes a Chariot Connect session for a recurring donation, instead of receiving a `grantIntent` as part of the `CHARIOT_SUCCESS` event, you will receive a `recurringGrantIntent`.
+A recurring session returns a `recurringGrantIntent` on `CHARIOT_SUCCESS` rather than a `grantIntent`.
 
 <CodeBlocks>
 ```json onSuccessMetadata

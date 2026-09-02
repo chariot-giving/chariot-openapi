@@ -5,19 +5,11 @@ hidden: false
 
 A **connect** is a nonprofit's configured instance of DAFpay. Creating one gives you the Connect ID (CID) that initializes the button for that nonprofit.
 
-To create a CID for an organization, we first need to [Search Chariot's Database](/api/organizations/search) to find the organization's ID using their Name or EIN (Employer Identification Number, Tax ID).
-Following that, we proceed to create a Connect with the organization's ID.
-
-<Tip title="Sandbox Testing">
-  You can use any valid EIN for testing in sandbox (i.e., American Red Cross 53-0196605).
-</Tip>
+Two calls: search for the nonprofit by name or EIN, then create a connect with the ID you get back. Any real EIN works in sandbox — American Red Cross is `53-0196605`.
 
 ## Search Organization
 
-The [Search Organization](/api/organizations/search) endpoint enables you to search for an organization by name or EIN within Chariot's verified nonprofit database.
-If the organization you are looking for is not found, please contact support@givechariot.com to request the organization be added.
-
-Below are a few examples of different implementations. Modify the `user` object,  `ein` field, and access token from step 1 before making the request.
+[Search Organization](/api/organizations/search) covers Chariot's verified nonprofit database. If a nonprofit isn't there, email support@givechariot.com to have it added.
 
 <CodeBlocks>
 ```curl cURL
@@ -42,18 +34,12 @@ fetch('https://sandboxapi.givechariot.com/v1/organizations/search?ein=123456789'
 ```
 </CodeBlocks>
 
-Bravo! You have just searched for a nonprofit organization in Chariot's system. Now let's create a Connect for this organization.
-
 ## Create Connect
 <Warning title="Nonprofit Contact Requirement">
 This route requires a contact email address for the organization. Ensure the email address provided is unique to the nonprofit and not a generic support email (e.g., support@platform.com). This email will be used for important messaging related to the organization's Chariot account and can be updated later.
 </Warning>
 
-The [Create Connect](/api/connects/create) endpoint creates a Connect record or retrieves it if a Connect already exists for the organization in Chariot's system.
-
-To create a Connect, the organization's `id` must be provided, which you should have from the previous step!
-
-Below are a few examples of different implementations. Modify the `ORGANIZATION_ID` query parameter with the organization's `id`. Don't forget to add the api key!
+[Create Connect](/api/connects/create) takes the organization's `id` and returns the connect, or the existing one if there already is one. Save the CID; you only ever need this call once per nonprofit.
 
 <CodeBlocks>
 ```curl cURL
@@ -92,10 +78,7 @@ fetch('https://sandboxapi.givechariot.com/v1/connects', options)
 ```
 </CodeBlocks>
 
-Amazing! You can now start integrating DAFpay to build a front end and start receiving grants for this organization.
-
 ## Create a Launch Plan
-For fundraising platforms with multiple organizations, the [Create Connect](/api/connects/create) needs to be called once for each organization on your platform.
-As part of development, you should determine when and how these calls will be made for each organization.
+Create Connect runs once per nonprofit on your platform, so decide during development when that call happens — at onboarding, at first DAFpay gift, or as a backfill. We ask for this plan before issuing [production keys](/guides/dafpay/integrating-dafpay/prod-keys).
 
 Next: [Install the Button](/guides/dafpay/integrating-dafpay/installation).

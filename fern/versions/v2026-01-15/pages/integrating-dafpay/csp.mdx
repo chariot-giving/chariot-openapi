@@ -4,9 +4,9 @@ subtitle: "What to allowlist so the button loads"
 hidden: false
 ---
 
-DAFpay is distributed as a cross-origin web component. The button renders inline on your page, but the checkout itself runs in either a cross-origin **iframe** embedded in your page (most desktop browsers, when the viewport supports the modal) or a cross-origin **popup window** at `https://secure.dafpay.com` (mobile devices, Safari, or when the parent viewport is too small for the modal).
+The button renders inline, but the checkout runs cross-origin: an iframe on most desktop browsers, a popup at `https://secure.dafpay.com` on mobile, Safari, or a viewport too small for the modal. Either way the bundle loads from Chariot's CDN and the component injects `@font-face` rules and inline styles into your document.
 
-In both modes, the DAFpay JavaScript bundle is loaded from Chariot's CDN and the web component injects `@font-face` declarations and inline styles into your page's document. If your site sends a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) (CSP) header — via either `Content-Security-Policy` or `Content-Security-Policy-Report-Only` — you must allow the directives below or the integration will silently fail to load.
+If your site sends a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) header, allow the directives below or DAFpay fails to load with no error a donor can see.
 
 ### Required Directives
 
@@ -40,14 +40,10 @@ Merge each directive into your existing policy — do not replace your full CSP 
 If you deliver CSP via a `<meta http-equiv="Content-Security-Policy">` tag instead of an HTTP header, the same directives apply, but `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are silently ignored from meta tags. Use a response header whenever possible.
 </Tip>
 
-### Troubleshooting
+### If the button doesn't render
 
-If the DAFpay button does not render, or clicking it does nothing:
+Check the console for `Refused to load the script/frame/font/style` — the error names the directive that blocked it — and the Network tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
 
-1. Open your browser's developer console. CSP violations are logged as errors prefixed with `Refused to load the script/frame/font/style` and name the directive that blocked the request.
-2. Check the **Network** tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
-3. If you ship a `Content-Security-Policy-Report-Only` header alongside your live policy, your reporting endpoint will receive `csp-violation` events naming the affected URLs.
-
-If you cannot relax your CSP — for example because of PCI scope or a vendor security policy — reach out to Chariot support to discuss alternative integration paths.
+If PCI scope or a vendor policy means you can't relax your CSP, contact support and we'll talk through alternatives.
 
 Next: [Send Donor Data](/guides/dafpay/integrating-dafpay/donor-data).

@@ -4,7 +4,7 @@ subtitle: "What to pass in onDonationRequest, and what to leave out"
 hidden: false
 ---
 
-Return the donor's information from `onDonationRequest` and DAFpay skips those fields. Anything you leave out gets filled from the donor's DAF account.
+Return what you know from `onDonationRequest`. Anything you leave out, DAFpay fills from the donor's DAF account.
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -77,7 +77,7 @@ To keep the window from opening until your own validation passes, return `false`
 
 ## Popup timing
 
-Mobile browsers block popups they consider decoupled from the click that asked for one, which happens when something slow runs between the click and the window opening.
+Mobile browsers block popups they consider decoupled from the click, which happens when something slow runs in between.
 
 <Tip title="Keep it under a second">
 - Keep the gap between the donor's click and the popup under 1000ms.
@@ -86,6 +86,6 @@ Mobile browsers block popups they consider decoupled from the click that asked f
 - Prefetch what you need before the donor clicks.
 </Tip>
 
-The two ways forms usually break this: a custom button that calls your own server before triggering the popup, and async work inside `onDonationRequest` such as fetching giving history or looking up prefill data. Move that work earlier, before the donor clicks.
+Two ways forms break this: a custom button that calls your server before triggering the popup, and async work inside `onDonationRequest` such as fetching giving history. Move that work earlier.
 
 Next: [Handle the Result](/guides/nonprofits/initiate/events).

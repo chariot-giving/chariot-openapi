@@ -4,32 +4,28 @@ subtitle: "Donors whose provider is not integrated with DAFpay"
 hidden: false
 ---
 
-Unintegrated Grants represent a donors intention to donate from a DAF provider that DAFpay is not yet integrated with.
+An unintegrated grant is a donor's intent to give from a provider DAFpay isn't connected to. It's a separate object from a grant, with its own status: `Unknown`, `Completed` or `Canceled`. New ones are `Unknown`, since nobody can tell yet whether the donor finished in their provider's portal.
 
-An unintegrated grant carries its own status: `Unknown`, `Completed` or `Canceled`. New ones come back as `Unknown`, since nobody can tell yet whether the donor finished the gift in their provider's portal.
-    - Use the [List Unintegrated Grants](/api/unintegrated-grants/list) API to access details such as gift amount, DAF provider name, and donor information.
-    - You can simulate the Unintegrated Grants flow on our [demo page](https://secure.dafpay.com/demo) by selecting The Boston Foundation.
+Read them with [List Unintegrated Grants](/api/unintegrated-grants/list), and trigger the flow on the [demo page](https://secure.dafpay.com/demo) by selecting The Boston Foundation.
 
-<Note title="Opting Out of Unintegrated Grants">
-    If your platform does not want to support unintegrated grants, DAFpay can redirect donors back to your donation form to select a different payment method (if the donor chooses an unsupported provider). Please let the Chariot team know if you would like to disable Unintegrated Grants for your platform.
-</Note>
+You can opt out. Tell us, and DAFpay returns those donors to your form to pick another payment method instead.
 
 <Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">
     <img src='../../images/disconnected-submit.png' />
     <img src='../../images/disconnected-return.png' />
 </Frame>
 
-If unintegrated grants are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
+If they're enabled, the window closes once the donor enters their details and fires `CHARIOT_EXIT` with reason `UNINTEGRATED_GRANT_CONFIRMED`. That's your cue to record the intent.
 
-<Note title="Unintegrated Grants Confirmation Page">
-  In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. Make sure to offer the ability for a donor to copy the tracking ID (including the "Tracking ID" prefix) directly on your confirmation page.
-</Note>
+<Warning title="The confirmation page has to carry the instructions">
+Render what `CHARIOT_EXIT` gives you: the tracking ID, the nonprofit's EIN and name, and a link to the DAF provider. Include a way to copy the tracking ID with its `Tracking ID:` prefix. Without those, the donor can't complete the gift.
+</Warning>
 
 <Frame caption="Unintegrated Grant Confirmation Page">
     <img src='../../images/unintegrated-grant-intent.png' />
 </Frame>
 
-DAFpay will also send an email directly to the donor reiterating the instructions.
+DAFpay emails the donor the same instructions.
 
 <Frame caption="Unintegrated Grant Donor Instructions Email">
     <img src='../../images/grant-intent-email.png' />

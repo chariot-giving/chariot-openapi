@@ -12,17 +12,17 @@ Sandbox is isolated from production, with its own data, API key, and dashboard. 
 
 ### Create your sandbox
 
-Create it from your production dashboard. It gets its own tenant and its own API key.
+From your production dashboard. It gets its own tenant.
 
 ### Add your team
 
-Developers and QA each need an account. An admin on your organization can create them.
+Developers and QA each need an account, created by an admin on your organization.
 
 ### Generate a sandbox API key
 
-Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`.
+Inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`.
 
-Keep one key per environment. With more than one, webhook delivery can resolve to the wrong key and events look like they disappeared.
+Keep one key per environment. With more than one, delivery can resolve to the wrong key and events look like they disappeared.
 
 ### Request a connect, if you run your own donation form
 
@@ -51,22 +51,22 @@ Any real EIN resolves in [Search Organization](/api/organizations/search). Ameri
 
 ### Creating test donations
 
-There is no simulation endpoint for donations or deposits. Two ways to produce them:
+Two ways, since there's no simulation endpoint:
 
 - Run a DAFpay checkout in sandbox. A completed session creates a grant, and a donation follows.
-- Create a simulated deposit from the sandbox dashboard, then add donations by manual entry. This is the practical way to get arbitrary donation shapes for testing your CRM mapping.
+- Create a simulated deposit from the sandbox dashboard and add donations by manual entry. This is how you get arbitrary donation shapes for testing your CRM mapping.
 
-In production you do neither. Linking a payer means donations arrive on their own.
+In production you do neither — a linked payer means donations arrive on their own.
 
 ## Current limitations
 
-**You cannot settle a donation.** A sandbox donation stays at incoming, funds not received. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop cannot be exercised here. Build and test that handler against a payload you construct yourself, then confirm it in production with one small live gift. We will run that test with you.
+**You can't settle a donation.** Sandbox donations stay at incoming. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop can't be exercised here — test that handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
 
-**You cannot cancel a donation.** Not in either environment. Contact us and we will cancel it.
+**You can't cancel a donation,** in either environment. Contact us and we'll do it.
 
-**`/v1/simulations/donations` and `/v1/simulations/deposits` do not exist.** The simulation endpoints that do exist are for Disbursements. See [Sandbox Simulations](/api/sandbox-simulations).
+**There are no donation or deposit simulation endpoints.** `/v1/simulations/donations` and `/v1/simulations/deposits` don't exist; the ones that do are for Disbursements. See [Sandbox Simulations](/api/sandbox-simulations).
 
-**Webhooks are not retried in sandbox.** Production retries a non-2xx response up to 10 times with backoff. Sandbox does not retry at all, so a handler that is briefly down misses the event. See [Troubleshooting](/guides/nonprofits/troubleshooting).
+**Webhooks aren't retried here.** Production retries a non-2xx up to 10 times with backoff; sandbox not at all, so a handler that's briefly down misses the event. See [Troubleshooting](/guides/nonprofits/troubleshooting).
 
 ## Next
 

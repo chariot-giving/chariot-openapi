@@ -6,11 +6,11 @@ hidden: false
 
 Connect fires three events. Everything your integration does after a donor opens the window hangs off them.
 
-| Event Name         | Description                                                                                                                                                                                                                                                                               | Metadata Type         |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| `CHARIOT_INIT`     | The init event is called when the Chariot Connect script is initialized and ready to be run. This is useful to be able to know when Chariot Connect is initialized and ready to be used.                                                                                                   | No metadata is provided for this event. |
-| `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create) route based on the grant intent data. | `OnSuccessMetadata`   |
-| `CHARIOT_EXIT`     | The exit event is called when a user exits without successfully completing the flow, when an error occurs during the flow, or when a user confirms an unintegrated grant.                                                                                                                  | `OnExitMetadata`      |
+| Event | Fires when | Metadata |
+|---|---|---|
+| `CHARIOT_INIT` | The Connect script is initialized and ready. | None |
+| `CHARIOT_SUCCESS` | The donor finished. Carries the session id and the grant intent, which you pass to [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create). | `OnSuccessMetadata` |
+| `CHARIOT_EXIT` | The donor left without completing, an error occurred, or the donor confirmed an unintegrated grant. | `OnExitMetadata` |
 
 ## Payloads
 
@@ -65,39 +65,29 @@ Connect fires three events. Everything your integration does after a donor opens
 | `RECURRING_NOT_SUPPORTED`  | Recurring grants are not supported by this DAF
 | `UNINTEGRATED_DAF_NOT_SUPPORTED` | Unintegrated DAF is not supported by DAFpay
 
-## Donation Amount Changes
+## When the amount changes mid-session
 
-<Warning title="Accounting For Changes Within a Session">
-Please note that the donation amount passed into DAFpay from your platform may change within the DAFpay modal for various reasons.
-To ensure accuracy, always use the information provided in the onSuccessMetadata from Chariot when calling the Create Grant route.
-</Warning>
+The amount you passed in can change inside the window: Connect suggests the donor's available balance if they ask for more than they have, and suggests the provider's minimum if there is one.
 
-If a donor tries to submit a grant request for an amount that exceeds their current account balance, Connect will alert the donor and suggest the donor to adjust the donation amount to the available account balance.
-
-Additionally, if a Donor Advised Fund platform has a minimum donation requirement, Connect will alert donors of this requirement and suggest the donor to alter the donation size to match the minimum threshold for submission.
+Always send the amount from `CHARIOT_SUCCESS` to Create Grant, never the one from your form.
 
 <img src='../../images/15e7e65-Error-handling-picture.png' />
 
-## Loading Screen
+## Between the window closing and your confirmation page
 
-Occasionally, there may be a delay between clicking "Donate" on DAFpay and being redirected to the organization’s confirmation page.
-To provide an intuitive user experience, make sure to implement an intermediary loading screen to notify the donor that their gift is being processed and that they should avoid navigating away from the page during this time.
-
-This loading screen should be displayed between the time you receive the `CHARIOT_SUCCESS` event and the time your systems have successfully processed the grant by calling the Create Grant route.
+There's a gap while your backend calls Create Grant. Show a loading screen from `CHARIOT_SUCCESS` until that call returns, and tell the donor not to navigate away — without one they refresh, and that goes badly.
 
 <Frame caption="Loading screen example">
     <img src='../../images/dafpay_form_click.png' />
     <img src='../../images/dafpay_loading_screen.png' />
 </Frame>
 
-## What your confirmation page should say
+Two things we correct on most reviews of the confirmation page itself:
 
-Two things we correct on most reviews.
-
-**Don't say the gift is being processed.** DAFpay submits a grant request. The DAF provider decides on it and sends the money, usually one to two weeks later. "Processing your gift" tells the donor something is happening that isn't.
+**Don't say the gift is being processed.** DAFpay submits a grant request. The DAF provider decides on it and sends the money, usually one to two weeks later.
 
 **Don't promise a tax receipt.** The donor took their deduction when they funded their DAF, so no receipt is coming for this gift.
 
-If you accept unintegrated grants, the confirmation page carries real work: see [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+If you accept unintegrated grants, the page carries more: see [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
 
 Next: [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant).

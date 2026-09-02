@@ -4,7 +4,7 @@ subtitle: "Writing status back to Chariot"
 hidden: false
 ---
 
-Write the status back so your finance team sees the same state in the dashboard that your integration sees.
+Write status back so your finance team sees in the dashboard what your integration sees.
 
 <EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
 
@@ -12,9 +12,7 @@ Write the status back so your finance team sees the same state in the dashboard 
 `PATCH /v1/donations/{id}` is not available to external API keys and returns `404`.
 </Warning>
 
-Create a CRM status property with the states your process uses and drive it from your integration. Saved views per status let your team work the exceptions.
-
-Properties also carry your CRM record ID, internal campaign or fund codes, and processing notes.
+Create a CRM status property with the states your process uses and drive it from your integration; saved views per status let your team work the exceptions. Properties also carry your CRM record ID, campaign or fund codes, and processing notes.
 
 ## Payment status
 
@@ -34,11 +32,9 @@ The dashboard shows friendlier labels for these, so match on the values above ra
 
 ## Gifts that arrive outside Chariot
 
-A donation only gets a deposit when the funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so those donations stay at `INCOMING_OUTSIDE_CHARIOT` and never get one.
+A donation only gets a deposit when funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so they stay at `INCOMING_OUTSIDE_CHARIOT` forever.
 
-When the money turns up, find the donation using the DAFpay tracking ID, external ID, or the donor and amount, then click the payment status field on the donations table and select `Received Outside Chariot`. This is a manual step in the dashboard.
-
-Linking the payer removes the work. Payment sources are linked in the dashboard.
+When the money turns up, find the donation by tracking ID, external ID, or donor and amount, then set its payment status on the donations table. That's a manual step in the dashboard, and linking the payer removes it.
 
 ## Before you launch
 

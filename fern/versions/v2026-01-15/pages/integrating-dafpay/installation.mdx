@@ -6,9 +6,7 @@ hidden: false
 
 ## Install the JavaScript package
 
-Chariot Connect (DAFpay button) comes as a small JavaScript package.
-It can be loaded directly from the Chariot CDN or installed via [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn.
-When loading from the CDN, it must always be loaded directly from [https://cdn.givechariot.com](https://cdn.givechariot.com), rather than included in a bundle or hosted yourself.
+The button is a small JavaScript package. Load it from the Chariot CDN, or install from [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. CDN builds have to load from `https://cdn.givechariot.com` at runtime — bundling it or hosting a copy breaks it.
 
 <CodeBlocks>
 ```html CDN
@@ -24,12 +22,7 @@ yarn add react-chariot-connect
 
 ## Add the component
 
-Chariot provides a simple-to-use web component that allows you to implement the Chariot Connect (DAFpay) button with a single line.
-Add Chariot-Connect component where you want the DAFpay button to appear and make sure to add the Connect ID (CID). 
-
-<Warning title="Save Down Your CID"> 
-You only need to call the Create Connect route one time per nonprofit to generate the cid; Once generated, you can save it down in your system.
-</Warning>
+Put the component where you want the button, with the nonprofit's Connect ID (CID) on it. Create Connect runs once per nonprofit, so store the CID rather than fetching it.
 
 <CodeBlocks>
 ```html HTML
@@ -51,8 +44,6 @@ const App = () => {
 ```
 </CodeBlocks>
 
-A nonprofit's `cid` (Connect ID) should be retrieved from your database after the nonprofit has been registered with Chariot.
-
 
 <Tip title="Sandbox Credentials">
   Use the following credentials to log in to any DAF provider in the sandbox environment.
@@ -65,7 +56,7 @@ A nonprofit's `cid` (Connect ID) should be retrieved from your database after th
 
 ## Where to put the button
 
-Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e., credit card, bank transfer, and Apple Pay)
+List DAFpay alongside your primary payment methods — credit card, bank transfer, Apple Pay — and put it above the amount and contact fields, or [Express Checkout](/guides/dafpay/integrating-dafpay/donor-data) can't prefill.
 
 <Frame caption="Placement is key!">
     <img src='../../images/button-placement.png' />
@@ -73,7 +64,7 @@ Ensure that _DAFpay_ is listed directly alongside primary payment methods (i.e.,
 
 ## Themes
 
-Choose your theme by adding the theme name as a parameter to the `chariot-connect` component, as below.
+Add a theme name to the component. Without one you get `DefaultTheme`.
 
 <CodeBlocks>
 ```html HTML
@@ -92,8 +83,6 @@ Choose your theme by adding the theme name as a parameter to the `chariot-connec
 />
 ```
 </CodeBlocks>
-
-We provide the options below as default themes. If `theme` is not defined, `DefaultTheme` will be used.
 
 **DefaultTheme**
 
@@ -116,15 +105,7 @@ We provide the options below as default themes. If `theme` is not defined, `Defa
 
 **Custom Theme**
 
-To create a custom theme for the DAFpay button, create an object with the desired properties that you wish to change.
-Utilize [Tailwind CSS](https://tailwindcss.com/) styling in the definition of these properties.
-
-<Info title="Style Customizations Notice">  
- Style customizations for DAFpay require that all available CSS be packaged within the `chariot-connect.umd.js` bundle.
- The problem is that for Chariot to allow any customizations, we would need to include the entire [tailwindcss](https://v1.tailwindcss.com/docs/controlling-file-size) package (~2.4Mb uncompressed) which would degrade performance and load times to an unacceptable level.
- 
- While performance is a concern, we also realize the need for a consistent and seamless user experience and are also committed to providing configurations for size, padding, border radius, etc. on top of the pre-built themes that we offer.
-</Info>
+For a custom theme, register an object with the properties you want to change, using [Tailwind CSS](https://tailwindcss.com/) values. Only the three below are adjustable — allowing more would mean shipping all of Tailwind in the bundle, at a load-time cost to every donor.
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -151,8 +132,6 @@ chariot.registerTheme("myTheme", alterations);
 />
 ```
 </CodeBlocks>
-
-**Theme Properties**
 
 | Parameter Name     | Use                                                                                      | Allowed value                                                                             |
 | :----------------- | :--------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |

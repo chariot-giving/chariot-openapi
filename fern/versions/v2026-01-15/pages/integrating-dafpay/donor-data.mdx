@@ -4,39 +4,17 @@ subtitle: "Express Checkout, onDonationRequest, and what not to pass"
 hidden: false
 ---
 
-DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest.
+Return what your form collected from `onDonationRequest`. Anything you leave out, DAFpay fills from the donor's DAF account.
 
-## Express Checkout: let DAFpay fill the fields
-Chariot offers "Express Checkout" where the Chariot Connect modal pulls the donor's name, email, phone and address information from their account with the DAF provider. This allows for "one-click" checkout experiences and removes the need for a donor to fill out a lengthy form before making a DAF donation. The user always has the ability to review their information and make changes before submission.
+That fill is Express Checkout. It needs no setup, but it only works when the button sits above your contact fields. Test it on the [demo page](https://secure.dafpay.com/demo) with the Express toggle on.
 
+Pass the amount either way — Express Checkout doesn't supply it.
 
-<Warning title="Placement Requirement">
-DAFpay's Express Checkout feature only works when the button is placed at the top of a donation form (before the donor’s contact details are collected).
-</Warning>
+<Error title="Empty strings count as provided">
+Chariot treats any value you pass as provided, including an empty string. Sending `email: ""` tells us the donor's email is blank, and they type it by hand instead of having it prefilled.
 
-<Error title="Empty strings count as 'provided'">
-Chariot populates any field you pass in the `onDonationRequest`, **including empty strings**. Sending `email: ""` or `firstName: ""` tells Chariot the donor's email and first name are blank, and the donor will be asked to enter their contact details by hand instead of having them prefilled.
-
-To get DAF prefill, **omit `firstName`, `lastName`, `email`, `phone`, and `address` entirely**. Do not send them set to `""`.
+Omit `firstName`, `lastName`, `email`, `phone` and `address` entirely to get prefill. Don't send them set to `""`.
 </Error>
-
-<Tip title="Automatically Active">
-No action is required to enable Express Checkout. If no donor information is provided in the onDonationRequest, the contact fields will be automatically populated from the DAF provider.
-
-To test the Express Checkout functionality, visit https://secure.dafpay.com/demo and ensure the "Express" toggle is enabled, which will place DAFpay at the top of the form, ahead of the contact fields.
-</Tip>
-
-<Note title="Donation Amount">
-If your platform opts for Express Checkout, you will still need to utilize the onDonationRequest to pass in the amount from your donation form to the DAFpay modal. See below for a list of potential onDonationRequest parameters that can be utilized (even when Express Checkout is active).
-</Note>
-
-## Pre-populated data: pass what your form collected
-You can pass form information to Chariot before launching a Connect session.
-To provide this information, leverage the `onDonationRequest` function from the Chariot element.
-
-<Info title="Leveraging The onDonationRequest">
-If DAFpay (or other payment options) appear after the amount and contact fields on your donation form, ensure that the collected information is passed into the onDonationRequest. This will allow the fields to be properly recorded by Chariot's system and displayed correctly on the DAFpay modal.
-</Info>
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -110,57 +88,29 @@ The given donation data must match the following schema to be accepted by Chario
 | fundId      | The ID of the preselected DAF provider. <br /><br /> If this value is provided, the donor will not be shown the default DAF dropdown and will instead be taken straight to that DAF's login.                                                          | string (optional) |
 | frequency   | The recurring frequency of the DAF grant (if it's a recurring gift). This parameter allows the following possible enum values: `ONE_TIME`, `MONTHLY`. If not provided, the grant will default to a `ONE_TIME` grant. For more information on recurring donations, please see the [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring) | string (optional) |
 
-<Warning title="Data Validation">
-To prevent request failures, any inputs exceeding the maximum allowed length will be automatically truncated.
-</Warning>
+Anything longer than its maximum is truncated rather than rejected.
 
-<Note title="Popular Parameters">
-- Metadata: Allows you to associate the payment or session with any data in your system (i.e., Form ID, Campaign Name).
-- Anonymous: Indicate if a donor has chosen to give anonymously on your donation form so the donation can be properly anonymized by the DAF provider.
-</Note>
+Send `anonymous` when a donor chooses to give anonymously, so the DAF provider anonymizes the grant properly.
 
 <Note title="Pass your hidden fields too">
 Whatever identifiers your form already carries — form or campaign ID, source, appeal code, designation code — belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
 </Note>
 
-## Preventing Blocked Popups
-Certain mobile browsers impose restrictions on popups if they are considered “decoupled” from the original user action. This often occurs when long-running asynchronous operations are introduced between the user’s action (e.g., a button click) and the popup launch.
+## Popup timing
 
-To ensure a seamless integration with DAFpay, platforms must be mindful of potential pitfalls when handling donation requests.
+Mobile browsers block popups they consider decoupled from the click that asked for one, which happens when something slow runs in between.
 
-<Tip title="General Best Practices">
-- Keep the interval between user action and popup launch under 1000ms.
-- Minimize blocking API calls before launching the popup.
-- Avoid long-running async operations in the donation request flow.
-- Where possible, prefetch necessary data before the user clicks the donation button.
+<Tip title="Keep it under a second">
+- Keep the gap between the donor's click and the popup under 1000ms.
+- Don't make blocking API calls before launching the popup.
+- Prefetch what you need before the donor clicks.
 </Tip>
 
-**Common scenarios where popup blocking occurs**
-<Accordion title="Custom button with Shadow DOM and delayed API calls">
-  If your platform has implemented a custom donation button using a Shadow DOM and manually triggers the DAFpay popup, be cautious about adding intermediate API or network requests before invoking the popup.
+Two ways platforms break this: a custom button that calls your own server before triggering the popup, and async work inside `onDonationRequest` such as fetching giving history or eligibility. Move that work earlier.
 
-  When a user clicks the platform’s custom button and the platform makes an API call to its own servers before triggering the DAFpay popup, if the delay exceeds 1000ms, the browser may block the popup.
+## Holding the button back
 
-  To prevent the popup from being blocked, ensure that all network requests complete before the Shadow DOM event is triggered and minimize intermediate operations to prevent unnecessary delays.
-</Accordion>
-<Accordion title="Async operations in onDonationRequest callback">
-  Some platforms rely on the built-in Chariot Connect (DAFpay) button to open the popup.
-
-  However, they introduce additional asynchronous operations in the onDonationRequest callback, such as:
-  - fetching user donation history
-  - verifying donor eligibility via API calls
-  - retrieving pre-filled form data
-
-  Since onDonationRequest allows for async operations, any delay beyond 1000ms increases the risk of the popup being blocked.
-
-  To prevent the popup from being blocked, minimize async logic inside onDonationRequest.	If additional data fetching is required, perform it before triggering the donation request or use background loading strategies.
-</Accordion>
-
-Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
-
-## Disabling Connect
-
-To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
+To keep the window from opening until your validation passes, return `false` from `onDonationRequest`.
 
 <img src='../../images/on-donation-false.png' />
 
