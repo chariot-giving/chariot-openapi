@@ -44,7 +44,7 @@ Chariot treats any value you pass as provided, including an empty string. Sendin
 To get DAF prefill, omit `firstName`, `lastName`, `email`, `phone` and `address` entirely. Don't send them set to `""`.
 </Error>
 
-Send only what we can't get from the provider: campaign and source IDs, a designation, and an amount if you want to force one.
+Omit the donor fields you want DAFpay to prefill. Pass what your form has already collected and needs to keep: campaign and source IDs, a designation, and an amount if you want to force one.
 
 ## Schema
 
@@ -65,11 +65,11 @@ Send only what we can't get from the provider: campaign and source IDs, a design
 
 Anything longer than its maximum is truncated rather than rejected.
 
-<Note title="Pass your hidden fields too">
+<Note title="Pass your form metadata">
 Whatever identifiers your form already carries, like a form or campaign ID, a source, an appeal code or a designation code, belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
 </Note>
 
-## Holding the button back
+## Blocking the button until your form validates
 
 To keep the window from opening until your own validation passes, return `false` from `onDonationRequest`.
 
@@ -79,7 +79,7 @@ To keep the window from opening until your own validation passes, return `false`
 
 Mobile browsers block popups they consider decoupled from the click that asked for one, which is what happens when something slow runs in between.
 
-<Tip title="Keep it under a second">
+<Tip title="Open the popup within one second">
 - Keep the gap between the donor's click and the popup under 1000ms.
 - Don't make blocking API calls before launching the popup.
 - Avoid long-running async work anywhere in the donation request flow.

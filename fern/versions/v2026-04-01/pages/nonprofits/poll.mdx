@@ -52,7 +52,7 @@ Subscribe with [Create Event Subscription](/api/event-subscriptions/create). Sig
 
 Subscribe to donation events, not grant events. A donation covers every gift you receive, DAFpay and everything else, so building on donations means building one pipeline instead of two. `grant.created` only fires for gifts you initiated yourself, and initiation is not payment.
 
-If you use webhooks, keep the poll running underneath as a backstop.
+If you use webhooks, keep polling as a fallback.
 
 Chariot rate-limits the API. Space out your pages rather than firing them in parallel, back off and retry rather than looping on failures, and contact us if your volume needs more headroom.
 

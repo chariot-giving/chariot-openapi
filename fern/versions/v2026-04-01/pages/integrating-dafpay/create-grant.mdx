@@ -26,7 +26,7 @@ Create Grant submits the grant to the donor's provider and creates the donation 
 
 `workflowSessionId` and `amount` are required. `applicationFeeAmount`, `donor`, `note` and `designation` are optional.
 
-Send the amount from `CHARIOT_SUCCESS` rather than the one from your form, and send it in whole dollars, meaning cents rounded to the nearest 100, since DAFs only accept whole-dollar grants.
+Send the amount from `CHARIOT_SUCCESS` rather than the one from your form. DAF grants have to be whole dollars, so the value in cents must be divisible by 100: $150 is `15000`.
 
 <Warning title="Fees are capped at 5% together">
 `applicationFeeAmount` is the fee your platform takes on top of Chariot's, in cents. Chariot collects it from the nonprofit and passes it to you, and only when the grant is actually received.
@@ -48,7 +48,7 @@ Most workflows proceed as follows:
 <Error title="Submit your own form first">
 Persist the gift on your side before you call Create Grant, so a failed submission can't leave your records out of step with Chariot's.
 
-Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first capture returns `201 Created`, and the same session again returns `200 OK` with the grant that already exists. `409 Conflict` means a capture for that session is still in flight, so wait and read the grant rather than submitting again.
+Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first capture returns `201 Created`, and the same session again returns `200 OK` with the grant that already exists. `409 Conflict` means a capture for that session is still in flight. Wait for it to finish, then read the grant instead of submitting again.
 
 What you can't recover from is the clock. An intent expires 15 minutes after authorization and then returns `410 Gone`, so nothing slow belongs between `CHARIOT_SUCCESS` and this call.
 </Error>

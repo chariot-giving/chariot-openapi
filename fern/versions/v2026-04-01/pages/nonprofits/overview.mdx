@@ -6,21 +6,21 @@ hidden: false
 
 Chariot collects your gifts from every source: DAF sponsors, fundraising platforms, workplace giving, checks. It codes them in one place, and the API moves them into your CRM or ERP.
 
-<Warning title="Most nonprofits should not build a DAFpay integration">
-DAFpay is already available on 70+ fundraising platforms. If your donation form is hosted by one of them, turn DAFpay on with your platform rather than building against our API. [Find your platform](https://www.givechariot.com/dafpay-setup#integration-search), or see [Do I Need to Integrate?](/guides/nonprofits/start-here).
+<Warning title="If you use a fundraising platform, you don't need to integrate DAFpay">
+DAFpay is available on 70+ fundraising platforms. If your donation form is hosted by one of them, turn DAFpay on there instead of building against our API. [Find your platform](https://www.givechariot.com/dafpay-setup#integration-search), or see [Do I Need to Integrate?](/guides/nonprofits/start-here).
 
-You'd still use the API for one thing: pulling the gifts you receive into your CRM or ERP. That's [Retrieve Donations](/guides/nonprofits/donations), and it's worth doing however DAFpay got onto your form.
+You would still use the API to pull the gifts you receive into your CRM or ERP. That's [Retrieve Donations](/guides/nonprofits/donations), and it applies however DAFpay got onto your form.
 </Warning>
 
-## The two APIs, in order
+## Which APIs you'll use
 
 <Steps>
 
 ### Capture the gift
 
-Only if you built and run your own donation form. Skip this if a fundraising platform hosts it. DAFpay authorizes the donor's gift in the browser, and your server calls the Grants API to capture it. A donation follows from that.
+Only if you built and run your own donation form. DAFpay authorizes the donor's gift in the browser, your server calls the Grants API to capture it, and a donation follows from that.
 
-Everyone else skips this step. See [Initiate Gifts](/guides/nonprofits/initiate).
+If a fundraising platform hosts your form, you don't need this step. See [Initiate Gifts](/guides/nonprofits/initiate).
 
 ### Retrieve donations
 
@@ -36,9 +36,9 @@ See [Retrieve Donations](/guides/nonprofits/donations).
 DAFpay session → grant intent → Grant → Donation → Deposit
 ```
 
-The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the money actually arrives in.
+The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the funds arrive in.
 
-A successful DAFpay session is not a gift, and a donation that exists is not money in the bank. Nothing here can be collapsed into "the donation succeeded".
+A successful DAFpay session means the donor authorized an intent. It doesn't mean a grant exists, and a donation that exists doesn't mean the funds have arrived. These are four separate stages.
 
 ## How gifts reach Chariot
 
@@ -49,7 +49,7 @@ A successful DAFpay session is not a gift, and a donation that exists is not mon
 | A linked DAF sponsor, platform, or lockbox | Link it once in the dashboard, then nothing per gift. |
 | DAFpay on a donation form you built | Your server captures each gift with the Grants API. |
 
-Either way you still retrieve and record the donations. The difference is only whether you start the gift yourself.
+Either way you retrieve and record the donations. The difference is whether your own server creates the grant or the gift reaches Chariot another way.
 
 ## What lives in the dashboard
 

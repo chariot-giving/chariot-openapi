@@ -1,6 +1,6 @@
 ---
 title: "Request Your Connect"
-subtitle: "Choose how DAFpay behaves on your form, and send us the result"
+subtitle: "Configure DAFpay for your form"
 hidden: false
 ---
 
@@ -8,11 +8,11 @@ A **connect** is your DAFpay configuration, and it controls what the window does
 
 ## Use the right Connect ID
 
-You may end up holding more than one. Claiming your Chariot Deposit Account gives you a Connect ID for the no-code button, tile and web link, and the connect you request here gives you another for your own form.
+Your account may have more than one. Claiming your Chariot Deposit Account gives you a Connect ID for the no-code button, tile and web link, and the connect you request here gives you another for your own form.
 
-They aren't interchangeable. The no-code one submits the gift from inside the window, so pointing your form at it means the window submits a grant and your backend submits another, which is how one checkout produces two gifts. Use the Connect ID we issue for your integration, and ask [support@givechariot.com](mailto:support@givechariot.com) if you're not sure which you have.
+They aren't interchangeable. The no-code one submits the gift from inside the window, so pointing your form at it means the window submits a grant and your backend submits another, which is how one checkout produces two gifts. Use the Connect ID we issue for your integration, and contact [support@givechariot.com](mailto:support@givechariot.com) if you're not sure which you have.
 
-Anything you leave at its default is fine. Copy the result, or send it in one click.
+You can leave any setting at its default. Copy the result, or send it in one click.
 
 <div id="chariot-setup-builder">
 
@@ -62,7 +62,7 @@ Anything you leave at its default is fine. Copy the result, or send it in one cl
 
     <div class="csb-setting">
       <span class="csb-name">Details to require</span>
-      <span class="csb-help">Required fields must be completed before the donor can continue. Every extra one is another chance to abandon the gift.</span>
+      <span class="csb-help">Required fields must be completed before the donor can continue. Require only the fields you need.</span>
       <div class="csb-checks">
         <label><input type="checkbox" data-group="require" value="name" checked /> Name</label>
         <label><input type="checkbox" data-group="require" value="email" checked /> Email</label>
@@ -82,7 +82,7 @@ Anything you leave at its default is fine. Copy the result, or send it in one cl
 
     <div class="csb-setting">
       <span class="csb-name">Donors whose DAF provider is not connected</span>
-      <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and email them instructions to finish in their own portal, or return them to your form to pay another way. Recording captures gifts you would otherwise lose, but those records are intentions, not money.</span>
+      <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and email them instructions to finish in their own portal, or return them to your form to pay another way. Recording captures gifts you would otherwise lose, but those records represent donor intent rather than funds received.</span>
       <select data-key="unconnected">
         <option value="Record what they intended">Record what they intended (default)</option>
         <option value="Send back to our form">Send them back to our form</option>
@@ -91,17 +91,17 @@ Anything you leave at its default is fine. Copy the result, or send it in one cl
 
     <div class="csb-setting">
       <span class="csb-name">Close the window as soon as they confirm</span>
-      <span class="csb-help">Applies only to donors whose DAF provider is not connected. DAFpay normally shows them a final confirmation screen, and your system is not notified until they close it. A donor who leaves it open, or closes the tab, never notifies you at all. Turning this on closes the window the moment they confirm.</span>
+      <span class="csb-help">Applies only to donors whose DAF provider is not connected. DAFpay normally shows them a final confirmation screen, and your system is not notified until they close it. If the donor leaves it open or closes the tab, your application never receives the event. Turning this on closes the window the moment they confirm.</span>
       <select data-key="close_window">
         <option value="no">No (default)</option>
         <option value="yes">Yes</option>
       </select>
-      <p class="csb-note">Choose yes only once your own confirmation page shows the tracking ID with its <code>Tracking ID:</code> prefix and a copy control, your EIN, your organization name, and a link to the donor's DAF provider. That screen is where the donor learns how to complete their gift.</p>
+      <p class="csb-note">Choose yes only once your own confirmation page shows the tracking ID with its <code>Tracking ID:</code> prefix and a copy control, your EIN, your organization name, and a link to the donor's DAF provider. That screen tells the donor how to complete their gift.</p>
     </div>
 
   </div>
 
-  <p class="csb-section">For our QA</p>
+  <p class="csb-section">Testing</p>
 
   <div class="csb-grid">
     <label class="csb-field">

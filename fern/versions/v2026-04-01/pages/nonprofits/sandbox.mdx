@@ -1,13 +1,13 @@
 ---
 title: "Sandbox Testing"
-subtitle: "What you can test, and what you cannot"
+subtitle: "What you can test"
 hidden: false
 ---
 
 Sandbox is isolated from production, with its own data, API key, and dashboard. No real money moves.
 
 <Warning title="Sandbox cannot settle a gift">
-You can test the whole checkout and everything the API returns, but a sandbox donation never settles into a deposit. The reconciliation half of your integration has to be confirmed in production with one small live gift, which we'll run with you.
+You can test the whole checkout and everything the API returns, but a sandbox donation never settles into a deposit. Confirm the settlement and reconciliation path in production with one small live gift, which we'll run with you.
 </Warning>
 
 You don't have to wait for verification to finish. As soon as you have a dashboard account you can create a sandbox and build against it, while nonprofit status and control person are still being verified.
@@ -18,7 +18,7 @@ You don't have to wait for verification to finish. As soon as you have a dashboa
 
 ### Create your sandbox
 
-Create it from your production dashboard. It gets its own tenant.
+Create it from your production dashboard. The sandbox uses a separate tenant from production.
 
 ### Add your team
 
@@ -28,7 +28,7 @@ Developers and QA each need an account, created by an admin on your organization
 
 Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, and production keys only against `https://api.givechariot.com`.
 
-Keep one key per environment. Event subscriptions belong to the key that created them, so with several keys in play you can end up watching one subscription while events are delivered against another, which looks exactly like events disappearing.
+Keep one key per environment. Event subscriptions belong to the key that created them, so with several keys you can end up watching one subscription while events are delivered against another, which makes events appear to be missing.
 
 ### Request a connect, if you run your own donation form
 
@@ -57,12 +57,12 @@ Any real EIN resolves in [Search Organization](/api/organizations/search). Ameri
 
 ### Creating test donations
 
-There's no simulation endpoint for these, so there are two ways to make one.
+There's no simulation endpoint for donations or deposits. You can create test data two ways:
 
 - Run a DAFpay checkout in sandbox. A completed session creates a grant, and a donation follows.
 - Create a simulated deposit from the sandbox dashboard and add donations by manual entry. This is how you get arbitrary donation shapes for testing your CRM mapping.
 
-You do neither of these in production, where a linked payer means donations arrive on their own.
+Both are for sandbox only. In production, donations arrive through linked payment sources.
 
 ## Current limitations
 
@@ -76,7 +76,7 @@ You do neither of these in production, where a linked payer means donations arri
 
 ## Next
 
-Build the flow you need: [Initiate Gifts](/guides/nonprofits/initiate) for your own donation form, [Retrieve Donations](/guides/nonprofits/donations) for everything else. If something isn't behaving, see [Troubleshooting](/guides/nonprofits/troubleshooting).
+Build the flow you need: [Initiate Gifts](/guides/nonprofits/initiate) for your own donation form, [Retrieve Donations](/guides/nonprofits/donations) for everything else. If you hit a problem, see [Troubleshooting](/guides/nonprofits/troubleshooting).
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

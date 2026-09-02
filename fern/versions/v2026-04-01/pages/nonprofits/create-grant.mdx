@@ -1,6 +1,6 @@
 ---
 title: "Create the Grant"
-subtitle: "Turning a grant intent into a gift"
+subtitle: "Capturing the DAFpay authorization"
 hidden: false
 ---
 
@@ -10,9 +10,9 @@ hidden: false
 
 You get a `grantIntent`, or a `recurringGrantIntent` for a monthly gift.
 
-### Submit your own form
+### Save the transaction on your side
 
-Persist the gift on your side first, so a failed submission can't leave your records out of step with Chariot's.
+Save your pending transaction before you call Chariot, so you can reconcile it if the call fails or times out. Don't mark it as a completed gift yet.
 
 ### Call Create Grant
 
@@ -22,15 +22,15 @@ Use [Create Recurring Grant](/api/recurring-grants/create) for a `recurringGrant
 
 Send the amount from `CHARIOT_SUCCESS`, not from your form. It can change inside the window if the donor hits their fund balance or the provider enforces a minimum.
 
-Send it in whole dollars, meaning cents rounded to the nearest 100, because DAFs only accept whole-dollar grants. If your form total has cents in it, round before you call. The amount from `CHARIOT_SUCCESS` is already whole.
+DAF grants have to be whole dollars, so the amount in cents must be divisible by 100: $150 is `15000`. Round before you call if your form total has cents in it. The amount from `CHARIOT_SUCCESS` is already whole.
 
 </Steps>
 
 <Warning title="Capture within 15 minutes">
-A grant intent expires 15 minutes after authorization. After that, Create Grant returns `410 Gone` and the donor has to start over, so don't put a queue, a batch job, or a manual approval between `CHARIOT_SUCCESS` and this call.
+A grant intent expires 15 minutes after authorization, and Create Grant then returns `410 Gone` and the donor has to start over. Because of that, don't put a queue, a batch job or a manual approval between `CHARIOT_SUCCESS` and this call.
 </Warning>
 
-Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first successful capture returns `201 Created`, and calling it again with the same session returns `200 OK` with the grant that already exists. You get `409 Conflict` only while a capture for that session is still in flight, which means waiting a moment and reading the grant rather than submitting again.
+Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first successful capture returns `201 Created`, and calling it again with the same session returns `200 OK` with the grant that already exists. You get `409 Conflict` only while a capture for that session is still in flight. Wait for it to finish, then read the grant instead of submitting again.
 
 Receiving `CHARIOT_SUCCESS` does not create a grant. If nothing calls Create Grant, the browser flow looks successful and [List Grants](/api/grants/list) returns nothing.
 

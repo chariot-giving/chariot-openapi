@@ -6,7 +6,7 @@ hidden: false
 
 This section is for nonprofits that built and run their own donation form and have to capture each gift from their own backend.
 
-If a fundraising platform hosts your form, stop here. Turn DAFpay on with your platform instead, since they already built this integration. [Find your platform](https://www.givechariot.com/dafpay-setup#integration-search). The same goes for the no-code DAFpay component: gifts reach Chariot on their own.
+If a fundraising platform hosts your form, use their DAFpay integration instead. [Find your platform](https://www.givechariot.com/dafpay-setup#integration-search). The no-code DAFpay component also sends gifts to Chariot without a Grants API call.
 
 The Grants API initiates the gift. Everything after that is [Retrieve Donations](/guides/nonprofits/donations).
 
@@ -38,7 +38,7 @@ Chariot creates connects. [Make your configuration choices](/guides/nonprofits/i
 
 ### Create the grant
 
-[Call Create Grant](/guides/nonprofits/initiate/create-grant) within 15 minutes. Without this call there is no gift.
+[Call Create Grant](/guides/nonprofits/initiate/create-grant) within 15 minutes. You have to make this call to turn the authorized intent into a grant.
 
 </Steps>
 

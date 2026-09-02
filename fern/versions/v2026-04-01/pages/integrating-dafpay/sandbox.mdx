@@ -58,7 +58,7 @@ A single-tenant test passes on a platform that misroutes gifts. Before you launc
 
 **Webhooks are not retried here.** Production retries a non-2xx response up to 10 times with backoff. Sandbox does not retry at all, so a handler that is briefly down misses the event outright. Check [List Events](/api/events/list) before concluding an event never fired.
 
-**Funds never move.** A sandbox grant stays at `Initiated`. The reconciliation half of your integration, matching an inbound gift to its grant, has to be confirmed against real remittances after go-live. See [Reconciliation](/guides/dafpay/gifts/reconciliation).
+**Funds never move.** A sandbox grant stays at `Initiated`. Matching an inbound gift to its grant has to be confirmed against real remittances after go-live. See [Reconciliation](/guides/dafpay/gifts/reconciliation).
 
 ## Tell us your connect configuration up front
 

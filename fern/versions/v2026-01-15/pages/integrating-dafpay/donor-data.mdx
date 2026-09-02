@@ -96,7 +96,7 @@ Send `anonymous` when a donor chooses to give anonymously, so the DAF provider a
 Everything in `onDonationRequest` describes the person giving. On a multi-tenant platform it's easy to pass the nonprofit's admin contact or the account holder instead, which then arrives on the gift as the donor.
 </Warning>
 
-<Note title="Pass your hidden fields too">
+<Note title="Pass your form metadata">
 Whatever identifiers your form already carries, like a form or campaign ID, a source, an appeal code or a designation code, belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
 </Note>
 
@@ -104,7 +104,7 @@ Whatever identifiers your form already carries, like a form or campaign ID, a so
 
 Mobile browsers block popups they consider decoupled from the click that asked for one, which is what happens when something slow runs in between.
 
-<Tip title="Keep it under a second">
+<Tip title="Open the popup within one second">
 - Keep the gap between the donor's click and the popup under 1000ms.
 - Don't make blocking API calls before launching the popup.
 - Prefetch what you need before the donor clicks.
@@ -112,7 +112,7 @@ Mobile browsers block popups they consider decoupled from the click that asked f
 
 Platforms usually break this in one of two ways. Either a custom button calls your own server before triggering the popup, or `onDonationRequest` goes off to fetch giving history or check eligibility. Move that work earlier, before the donor clicks.
 
-## Holding the button back
+## Blocking the button until your form validates
 
 To keep the window from opening until your validation passes, return `false` from `onDonationRequest`.
 
