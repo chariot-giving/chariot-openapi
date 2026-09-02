@@ -4577,13 +4577,10 @@ components:
         A Donation is a gift of money to a nonprofit organization.
       required:
         - id
-        - payment_source_id
         - amount_gross
         - amount_net
         - amount_fee
         - currency
-        - purpose
-        - note
         - created_at
       properties:
         id:
@@ -4593,11 +4590,9 @@ components:
           example: donation_01j8rs605a4gctmbm58d87mvsj
         external_id:
           type: string
-          readOnly: true
           description: |-
-            A short human-readable identifier for the donation, useful for reconciling against your own systems.
-            This is the same identifier shown on the donation in the Chariot dashboard.
-          example: "29247869"
+            The caller's own identifier for the donation, useful for reconciling against your own systems.
+          example: "INV-12345"
         payment_source_id:
           type: string
           description: |-
@@ -4622,11 +4617,6 @@ components:
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
-        individual_gift_amount:
-          type: integer
-          format: int64
-          description: |-
-            The amount contributed by the individual donor in minor units of the currency.
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
@@ -4650,7 +4640,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/DonationAttribution"
         initiation:
-          description: A subhash containing information about how the donation was initiated by DAFpay.
+          description: A subhash containing information about how the donation was initiated by the donor.
           allOf:
             - $ref: "#/components/schemas/DonationInitiation"
         settlement:
@@ -4661,12 +4651,12 @@ components:
           description: A subhash containing information about the grant from a Donor-Advised Fund sponsor.
           allOf:
             - $ref: "#/components/schemas/DafGrant"
-        platform:
+        metadata:
+          type: object
           description: |-
-            A subhash containing information about the platform that facilitated the donation.
-            If this is empty, then the donation was not facilitated by a platform.
-          allOf:
-            - $ref: "#/components/schemas/Platform"
+            Arbitrary key-value pairs recorded against the donation. Use this to attach your own
+            reconciliation data, campaign identifiers, or any other data your systems need.
+          additionalProperties: true
         corporate_match:
           description: |-
             A subhash containing information about the corporate match for the donation.
@@ -4965,45 +4955,6 @@ components:
           type: string
           description: The source of the corporate match.
           example: "Payroll"
-    Platform:
-      type: object
-      description: |-
-        A subhash containing information about the platform that facilitated the donation.
-      properties:
-        name:
-          type: string
-          description: The name of the platform.
-          example: "PayPal Grant Payments"
-        platform_grant_id:
-          type: string
-          description: The identifier for the grant within the platform's system.
-          example: "93492947-7894-4663-a944-f2469d0027ca"
-        metadata:
-          type: object
-          description: Additional key value pairs that were passed to the platform during the donation initiation.
-          additionalProperties:
-            type: string
-        acceptance:
-          description: |-
-            A subhash containing information about the acceptance of the grant from the platform.
-            This is only present if the platform requires grant acceptance before disbursing funds.
-          allOf:
-            - $ref: "#/components/schemas/PlatformAcceptance"
-    PlatformAcceptance:
-      type: object
-      description: |-
-        A subhash containing information about the acceptance of the grant from the platform.
-      properties:
-        accepted:
-          type: boolean
-          description: Whether the grant was accepted from the platform.
-          example: true
-        expires_at:
-          type: string
-          format: date-time
-          description: |-
-            The date and time when the acceptance of the grant will expire.
-          example: "2020-01-31T23:59:59Z"
     DafGrant:
       type: object
       description: |-
@@ -5023,10 +4974,6 @@ components:
         program_name:
           type: string
           description: The name of the program at the Donor Advised Fund sponsor.
-        sponsor_grant_id:
-          type: string
-          description: The identifier for the grant at the Donor Advised Fund sponsor.
-          example: "93492947-7894-4663-a944-f2469d0027ca"
     DonationSettlement:
       type: object
       description: |-
@@ -5061,8 +5008,8 @@ components:
     DonationInitiation:
       type: object
       description: |-
-        If the donation was initiated through a Chariot Connect instance (DAFpay), this object will contain additional information
-        about the initiation of the donation.
+        A subhash describing where and how the donation was initiated by the donor before it
+        reached Chariot.
       required:
         - initiated_at
         - frequency
@@ -5073,39 +5020,24 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
-        channel:
+        platform:
           type: string
           description: |-
-            The DAFpay integration channel used to initiate the donation.
-            - `INTEGRATED` - The donation was initiated through an integrated DAFpay instance where the DAF sponsor
-              processes the grant electronically via the DAFpay network.
-            - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
-              completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
-          example: "INTEGRATED"
-          enum:
-            - INTEGRATED
-            - UNINTEGRATED
-        web_location_url:
+            The name of the platform where the donor initiated the donation.
+          example: "Givebutter"
+        identifier:
           type: string
-          description: The URL of the web location where the donation was initiated.
+          description: |-
+            The initiating platform's own identifier for the donation. Use it to reconcile the
+            donation against records in the platform's system.
+          example: "L9E182VBGP"
+        url:
+          type: string
+          description: The URL of the page where the donor initiated the donation.
           example: "https://www.example.com/donation/1234567890"
-        fundraising_platform_name:
-          type: string
-          description: |-
-            The name of the fundraising platform that initiated the donation.
-          example: "Classy"
-        dafpay_form:
-          type: string
-          description: |-
-            The DAFpay form where the donation was initiated.
-          example: "DAF day"
-        dafpay_tracking_id:
-          type: string
-          description: The tracking ID for the donation as generated by DAFpay.
-          example: L9E182VBGP
-        dafpay_metadata:
+        metadata:
           type: object
-          description: Additional key value pairs that were passed to DAFpay during the donation initiation.
+          description: Additional key-value pairs the platform captured when the donation was initiated.
           additionalProperties:
             type: string
           example:
@@ -6370,25 +6302,6 @@ components:
         address:
           allOf:
             - $ref: "#/components/schemas/AddressInput"
-    RecipientInput:
-      type: object
-      description: |-
-        The recipient designation for a gift — the fund, chapter, program, or campaign the donor wants
-        the funds directed to.
-      properties:
-        primary_name:
-          type: string
-          description: The designated recipient of the gift (for example a fund, chapter, or campaign).
-          example: "Emergency Response Fund"
-        secondary_name:
-          type: string
-          description: A further designation under the primary one (for example a specific program within a fund).
-          example: "Wildfire Relief"
-        address:
-          type: string
-          description: |-
-            The recipient's address as a single unstructured line. Useful when the source system reports
-            an unparsed address (e.g. a stub or memo line).
     DafGrantInput:
       type: object
       description: |-
@@ -7878,14 +7791,14 @@ components:
               clear_fields:
                 type: array
                 description: |-
-                  Field paths to null (dot notation, e.g. `note`, `primary_donor.email`,
-                  `recipient.secondary_name`). Unknown paths are rejected, as are the amounts, currency,
-                  and effective_date, which have no empty representation.
+                  Field paths to null (dot notation, e.g. `note`, `attribution.primary_donor.email`).
+                  Unknown paths are rejected, as are the amounts, currency, and effective_date, which
+                  have no empty representation.
                 items:
                   type: string
                 example:
                   - "note"
-                  - "primary_donor.email"
+                  - "attribution.primary_donor.email"
               payment_source_id:
                 type: string
                 description: |-
@@ -7928,26 +7841,29 @@ components:
                 type: string
                 description: An external identifier for the donation, useful for reconciliation against your own systems.
                 example: "INV-12345"
-              primary_donor:
-                allOf:
-                  - $ref: "#/components/schemas/DonorInput"
-              joint_donor:
-                allOf:
-                  - $ref: "#/components/schemas/DonorInput"
-              recipient:
-                allOf:
-                  - $ref: "#/components/schemas/RecipientInput"
+              attribution:
+                type: object
+                description: |-
+                  A subhash containing information about how the donation is attributed. Mirrors
+                  the shape of the `attribution` object on the donation response.
+                properties:
+                  primary_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+                  joint_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
               corporate_match:
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatchInput"
-              platform_metadata:
+              metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value metadata to record against the donation. Supplying this field
-                  replaces the stored map wholesale; naming `platform_metadata` in `clear_fields` drops it.
+                  Arbitrary key-value pairs to record against the donation. Supplying this field
+                  replaces the stored map wholesale; naming `metadata` in `clear_fields` drops it.
                 additionalProperties: true
               artifact_file_ids:
                 type: array
@@ -8031,19 +7947,16 @@ components:
                   joint_donor:
                     allOf:
                       - $ref: "#/components/schemas/DonorInput"
-              recipient:
-                allOf:
-                  - $ref: "#/components/schemas/RecipientInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
               corporate_match:
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatchInput"
-              platform_metadata:
+              metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value metadata to record against the donation.
+                  Arbitrary key-value pairs to record against the donation.
                 additionalProperties: true
               artifact_file_ids:
                 type: array

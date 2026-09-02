@@ -244,8 +244,19 @@ navigation:
                   title: Lockboxes
               - mailItems:
                   title: Mail Items
-              - donations:
-                  title: Donations
+              - section: Donations
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/donations/overview.mdx
+                  - page: The Donation object
+                    slug: object
+                    path: ./pages/api/donations/object.mdx
+                  - endpoint: POST /v1/donations
+                  - endpoint: GET /v1/donations
+                  - endpoint: GET /v1/donations/{id}
+                  - endpoint: PATCH /v1/donations/{id}
+                  - endpoint: DELETE /v1/donations/{id}
               - deposits:
                   title: Deposits
               - properties:
