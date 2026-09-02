@@ -45,9 +45,21 @@ If either of those matters, you need the API path below.
 | You want DAFpay gifts, and every other gift, pulled into your CRM or ERP automatically | [Retrieve Donations](/guides/nonprofits/donations) |
 | You built and run your own donation form, and pass data with the gift | [Initiate Gifts](/guides/nonprofits/initiate), then [Retrieve Donations](/guides/nonprofits/donations) |
 | You want DAFpay on a Ways to Give page and nothing more | The button or web link from your dashboard. No code. |
-| Your platform isn't on the list | [Talk to us](mailto:support@givechariot.com) before building anything |
+| Your platform isn't on the list | [Talk to us](mailto:support@givechariot.com) first. For some platforms we build the integration ourselves and hand you a snippet, which is less work than anything you'd build. |
 
-The second row is the one people miss. Retrieving donations is worth doing however your gifts arrive, and it's independent of who put DAFpay on your form.
+## Where the gift data ends up
+
+The path you take decides where a DAFpay gift shows up, and this is the question nonprofits ask us most.
+
+| How DAFpay is on your form | Gift appears in Chariot | Gift appears in your fundraising platform | Reaches your CRM |
+| --- | --- | --- | --- |
+| Through your fundraising platform | Yes | Yes | Only if that platform has a CRM integration and you use it |
+| The no-code button, tile or web link | Yes | No | Only if you build it, through [Retrieve Donations](/guides/nonprofits/donations) |
+| A form you built, on the API | Yes | Not applicable | However you build it |
+
+If gifts have to land in your CRM, check with your platform before assuming DAFpay rides along. Plenty of platforms show the gift but don't sync it.
+
+The second row of the table above is the one people miss. Retrieving donations is worth doing however your gifts arrive, and it's independent of who put DAFpay on your form.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

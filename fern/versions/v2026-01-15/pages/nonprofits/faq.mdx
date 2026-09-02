@@ -113,6 +113,36 @@ hidden: false
         Connects are the exception. Chariot creates those, so [request one](/guides/nonprofits/initiate/connect-config) if you are running DAFpay on your own donation form.
     </Accordion>
 
+    <Accordion title="Will DAFpay gifts sync to my CRM?">
+
+        It depends on how DAFpay got onto your form. Through a fundraising platform, the gift appears in that platform, and it reaches your CRM only if the platform has a CRM integration and you have it turned on. Ask them; several show the gift without syncing it.
+
+        Through the no-code button, tile or web link, the gift is in Chariot and nowhere else. Getting it into your CRM means building on [Retrieve Donations](/guides/nonprofits/donations), which works the same however the gift arrived.
+
+    </Accordion>
+    <Accordion title="Can I turn off gifts from unconnected DAF providers?">
+
+        Not on the no-code button, tile or web link. Those allow them by default and there's no switch.
+
+        On a fundraising platform, that platform decides for everyone on it, so ask them. On a form you built, you choose it in your [connect setup](/guides/nonprofits/initiate/connect-config).
+
+        Remember what one of these is: a donor telling you they intend to give from a provider we can't submit to. Many are never completed, so don't count one as a gift until a donation shows up behind it.
+
+    </Accordion>
+    <Accordion title="Will I see every gift in a monthly DAFpay series?">
+
+        Usually not. The donor's DAF provider owns the schedule, and Chariot records the initial grant rather than creating one each month. On most fundraising platforms only that first gift is visible to you.
+
+        The money still arrives. Each monthly payment comes through as its own donation, so [Retrieve Donations](/guides/nonprofits/donations) sees all of them even when your platform shows one. Group them by donor name, provider, fund name and amount.
+
+    </Accordion>
+    <Accordion title="How do I attribute a DAFpay gift to a campaign or form?">
+
+        The gift carries the URL of the page the donor gave from, so the form source is usually enough to attribute it. The web link is the exception, since a donor who follows it isn't on a page of yours, and it passes no URL.
+
+        For anything more specific than that, a campaign code or an appeal, you need the metadata a form you built can pass. The no-code button doesn't carry it.
+
+    </Accordion>
     <Accordion title="Can I test before going live?">
         Yes. Create a sandbox from your production dashboard. See [Sandbox Testing](/guides/nonprofits/sandbox) for what can and cannot be exercised there.
     </Accordion>
