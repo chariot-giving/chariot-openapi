@@ -1,0 +1,105 @@
+---
+title: "Sandbox Testing"
+subtitle: "What you can test, and what you cannot"
+hidden: false
+---
+
+Sandbox is isolated from production, with its own data, API key, and dashboard. No real money moves.
+
+## Setting up
+
+<Steps>
+
+### Create your sandbox
+
+Create it from your production dashboard. It gets its own tenant and its own API key.
+
+### Add your team
+
+Developers and QA each need an account. An admin on your organization can create them.
+
+### Generate a sandbox API key
+
+Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`.
+
+Keep one key per environment. With more than one, webhook delivery can resolve to the wrong key and events look like they disappeared.
+
+### Request a connect, if you run your own donation form
+
+Chariot creates connects. [Request yours](/guides/nonprofits/dafpay/connect-config) and we set up sandbox and production together. Sandbox connect IDs are prefixed `test_`.
+
+Skip this if your gifts arrive through a fundraising platform, the DAFpay component, or a linked payment source.
+
+</Steps>
+
+Any real EIN resolves in [Search Organization](/api/organizations/search). American Red Cross is `53-0196605`.
+
+## What works
+
+| Flow | Notes |
+| --- | --- |
+| Search organization, create connect | |
+| Render the DAFpay button and run a session | Compare against the [demo page](https://secure.dafpay.com/demo) |
+| DAF prefill and `onDonationRequest` | Confirm you send no empty strings |
+| Initiate a gift with Create Grant | Custom donation forms only |
+| Recurring grant intents | Select the monthly option |
+| Unconnected DAF provider flow | Select The Boston Foundation to trigger it |
+| List and get grants, donations, deposits | |
+| Event subscriptions and `donation.created` | Confirm your endpoint and signature verification |
+| Create and assign properties | Your write-back path |
+| Simulated deposits with manual donation entry | From the sandbox dashboard |
+
+### Creating test donations
+
+There is no simulation endpoint for donations or deposits. Two ways to produce them:
+
+- Run a DAFpay checkout in sandbox. A completed session creates a grant, and a donation follows.
+- Create a simulated deposit from the sandbox dashboard, then add donations by manual entry. This is the practical way to get arbitrary donation shapes for testing your CRM mapping.
+
+In production you do neither. Linking a payer means donations arrive on their own.
+
+## Current limitations
+
+**You cannot settle a donation.** A sandbox donation stays at incoming, funds not received. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop cannot be exercised here. Build and test that handler against a payload you construct yourself, then confirm it in production with one small live gift. We will run that test with you.
+
+**You cannot cancel a donation.** Not in either environment. Contact us and we will cancel it.
+
+**`/v1/simulations/donations` and `/v1/simulations/deposits` do not exist.** The simulation endpoints that do exist are for Disbursements. See [Sandbox Simulations](/api/sandbox-simulations).
+
+**Webhooks are not retried in sandbox.** Production retries a non-2xx response up to 10 times with backoff. Sandbox does not retry at all, so a handler that is briefly down misses the event. Check [List Events](/api/events/list), which holds events for 30 days, before concluding an event never fired.
+
+## If your webhooks are not arriving
+
+<Steps>
+
+### Confirm you subscribed to a donation event
+
+`grant.created` only fires when a gift is initiated through your own donation form. If you are waiting for a gift record and only subscribed to grant events, nothing will arrive.
+
+### Confirm you generated the key in this environment's dashboard
+
+A key you generated covers grant and donation events both. If your key was issued some other way it may be scoped to grants only, in which case a donation subscription shows zero deliveries with no error.
+
+### Confirm you have one key for this environment
+
+With more than one, delivery can resolve to the wrong key.
+
+### Check List Events
+
+<EndpointRequestSnippet endpoint="GET /v1/events" />
+
+If the event is listed but never arrived, it is a delivery problem. If it is not listed, the event never fired.
+
+### Custom donation forms: confirm the grant exists
+
+Call [List Grants](/api/grants/list). An empty list after a successful-looking checkout means Create Grant was never called.
+
+Two grants per checkout means you are initializing with a component connect's CID, so the window is submitting the grant and so are you.
+
+</Steps>
+
+Still stuck: send us the environment, your organization name, the endpoint URL you registered, the event categories you subscribed to, and a grant or donation ID you expected an event for.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

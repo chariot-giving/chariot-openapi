@@ -1,0 +1,143 @@
+---
+title: "FAQ"
+subtitle: "Common questions from nonprofits"
+hidden: false
+---
+
+## Getting started
+
+<AccordionGroup>
+    <Accordion title="What does Chariot do for my organization?">
+        Chariot collects the gifts you already receive into one account: DAF sponsors, fundraising platforms, workplace giving, mailed checks. It codes them and gives you one API to move them into your CRM or ERP.
+
+        Instead of a portal, a login, and a reconciliation process per payer, you have one.
+    </Accordion>
+
+    <Accordion title="How is this different from DAFpay?">
+        DAFpay is donor-facing. It lets a donor give from their donor-advised fund at checkout.
+
+        Gift Processing is your side of it. It unifies the gifts after they are initiated, whether they came from DAFpay or anywhere else.
+
+        Most organizations use both.
+    </Accordion>
+
+    <Accordion title="What does onboarding involve?">
+        Create an account with your EIN, complete nonprofit verification, add your banking details, set up a payment source per payer, and share your Chariot banking details with each of them. Gifts then arrive on their own.
+
+        Verification takes 3-10 business days.
+    </Accordion>
+
+    <Accordion title="What does it cost?">
+        See [our pricing page](https://givechariot.com/pricing).
+    </Accordion>
+</AccordionGroup>
+
+## Payment sources
+
+<AccordionGroup>
+    <Accordion title="What is a payment source?">
+        A segregated address for receiving gifts from one payer. Either electronic, with its own routing and account number, or a lockbox mailing address for checks.
+
+        Every payment source settles into the same account, but each keeps separate tracking so you can tell gifts apart.
+    </Accordion>
+
+    <Accordion title="How many can I have?">
+        There is no limit. Manage them in your dashboard.
+    </Accordion>
+
+    <Accordion title="Can I delete one?">
+        Not if it has deposits or donations against it, since that would break your audit trail. Stop directing payers to it and it goes quiet.
+    </Accordion>
+</AccordionGroup>
+
+## Donations and deposits
+
+<AccordionGroup>
+    <Accordion title="What is the difference between a donation and a deposit?">
+        A deposit is a transfer of money that arrives at a payment source. A donation is one donor's gift.
+
+        One deposit usually holds many donations. A sponsor sending a weekly $10,000 transfer covering 50 donors gives you one deposit and 50 donations.
+    </Accordion>
+
+    <Accordion title="How long until a gift shows up?">
+        From another Chariot account, immediately. By ACH, 1-2 business days after the payer sends it. By check, 1-3 business days after it reaches the lockbox, plus 3-5 to settle.
+
+        The donation data is available as soon as we receive the transfer, before the funds finish settling.
+    </Accordion>
+
+    <Accordion title="How do I add my own fields to a donation?">
+        Use properties.
+
+        <EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
+
+        Properties hold your CRM record ID, internal campaign and fund codes, processing notes, and CRM status. They are searchable, so you can filter and build views on them.
+    </Accordion>
+
+    <Accordion title="What if a gift never settles in Chariot?">
+        A donation only gets a deposit when the funds reach your Chariot Account. Gifts from payers you have not linked arrive by their existing route, so those donations stay at `Incoming Outside Chariot`.
+
+        When the money turns up, find the donation, click the payment status field on the donations table, and select `Received Outside Chariot`.
+    </Accordion>
+
+    <Accordion title="Which amount should we record, and does Chariot take a fee?">
+        Record net. Gross is the gift plus any corporate match, and the fee shown on a donation is what the donation platform or third-party processor charged, not a Chariot fee. Deposits reflect net.
+
+        Chariot's own DAFpay fee depends on your plan, and Growth, Core, and Enterprise plans include DAFpay volume. It is billed through Chariot Billing rather than deducted from gifts, so it does not change the amounts on a donation. See Billing in your dashboard.
+    </Accordion>
+
+    <Accordion title="What happens if a deposit is returned?">
+        The deposit status changes and the donations stay in your system. If the funds had already settled, they are debited back.
+
+        Review the reason, sort it out with the payer, and update your records. Contact [support@givechariot.com](mailto:support@givechariot.com) if you need help.
+    </Accordion>
+
+    <Accordion title="How are duplicates handled?">
+        Chariot de-duplicates on identifiers from the payer. If you think you have a duplicate, check the donation's `artifacts` for the source file and compare effective dates and amounts. Contact support if you are unsure.
+    </Accordion>
+</AccordionGroup>
+
+## Integration
+
+<AccordionGroup>
+    <Accordion title="What does a CRM integration look like?">
+        Poll deposits by settlement date, then pull the donations on each one. Map the fields, create the record in your CRM, then assign a property back on the donation so Chariot shows it as handled.
+
+        Webhooks can tell you sooner, but deliveries can fail, so keep the poll running underneath rather than relying on events alone.
+
+        See the [Gift Processing API](/guides/nonprofits/gift-processing). Contact [support@givechariot.com](mailto:support@givechariot.com) if you want to know about pre-built integrations for your CRM.
+    </Accordion>
+
+    <Accordion title="Do I need separate keys for DAFpay and Gift Processing?">
+        No. One key generated in your dashboard covers both.
+
+        Connects are the exception. Chariot creates those, so [request one](/guides/nonprofits/dafpay/connect-config) if you are running DAFpay on your own donation form.
+    </Accordion>
+
+    <Accordion title="Can I test before going live?">
+        Yes. Create a sandbox from your production dashboard. See [Sandbox Testing](/guides/nonprofits/sandbox) for what can and cannot be exercised there.
+    </Accordion>
+</AccordionGroup>
+
+## Security
+
+<AccordionGroup>
+    <Accordion title="Is my data secure?">
+        Chariot is SOC 2 Type II certified. Data is encrypted in transit and at rest, access is role-based, and actions are logged. Our banking partner is Column N.A., a nationally chartered bank.
+
+        See our [security practices](https://givechariot.com/security).
+    </Accordion>
+
+    <Accordion title="Are my funds FDIC insured?">
+        Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through Column N.A., Member FDIC, and deposits are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+    </Accordion>
+</AccordionGroup>
+
+## Still stuck
+
+- **Email**: [support@givechariot.com](mailto:support@givechariot.com)
+- **Help Center**: [help.givechariot.com](https://help.givechariot.com/)
+- **Dashboard**: [dashboard.givechariot.com](https://dashboard.givechariot.com)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

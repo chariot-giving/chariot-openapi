@@ -12,6 +12,10 @@ All APIs in these docs are available in Sandbox.
 Additionally, Chariot provides a set of [Simulation APIs](/api/sandbox-simulations), which are only available in Sandbox.
 These APIs allow you to quickly test financial related events that might take long periods of time to occur in the real world (Production).
 
+<Note title="Simulation coverage">
+Simulation endpoints exist for **disbursements** and **inbound transfers**, the flows on this page. They do not cover donations or deposits. If you are testing DAFpay or Gift Processing, see [Sandbox Testing for nonprofits](/guides/nonprofits/sandbox).
+</Note>
+
 If you have a sandbox Event Subscription configured, calling these APIs will also result in the appropriate webhooks being sent to your endpoint.
 
 ## Testing disbursement payment rails

@@ -1,0 +1,77 @@
+---
+title: "Overview"
+subtitle: "Chariot for nonprofits"
+hidden: false
+---
+
+Chariot collects your gifts from every source: DAF sponsors, fundraising platforms, workplace giving, checks. It codes them in one place.
+
+The API moves those coded gifts into your CRM or ERP:
+
+<Steps>
+
+### Retrieve donations
+
+Pull donations with donor attribution and your codes already applied.
+
+### Create the records in your system
+
+Map the fields to your CRM or ERP.
+
+### Mark them recorded
+
+Assign a property back on the donation so Chariot shows the gift as handled.
+
+</Steps>
+
+Start with the [Gift Processing API](/guides/nonprofits/gift-processing).
+
+## How gifts reach Chariot
+
+| Source | What you do |
+| --- | --- |
+| DAFpay on your fundraising platform | Nothing. They arrive on their own. |
+| The DAFpay component on your site | Nothing. They arrive on their own. |
+| A linked DAF sponsor, platform, or lockbox | Link it once in the dashboard. |
+| DAFpay on a donation form you built | Call the Grants API to initiate the gift. |
+
+If you built your own donation form, see [Custom Donation Forms](/guides/nonprofits/dafpay). The Grants API initiates the gift; you work with donations from there.
+
+## What lives in the dashboard
+
+Configured in the dashboard, not through the API:
+
+- **Payment source linking.** Connecting each DAF sponsor, platform, or lockbox so their funds flow into your Chariot Account<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>.
+- **Donation coding.** The properties, views, and policies that categorize gifts. Your integration reads the result.
+
+## Onboarding
+
+<Steps>
+
+### Create your account
+
+Sign up at [givechariot.com](https://givechariot.com) with your organization's EIN. A control person has to claim the account.
+
+### Complete verification
+
+Chariot verifies your nonprofit status and control person. This takes 3-10 business days.
+
+### Link your external bank account
+
+Settings, then External Financial Accounts. Once linked, move funds from the account Overview page with **Move Money**, or set up automatic transfers on a schedule. ACH takes 2-3 business days and only Account Owners can initiate it.
+
+### Set up payment sources
+
+One per DAF sponsor, platform, or lockbox, then share your Chariot banking details with each of them.
+
+### Generate an API key
+
+One per environment, generated in the dashboard.
+
+</Steps>
+
+Build against [sandbox](/guides/nonprofits/sandbox) first.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
