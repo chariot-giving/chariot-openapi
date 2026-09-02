@@ -1,0 +1,45 @@
+---
+title: "Overview"
+subtitle: "Using the Grants API in a form you built"
+hidden: false
+---
+
+This section is for teams running DAFpay inside a donation form they built. If DAFpay runs on your fundraising platform or through the DAFpay component, gifts arrive in Chariot on their own and none of this applies.
+
+The Grants API initiates the gift. Everything after that is [Retrieve Donations](/guides/nonprofits/donations).
+
+## What you need
+
+Your dashboard API key already covers grants and donations, so you don't need a second one.
+
+You do need a **connect**, your configured instance of DAFpay, which produces the Connect ID (CID) that initializes the button.
+
+## The order of work
+
+<Steps>
+
+### Request your connect
+
+Chariot creates connects. [Make your configuration choices](/guides/nonprofits/initiate/connect-config) and we set up sandbox and production together.
+
+### Install the button
+
+[Add the component](/guides/nonprofits/initiate/install) to your form with your CID on it.
+
+### Send donor data
+
+[Return what you know about the donor](/guides/nonprofits/initiate/donor-data) so DAFpay can skip those fields.
+
+### Handle the result
+
+[Listen for the events](/guides/nonprofits/initiate/events) the window fires.
+
+### Create the grant
+
+[Call Create Grant](/guides/nonprofits/initiate/create-grant) within 15 minutes. Without this call there is no gift.
+
+</Steps>
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

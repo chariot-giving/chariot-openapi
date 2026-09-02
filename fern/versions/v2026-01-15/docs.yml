@@ -31,24 +31,48 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
-          - page: Gift Processing API
-            slug: gift-processing
-            path: ./pages/nonprofits/gift-processing.mdx
-          - section: Custom Donation Forms
-            slug: dafpay
-            contents:
-              - page: Overview
-                slug: /
-                path: ./pages/nonprofits/dafpay.mdx
-              - page: Configure and Request Your Connect
-                slug: connect-config
-                path: ./pages/nonprofits/connect-config.mdx
-              - page: Installing the Button
-                slug: install
-                path: ./pages/nonprofits/install.mdx
+          - page: Set Up Your Account
+            slug: setup
+            path: ./pages/nonprofits/setup.mdx
           - page: Sandbox Testing
             slug: sandbox
             path: ./pages/nonprofits/sandbox.mdx
+          - section: Initiate Gifts
+            slug: initiate
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/nonprofits/initiate-overview.mdx
+              - page: Request Your Connect
+                slug: connect-config
+                path: ./pages/nonprofits/connect-config.mdx
+              - page: Install the Button
+                slug: install
+                path: ./pages/nonprofits/install.mdx
+              - page: Send Donor Data
+                slug: donor-data
+                path: ./pages/nonprofits/donor-data.mdx
+              - page: Handle the Result
+                slug: events
+                path: ./pages/nonprofits/events.mdx
+              - page: Create the Grant
+                slug: create-grant
+                path: ./pages/nonprofits/create-grant.mdx
+          - section: Retrieve Donations
+            slug: donations
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/nonprofits/donations-overview.mdx
+              - page: Poll for Donations
+                slug: poll
+                path: ./pages/nonprofits/poll.mdx
+              - page: Record the Gift
+                slug: record
+                path: ./pages/nonprofits/record.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/nonprofits/troubleshooting.mdx
           - page: FAQ
             slug: faq
             path: ./pages/nonprofits/faq.mdx

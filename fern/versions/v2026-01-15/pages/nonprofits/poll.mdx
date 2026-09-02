@@ -1,0 +1,47 @@
+---
+title: "Poll for Donations"
+subtitle: "Retrieving what arrived"
+hidden: false
+---
+
+Poll for donations on a schedule. A poll reflects what is actually in Chariot; a webhook can be dropped.
+
+<Steps>
+
+### List deposits that settled in your window
+
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+
+Filter with `settled_at.after` and `settled_at.before`.
+
+### List the donations on each deposit
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+Pass `deposit_id`. You can also filter by `payment_source_id` or `created_at`. Pages hold up to 100 records; use `page_token` to walk the rest.
+
+Rate limits apply and are returned in the response headers. Watch them when you loop deposits, and contact us if your volume needs more headroom.
+
+### Get the full record
+
+<EndpointRequestSnippet endpoint="GET /v1/donations/{id}" example="GetDonation" />
+
+</Steps>
+
+## Webhooks
+
+Webhooks tell you sooner, but treat them as a prompt to go look rather than a record of what arrived. Deliveries can fail. In production we retry a non-2xx response up to 10 times with backoff and disable the endpoint after 5 days of failures; in sandbox there are no retries at all.
+
+| Event | Fires when |
+| --- | --- |
+| `donation.created` | A gift is recorded in Chariot |
+| `donation.updated` | A donation changes, including settling against a deposit |
+| `deposit.created`, `deposit.updated` | A transfer lands or changes status |
+
+Subscribe with [Create Event Subscription](/api/event-subscriptions/create). Signature verification is covered in [Webhooks and Events](/api/webhooks).
+
+Subscribe to donation events. `grant.created` only fires for gifts initiated through your own donation form, and initiation is not payment.
+
+If you use webhooks, keep the poll running underneath as a backstop.
+
+Next: [Record the Gift](/guides/nonprofits/donations/record).

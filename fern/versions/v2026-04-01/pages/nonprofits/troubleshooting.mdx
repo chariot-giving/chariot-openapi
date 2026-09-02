@@ -1,0 +1,53 @@
+---
+title: "Troubleshooting"
+subtitle: "The things that usually go wrong"
+hidden: false
+---
+
+## Webhooks are not arriving
+
+<Steps>
+
+### Confirm you subscribed to a donation event
+
+`grant.created` only fires when a gift is initiated through your own donation form. If you're waiting for a gift record and only subscribed to grant events, nothing will arrive.
+
+### Confirm you generated the key in this environment's dashboard
+
+A key you generated covers grant and donation events both. If your key was issued some other way it may be scoped to grants only, in which case a donation subscription shows zero deliveries with no error.
+
+### Confirm you have one key for this environment
+
+With more than one, delivery can resolve to the wrong key and events look like they disappeared.
+
+### Check List Events
+
+<EndpointRequestSnippet endpoint="GET /v1/events" />
+
+Events are held for 30 days. If the event is listed but never arrived, it's a delivery problem. If it isn't listed, the event never fired.
+
+</Steps>
+
+Sandbox does not retry a failed delivery at all, so a handler that was briefly down misses the event outright.
+
+## A checkout looked successful but there is no grant
+
+Call [List Grants](/api/grants/list). An empty list means Create Grant was never called. Receiving `CHARIOT_SUCCESS` does not create a grant.
+
+## One checkout produced two grants
+
+You're initializing with a component connect's CID rather than your API connect's. The window submits the grant and so does your backend.
+
+The no-code DAFpay component submits from the modal itself, since there's no backend to do it. Contact us if you're unsure which CID you hold.
+
+## A grant has no donation ID
+
+The donation is created asynchronously, so `donation_id` isn't on the Create Grant response and isn't always there the first time you call [Get Grant](/api/grants/get). Retry with a short backoff. Don't fall back to matching on the DAFpay tracking ID; about 8% of grants don't have one.
+
+## A donation never settles
+
+Settlement can't be triggered in sandbox, so a sandbox donation stays at incoming, funds not received, forever. That's expected. Test your reconciliation handler against a payload you construct yourself, then confirm it in production with one small live gift. We'll run that test with you.
+
+## Still stuck
+
+Send us the environment, your organization name, the endpoint URL you registered, the event categories you subscribed to, and a grant or donation ID you expected an event for: [support@givechariot.com](mailto:support@givechariot.com).
