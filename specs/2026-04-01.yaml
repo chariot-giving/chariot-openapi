@@ -6302,6 +6302,25 @@ components:
         address:
           allOf:
             - $ref: "#/components/schemas/AddressInput"
+    RecipientInput:
+      type: object
+      description: |-
+        The recipient designation for a gift — the fund, chapter, program, or campaign the donor wants
+        the funds directed to.
+      properties:
+        primary_name:
+          type: string
+          description: The designated recipient of the gift (for example a fund, chapter, or campaign).
+          example: "Emergency Response Fund"
+        secondary_name:
+          type: string
+          description: A further designation under the primary one (for example a specific program within a fund).
+          example: "Wildfire Relief"
+        address:
+          type: string
+          description: |-
+            The recipient's address as a single unstructured line. Useful when the source system reports
+            an unparsed address (e.g. a stub or memo line).
     DafGrantInput:
       type: object
       description: |-
@@ -7853,6 +7872,9 @@ components:
                   joint_donor:
                     allOf:
                       - $ref: "#/components/schemas/DonorInput"
+              recipient:
+                allOf:
+                  - $ref: "#/components/schemas/RecipientInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
@@ -7947,6 +7969,9 @@ components:
                   joint_donor:
                     allOf:
                       - $ref: "#/components/schemas/DonorInput"
+              recipient:
+                allOf:
+                  - $ref: "#/components/schemas/RecipientInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
