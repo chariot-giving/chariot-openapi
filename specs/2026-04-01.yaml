@@ -3371,6 +3371,187 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files that Chariot stores on your behalf. [Create a File Link](/api/files/create-link) to download
+        the file's contents.
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Upload a File
+      description: |-
+        Upload a file with a given purpose to Chariot as `multipart/form-data`.
+      operationId: uploadFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UploadFileRequest"
+      responses:
+        "201":
+          $ref: "#/components/responses/UploadFileResponse"
+        "200":
+          $ref: "#/components/responses/UploadFileReplayResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a file
+      description: |-
+        Retrieve a file's metadata.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The file
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/link:
+    get:
+      summary: Create a File Link
+      description: |-
+        Creates an unauthenticated temporary URL to download the file's contents. Note
+        that this link expires and therefore should not be cached.
+      operationId: createFileLink
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The file link
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/contents:
+    get:
+      summary: Get File Contents
+      description: |-
+        Returns a 302 to a temporary, unauthenticated URL, allowing clients to download file contents directly
+      operationId: getFileContents
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "302":
+          description: A redirect to a temporary URL that serves the file's bytes.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/properties:
     get:
       summary: List Properties
@@ -4432,39 +4613,63 @@ components:
           example: "donation_receipt.pdf"
         description:
           type: string
+          nullable: true
           description: The description of the file.
           example: "Donation receipt for donation to the nonprofit"
         purpose:
-          type: string
-          description: The purpose of the file.
-          enum:
-            - integration_download
-            - inbound_mail_item
-            - inbound_email
-            - grant_letter
-            - manual_upload
+          $ref: "#/components/schemas/FilePurpose"
         content_type:
           type: string
           description: The MIME type of the file.
           example: "application/pdf"
+        size_bytes:
+          type: integer
+          format: int64
+          readOnly: true
+          description: The size of the file in bytes.
+          example: 20841
         created_at:
           type: string
           format: date-time
           readOnly: true
           description: The date and time when the file was created.
           example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the file was last updated.
+          example: "2020-01-31T23:59:59Z"
+    FilePurpose:
+      type: string
+      description: |-
+        The file's purpose. Note that entries may be added to this list without notice.
+      enum:
+        - manual_upload
+        - grant_letter
+        - integration_download
+        - inbound_mail_item
+        - inbound_mail_item_thumbnail
+        - inbound_email
+        - inbound_email_attachment
+        - bank_check_image_front
+        - bank_check_image_back
+        - check_attachment
+        - bank_statement
+        - bank_account_verification_letter
+        - automation_output
+        - export
+        - other
+      example: "manual_upload"
     FileLink:
       type: object
       description: |-
-        A file link is a URL that can be used to download a file.
+        A file link is a temporary URL that downloads a file's bytes without a Chariot
+        credential. It expires an hour after it is issued.
       properties:
-        file_id:
+        url:
           type: string
-          description: The unique identifier for the file.
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
-        unauthenticated_url:
-          type: string
-          description: The unauthenticated URL to download the file.
+          description: The URL to download the file. It needs no Chariot credential.
           example: "https://cdn.givechariot.com/files/file.pdf"
         expires_at:
           type: string
@@ -4866,10 +5071,22 @@ components:
           description: A subhash containing information about the inbound ACH transfer associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
+        ach_transfer:
+          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot debits an external bank account to fund the account.
+          allOf:
+            - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
           description: A subhash containing information about the check deposit associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A subhash containing information about the inbound real-time payments transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A subhash containing information about the inbound wire transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -4912,8 +5129,8 @@ components:
         effective_date:
           type: string
           format: date-time
-          description: The effective date for the ACH transfer.
-          example: "2020-01-31T23:00:00Z"
+          description: The effective date for the ACH transfer. The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         status:
           type: string
           description: The status of the ACH transfer.
@@ -4923,6 +5140,10 @@ components:
             - declined
             - accepted
             - returned
+        company_discretionary_data:
+          type: string
+          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          example: "GRANT-2024-001"
     CheckDeposit:
       type: object
       description: |-
@@ -4954,6 +5175,74 @@ components:
             - deposited
             - rejected
             - returned
+    InboundRealTimePaymentsTransfer:
+      type: object
+      description: |-
+        A Real-Time Payments transfer initiated outside of Chariot to your financial account.
+        Inbound Real-Time Payments transfers settle immediately.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound real-time payments transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+            - declined
+        debtor_name:
+          type: string
+          description: The name of the debtor who sent the transfer.
+          example: "Charity Good"
+        debtor_routing_number:
+          type: string
+          description: The routing number of the debtor's financial account.
+          example: "1234567890"
+        debtor_account_number:
+          type: string
+          description: The account number of the debtor's financial account.
+          example: "9876543210"
+        transaction_identification:
+          type: string
+          description: The transaction identification assigned by the sender.
+          example: "20240101ABC123"
+        remittance_information:
+          type: string
+          description: Unstructured remittance information sent with the transfer.
+          example: "Grant payment"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
+    InboundWireTransfer:
+      type: object
+      description: |-
+        A wire transfer initiated outside of Chariot to your financial account.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound wire transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+        originator_name:
+          type: string
+          description: The name of the originator who sent the transfer.
+          example: "Charity Good"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originator's financial account.
+          example: "1234567890"
+        originator_account_number:
+          type: string
+          description: The account number of the originator's financial account.
+          example: "9876543210"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
       description: |-
@@ -6510,17 +6799,21 @@ components:
             The lifecycle status of the ACH transfer.
             Possible values include:
               - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
+              - `pending_submission`: The ACH transfer is queued for submission to the Federal Reserve.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
               - `completed`: The ACH transfer has been completed. Funds should be settled.
               - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
+              - `canceled`: The ACH transfer was canceled before submission.
           example: "initiated"
           enum:
             - initiated
+            - pending_submission
             - submitted
             - completed
             - rejected
             - returned
+            - canceled
         direction:
           type: string
           description: |-
@@ -6537,7 +6830,9 @@ components:
           enum:
             - corporate_credit_or_debit
             - prearranged_payments_and_deposit
+            - international_ach_transaction
             - internet_initiated
+            - corporate_trade_exchange
         company_entry_description:
           type: string
           description: |-
@@ -6557,7 +6852,8 @@ components:
           description: |-
             The ACH transfer's effective date as sent to the Federal Reserve.
             This is the date the funds will be available to the receiving organization.
-          example: "2020-01-31T23:00:00Z"
+            The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         submitted_at:
           type: string
           format: date-time
@@ -6929,6 +7225,7 @@ components:
         An inbound transfer represents a transfer of funds from an external bank account to a financial account.
       required:
         - id
+        - program_id
         - amount
         - created_at
       properties:
@@ -6937,6 +7234,10 @@ components:
           description: The unique identifier for the inbound transfer
           example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
           readOnly: true
+        program_id:
+          type: string
+          description: The unique identifier for the program that the inbound transfer belongs to.
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
         amount:
           type: integer
           format: int64
@@ -6963,6 +7264,10 @@ components:
             - completed
             - canceled
             - failed
+        transfer:
+          description: A subhash containing information about the transfer associated with the inbound transfer.
+          allOf:
+            - $ref: "#/components/schemas/Transfer"
         created_at:
           type: string
           format: date-time
@@ -7329,20 +7634,27 @@ components:
       schema:
         type: string
   requestBodies:
-    CreateFileLinkRequest:
-      description: The request body for the File Links.create endpoint
+    UploadFileRequest:
+      description: The file to upload, its purpose, and an optional description.
       required: true
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             required:
-              - file_id
+              - file
+              - purpose
             properties:
-              file_id:
+              file:
                 type: string
-                description: The unique identifier for the file to create a link for.
-                example: "file_01j8rs605a4gctmbm58d87mvsj"
+                format: binary
+                description: The file's bytes. At most 100 MiB.
+              purpose:
+                $ref: "#/components/schemas/FilePurpose"
+              description:
+                type: string
+                description: A description of the file.
+                example: "Donation receipt for donation to the nonprofit"
     CreateNonprofitAddressSuggestionRequest:
       description: Address entries to upload, each matched to a nonprofit by EIN.
       required: true
@@ -8612,6 +8924,26 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    UploadFileResponse:
+      description: The file was stored.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/File"
+    UploadFileReplayResponse:
+      description: |-
+        The `Idempotency-Key` had already stored this file, so the existing File is
+        returned and nothing was uploaded again.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/File"
     AssignPropertyResponse:
       description: The response for Properties.assign
       headers:
