@@ -12,7 +12,7 @@ Sandbox is isolated from production, with its own data, API key, and dashboard. 
 
 ### Create your sandbox
 
-From your production dashboard. It gets its own tenant.
+Create it from your production dashboard. It gets its own tenant.
 
 ### Add your team
 
@@ -20,7 +20,7 @@ Developers and QA each need an account, created by an admin on your organization
 
 ### Generate a sandbox API key
 
-Inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`.
+Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, and production keys only against `https://api.givechariot.com`.
 
 Keep one key per environment. With more than one, delivery can resolve to the wrong key and events look like they disappeared.
 
@@ -51,16 +51,16 @@ Any real EIN resolves in [Search Organization](/api/organizations/search). Ameri
 
 ### Creating test donations
 
-Two ways, since there's no simulation endpoint:
+There's no simulation endpoint for these, so there are two ways to make one.
 
 - Run a DAFpay checkout in sandbox. A completed session creates a grant, and a donation follows.
 - Create a simulated deposit from the sandbox dashboard and add donations by manual entry. This is how you get arbitrary donation shapes for testing your CRM mapping.
 
-In production you do neither — a linked payer means donations arrive on their own.
+You do neither of these in production, where a linked payer means donations arrive on their own.
 
 ## Current limitations
 
-**You can't settle a donation.** Sandbox donations stay at incoming. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop can't be exercised here — test that handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
+**You can't settle a donation.** Sandbox donations stay at incoming. Settlement is what fires `donation.updated` with a deposit, so the reconciliation half of your loop can't be exercised here. Test that handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
 
 **You can't cancel a donation,** in either environment. Contact us and we'll do it.
 

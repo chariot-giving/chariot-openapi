@@ -4,7 +4,7 @@ subtitle: "Writing status back to Chariot"
 hidden: false
 ---
 
-Write status back so your finance team sees in the dashboard what your integration sees.
+Write the status back so your finance team sees the same state in the dashboard that your integration sees.
 
 <EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
 
@@ -12,7 +12,7 @@ Write status back so your finance team sees in the dashboard what your integrati
 `PATCH /v1/donations/{id}` is not available to external API keys and returns `404`.
 </Warning>
 
-Create a CRM status property with the states your process uses and drive it from your integration; saved views per status let your team work the exceptions. Properties also carry your CRM record ID, campaign or fund codes, and processing notes.
+Create a CRM status property with the states your process uses and drive it from your integration. Saved views per status let your team work the exceptions. Properties also carry your CRM record ID, internal campaign or fund codes, and processing notes.
 
 ## Payment status
 
@@ -32,23 +32,9 @@ The dashboard shows friendlier labels for these, so match on the values above ra
 
 ## Gifts that arrive outside Chariot
 
-A donation only gets a deposit when funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so they stay at `INCOMING_OUTSIDE_CHARIOT` forever.
+A donation only gets a deposit once the funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so those donations stay at `INCOMING_OUTSIDE_CHARIOT` and never get one.
 
-When the money turns up, find the donation by tracking ID, external ID, or donor and amount, then set its payment status on the donations table. That's a manual step in the dashboard, and linking the payer removes it.
-
-## Before you launch
-
-* [ ] Payment sources linked in the dashboard for each payer you route
-* [ ] Donation coding configured in the dashboard: properties, views, policies
-* [ ] Retrieval built on a scheduled poll of [List Deposits](/api/deposits/list) and [List Donations](/api/donations/list)
-* [ ] If you use webhooks, the poll still runs underneath as a backstop
-* [ ] CRM status property created, including a state for gifts received offline
-* [ ] Write-back built on [Assign Property](/api/properties/assign)
-* [ ] Any webhook handler returns 2xx quickly, is idempotent, and verifies signatures
-* [ ] Your team knows an incoming status is not banked
-* [ ] Finance aligned on the reconciliation process
-
-Settlement can't be triggered in sandbox, so confirm that path with a small live gift after go-live. See [sandbox limitations](/guides/nonprofits/sandbox#current-limitations).
+When the money turns up, find the donation by its tracking ID, external ID, or the donor and amount, then set its payment status on the donations table. That's a manual step in the dashboard, and linking the payer takes it away.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

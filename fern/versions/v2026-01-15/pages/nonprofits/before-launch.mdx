@@ -1,0 +1,40 @@
+---
+title: "Before You Launch"
+subtitle: "What to confirm before real gifts run through this"
+hidden: false
+---
+
+Work through whichever half applies to you. If you built your own donation form you need both, and if your gifts arrive through a platform, a linked payer or the DAFpay component, you only need the second.
+
+## Your donation form
+
+* [ ] Connect requested and [configured](/guides/nonprofits/initiate/connect-config) in sandbox and production
+* [ ] Chariot Connect installed, Connect ID wired to the component
+* [ ] Button at the top of the form, above the amount
+* [ ] No empty-string identity fields in `onDonationRequest`, and DAF prefill verified
+* [ ] Create Grant called well inside the 15-minute window, and the handler is idempotent
+* [ ] Recurring intents branch to Create Recurring Grant
+* [ ] Grants created with the amount from `CHARIOT_SUCCESS`
+* [ ] One checkout produces one grant
+* [ ] `donationId` read from Get Grant with a retry, not matched on tracking ID
+* [ ] Confirmation page renders tracking ID, EIN, organization name, and provider link
+* [ ] Popup timing checked on mobile, under 1000ms from click to popup
+* [ ] Everything downstream built on [Retrieve Donations](/guides/nonprofits/donations)
+
+## Gift processing
+
+* [ ] Payment sources linked in the dashboard for each payer you route
+* [ ] Donation coding configured in the dashboard: properties, views, policies
+* [ ] Retrieval built on a scheduled poll of [List Deposits](/api/deposits/list) and [List Donations](/api/donations/list)
+* [ ] If you use webhooks, the poll still runs underneath as a backstop
+* [ ] CRM status property created, including a state for gifts received offline
+* [ ] Write-back built on [Assign Property](/api/properties/assign)
+* [ ] Any webhook handler returns 2xx quickly, is idempotent, and verifies signatures
+* [ ] Your team knows an incoming status is not banked
+* [ ] Finance aligned on the reconciliation process
+
+Settlement can't be triggered in sandbox, so confirm that path with a small live gift after go-live. See [sandbox limitations](/guides/nonprofits/sandbox#current-limitations).
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

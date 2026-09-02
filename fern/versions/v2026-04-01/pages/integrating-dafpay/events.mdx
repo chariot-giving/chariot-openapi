@@ -67,7 +67,7 @@ Connect fires three events. Everything your integration does after a donor opens
 
 ## When the amount changes mid-session
 
-The amount you passed in can change inside the window: Connect suggests the donor's available balance if they ask for more than they have, and suggests the provider's minimum if there is one.
+The amount you passed in can change inside the window. If the donor asks for more than their fund holds, Connect suggests their available balance instead, and if their provider has a minimum, Connect suggests that.
 
 Always send the amount from `CHARIOT_SUCCESS` to Create Grant, never the one from your form.
 
@@ -75,19 +75,19 @@ Always send the amount from `CHARIOT_SUCCESS` to Create Grant, never the one fro
 
 ## Between the window closing and your confirmation page
 
-There's a gap while your backend calls Create Grant. Show a loading screen from `CHARIOT_SUCCESS` until that call returns, and tell the donor not to navigate away — without one they refresh, and that goes badly.
+There's a gap while your backend calls Create Grant. Show a loading screen from `CHARIOT_SUCCESS` until that call returns, and tell the donor not to navigate away. Without one, donors refresh the page, and that goes badly.
 
 <Frame caption="Loading screen example">
     <img src='../../images/dafpay_form_click.png' />
     <img src='../../images/dafpay_loading_screen.png' />
 </Frame>
 
-Two things we correct on most reviews of the confirmation page itself:
+Two things come up on almost every review of the confirmation page.
 
 **Don't say the gift is being processed.** DAFpay submits a grant request. The DAF provider decides on it and sends the money, usually one to two weeks later.
 
 **Don't promise a tax receipt.** The donor took their deduction when they funded their DAF, so no receipt is coming for this gift.
 
-If you accept unintegrated grants, the page carries more: see [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+If you accept unintegrated grants, that page has more to carry. See [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
 
 Next: [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant).

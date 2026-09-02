@@ -74,6 +74,9 @@ navigation:
               - page: Record the Gift
                 slug: record
                 path: ./pages/nonprofits/record.mdx
+          - page: Before You Launch
+            slug: before-launch
+            path: ./pages/nonprofits/before-launch.mdx
           - page: Troubleshooting
             slug: troubleshooting
             path: ./pages/nonprofits/troubleshooting.mdx

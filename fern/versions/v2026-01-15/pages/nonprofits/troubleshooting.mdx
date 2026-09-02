@@ -38,7 +38,7 @@ Call [List Grants](/api/grants/list). An empty list means Create Grant was never
 
 You're initializing with a component connect's CID rather than your API connect's. The window submits the grant and so does your backend.
 
-The no-code component submits from the modal itself, having no backend. Contact us if you're unsure which CID you hold.
+The no-code component has no backend, so it submits from the modal itself. Contact us if you're not sure which CID you hold.
 
 ## A grant has no donation ID
 
@@ -46,7 +46,7 @@ The donation is created asynchronously, so `donationId` isn't on the Create Gran
 
 ## A donation never settles
 
-Expected in sandbox — settlement can't be triggered there. Test your reconciliation handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
+This is expected in sandbox, where settlement can't be triggered at all. Test your reconciliation handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
 
 ## Still stuck
 

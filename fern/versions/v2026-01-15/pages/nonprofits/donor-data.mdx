@@ -4,7 +4,7 @@ subtitle: "What to pass in onDonationRequest, and what to leave out"
 hidden: false
 ---
 
-Return what you know from `onDonationRequest`. Anything you leave out, DAFpay fills from the donor's DAF account.
+Return what you know about the donor from `onDonationRequest`. Anything you leave out, DAFpay fills in from their DAF account.
 
 <CodeBlocks>
 ```javascript JavaScript
@@ -66,7 +66,7 @@ Send only what we can't get from the provider: campaign and source IDs, a design
 Anything longer than its maximum is truncated rather than rejected.
 
 <Note title="Pass your hidden fields too">
-Whatever identifiers your form already carries — form or campaign ID, source, appeal code, designation code — belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
+Whatever identifiers your form already carries, like a form or campaign ID, a source, an appeal code or a designation code, belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
 </Note>
 
 ## Holding the button back
@@ -77,7 +77,7 @@ To keep the window from opening until your own validation passes, return `false`
 
 ## Popup timing
 
-Mobile browsers block popups they consider decoupled from the click, which happens when something slow runs in between.
+Mobile browsers block popups they consider decoupled from the click that asked for one, which is what happens when something slow runs in between.
 
 <Tip title="Keep it under a second">
 - Keep the gap between the donor's click and the popup under 1000ms.
@@ -86,6 +86,6 @@ Mobile browsers block popups they consider decoupled from the click, which happe
 - Prefetch what you need before the donor clicks.
 </Tip>
 
-Two ways forms break this: a custom button that calls your server before triggering the popup, and async work inside `onDonationRequest` such as fetching giving history. Move that work earlier.
+Forms usually break this in one of two ways. Either a custom button calls your own server before triggering the popup, or `onDonationRequest` goes off to fetch something like giving history. Move that work earlier, before the donor clicks.
 
 Next: [Handle the Result](/guides/nonprofits/initiate/events).

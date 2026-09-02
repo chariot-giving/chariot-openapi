@@ -4,11 +4,11 @@ subtitle: "Monthly gifts from a DAF"
 hidden: false
 ---
 
-A donor can set up a `MONTHLY` gift from their DAF instead of a one-time one.
+A donor can set up a `MONTHLY` gift from their DAF instead of giving once.
 
-The DAF provider owns the schedule. Chariot records the initial grant with `frequency: MONTHLY` and doesn't create a new grant each month, and we aren't notified if the donor cancels or changes it — that happens in their provider's portal.
+The DAF provider owns the schedule. Chariot records the initial grant with `frequency: MONTHLY` and doesn't create a new grant each month, and we aren't notified when a donor cancels or changes one, because they do that in their provider's portal.
 
-A recurring session returns a `recurringGrantIntent` on `CHARIOT_SUCCESS` rather than a `grantIntent`.
+A recurring session returns a `recurringGrantIntent` on `CHARIOT_SUCCESS` instead of a `grantIntent`.
 
 <CodeBlocks>
 ```json onSuccessMetadata

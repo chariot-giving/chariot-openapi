@@ -4,21 +4,21 @@ subtitle: "Capturing a grant intent"
 hidden: false
 ---
 
-A completed Connect session gives you a grant intent. Your backend turns it into a grant.
+A completed Connect session gives you a grant intent, and your backend is what turns that intent into a grant.
 
 <Error title="CHARIOT_SUCCESS does not create a grant">
-The window authorizes an intent and stops. Until your backend calls [Create Grant](/api/grants/create), the grant does not exist and [List Grants](/api/grants/list) returns nothing — while the browser flow looks entirely successful.
+The window authorizes an intent and stops there. Until your backend calls [Create Grant](/api/grants/create), the grant does not exist and [List Grants](/api/grants/list) returns nothing, even though the browser flow looked completely successful.
 </Error>
 
 <Note title="Use your API connect's CID">
-The no-code DAFpay component submits the grant from the modal itself, since it has no backend. That's a different connect. Initialize with a component CID and both the modal and your backend submit, which is why one checkout yields two grants. Ask [support@givechariot.com](mailto:support@givechariot.com) if you're unsure which you hold.
+The no-code DAFpay component has no backend, so it submits the grant from the modal itself. It uses a different connect from the one you integrate against. If you initialize with a component CID, the modal submits the grant and your backend submits it too, which is how one checkout ends up producing two grants. Ask [support@givechariot.com](mailto:support@givechariot.com) if you're not sure which CID you hold.
 </Note>
 
 ## What Create Grant takes
 
 `workflowSessionId` and `amount` are required. `applicationFeeAmount`, `donor`, `note` and `designation` are optional.
 
-Send the amount from `CHARIOT_SUCCESS` rather than the one from your form, and send it in whole dollars — cents rounded to the nearest 100 — since DAFs only accept whole-dollar grants.
+Send the amount from `CHARIOT_SUCCESS` rather than the one from your form, and send it in whole dollars, meaning cents rounded to the nearest 100, since DAFs only accept whole-dollar grants.
 
 <Warning title="Fees are capped at 5% together">
 `applicationFeeAmount` is the fee your platform takes on top of Chariot's, in cents. Chariot collects it from the nonprofit and passes it to you, and only when the grant is actually received.

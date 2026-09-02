@@ -6,7 +6,7 @@ hidden: false
 
 The button renders inline, but the checkout runs cross-origin: an iframe on most desktop browsers, a popup at `https://secure.dafpay.com` on mobile, Safari, or a viewport too small for the modal. Either way the bundle loads from Chariot's CDN and the component injects `@font-face` rules and inline styles into your document.
 
-If your site sends a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) header, allow the directives below or DAFpay fails to load with no error a donor can see.
+If your site sends a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) header, you need to allow the directives below. Otherwise DAFpay fails to load and the donor sees no error at all.
 
 ### Required Directives
 
@@ -42,7 +42,7 @@ If you deliver CSP via a `<meta http-equiv="Content-Security-Policy">` tag inste
 
 ### If the button doesn't render
 
-Check the console for `Refused to load the script/frame/font/style` — the error names the directive that blocked it — and the Network tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
+Check the browser console for `Refused to load the script/frame/font/style`, which names the directive that blocked the request, and check the Network tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
 
 If PCI scope or a vendor policy means you can't relax your CSP, contact support and we'll talk through alternatives.
 

@@ -6,7 +6,7 @@ hidden: false
 
 ## Install the JavaScript package
 
-The button is a small JavaScript package. Load it from the Chariot CDN, or install from [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. CDN builds have to load from `https://cdn.givechariot.com` at runtime — bundling it or hosting a copy breaks it.
+The button is a small JavaScript package. Load it from the Chariot CDN, or install it from [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. If you use the CDN, the script has to load from `https://cdn.givechariot.com` at runtime, so bundling it or hosting your own copy will break it.
 
 <CodeBlocks>
 ```html CDN
@@ -56,7 +56,7 @@ const App = () => {
 
 ## Where to put the button
 
-List DAFpay alongside your primary payment methods — credit card, bank transfer, Apple Pay — and put it above the amount and contact fields, or [Express Checkout](/guides/dafpay/integrating-dafpay/donor-data) can't prefill.
+List DAFpay alongside your primary payment methods, next to credit card, bank transfer and Apple Pay. Put it above the amount and the contact fields, since [Express Checkout](/guides/dafpay/integrating-dafpay/donor-data) can only prefill when the button comes first.
 
 <Frame caption="Placement is key!">
     <img src='../../images/button-placement.png' />
@@ -64,7 +64,7 @@ List DAFpay alongside your primary payment methods — credit card, bank transfe
 
 ## Themes
 
-Add a theme name to the component. Without one you get `DefaultTheme`.
+Add a theme name to the component. If you leave it off, you get `DefaultTheme`.
 
 <CodeBlocks>
 ```html HTML
@@ -105,7 +105,7 @@ Add a theme name to the component. Without one you get `DefaultTheme`.
 
 **Custom Theme**
 
-For a custom theme, register an object with the properties you want to change, using [Tailwind CSS](https://tailwindcss.com/) values. Only the three below are adjustable — allowing more would mean shipping all of Tailwind in the bundle, at a load-time cost to every donor.
+For a custom theme, register an object with the properties you want to change, using [Tailwind CSS](https://tailwindcss.com/) values. Only the three properties below are adjustable. Allowing more would mean shipping all of Tailwind in the bundle, which would cost every donor load time.
 
 <CodeBlocks>
 ```javascript JavaScript
