@@ -18,7 +18,7 @@ Call [List Grants](/api/grants/list). An empty list means Create Grant was never
 
 ## One checkout produced two grants
 
-You're initializing with an auto-capture CID, which submits the grant from the modal, while your backend submits it too. See [capture mode](/guides/dafpay/integrating-dafpay/connect-config), and contact us if you're not sure which CID you hold.
+You're initializing with the Connect ID for the no-code button rather than the one for your integration. That one submits the gift from inside the window, so your backend submits a second. See [which Connect ID to use](/guides/dafpay/integrating-dafpay/connect-config).
 
 ## Create Grant is failing
 
