@@ -4462,6 +4462,7 @@ components:
           description: |-
             The original amount of the donation as intended by the donor in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 25000
         amount_net:
           type: integer
           format: int64
@@ -4469,12 +4470,14 @@ components:
             The amount of the donation that the nonprofit will receive after DAF and/or
             platform processing fees are deducted in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 24500
         amount_fee:
           type: integer
           format: int64
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
+          example: 500
         individual_gift_amount:
           type: integer
           format: int64
@@ -6876,21 +6879,21 @@ components:
           description: |-
             The date and time at which the ACH transfer was settled.
             If the transfer is not settled, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         rejected_at:
           type: string
           format: date-time
           description: |-
             The date and time at which the ACH transfer was rejected.
             If the transfer is not rejected, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         returned_at:
           type: string
           format: date-time
           description: |-
             The date and time at which the ACH transfer was returned.
             If the transfer is not returned, this will be null.
-          example: "2020-07-12 15:00:00.000"
+          example: "2020-07-12T15:00:00Z"
         created_at:
           type: string
           format: date-time

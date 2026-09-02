@@ -8,6 +8,24 @@ hidden: false
 
 This guide is for fundraising platforms adding DAFpay on behalf of the nonprofits they serve. If you are a nonprofit putting DAFpay on your own form, start with [For Nonprofits](/guides/nonprofits).
 
+You integrate once and enable DAFpay for many nonprofits. Each one gets its own connect and its own Connect ID, and your platform is what decides which connect a given donation form initializes.
+
+```
+        your platform
+              │
+    ┌─────────┼─────────┐
+    ▼         ▼         ▼
+Nonprofit A  B         C
+ connect   connect   connect
+    └─────────┼─────────┘
+              ▼
+           DAFpay
+              ▼
+        Grant → Donation
+```
+
+Getting that mapping wrong is the one mistake that misroutes money, so store the Connect ID against the nonprofit it belongs to and never fall back to a single platform-wide CID.
+
 ## How it works
 
 DAFpay handles the whole grant submission: credential verification, multi-factor authentication, error management and fee collection, for every DAF provider we support.
@@ -31,6 +49,16 @@ Your backend turns the donor's authorized intent into a grant, and you query Cha
 <Frame>
     <img src='../../images/DAFpay_API_Docs_Image.png' />
 </Frame>
+
+## What each stage means
+
+```
+DAFpay session → grant intent → Grant → Donation → Deposit
+```
+
+The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the money actually arrives in.
+
+A successful DAFpay session is not a gift, and a donation that exists is not money in the bank. Nothing here can be collapsed into "the donation succeeded".
 
 ## Where to start
 

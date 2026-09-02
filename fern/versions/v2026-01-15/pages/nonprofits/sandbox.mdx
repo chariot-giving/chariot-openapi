@@ -24,7 +24,7 @@ Developers and QA each need an account, created by an admin on your organization
 
 Generate it inside the sandbox dashboard. Sandbox keys only work against `https://sandboxapi.givechariot.com`, and production keys only against `https://api.givechariot.com`.
 
-Keep one key per environment. With more than one, delivery can resolve to the wrong key and events look like they disappeared.
+Keep one key per environment. Event subscriptions belong to the key that created them, so with several keys in play you can end up watching one subscription while events are delivered against another, which looks exactly like events disappearing.
 
 ### Request a connect, if you run your own donation form
 

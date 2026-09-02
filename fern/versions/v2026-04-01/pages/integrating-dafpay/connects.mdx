@@ -79,6 +79,12 @@ fetch('https://sandboxapi.givechariot.com/v1/connects', options)
 </CodeBlocks>
 
 ## Create a Launch Plan
-Create Connect runs once for every nonprofit on your platform, so decide during development when that call happens: at onboarding, at their first DAFpay gift, or as a backfill. We ask for this plan before issuing [production keys](/guides/dafpay/integrating-dafpay/prod-keys).
+Create Connect runs once for every nonprofit on your platform, so decide during development when that call happens. Call it when the nonprofit enables DAFpay, then store the CID against that nonprofit in your own database. Don't call it during a donor checkout, and don't share one CID across nonprofits: the CID is what tells Chariot whose gift this is.
+
+```
+your nonprofit record ──► chariot_connect_id
+```
+
+For nonprofits you already have when you launch, the same call is your backfill. We ask for that plan before issuing [production keys](/guides/dafpay/integrating-dafpay/prod-keys).
 
 Next: [Configure Your Connect](/guides/dafpay/integrating-dafpay/connect-config).

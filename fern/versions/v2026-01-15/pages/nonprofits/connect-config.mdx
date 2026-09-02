@@ -4,7 +4,19 @@ subtitle: "Choose how DAFpay behaves on your form, and send us the result"
 hidden: false
 ---
 
-Your **connect** controls what the DAFpay window does when a donor opens it from your form. Chariot creates connects, so make your choices below and send them to us. We set up sandbox and production together.
+A **connect** is your DAFpay configuration, and it controls what the window does when a donor opens it from your form. Chariot creates connects, so make your choices below and send them to us. We set up sandbox and production together, each with its own Connect ID (CID).
+
+## Two kinds of connect
+
+There are two, and using the wrong one is the cause of a checkout producing two grants.
+
+| | API connect | Component connect |
+|---|---|---|
+| Used by | A donation form you built | Chariot's no-code DAFpay component |
+| Who submits the grant | Your backend, with Create Grant | The modal itself |
+| Do you call Create Grant? | Yes | No |
+
+Everything in this section assumes an API connect. Ask [support@givechariot.com](mailto:support@givechariot.com) if you aren't sure which CID you hold.
 
 Anything you leave at its default is fine. Copy the result, or send it in one click.
 

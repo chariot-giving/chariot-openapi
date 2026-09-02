@@ -26,13 +26,11 @@ Send it in whole dollars, meaning cents rounded to the nearest 100, because DAFs
 
 </Steps>
 
-<Warning title="15 minutes, one attempt">
-A grant intent has to be captured within 15 minutes of authorization or the call returns `410 Gone`. Each intent can only be captured once; a duplicate returns `409 Conflict`.
-
-Don't put a queue, a batch job, or a manual approval between `CHARIOT_SUCCESS` and this call.
-
-Create Grant takes no idempotency key, so your own handler has to be the guard: record that you captured an intent before you retry anything, or a retry becomes a second capture attempt and comes back `409`.
+<Warning title="Capture within 15 minutes">
+A grant intent expires 15 minutes after authorization. After that, Create Grant returns `410 Gone` and the donor has to start over, so don't put a queue, a batch job, or a manual approval between `CHARIOT_SUCCESS` and this call.
 </Warning>
+
+Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first successful capture returns `201 Created`, and calling it again with the same session returns `200 OK` with the grant that already exists. You get `409 Conflict` only while a capture for that session is still in flight, which means waiting a moment and reading the grant rather than submitting again.
 
 Receiving `CHARIOT_SUCCESS` does not create a grant. If nothing calls Create Grant, the browser flow looks successful and [List Grants](/api/grants/list) returns nothing.
 

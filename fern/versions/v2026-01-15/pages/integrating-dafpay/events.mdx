@@ -9,8 +9,18 @@ Connect fires three events. Everything your integration does after a donor opens
 | Event | Fires when | Metadata |
 |---|---|---|
 | `CHARIOT_INIT` | The Connect script is initialized and ready. | None |
-| `CHARIOT_SUCCESS` | The donor finished. Carries the session id and the grant intent, which you pass to [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create). | `OnSuccessMetadata` |
+| `CHARIOT_SUCCESS` | The donor authorized a grant intent. No grant exists yet. Pass the intent to [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create). | `OnSuccessMetadata` |
 | `CHARIOT_EXIT` | The donor left without completing, an error occurred, or the donor confirmed an unintegrated grant. | `OnExitMetadata` |
+
+<Note title="Tie the session to your transaction">
+When `CHARIOT_SUCCESS` fires, hand your backend the `workflowSessionId` alongside your own transaction id and the nonprofit it belongs to:
+
+```
+your transaction ── nonprofit_id ── connect_id ── workflowSessionId
+```
+
+Everything downstream, from capturing the grant to reconciling the donation, is keyed off that row.
+</Note>
 
 ## Payloads
 
@@ -64,6 +74,19 @@ Connect fires three events. Everything your integration does after a donor opens
 | `INACTIVE_CARD`            | Inactive card.                                                                                                                                                                                                                |
 | `RECURRING_NOT_SUPPORTED`  | Recurring grants are not supported by this DAF
 | `UNINTEGRATED_DAF_NOT_SUPPORTED` | Unintegrated DAF is not supported by DAFpay
+
+Not every exit is a failure. What you do depends on the reason.
+
+| Reason | What happened | What to do |
+|---|---|---|
+| `USER_EXIT` | The donor closed the window | Return them to your form |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor recorded an intent for a provider we can't submit to | Show them how to finish, and record the intent rather than a gift |
+| `SESSION_NOT_FOUND` | The session expired | Have them start again |
+| `INSTITUTION_DOWN_ERROR`, `CONNECTION_FAILED` | The provider is unreachable | Ask them to try again later |
+| `CREDENTIALS_ERROR`, `TFA_ERROR`, `INVALID_CARD`, `INACTIVE_CARD` | The donor couldn't authenticate at their provider | Let them retry or pick another provider |
+| `EIN_NOT_FOUND`, `INELIGIBLE_ORGANIZATION`, `NO_CHARITABLE_ACCOUNTS`, `RECURRING_NOT_SUPPORTED`, `UNINTEGRATED_DAF_NOT_SUPPORTED` | This gift can't be made this way | Offer another payment method |
+| `CID_NOT_FOUND`, `SERVICE_DEACTIVATED` | Your configuration is wrong | Check the CID you initialized with |
+| `ZERO_AMOUNT`, `INVALID_PRESELECTED_DAF`, `CUSTOM_ERROR`, `INTERNAL_ERROR` | Something in the request or on our side | Log it and contact support if it repeats |
 
 ## When the amount changes mid-session
 

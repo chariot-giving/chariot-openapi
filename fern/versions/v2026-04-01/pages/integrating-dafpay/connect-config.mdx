@@ -8,6 +8,18 @@ A connect is a nonprofit's instance of DAFpay, and its configuration decides wha
 
 Do this when you request sandbox keys, not at QA. A sandbox connect that behaves differently from production means you build against the wrong shape and find out at the end, and a field you never passed in sandbox is a field you never tested.
 
+## Two kinds of connect
+
+There are two, and using the wrong one is the cause of a checkout producing two grants.
+
+| | API connect | Component connect |
+|---|---|---|
+| Used by | A donation form you built | Chariot's no-code DAFpay component |
+| Who submits the grant | Your backend, with Create Grant | The modal itself |
+| Do you call Create Grant? | Yes | No |
+
+Everything in this guide assumes an API connect. Ask [support@givechariot.com](mailto:support@givechariot.com) if you aren't sure which CID you hold.
+
 ## Donor details step
 
 The step inside the window where the donor's name, email and address appear. DAFpay fills them from the donor's DAF account, so the donor retypes nothing, and it collects anything your form doesn't ask for, such as a mailing address a nonprofit needs for receipting.

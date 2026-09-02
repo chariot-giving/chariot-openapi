@@ -42,4 +42,12 @@ After you submit your own donation form, don't forget to call the [Create Recurr
 If your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
 </Note>
 
+## How to model it on your side
+
+Don't model a monthly gift as one long-running grant. Chariot records the first one and nothing after it, so each later payment arrives as its own donation with nothing linking it back.
+
+Store the original grant as the start of a series and reconcile each subsequent donation separately, grouping by donor name, provider, fund name and amount. `initiation.frequency` on the donation tells you a gift belongs to a monthly series rather than being a one-time gift.
+
+You won't be told when a donor cancels or changes the amount, since that happens in their provider's portal. Treat a series as open-ended and let the absence of payments speak for itself rather than promising the nonprofit a schedule.
+
 Next: [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).

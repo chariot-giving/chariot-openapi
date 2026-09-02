@@ -25,9 +25,13 @@ You're initializing with a component connect's CID rather than your API connect'
 | Code | Meaning |
 |---|---|
 | `410 Gone` | The intent is older than 15 minutes. The donor has to start over. |
-| `409 Conflict` | That intent was already captured. Check whether you have a grant for it before retrying. |
-| `400 Bad Request` | An amount that isn't whole dollars, a field over its maximum length, or Chariot's fee plus your `applicationFeeAmount` exceeding 5% of the grant. |
+| `409 Conflict` | A capture for that session is still in flight. Wait, then read the grant instead of submitting again. |
+| `400 Bad Request` | An amount that isn't divisible by 100, a field over its maximum length, or Chariot's fee plus your `applicationFeeAmount` exceeding 5% of the grant. |
 | `401` / `403` | Wrong environment for the key. Sandbox keys only work against `sandboxapi.givechariot.com`. |
+
+## Create Grant returned 200 instead of 201
+
+Nothing is wrong. `201` means you created the grant just now; `200` means that session was already captured and the response is the existing grant.
 
 ## The donor's prefill is empty
 

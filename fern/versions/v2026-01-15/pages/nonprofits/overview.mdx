@@ -10,9 +10,9 @@ Chariot collects your gifts from every source: DAF sponsors, fundraising platfor
 
 <Steps>
 
-### Initiate the gift
+### Capture the gift
 
-Only if you built your own donation form. The Grants API records the donor's DAF gift at checkout, and a donation follows from it.
+Only if you built your own donation form. DAFpay authorizes the donor's gift in the browser, and your server calls the Grants API to capture it. A donation follows from that.
 
 Everyone else skips this step. See [Initiate Gifts](/guides/nonprofits/initiate).
 
@@ -24,14 +24,26 @@ See [Retrieve Donations](/guides/nonprofits/donations).
 
 </Steps>
 
+## What each stage means
+
+```
+DAFpay session → grant intent → Grant → Donation → Deposit
+```
+
+The donor authorizes an intent in the browser. Capturing that intent creates a **Grant**, the donor's instruction to their DAF provider. A **Donation** is the gift record Chariot keeps once the provider acts on it, and a **Deposit** is the transfer the money actually arrives in.
+
+A successful DAFpay session is not a gift, and a donation that exists is not money in the bank. Nothing here can be collapsed into "the donation succeeded".
+
 ## How gifts reach Chariot
 
 | Source | What you do |
 | --- | --- |
-| DAFpay on your fundraising platform | Nothing. They arrive on their own. |
-| The DAFpay component on your site | Nothing. They arrive on their own. |
-| A linked DAF sponsor, platform, or lockbox | Link it once in the dashboard. |
-| DAFpay on a donation form you built | Call the Grants API to initiate the gift. |
+| DAFpay on your fundraising platform | No API call to start the gift. It reaches Chariot on its own. |
+| The DAFpay component on your site | No API call to start the gift. It reaches Chariot on its own. |
+| A linked DAF sponsor, platform, or lockbox | Link it once in the dashboard, then nothing per gift. |
+| DAFpay on a donation form you built | Your server captures each gift with the Grants API. |
+
+Either way you still retrieve and record the donations. The difference is only whether you start the gift yourself.
 
 ## What lives in the dashboard
 

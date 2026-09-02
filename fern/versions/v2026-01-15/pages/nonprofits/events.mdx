@@ -7,7 +7,7 @@ hidden: false
 | Event | Fires when | Metadata |
 |---|---|---|
 | `CHARIOT_INIT` | The Chariot Connect script is initialized and ready to run. | None |
-| `CHARIOT_SUCCESS` | The donor finished. Carries the session id and the grant intent. | `OnSuccessMetadata` |
+| `CHARIOT_SUCCESS` | The donor authorized a grant intent. No grant exists yet. Carries the session id and the intent. | `OnSuccessMetadata` |
 | `CHARIOT_EXIT` | The donor left without completing, an error occurred, or the donor confirmed an unintegrated grant. | `OnExitMetadata` |
 
 <CodeBlocks>
@@ -90,6 +90,19 @@ import ChariotConnect from 'react-chariot-connect';
 | `UNINTEGRATED_DAF_NOT_SUPPORTED` | Unintegrated DAF is not supported by DAFpay. |
 
 `UNINTEGRATED_GRANT_CONFIRMED` is not a failure. It means the donor's provider isn't connected to DAFpay and they confirmed their intent anyway. See [donors on an unconnected provider](/guides/nonprofits/initiate/create-grant#donors-on-an-unconnected-provider).
+
+Not every exit is a failure. What you do depends on the reason.
+
+| Reason | What happened | What to do |
+|---|---|---|
+| `USER_EXIT` | The donor closed the window | Return them to your form |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor recorded an intent for a provider we can't submit to | Show them how to finish, and record the intent rather than a gift |
+| `SESSION_NOT_FOUND` | The session expired | Have them start again |
+| `INSTITUTION_DOWN_ERROR`, `CONNECTION_FAILED` | The provider is unreachable | Ask them to try again later |
+| `CREDENTIALS_ERROR`, `TFA_ERROR`, `INVALID_CARD`, `INACTIVE_CARD` | The donor couldn't authenticate at their provider | Let them retry or pick another provider |
+| `EIN_NOT_FOUND`, `INELIGIBLE_ORGANIZATION`, `NO_CHARITABLE_ACCOUNTS`, `RECURRING_NOT_SUPPORTED`, `UNINTEGRATED_DAF_NOT_SUPPORTED` | This gift can't be made this way | Offer another payment method |
+| `CID_NOT_FOUND`, `SERVICE_DEACTIVATED` | Your configuration is wrong | Check the CID you initialized with |
+| `ZERO_AMOUNT`, `INVALID_PRESELECTED_DAF`, `CUSTOM_ERROR`, `INTERNAL_ERROR` | Something in the request or on our side | Log it and contact support if it repeats |
 
 ## When the amount changes mid-session
 

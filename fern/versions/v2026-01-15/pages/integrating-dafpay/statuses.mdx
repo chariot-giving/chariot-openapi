@@ -6,11 +6,13 @@ hidden: false
 
 A grant carries one of three statuses.
 
-| Status | Meaning |
-| --- | --- |
-| `Initiated` | The grant request was submitted successfully and the DAF provider is still processing it. Every DAFpay grant from an integrated provider starts here. |
-| `Completed` | The nonprofit has the money. Covers both a gift received into their Chariot Account and one they marked received offline, having identified the line item by its tracking ID or external grant ID. |
-| `Canceled` | The grant will not be paid. |
+| Status | Meaning | Money with the nonprofit? | What to show |
+| --- | --- | --- | --- |
+| `Initiated` | Submitted to the DAF provider, which is still processing it. Every DAFpay grant starts here and usually stays here one to two weeks. | No | Submitted or pending, never "received" |
+| `Completed` | The nonprofit has the money, either into their Chariot Account or marked received offline. | Yes | Received |
+| `Canceled` | The grant will not be paid. | No | Canceled |
+
+Chariot sets these, not you. A grant leaves `Initiated` when the money lands and the nonprofit marks the gift received, so subscribe to `grant.updated` rather than polling for it.
 
 Match on these values exactly. The dashboard says "received", but the API returns `Completed` for that and for received-offline alike.
 

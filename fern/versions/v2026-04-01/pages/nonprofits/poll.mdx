@@ -8,6 +8,8 @@ Poll for donations on a schedule. A poll reflects what's actually in Chariot, wh
 
 Keep the two passes below in one job. Deposits tell you what settled, and donations by date catch the gifts that never get a deposit at all.
 
+Hold a checkpoint rather than always asking for "the last day". Read from your last successful checkpoint to now, page through everything, process each donation by its Chariot ID so a repeat is harmless, and only move the checkpoint once the whole window succeeded. A job that always looks back a fixed distance loses anything that arrives while it's failing.
+
 <Steps>
 
 ### List deposits that settled in your window
