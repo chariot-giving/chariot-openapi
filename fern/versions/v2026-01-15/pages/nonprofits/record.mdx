@@ -20,18 +20,21 @@ Properties also carry your CRM record ID, internal campaign or fund codes, and p
 
 Every donation carries one of four payment statuses, set from whether its payment source is connected to your account.
 
-| Status | Meaning |
+| `payment_status` | Meaning |
 | --- | --- |
-| `Incoming To Chariot` | Money is expected to arrive in your Chariot Account |
-| `Received In Chariot` | Money landed in your Chariot Account |
-| `Incoming Outside Chariot` | Money is expected to arrive outside Chariot |
-| `Received Outside Chariot` | Money arrived outside Chariot, for example a check sent to your office |
+| `INCOMING_TO_CHARIOT` | Money is expected to arrive in your Chariot Account |
+| `RECEIVED_IN_CHARIOT` | Money landed in your Chariot Account |
+| `INCOMING_OUTSIDE_CHARIOT` | Money is expected to arrive outside Chariot |
+| `RECEIVED_OUTSIDE_CHARIOT` | Money arrived outside Chariot, for example a check sent to your office |
+| `CANCELED` | The donation will not arrive |
 
-Only `Received In Chariot` means the funds are in your Chariot Account and the donation has a deposit. Do not treat an incoming status as banked.
+Only `RECEIVED_IN_CHARIOT` means the funds are in your Chariot Account and the donation has a deposit. Do not treat an incoming status as banked.
+
+The dashboard shows friendlier labels for these, so match on the values above rather than on what the screen says.
 
 ## Gifts that arrive outside Chariot
 
-A donation only gets a deposit when the funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so those donations stay at `Incoming Outside Chariot` and never get one.
+A donation only gets a deposit when the funds reach your Chariot Account. Gifts from payers you haven't linked arrive by their existing route, so those donations stay at `INCOMING_OUTSIDE_CHARIOT` and never get one.
 
 When the money turns up, find the donation using the DAFpay tracking ID, external ID, or the donor and amount, then click the payment status field on the donations table and select `Received Outside Chariot`. This is a manual step in the dashboard.
 

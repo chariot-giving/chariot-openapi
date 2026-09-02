@@ -119,6 +119,10 @@ To prevent request failures, any inputs exceeding the maximum allowed length wil
 - Anonymous: Indicate if a donor has chosen to give anonymously on your donation form so the donation can be properly anonymized by the DAF provider.
 </Note>
 
+<Note title="Pass your hidden fields too">
+Whatever identifiers your form already carries — form or campaign ID, source, appeal code, designation code — belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
+</Note>
+
 ## Preventing Blocked Popups
 Certain mobile browsers impose restrictions on popups if they are considered “decoupled” from the original user action. This often occurs when long-running asynchronous operations are introduced between the user’s action (e.g., a button click) and the popup launch.
 

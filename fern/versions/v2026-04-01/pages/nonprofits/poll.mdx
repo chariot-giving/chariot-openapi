@@ -18,7 +18,7 @@ Filter with `settled_at.after` and `settled_at.before`.
 
 <EndpointRequestSnippet endpoint="GET /v1/donations" />
 
-Pass `deposit_id`. You can also filter by `payment_source_id` or `created_at`. Pages hold up to 100 records; use `page_token` to walk the rest.
+Pass `deposit_id`. You can also filter by `payment_source_id`, or by `created_at.after` and `created_at.before`. Pages hold up to 100 records; use `page_token` to walk the rest.
 
 Rate limits apply and are returned in the response headers. Watch them when you loop deposits, and contact us if your volume needs more headroom.
 

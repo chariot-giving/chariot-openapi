@@ -49,8 +49,10 @@ hidden: false
     <Accordion title="How can my platform collect our processing fees?">
 
         In the [Create Grant](/api/grants/create) endpoint, there is a parameter named `applicationFeeAmount`.
-        This will allow the caller to pass in a processing fee for the grant.
+        This will allow the caller to pass in a processing fee for the grant, in cents.
         Chariot will then either deduct that amount before paying out the nonprofit or invoice the fees from the nonprofit and send the fees in a cadence according to an agreed-upon contract.
+
+        Platform fees are only taken when the grant is successfully received by the nonprofit, and Chariot's fee plus your `applicationFeeAmount` cannot exceed 5% of the grant amount. Over that, the call returns `400 Bad Request`.
 
     </Accordion>
     <Accordion title="Can we add an optional tip?">

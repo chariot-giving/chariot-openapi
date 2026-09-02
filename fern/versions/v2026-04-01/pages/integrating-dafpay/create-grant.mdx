@@ -22,6 +22,20 @@ The no-code DAFpay component submits the grant from the modal itself, since ther
 Use your API connect's CID. Initializing with a component connect's CID means the modal submits the grant *and* your backend submits it, which is why a single checkout can yield two grants. Contact [support@givechariot.com](mailto:support@givechariot.com) if you are unsure which CID you hold.
 </Note>
 
+## What Create Grant takes
+
+`workflowSessionId` and `amount` are required. `applicationFeeAmount`, `donor`, `note` and `designation` are optional.
+
+Send the amount from `CHARIOT_SUCCESS` rather than the one from your form, and send it in whole dollars — cents rounded to the nearest 100 — since DAFs only accept whole-dollar grants.
+
+<Warning title="Fees are capped at 5% together">
+`applicationFeeAmount` is the fee your platform takes on top of Chariot's, in cents. Chariot collects it from the nonprofit and passes it to you, and only when the grant is actually received.
+
+Chariot's fee plus your `applicationFeeAmount` cannot exceed 5% of the grant amount. Over that, Create Grant returns `400 Bad Request`.
+</Warning>
+
+A donor covering fees means a larger `amount`, not a separate field. Raising the amount also raises the fee, so calculate it, then round to a whole dollar. The formula is in the [FAQ](/guides/dafpay/faq).
+
 ## The sequence
 
 Most workflows proceed as follows:

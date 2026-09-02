@@ -28,7 +28,7 @@ QA CHECKLIST (sandbox, confirm each line)
 [ ] On-donation data: donor name, email, phone and address arrive on the donation, and our metadata (campaign, source, form ID, designation) comes through
 [ ] Button placement: the DAFpay button sits at the top of the form, above the gift amount and ahead of our contact fields
 [ ] Change amount in modal: when a donor changes the amount inside the DAFpay window, we record the amount from CHARIOT_SUCCESS rather than the one from our form
-[ ] Confirmation redirect: the donor lands on our confirmation page once the window closes, with a loading screen in between
+[ ] Confirmation redirect: the donor lands on our confirmation page once the window closes, with a loading screen in between, and the page does not say the gift is being processed or promise a tax receipt
 [ ] Unintegrated grants: a donor on an unconnected provider ends up where our configuration says, and if we record intents, the confirmation page shows the tracking ID with its "Tracking ID:" prefix and a way to copy it, our EIN, the organization name, and a link to the provider
 [ ] Recurring, if enabled: a monthly intent goes to Create Recurring Grant and records frequency MONTHLY
 [ ] Fees, if we collect them: applicationFeeAmount matches what we charge, final amounts are whole dollars, and the tip option is suppressed when DAFpay is selected
@@ -39,10 +39,16 @@ BROWSERS (confirm each, mobile and desktop)
 [ ] Firefox
 
 FUNDRAISING PLATFORMS ONLY
-Launch plan for creating a connect per nonprofit:
 Nonprofit we can send the production test donation to:
 Recording of a nonprofit turning DAFpay on in our platform:
 Help article link:
+
+LAUNCH PLAN
+How connects get created for each nonprofit:
+If DAFpay is on by default: how existing nonprofits get backfilled, and how each new one gets it:
+If DAFpay is opt-in: how you check the nonprofit has a Chariot Deposit Account before they can turn it on:
+Where the co-branded Chariot signup link lives on your site:
+Target launch date and what you are announcing:
 ```
 
 ## Notes on a few lines
@@ -50,6 +56,10 @@ Help article link:
 **The QA and browser lines are confirmations, not artifacts.** We don't need a recording or a screenshot for each one. If an item doesn't apply to your integration, say so on the line rather than deleting it. Check each browser on both mobile and desktop, since popup handling and the redirect back to your confirmation page are where they differ most.
 
 **The recording covers nonprofit onboarding.** Show how a nonprofit turns DAFpay on in your platform, start to finish, the way one of your customers would do it. The sandbox test form covers the donation itself, so the recording doesn't need to.
+
+**The launch plan is the part people underestimate.** Turning DAFpay on by default means a one-time backfill of every nonprofit you already have plus a path for every new one, and opt-in means something has to check that a nonprofit has its Chariot Deposit Account before the button can go live. Write down how each of those actually happens.
+
+We also schedule a go-live review with you before issuing keys, covering your launch date, your help article, and what each side announces.
 
 **The help article answers four questions.** Nonprofits ask us these constantly and only you can answer them, so we need one article, published for your customers, that covers all four:
 

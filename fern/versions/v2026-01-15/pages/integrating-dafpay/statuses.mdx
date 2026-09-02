@@ -4,12 +4,17 @@ subtitle: "What a grant's status means, and cancellations"
 hidden: false
 ---
 
-All DAFpay grants from integrated providers will be marked with the `Initiated` status,
-indicating that a grant was successfully submitted (but the DAF provider is still processing the gift).
+A grant carries one of three statuses.
 
-Once a nonprofit receives the funds from the DAF provider and identifies the specific grant line item using the trackingId/externalId, they can manually update the status  to `Received` on the Chariot dashboard.
+| Status | Meaning |
+| --- | --- |
+| `Initiated` | The grant request was submitted successfully and the DAF provider is still processing it. Every DAFpay grant from an integrated provider starts here. |
+| `Completed` | The nonprofit received the funds and marked the gift received in the Chariot dashboard, having identified the line item by its tracking ID or external grant ID. |
+| `Canceled` | The grant will not be paid. |
 
-Please subscribe to the `grant.updated` [Webhook Event](https://docs.givechariot.com/api/webhooks) to receive notifications when a grant status is updated on the Chariot dashboard so you can display the updated status on the fundraising platform dashboard.
+Match on these values exactly; the dashboard's wording for an action does not always match the value the API returns.
+
+Subscribe to the `grant.updated` [webhook event](/api/webhooks) so you can show the current status on your own dashboard. If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
 
 
 ## Cancellations & Refunds
@@ -20,6 +25,6 @@ As funds in DAFs are no longer under the donor's direct ownership, the concept o
 Donations made via DAFpay are typically **final and irrevocable** gifts (depending on the specific policies of the DAF provider).
 
 <Info title="Cancellation Procedures">
-    Cancelled grants will be marked as `Cancelled` in your platform’s dashboard and will not incur any processing fees.
+    Canceled grants come back with status `Canceled` and do not incur any processing fees.
     If you believe a grant should be cancelled, please contact the donor first to confirm the cancellation and then send a request to the Chariot support team.
 </Info>

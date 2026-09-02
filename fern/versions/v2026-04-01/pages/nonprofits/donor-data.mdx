@@ -65,6 +65,10 @@ Send only what we can't get from the provider: campaign and source IDs, a design
 
 Anything longer than its maximum is truncated rather than rejected.
 
+<Note title="Pass your hidden fields too">
+Whatever identifiers your form already carries — form or campaign ID, source, appeal code, designation code — belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.
+</Note>
+
 ## Holding the button back
 
 To keep the window from opening until your own validation passes, return `false` from `onDonationRequest`.
