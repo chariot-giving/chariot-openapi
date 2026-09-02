@@ -31,6 +31,9 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
+          - page: Do I Need to Integrate?
+            slug: start-here
+            path: ./pages/nonprofits/start-here.mdx
           - page: Set Up Your Account
             slug: setup
             path: ./pages/nonprofits/setup.mdx

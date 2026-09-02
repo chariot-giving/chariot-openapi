@@ -20,6 +20,8 @@ Your Chariot API key is a server-side credential. The browser sends you the `wor
 Don't take the nonprofit's identity from browser state. The session already belongs to the connect you initialized, so a mismatch between that and your own record means you've mixed up tenants, and it's cheaper to catch it here than in reconciliation.
 </Warning>
 
+Create Grant submits the grant to the donor's provider and creates the donation record behind it. A failed capture leaves neither, just an authorized workflow session that was never used.
+
 ## What Create Grant takes
 
 `workflowSessionId` and `amount` are required. `applicationFeeAmount`, `donor`, `note` and `designation` are optional.

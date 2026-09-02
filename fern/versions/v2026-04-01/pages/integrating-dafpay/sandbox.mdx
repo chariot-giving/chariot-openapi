@@ -43,6 +43,17 @@ password: password123
 | Grant status webhooks | Subscribe to `grant.updated` and confirm signature verification |
 | Content Security Policy | Load the form with your real CSP header, not a relaxed dev one |
 
+## Test more than one nonprofit
+
+A single-tenant test passes on a platform that misroutes gifts. Before you launch, run two nonprofits through sandbox at once and confirm that a donor on Nonprofit A's form initializes A's connect, and that the grant lands against A rather than B.
+
+| Test | Why |
+| --- | --- |
+| Two nonprofits, two connects | Catches a hardcoded or cached CID |
+| Two donor sessions at the same time | Catches a CID held in shared state |
+| Grant attribution per nonprofit | Confirms the money would reach the right organization |
+| A nonprofit with DAFpay off | Confirms you don't render the button without a connect |
+
 ## Two things sandbox will not tell you
 
 **Webhooks are not retried here.** Production retries a non-2xx response up to 10 times with backoff. Sandbox does not retry at all, so a handler that is briefly down misses the event outright. Check [List Events](/api/events/list) before concluding an event never fired.

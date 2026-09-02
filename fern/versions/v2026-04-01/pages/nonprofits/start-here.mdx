@@ -1,0 +1,54 @@
+---
+title: "Do I Need to Integrate?"
+subtitle: "Most nonprofits don't"
+hidden: false
+---
+
+DAFpay is already available on 70+ fundraising platforms. If your donation form is hosted by one of them, you turn DAFpay on there and write no code at all.
+
+<Steps>
+
+### Find your fundraising platform
+
+Search the [DAFpay integrations list](https://www.givechariot.com/dafpay-setup#integration-search). Givebutter, Fundraise Up, Blackbaud, Classy, GoFundMe Pro, Neon One, EveryAction and dozens of others are on it.
+
+### Turn DAFpay on in your platform
+
+Your platform's own help article covers where the switch is, whether it applies per form or account-wide, and how gifts reach your CRM. Your platform already built the Chariot integration, so none of the API work in these guides applies to you.
+
+### Claim your Chariot Deposit Account
+
+Gifts settle into it, and it's where you see them coded in one place.
+
+</Steps>
+
+That's the whole path for most nonprofits. Nothing below is required.
+
+## The no-code button
+
+Claiming your Chariot Deposit Account already gives you a button, a tile and a web link, each with its own Connect ID. They need no engineering: paste the snippet, or link to the web link.
+
+They're the right answer on a Ways to Give page, or a standalone page for one event, where the donor arrives, clicks, and gives.
+
+They're the wrong answer on your main donation form, for two reasons:
+
+- **Nothing you collect reaches the gift.** The button passes only the page URL, and the web link passes nothing at all. A designation, a dedication, a fee-coverage choice, a campaign code, an appeal: all of it is lost.
+- **Nothing comes back to your form.** The gift is submitted inside the window, then the window closes and your form is still sitting there. The donor fills in your fields, clicks, and your page never learns a gift happened.
+
+If either of those matters, you need the API path below.
+
+## When you do need the API
+
+| Situation | What to read |
+| --- | --- |
+| Your platform is on the list | Nothing here. Turn DAFpay on with them. |
+| You want DAFpay gifts, and every other gift, pulled into your CRM or ERP automatically | [Retrieve Donations](/guides/nonprofits/donations) |
+| You built and run your own donation form, and pass data with the gift | [Initiate Gifts](/guides/nonprofits/initiate), then [Retrieve Donations](/guides/nonprofits/donations) |
+| You want DAFpay on a Ways to Give page and nothing more | The button or web link from your dashboard. No code. |
+| Your platform isn't on the list | [Talk to us](mailto:support@givechariot.com) before building anything |
+
+The second row is the one people miss. Retrieving donations is worth doing however your gifts arrive, and it's independent of who put DAFpay on your form.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

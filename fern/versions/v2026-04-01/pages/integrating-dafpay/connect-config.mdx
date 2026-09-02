@@ -8,17 +8,19 @@ A connect is a nonprofit's instance of DAFpay, and its configuration decides wha
 
 Do this when you request sandbox keys, not at QA. A sandbox connect that behaves differently from production means you build against the wrong shape and find out at the end, and a field you never passed in sandbox is a field you never tested.
 
-## Two kinds of connect
+## Capture mode
 
-There are two, and using the wrong one is the cause of a checkout producing two grants.
+A connect is set to one of two capture modes, and it decides whether you call Create Grant at all.
 
-| | API connect | Component connect |
+| | Authorize | Auto-capture |
 |---|---|---|
-| Used by | A donation form you built | Chariot's no-code DAFpay component |
-| Who submits the grant | Your backend, with Create Grant | The modal itself |
-| Do you call Create Grant? | Yes | No |
+| Used by | A form you built, and every fundraising platform | Chariot's no-code button, tile and web link |
+| What clicking Donate does | Fires `CHARIOT_SUCCESS` with a `workflowSessionId` authorized for 15 minutes | Calls Create Grant itself, there and then |
+| Do you call Create Grant? | Yes, from your backend | No |
 
-Everything in this guide assumes an API connect. Ask [support@givechariot.com](mailto:support@givechariot.com) if you aren't sure which CID you hold.
+API integrations use Authorize deliberately. If the grant were submitted the moment the donor clicked, and your page then errored, the donor would see a failure for a gift that already went through and would likely give again. Authorize moves that risk to the other side: nothing is submitted until your backend says so, at the cost of losing gifts where the donor authorizes and the capture never happens.
+
+That gap is real, so treat a missing capture as a bug rather than an edge case, and watch the rate.
 
 ## Donor details step
 

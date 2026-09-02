@@ -12,11 +12,11 @@ If your site sends a [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
 | Directive    | Add to allowlist                              | Why it's needed                                                                                                                                                            |
 |--------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` from Chariot's CDN.           |
-| `frame-src`  | `https://secure.dafpay.com`                   | Embeds the DAFpay checkout in a cross-origin iframe. If `frame-src` is not set, browsers fall back to `child-src`, then `default-src`.                                     |
-| `font-src`   | `https://cdn.givechariot.com`                 | The DAFpay web component injects `@font-face` rules into your document referencing Chariot-hosted fonts.                         |
+| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` from Chariot's CDN. Missing it and the button never initializes.           |
+| `frame-src`  | `https://secure.dafpay.com`                   | Embeds the DAFpay checkout in a cross-origin iframe. Missing it and the button renders but clicking does nothing. If `frame-src` is not set, browsers fall back to `child-src`, then `default-src`.                                     |
+| `font-src`   | `https://cdn.givechariot.com`                 | The component injects `@font-face` rules into your document. Missing it and the window loads with fallback fonts.                         |
 | `style-src`  | `'unsafe-inline'` (or a matching nonce/hash)  | The web component injects inline `<style>` blocks into the parent document.                       |
-| `img-src`    | `https://cdn.givechariot.com`                 | DAFpay tile and extended button themes reference DAF provider logos and other imagery hosted on Chariot's CDN.                                                             |
+| `img-src`    | `https://cdn.givechariot.com`                 | Provider logos and button imagery. Missing it and the DAF list renders without logos.                                                             |
 
 The parent page does **not** need to allow `connect-src` for Chariot — all DAFpay API traffic originates inside the iframe (`secure.dafpay.com`), which has its own CSP that we manage.
 

@@ -6,7 +6,7 @@ hidden: false
 
 Return what your form collected from `onDonationRequest`. Anything you leave out, DAFpay fills from the donor's DAF account.
 
-That fill is called Express Checkout. It needs no setup, but it only works when the button sits above your contact fields. You can try it on the [demo page](https://secure.dafpay.com/demo) with the Express toggle on.
+That fill is called Express Checkout. It needs no setup, but it only works when the button sits above your contact fields, and it's best-effort: some providers don't expose a donor's address or phone at all, so those fields come back empty and the donor is asked for them in the window. You can try it on the [demo page](https://secure.dafpay.com/demo) with the Express toggle on.
 
 You still have to pass the amount yourself, because Express Checkout doesn't supply it.
 
@@ -91,6 +91,10 @@ The given donation data must match the following schema to be accepted by Chario
 If a value runs past its maximum we truncate it instead of failing the request.
 
 Send `anonymous` when a donor chooses to give anonymously, so the DAF provider anonymizes the grant properly.
+
+<Warning title="Send the donor's details, not your customer's">
+Everything in `onDonationRequest` describes the person giving. On a multi-tenant platform it's easy to pass the nonprofit's admin contact or the account holder instead, which then arrives on the gift as the donor.
+</Warning>
 
 <Note title="Pass your hidden fields too">
 Whatever identifiers your form already carries, like a form or campaign ID, a source, an appeal code or a designation code, belong in `metadata`. They come back on the grant's `metadata`, and on the donation as `initiation.dafpay_metadata`, which is how the nonprofit codes the gift in their CRM. Anything you leave out is gone by then.

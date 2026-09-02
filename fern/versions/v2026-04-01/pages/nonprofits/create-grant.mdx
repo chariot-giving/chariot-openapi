@@ -34,6 +34,12 @@ Retrying is safe. Create Grant is idempotent on `workflowSessionId`: the first s
 
 Receiving `CHARIOT_SUCCESS` does not create a grant. If nothing calls Create Grant, the browser flow looks successful and [List Grants](/api/grants/list) returns nothing.
 
+## Capturing the grant is what creates the donation
+
+Create Grant does two things: it submits the grant to the donor's provider and it creates the donation record behind it. Everything you read later through [Retrieve Donations](/guides/nonprofits/donations) exists because this call succeeded.
+
+So a failed capture doesn't leave a gift half-recorded. There's no grant and no donation, only a workflow session that was authorized and never used.
+
 ## Finding the donation
 
 `donationId` on [Get Grant](/api/grants/get) links a grant to its donation, and that ID is where [Retrieve Donations](/guides/nonprofits/donations) picks up.

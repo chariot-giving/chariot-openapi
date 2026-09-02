@@ -4,7 +4,9 @@ subtitle: "What to pass in onDonationRequest, and what to leave out"
 hidden: false
 ---
 
-Return what you know about the donor from `onDonationRequest`. Anything you leave out, DAFpay fills in from their DAF account.
+Return what you know about the donor from `onDonationRequest`. Anything you leave out, DAFpay tries to fill in from their DAF account.
+
+It's a try, not a promise. Some providers don't expose the donor's address or phone through their own interface, so those fields come back empty however your connect is configured, and the donor is asked for them in the window instead.
 
 <CodeBlocks>
 ```javascript JavaScript

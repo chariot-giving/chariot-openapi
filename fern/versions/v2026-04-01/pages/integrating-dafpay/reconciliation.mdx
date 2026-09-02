@@ -32,4 +32,21 @@ To show the provider's name, like Fidelity Charitable, pass the grant's `fundId`
 Fall back to the external grant ID, then to the donor's fund name, amount and other grant details.
 </Warning>
 
+## What to persist
+
+One row per checkout, on your side, is what makes reconciliation possible later.
+
+| Field | When you get it | Notes |
+| --- | --- | --- |
+| Your transaction ID | At checkout | Your key, not ours |
+| `nonprofit_id` | At checkout | Which of your customers this belongs to |
+| `connect_id` (CID) | At nonprofit onboarding | Proves which connect the session ran on |
+| `workflowSessionId` | `CHARIOT_SUCCESS` | Ties the browser session to the capture |
+| Grant `id` | Create Grant response | Stable |
+| `donationId` | Asynchronously, from Get Grant | Absent at first; retry with backoff |
+| Grant status | `grant.updated` webhook | `Initiated` until the nonprofit has the money |
+| Tracking ID, external grant ID | On the grant | What appears on the provider's remittance |
+
+Reconcile on the grant ID and the donation ID. Don't use the tracking ID as a key, since about 8% of grants don't have one.
+
 Next: [Grant Statuses](/guides/dafpay/gifts/statuses).

@@ -61,6 +61,16 @@ A donation only gets a deposit once the funds reach your Chariot Account. Gifts 
 
 When the money turns up, find the donation by its tracking ID, external ID, or the donor and amount, then set its payment status on the donations table. That's a manual step in the dashboard, and linking the payer takes it away.
 
+## Which system owns what
+
+| Chariot is the source of truth for | Your CRM or ERP is the source of truth for |
+| --- | --- |
+| The donation, deposit and payment source IDs | Your donor and household records |
+| Amounts, fees and settlement state | Campaign, fund and appeal coding |
+| Donor attribution as the payer reported it | Your own gift ID and accounting classification |
+
+Store Chariot's donation ID on your gift record. It's the key you reconcile on, and it's stable.
+
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
 </Info>
