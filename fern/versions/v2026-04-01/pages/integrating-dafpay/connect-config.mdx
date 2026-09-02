@@ -1,0 +1,35 @@
+---
+title: "Configure Your Connect"
+subtitle: "What the DAFpay window does, and the four choices you get"
+hidden: false
+---
+
+A connect is a nonprofit's instance of DAFpay, and its configuration decides what the window does when a donor opens it. Chariot sets these, so tell us what you want and we apply it to your sandbox and production connects together.
+
+Do this when you request sandbox keys, not at QA. A sandbox connect that behaves differently from production means you build against the wrong shape and find out at the end, and a field you never passed in sandbox is a field you never tested.
+
+## Donor details step
+
+The step inside the window where the donor's name, email and address appear. DAFpay fills them from the donor's DAF account, so the donor retypes nothing, and it collects anything your form doesn't ask for, such as a mailing address a nonprofit needs for receipting.
+
+Skip it and DAFpay knows only what your form sends in [`onDonationRequest`](/guides/dafpay/integrating-dafpay/donor-data).
+
+## Monthly recurring gifts
+
+Whether a donor can turn a gift into a `MONTHLY` one from their DAF. If you allow it, your backend has to branch to Create Recurring Grant. See [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring).
+
+## Donors on an unconnected DAF provider
+
+Either DAFpay records what they intended, and your confirmation page shows them how to finish in their own portal, or DAFpay sends them back to your form to pick another payment method. This one changes what you have to build, so decide it early. See [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+
+## Closing the window on confirmation
+
+This applies only to those donors. DAFpay normally shows them a final confirmation screen, and your system isn't notified until they close it, so a donor who leaves it open or closes the tab never notifies you at all. Turning this on closes the window the moment they confirm.
+
+## Per nonprofit, not per platform
+
+Each nonprofit on your platform gets its own connect, so these choices can differ between them. In practice platforms pick one configuration and we apply it to every connect they create. Tell us if you want a different default for a specific nonprofit.
+
+Changing a live configuration works the same way: send us what you want changed, and say whether it applies to sandbox, production, or both. We apply it to both unless you tell us otherwise.
+
+Next: [Install the Button](/guides/dafpay/integrating-dafpay/installation).

@@ -8,6 +8,8 @@ An unintegrated grant is a donor's intent to give from a provider DAFpay isn't c
 
 Read them with [List Unintegrated Grants](/api/unintegrated-grants/list), and trigger the flow on the [demo page](https://secure.dafpay.com/demo) by selecting The Boston Foundation.
 
+Chariot moves the status off `Unknown`, not you. It becomes `Completed` when we match an arriving payment to the intent, which only happens if the donor actually finished the gift in their provider's portal. Unintegrated grants are read-only over the API, so subscribe to `unintegrated_grant.updated` if you want to reflect the change on your side.
+
 You can opt out of these. Tell us, and DAFpay sends those donors back to your form to choose another payment method.
 
 <Frame caption="Handling unsupported DAF providers differently within DAFpay. Left: Allow donors to record a Grant Intent; Right: Return donors to your donation form.">

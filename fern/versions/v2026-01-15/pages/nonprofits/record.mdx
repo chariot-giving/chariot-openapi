@@ -4,15 +4,40 @@ subtitle: "Writing status back to Chariot"
 hidden: false
 ---
 
-Write the status back so your finance team sees the same state in the dashboard that your integration sees.
+Write the status back so your finance team sees the same state in the dashboard that your integration sees. This takes three calls, and the first two only once.
+
+<Steps>
+
+### Create the property in the dashboard
+
+Properties are created in the dashboard, not through the API. Make a CRM status property with the states your process uses, plus a state for gifts you received offline. Team members who edit properties need the **Development** permission.
+
+### Find its ID and its option IDs
+
+<EndpointRequestSnippet endpoint="GET /v1/properties" />
+
+Filter by `resource_type` to get the donation properties. Each one comes back with an `id` like `prop_01j8rs…` and, for a status property, its first 25 `options`. If `total_option_count` is higher than that, page through them with [List Property Options](/api/properties/list-options).
+
+Store the property ID and the option ID for each state. Neither changes.
+
+### Assign the value to donations
 
 <EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
 
-<Warning title="Use properties/assign">
-`PATCH /v1/donations/{id}` is not available to external API keys and returns `404`.
-</Warning>
+The `{id}` in the path is the **property** ID, not the donation. The donations go in the body:
 
-Create a CRM status property with the states your process uses and drive it from your integration. Saved views per status let your team work the exceptions. Properties also carry your CRM record ID, internal campaign or fund codes, and processing notes.
+```json
+{
+  "value": { "type": "ENUM", "enum_value_id": "propopt_01j8rs605a4gctmbm58d87mvsj" },
+  "resources": { "ids": ["donation_01j8rs605a4gctmbm58d87mvsj"] }
+}
+```
+
+You can assign one value to up to 100 donations per call, so batch a poll's worth rather than calling once per gift. Passing `"empty": true` in `value` clears the property instead.
+
+</Steps>
+
+Saved views per status let your team work the exceptions. Properties also carry your CRM record ID, internal campaign or fund codes, and processing notes.
 
 ## Payment status
 

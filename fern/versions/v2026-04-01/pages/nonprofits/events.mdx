@@ -35,6 +35,33 @@ hidden: false
 
 `CHARIOT_SUCCESS` is where you [create the grant](/guides/nonprofits/initiate/create-grant). On its own it does not create a gift.
 
+## Attaching the listeners
+
+<CodeBlocks>
+```javascript JavaScript
+const chariot = document.getElementById("chariot")
+
+chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
+  // detail is the onSuccessMetadata above. Record the intent,
+  // then have your backend call Create Grant.
+})
+
+chariot.addEventListener("CHARIOT_EXIT", ({ detail }) => {
+  // detail.reason tells you why. UNINTEGRATED_GRANT_CONFIRMED is not a failure.
+})
+```
+```javascript React
+import ChariotConnect from 'react-chariot-connect';
+
+<ChariotConnect
+    cid="GENERATED_CONNECT_IDENTIFIER"
+    onDonationRequest={onDonationRequest}
+    onSuccess={(r) => { /* same payload as CHARIOT_SUCCESS */ }}
+    onExit={(e) => { /* same payload as CHARIOT_EXIT */ }}
+/>
+```
+</CodeBlocks>
+
 ## Exit reasons
 
 | Exit Reason | Description |

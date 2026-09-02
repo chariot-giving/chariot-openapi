@@ -37,8 +37,10 @@ Most workflows proceed as follows:
 2. Submit your own donation form before converting the grant intent into a grant.
 3. Have your backend call Chariot's [Create Grant](/api/grants/create) to create the grant (i.e., capture the grant intent).
 
-<Error>
-  Submitting your own donation form before calling Chariot’s [Create Grant](/api/grants/create) ensures consistency between your system and Chariot. See **Loading Screen** section below.
+<Error title="Submit your own form first">
+Persist the gift on your side before you call Create Grant, so a failed submission can't leave your records out of step with Chariot's.
+
+Create Grant takes no idempotency key, so your handler has to be the guard: record that you captured an intent before retrying anything, or the retry becomes a second capture and comes back `409 Conflict`. An intent also expires 15 minutes after authorization and then returns `410 Gone`, so nothing slow belongs between `CHARIOT_SUCCESS` and this call.
 </Error>
 
 <CodeBlocks>

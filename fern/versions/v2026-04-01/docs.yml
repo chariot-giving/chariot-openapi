@@ -101,6 +101,9 @@ navigation:
               - page: Create Connects
                 slug: connects
                 path: ./pages/integrating-dafpay/connects.mdx
+              - page: Configure Your Connect
+                slug: connect-config
+                path: ./pages/integrating-dafpay/connect-config.mdx
               - page: Install the Button
                 slug: installation
                 path: ./pages/integrating-dafpay/installation.mdx
@@ -134,6 +137,9 @@ navigation:
               - page: Grant Statuses
                 slug: statuses
                 path: ./pages/integrating-dafpay/statuses.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/integrating-dafpay/troubleshooting.mdx
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx

@@ -1,0 +1,48 @@
+---
+title: "Troubleshooting"
+subtitle: "The things that usually go wrong"
+hidden: false
+---
+
+## The button doesn't render, or clicking it does nothing
+
+Almost always your Content Security Policy. Check the browser console for `Refused to load the script/frame/font/style`, which names the directive that blocked the request. See [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
+
+## The popup is blocked on mobile
+
+Something slow ran between the donor's click and the window opening. Keep that gap under 1000ms and move API calls earlier. See [popup timing](/guides/dafpay/integrating-dafpay/donor-data#popup-timing).
+
+## A checkout looked successful but there is no grant
+
+Call [List Grants](/api/grants/list). An empty list means Create Grant was never called. `CHARIOT_SUCCESS` authorizes an intent; it doesn't create a grant.
+
+## One checkout produced two grants
+
+You're initializing with a component connect's CID rather than your API connect's, so the modal submits the grant and your backend submits it too. Contact us if you're not sure which CID you hold.
+
+## Create Grant is failing
+
+| Code | Meaning |
+|---|---|
+| `410 Gone` | The intent is older than 15 minutes. The donor has to start over. |
+| `409 Conflict` | That intent was already captured. Check whether you have a grant for it before retrying. |
+| `400 Bad Request` | An amount that isn't whole dollars, a field over its maximum length, or Chariot's fee plus your `applicationFeeAmount` exceeding 5% of the grant. |
+| `401` / `403` | Wrong environment for the key. Sandbox keys only work against `sandboxapi.givechariot.com`. |
+
+## The donor's prefill is empty
+
+You're sending identity fields as empty strings. Chariot treats `email: ""` as an answer. Omit those keys entirely instead. See [Send Donor Data](/guides/dafpay/integrating-dafpay/donor-data).
+
+## Webhooks aren't arriving
+
+Check that you subscribed to the right event. `grant.created` covers grants; unintegrated grants have their own `unintegrated_grant.created` and `unintegrated_grant.updated`. Then check [List Events](/api/events/list): if the event is listed but never arrived, it's a delivery problem, and if it isn't listed, it never fired.
+
+Keep one key per environment. With more than one, delivery can resolve to the wrong key and events look like they disappeared. Sandbox never retries a failed delivery.
+
+## A grant is stuck at Initiated
+
+That's normal. It stays `Initiated` until the nonprofit has the money and marks the gift received, which usually takes one to two weeks. See [Grant Statuses](/guides/dafpay/gifts/statuses).
+
+## Still stuck
+
+Send us the environment, your platform name, the endpoint URL you registered, the event categories you subscribed to, and a grant ID you expected something for: [support@givechariot.com](mailto:support@givechariot.com).

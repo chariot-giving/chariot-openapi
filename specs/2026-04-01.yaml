@@ -4757,14 +4757,14 @@ components:
         options:
           type: array
           description: |-
-            The first 25 options for enum and user properties. Use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The first 25 options for enum and user properties. Use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
           items:
             $ref: "#/components/schemas/PropertyOptionValue"
         total_option_count:
           type: integer
           format: int32
           description: |-
-            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
     PropertyOptionValue:
       type: object
       description: |-

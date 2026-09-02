@@ -48,6 +48,19 @@ The donation is created asynchronously, so `donationId` isn't on the Create Gran
 
 This is expected in sandbox, where settlement can't be triggered at all. Test your reconciliation handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
 
+## What the errors mean
+
+| Code | Where | Meaning |
+|---|---|---|
+| `410 Gone` | Create Grant | The intent is older than 15 minutes. The donor has to start over. |
+| `409 Conflict` | Create Grant | That intent was already captured. Check whether you have a grant for it before retrying. |
+| `400 Bad Request` | Create Grant | Usually an amount that isn't whole dollars, or a field over its maximum length. |
+| `400 Bad Request` | Assign Property | The resource IDs don't match the property's `resource_type`, or you sent more than 100. |
+| `404 Not Found` | `PATCH /v1/donations/{id}` | That route isn't available to external API keys. Use [Assign Property](/api/properties/assign) instead. |
+| `401` / `403` | Anywhere | Wrong environment for the key. Sandbox keys only work against `sandboxapi.givechariot.com`. |
+
+Grants, donations and deposits are read-only over the API. You change what your integration sees by assigning properties, not by writing to those objects.
+
 ## Still stuck
 
 Send us the environment, your organization name, the endpoint URL you registered, the event categories you subscribed to, and a grant or donation ID you expected an event for: [support@givechariot.com](mailto:support@givechariot.com).
