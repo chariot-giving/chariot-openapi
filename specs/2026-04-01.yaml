@@ -8194,19 +8194,19 @@ components:
             type: object
             required:
               - amount
-              - account_id
             properties:
               amount:
-                type: number
+                type: integer
+                format: int64
                 description: |-
                   The amount of the transfer in cents.
                   This amount must be positive.
                 example: 10000
-              account_id:
+              program_id:
                 type: string
                 description: |-
-                  The identifier of the financial account that will receive the transfer.
-                example: "account_01jpjenf5q6cawy43yxfcrxhct"
+                  The unique identifier for the program that the inbound transfer belongs to.
+                example: "program_01jpjenf5q6cawy43yxfcrxhct"
               description:
                 type: string
                 description: An arbitrary string attached to the object. Often useful for displaying to users.
