@@ -238,14 +238,46 @@ navigation:
             skip-slug: true
             icon: gear
             contents:
-              - paymentSources:
-                  title: Payment Sources
+              - section: Sources
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/sources/overview.mdx
+                  - page: The Source object
+                    slug: object
+                    path: ./pages/api/sources/object.mdx
+                  - endpoint: GET /v1/sources
+                  - endpoint: GET /v1/sources/{id}
+              - section: Source Connections
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/source_connections/overview.mdx
+                  - page: The Source Connection object
+                    slug: object
+                    path: ./pages/api/source_connections/object.mdx
+                  - endpoint: POST /v1/source_connections
+                  - endpoint: GET /v1/source_connections
+                  - endpoint: GET /v1/source_connections/{id}
+                  - endpoint: PATCH /v1/source_connections/{id}
+                  - endpoint: DELETE /v1/source_connections/{id}
               - lockboxes:
                   title: Lockboxes
               - mailItems:
                   title: Mail Items
-              - donations:
-                  title: Donations
+              - section: Donations
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/donations/overview.mdx
+                  - page: The Donation object
+                    slug: object
+                    path: ./pages/api/donations/object.mdx
+                  - endpoint: POST /v1/donations
+                  - endpoint: GET /v1/donations
+                  - endpoint: GET /v1/donations/{id}
+                  - endpoint: PATCH /v1/donations/{id}
+                  - endpoint: DELETE /v1/donations/{id}
               - deposits:
                   title: Deposits
               - properties:

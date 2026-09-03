@@ -1,0 +1,18 @@
+---
+title: "Sources"
+subtitle: "Chariot's canonical directory of payers and giving platforms."
+---
+
+A **Source** is a canonical entry in Chariot's directory of payers, DAF sponsors, workplace-giving platforms, and other institutions that send money to nonprofits. Every API caller sees the same directory. Chariot maintains it; callers can't create, modify, or delete a source.
+
+Sources are the shared vocabulary of "where money can come from" — the same Fidelity Charitable that appears on your Sources list also appears on every other org's list, with the same ID and the same shape.
+
+Use Sources when you need to:
+
+- **Discover what Chariot supports** — the directory is the source of truth for supported payers, DAF sponsors, and giving platforms.
+- **Reference a source by a stable identifier** — every source has an `internal_id` slug that's portable outside Chariot.
+- **Render a source picker** — logos, display names, and capabilities are all on the Source object.
+
+To model an organization's actual relationship with a source — the credentials, configuration, and money flow — see [Source Connections](../source_connections/overview). Every donation and deposit references a Source Connection, not a Source, so Sources appear only as the underlying directory row.
+
+See [The Source object](object) for the full schema.
