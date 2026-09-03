@@ -2900,6 +2900,291 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/sources:
+    get:
+      summary: List Sources
+      description: |-
+        Returns Chariot's directory of canonical sources — payers, DAF sponsors,
+        workplace-giving platforms, and other institutions that send money to
+        nonprofits. Every caller sees the same list.
+      operationId: listSources
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListSourcesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/sources/{id}:
+    get:
+      summary: Get a Source
+      description: |-
+        Retrieves a Source by its unique identifier.
+      operationId: getSource
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the source.
+          required: true
+          schema:
+            type: string
+          example: "src_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The source.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/connections:
+    get:
+      summary: List Connections
+      description: |-
+        Returns the connections belonging to your organization. Each connection
+        is either linked to a canonical Source or a bring-your-own bank
+        address. Donations and deposits reference connections by ID.
+      operationId: listConnections
+      tags:
+        - connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter connections by status.
+          required: false
+          schema:
+            type: string
+            enum:
+              - connected
+              - pending
+              - disabled
+              - error
+              - available
+        - name: include
+          in: query
+          description: |-
+            Set to `available` to also return one row for every Source in the
+            directory that the organization has not connected. Available rows
+            appear with `status: available` and no `id`; they are read-only.
+          required: false
+          schema:
+            type: string
+            enum:
+              - available
+      responses:
+        "200":
+          $ref: "#/components/responses/ListConnectionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Connection
+      description: |-
+        Creates a new connection. Supply `source_id` to link a canonical
+        Source; supply `financial_address` without `source_id` to create a
+        bring-your-own connection.
+      operationId: createConnection
+      tags:
+        - connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateConnectionRequest"
+      responses:
+        "201":
+          description: The connection was created.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/connections/{id}:
+    get:
+      summary: Get a Connection
+      description: |-
+        Retrieves a connection by its unique identifier.
+      operationId: getConnection
+      tags:
+        - connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the connection.
+          required: true
+          schema:
+            type: string
+          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The connection.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Connection
+      description: |-
+        Updates a connection's mutable fields. Immutable fields (`source_id`,
+        `financial_address` on a linked connection) can't be changed; create a
+        new connection instead.
+      operationId: updateConnection
+      tags:
+        - connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the connection.
+          required: true
+          schema:
+            type: string
+          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateConnectionRequest"
+      responses:
+        "200":
+          description: The updated connection.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a Connection
+      description: |-
+        Deletes a connection. Existing donation and deposit references still
+        resolve to the connection, but the connection stops appearing in list
+        responses and no new activity can flow through it.
+      operationId: deleteConnection
+      tags:
+        - connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the connection.
+          required: true
+          schema:
+            type: string
+          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "204":
+          description: The connection was deleted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/payment_sources:
     get:
       summary: List Payment Sources
@@ -4571,6 +4856,143 @@ components:
           type: string
           description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
           example: "101050001"
+    Source:
+      type: object
+      description: |-
+        A Source is a canonical entry in Chariot's directory of payers,
+        DAF sponsors, workplace-giving platforms, and other institutions
+        that send money to nonprofits. Every caller sees the same directory.
+        Chariot maintains it; callers can't create, modify, or delete a
+        source.
+      required:
+        - id
+        - internal_id
+        - display_name
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the source.
+          example: "src_01j8rs605a4gctmbm58d87mvsj"
+        internal_id:
+          type: string
+          readOnly: true
+          description: |-
+            A stable, human-readable slug for the source. Use this as a
+            portable reference when you need one that's meaningful outside
+            Chariot.
+          example: "fidelity_charitable"
+        display_name:
+          type: string
+          description: The human-readable name of the source.
+          example: "Fidelity Charitable"
+        logo_url:
+          type: string
+          description: URL of the source's logo.
+          example: "https://cdn.chariot.co/sources/fidelity_charitable.png"
+        capabilities:
+          type: array
+          description: |-
+            The set of payment rails and integration modes this source
+            supports.
+          items:
+            type: string
+            enum:
+              - ach
+              - check
+              - wire
+              - dafpay
+        deprecated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: |-
+            When set, Chariot has marked this source for retirement.
+            Existing connections continue to work but new ones can't be
+            created against it.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this source was added to the directory.
+    Connection:
+      type: object
+      description: |-
+        A Connection is your organization's persistent relationship with a
+        Source, or a bring-your-own bank address you've added directly.
+        Donations and deposits reference connections by ID.
+
+        Connections come in two shapes:
+
+        - **Linked** — points at a canonical Source in Chariot's directory
+          via `source_id`.
+        - **Bring-your-own (BYO)** — has no `source_id`; carries its own
+          `financial_address` instead.
+      required:
+        - id
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the connection.
+          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+        source_id:
+          type: string
+          nullable: true
+          description: |-
+            The identifier of the Source this connection is linked to.
+            Null on bring-your-own connections.
+          example: "src_01j8rs605a4gctmbm58d87mvsj"
+        name:
+          type: string
+          description: A caller-provided nickname for the connection.
+          example: "Fidelity — General Fund"
+        status:
+          type: string
+          readOnly: true
+          description: The current state of the connection.
+          example: "connected"
+          enum:
+            - connected
+            - pending
+            - disabled
+            - error
+        financial_address:
+          allOf:
+            - $ref: "#/components/schemas/FinancialAddress"
+          description: |-
+            Bank address for the connection. Required on bring-your-own
+            connections. May be present on linked connections when Chariot
+            has provisioned one on the caller's behalf.
+        metadata:
+          type: object
+          description: |-
+            Arbitrary key-value pairs recorded against the connection.
+            Attach caller-specific configuration or reconciliation data
+            here.
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the connection was created.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the connection was last updated.
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: |-
+            When set, the connection has been deleted. Existing donation and
+            deposit references still resolve; new activity is blocked.
     Donation:
       type: object
       description: |-
@@ -7903,6 +8325,67 @@ components:
                 email: "warrenBuffet@example.com"
               clear_fields:
                 - "note"
+    CreateConnectionRequest:
+      description: |-
+        The request to create a new connection. Provide `source_id` to link a
+        canonical Source. Omit `source_id` and provide `financial_address` to
+        create a bring-your-own connection.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              source_id:
+                type: string
+                description: |-
+                  The identifier of the Source to link to. Omit to create a
+                  bring-your-own connection with the supplied
+                  `financial_address`.
+                example: "src_01j8rs605a4gctmbm58d87mvsj"
+              name:
+                type: string
+                description: A caller-provided nickname for the connection.
+                example: "Fidelity — General Fund"
+              financial_address:
+                allOf:
+                  - $ref: "#/components/schemas/FinancialAddress"
+                description: |-
+                  Bank address for the connection. Required when `source_id`
+                  is omitted (bring-your-own).
+              metadata:
+                type: object
+                description: |-
+                  Arbitrary key-value pairs to record against the connection.
+                additionalProperties: true
+            example:
+              source_id: "src_01j8rs605a4gctmbm58d87mvsj"
+              name: "Fidelity — General Fund"
+    UpdateConnectionRequest:
+      description: |-
+        The request to update a connection. Only the fields explicitly present
+        in the request body are changed; omitted fields are left as-is.
+        `source_id` and `financial_address` on linked connections are
+        immutable; to change them, delete this connection and create a new
+        one.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: A caller-provided nickname for the connection.
+                example: "Fidelity — Scholarship Fund"
+              metadata:
+                type: object
+                description: |-
+                  Arbitrary key-value pairs. Supplying this field replaces the
+                  stored map wholesale.
+                additionalProperties: true
+            example:
+              name: "Fidelity — Scholarship Fund"
     CreateDonationRequest:
       description: |-
         The request to record a new donation.
@@ -9150,6 +9633,46 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    ListSourcesResponse:
+      description: The response for Sources.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Source"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
+    ListConnectionsResponse:
+      description: The response for Connections.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Connection"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
     ListPaymentSourcesResponse:
       description: The response for PaymentSources.list
       headers:

@@ -238,6 +238,29 @@ navigation:
             skip-slug: true
             icon: gear
             contents:
+              - section: Sources
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/sources/overview.mdx
+                  - page: The Source object
+                    slug: object
+                    path: ./pages/api/sources/object.mdx
+                  - endpoint: GET /v1/sources
+                  - endpoint: GET /v1/sources/{id}
+              - section: Connections
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/connections/overview.mdx
+                  - page: The Connection object
+                    slug: object
+                    path: ./pages/api/connections/object.mdx
+                  - endpoint: POST /v1/connections
+                  - endpoint: GET /v1/connections
+                  - endpoint: GET /v1/connections/{id}
+                  - endpoint: PATCH /v1/connections/{id}
+                  - endpoint: DELETE /v1/connections/{id}
               - paymentSources:
                   title: Payment Sources
               - lockboxes:
