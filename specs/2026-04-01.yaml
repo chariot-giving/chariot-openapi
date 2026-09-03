@@ -2975,16 +2975,16 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/connections:
+  /v1/source_connections:
     get:
-      summary: List Connections
+      summary: List Source Connections
       description: |-
-        Returns the connections belonging to your organization. Each connection
+        Returns the source connections belonging to your organization. Each source connection
         is either linked to a canonical Source or a bring-your-own bank
         address. Donations and deposits reference connections by ID.
-      operationId: listConnections
+      operationId: listSourceConnections
       tags:
-        - connections
+        - source_connections
       security:
         - bearerAuth: []
       parameters:
@@ -3003,7 +3003,7 @@ paths:
             type: string
         - name: status
           in: query
-          description: Filter connections by status.
+          description: Filter source connections by status.
           required: false
           schema:
             type: string
@@ -3026,7 +3026,7 @@ paths:
               - available
       responses:
         "200":
-          $ref: "#/components/responses/ListConnectionsResponse"
+          $ref: "#/components/responses/ListSourceConnectionsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3036,14 +3036,14 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
-      summary: Create a Connection
+      summary: Create a Source Connection
       description: |-
-        Creates a new connection. Supply `source_id` to link a canonical
+        Creates a new source connection. Supply `source_id` to link a canonical
         Source; supply `financial_address` without `source_id` to create a
         bring-your-own connection.
-      operationId: createConnection
+      operationId: createSourceConnection
       tags:
-        - connections
+        - source_connections
       security:
         - bearerAuth: []
       parameters:
@@ -3054,7 +3054,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/CreateConnectionRequest"
+        $ref: "#/components/requestBodies/CreateSourceConnectionRequest"
       responses:
         "201":
           description: The connection was created.
@@ -3066,7 +3066,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Connection"
+                $ref: "#/components/schemas/SourceConnection"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3077,14 +3077,14 @@ paths:
           $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/connections/{id}:
+  /v1/source_connections/{id}:
     get:
-      summary: Get a Connection
+      summary: Get a Source Connection
       description: |-
-        Retrieves a connection by its unique identifier.
-      operationId: getConnection
+        Retrieves a source connection by its unique identifier.
+      operationId: getSourceConnection
       tags:
-        - connections
+        - source_connections
       security:
         - bearerAuth: []
       parameters:
@@ -3094,7 +3094,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: The connection.
@@ -3104,7 +3104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Connection"
+                $ref: "#/components/schemas/SourceConnection"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3116,14 +3116,14 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     patch:
-      summary: Update a Connection
+      summary: Update a Source Connection
       description: |-
-        Updates a connection's mutable fields. Immutable fields (`source_id`,
+        Updates a source connection's mutable fields. Immutable fields (`source_id`,
         `financial_address` on a linked connection) can't be changed; create a
         new connection instead.
-      operationId: updateConnection
+      operationId: updateSourceConnection
       tags:
-        - connections
+        - source_connections
       security:
         - bearerAuth: []
       parameters:
@@ -3133,16 +3133,16 @@ paths:
           required: true
           schema:
             type: string
-          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
-        $ref: "#/components/requestBodies/UpdateConnectionRequest"
+        $ref: "#/components/requestBodies/UpdateSourceConnectionRequest"
       responses:
         "200":
           description: The updated connection.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Connection"
+                $ref: "#/components/schemas/SourceConnection"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3154,14 +3154,14 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     delete:
-      summary: Delete a Connection
+      summary: Delete a Source Connection
       description: |-
-        Deletes a connection. Existing donation and deposit references still
+        Deletes a source connection. Existing donation and deposit references still
         resolve to the connection, but the connection stops appearing in list
         responses and no new activity can flow through it.
-      operationId: deleteConnection
+      operationId: deleteSourceConnection
       tags:
-        - connections
+        - source_connections
       security:
         - bearerAuth: []
       parameters:
@@ -3171,7 +3171,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "204":
           description: The connection was deleted.
@@ -4917,14 +4917,14 @@ components:
           format: date-time
           readOnly: true
           description: When this source was added to the directory.
-    Connection:
+    SourceConnection:
       type: object
       description: |-
-        A Connection is your organization's persistent relationship with a
+        A Source Connection is your organization's persistent relationship with a
         Source, or a bring-your-own bank address you've added directly.
         Donations and deposits reference connections by ID.
 
-        Connections come in two shapes:
+        Source Connections come in two shapes:
 
         - **Linked** — points at a canonical Source in Chariot's directory
           via `source_id`.
@@ -4939,7 +4939,7 @@ components:
           type: string
           readOnly: true
           description: The unique identifier for the connection.
-          example: "conn_01j8rs605a4gctmbm58d87mvsj"
+          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
         source_id:
           type: string
           nullable: true
@@ -8325,9 +8325,9 @@ components:
                 email: "warrenBuffet@example.com"
               clear_fields:
                 - "note"
-    CreateConnectionRequest:
+    CreateSourceConnectionRequest:
       description: |-
-        The request to create a new connection. Provide `source_id` to link a
+        The request to create a new source connection. Provide `source_id` to link a
         canonical Source. Omit `source_id` and provide `financial_address` to
         create a bring-your-own connection.
       required: true
@@ -8361,9 +8361,9 @@ components:
             example:
               source_id: "src_01j8rs605a4gctmbm58d87mvsj"
               name: "Fidelity — General Fund"
-    UpdateConnectionRequest:
+    UpdateSourceConnectionRequest:
       description: |-
-        The request to update a connection. Only the fields explicitly present
+        The request to update a source connection. Only the fields explicitly present
         in the request body are changed; omitted fields are left as-is.
         `source_id` and `financial_address` on linked connections are
         immutable; to change them, delete this connection and create a new
@@ -9653,8 +9653,8 @@ components:
                   A cursor token to retrieve the next page of results. If
                   specified, more results exist on the server; otherwise the
                   list has been exhausted.
-    ListConnectionsResponse:
-      description: The response for Connections.list
+    ListSourceConnectionsResponse:
+      description: The response for SourceConnections.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -9666,7 +9666,7 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Connection"
+                  $ref: "#/components/schemas/SourceConnection"
               next_page_token:
                 type: string
                 description: |-

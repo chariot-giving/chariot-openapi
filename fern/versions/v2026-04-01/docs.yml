@@ -248,19 +248,19 @@ navigation:
                     path: ./pages/api/sources/object.mdx
                   - endpoint: GET /v1/sources
                   - endpoint: GET /v1/sources/{id}
-              - section: Connections
+              - section: Source Connections
                 contents:
                   - page: Overview
                     slug: overview
-                    path: ./pages/api/connections/overview.mdx
-                  - page: The Connection object
+                    path: ./pages/api/source_connections/overview.mdx
+                  - page: The Source Connection object
                     slug: object
-                    path: ./pages/api/connections/object.mdx
-                  - endpoint: POST /v1/connections
-                  - endpoint: GET /v1/connections
-                  - endpoint: GET /v1/connections/{id}
-                  - endpoint: PATCH /v1/connections/{id}
-                  - endpoint: DELETE /v1/connections/{id}
+                    path: ./pages/api/source_connections/object.mdx
+                  - endpoint: POST /v1/source_connections
+                  - endpoint: GET /v1/source_connections
+                  - endpoint: GET /v1/source_connections/{id}
+                  - endpoint: PATCH /v1/source_connections/{id}
+                  - endpoint: DELETE /v1/source_connections/{id}
               - paymentSources:
                   title: Payment Sources
               - lockboxes:
