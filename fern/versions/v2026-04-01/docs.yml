@@ -261,8 +261,6 @@ navigation:
                   - endpoint: GET /v1/source_connections/{id}
                   - endpoint: PATCH /v1/source_connections/{id}
                   - endpoint: DELETE /v1/source_connections/{id}
-              - paymentSources:
-                  title: Payment Sources
               - lockboxes:
                   title: Lockboxes
               - mailItems:

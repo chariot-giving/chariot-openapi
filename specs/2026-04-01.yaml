@@ -3185,94 +3185,6 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/payment_sources:
-    get:
-      summary: List Payment Sources
-      description: |-
-        List payment sources for your Chariot account.
-
-        Payment Sources represent segregated addresses for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
-      operationId: listPaymentSources
-      tags:
-        - paymentSources
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: page_token
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/ListPaymentSourcesResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/payment_sources/{id}:
-    get:
-      summary: Get a Payment Source
-      description: |-
-        Get a payment source by its unique identifier.
-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
-      operationId: getPaymentSource
-      tags:
-        - paymentSources
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the payment source
-          required: true
-          schema:
-            type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: Successfully retrieved the payment source.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PaymentSource"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/lockboxes:
     get:
       summary: List Lockboxes
@@ -4665,54 +4577,6 @@ components:
         logo_url:
           type: string
           description: The URL of the organization's logo
-    PaymentSource:
-      type: object
-      description: |-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the payment source
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-        financial_account_id:
-          type: string
-          description: The unique identifier for the financial account that the payment source belongs to
-          example: "fa_01j8rs605a4gctmbm58d87mvsj"
-        name:
-          type: string
-          description: The name of the payment source
-          example: "Main Payment Source"
-        source_type:
-          type: string
-          description: The type of the payment source
-          example: "portal"
-          enum:
-            - manual
-            - portal
-            - lockbox
-            - grantmaker
-        financial_address:
-          $ref: "#/components/schemas/FinancialAddress"
-        lockbox:
-          $ref: "#/components/schemas/Lockbox"
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the payment source was created
-          example: "2020-01-31T23:59:59Z"
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the payment source was last updated
-          example: "2020-01-31T23:59:59Z"
     Lockbox:
       type: object
       description: |-
@@ -9673,27 +9537,6 @@ components:
                   A cursor token to retrieve the next page of results. If
                   specified, more results exist on the server; otherwise the
                   list has been exhausted.
-    ListPaymentSourcesResponse:
-      description: The response for PaymentSources.list
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              results:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentSource"
-              next_page_token:
-                type: string
-                description: |-
-                  A cursor token to use to retrieve the next page of results by making another API call
-                   to the same endpoint with the same parameters (only changing the pageToken). If
-                   specified, then more results exist on the server that were not returned, otherwise
-                   no more results exist on the server.
     ListFilesResponse:
       description: The response for Files.list
       headers:
