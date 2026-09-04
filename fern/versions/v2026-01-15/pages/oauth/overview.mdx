@@ -36,18 +36,29 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration — requesting a scope outside that set will fail the authorization request.
 
+**Grantmaking**
+
+| Scope                        | Grants                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| `read:payouts`               | Read and list disbursements and inbound transfers                                  |
+| `create:payouts`             | Create disbursements, approve, cancel, and stop them, and create inbound transfers |
+| `read:nonprofits`            | Search and read recipient organizations                                            |
+| `read:events`                | Read events and webhook subscriptions                                              |
+| `create:event_subscriptions` | Create and update webhook subscriptions                                            |
+
+**Identity**
+
 | Scope            | Grants                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------- |
-| `read:grants`    | Read and list grants and recurring grants                                                    |
-| `create:grants`  | Create grants and recurring grants                                                           |
 | `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
 | `offline_access` | Accepted for compatibility with OIDC clients. Refresh tokens are issued regardless           |
 
 <Note>
-  The consenting user's role must itself carry the permissions behind the scopes
-  you request. A token only receives the permissions your client, the
-  authorization, and the user's role all share, so a user with a read-only role
-  who approves `create:grants` will receive read access only.
+  A token only receives the permissions your client, the authorization, and the
+  consenting user's role all have in common. Because only Owners and Admins hold
+  every permission above, ask the nonprofit to have an Owner or Admin approve
+  your application — a user on a more limited role can complete the flow and
+  still receive a token with less access than you requested.
 </Note>
 
 ## Authorization Code Flow
@@ -151,7 +162,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=openid%20read:grants
+  &scope=openid%20read:payouts%20create:payouts
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
