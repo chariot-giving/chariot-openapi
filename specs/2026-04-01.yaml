@@ -104,6 +104,68 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/organizations/onboard/{id}:
+    post:
+      summary: "Sandbox: Onboard an organization"
+      description: |
+        Creates a Chariot account for a sandbox recipient organization so that
+        disbursements to it settle electronically instead of via a mailed check.
+
+        By default a sandbox organization has no Chariot account, so disbursements
+        to it are mailed as a physical check. Call this endpoint to provision an
+        account for the organization and choose which electronic rail its
+        disbursements should settle on.
+
+        The `settlement` is fixed on the first successful call. Onboarding the same
+        organization again with a different `settlement` returns an error.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: onboardOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the organization to onboard.
+          required: true
+          schema:
+            type: string
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - settlement
+              properties:
+                settlement:
+                  $ref: "#/components/schemas/SandboxSettlement"
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/programs:
     get:
       summary: List Programs
@@ -2093,6 +2155,16 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: |-
+            A client-generated identifier for the request. Replays with the same key return `409 Conflict`. The successfully created disbursement can later be located via `GET /v1/disbursements?idempotency_key=...`.
+
+            We recommend supplying your own unique identifier for the disbursement in your system, so you can later look it up by an ID you already track.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/CreateDisbursementRequest"
       responses:
@@ -2159,6 +2231,14 @@ paths:
           schema:
             type: string
             example: "organization"
+        - name: idempotency_key
+          in: query
+          description: |-
+            Filter to the disbursement created with this exact `Idempotency-Key` header on `POST /v1/disbursements`. Useful for recovering the result of a create request when the response was lost (e.g. network timeout). Returns at most one disbursement. Disbursements created via `POST /v1/disbursements/bulk` cannot be looked up this way.
+          required: false
+          schema:
+            type: string
+            example: "8e91b2f3-d7c4-4a59-9a91-72a40b1f2c3d"
       responses:
         "200":
           $ref: "#/components/responses/ListDisbursementsResponse"
@@ -2179,6 +2259,8 @@ paths:
 
         All disbursements in the request will be created together. If any disbursement fails validation,
         the entire request will fail and no disbursements will be created.
+
+        **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`.
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
@@ -2512,6 +2594,86 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/grants/{id}/complete:
+    post:
+      summary: "Sandbox: Complete a grant"
+      description: |
+        Simulates the DAF sponsor completing a grant. Transitions the grant status to `completed`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateGrantCompletion
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the grant.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
+      responses:
+        "200":
+          description: The updated grant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/simulations/grants/{id}/cancel:
+    post:
+      summary: "Sandbox: Cancel a grant"
+      description: |
+        Simulates the DAF sponsor canceling the grant. Transitions the grant status to `canceled`.
+
+        <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
+        This API is only available in the sandbox environment.
+        </Note>
+      operationId: simulateGrantCancellation
+      tags:
+        - Grants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the grant.
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "10229488-08d2-4629-b70c-a2f4f4d25344"
+      responses:
+        "200":
+          description: The updated grant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Grant"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/inbound_transfers:
     post:
       summary: Create an Inbound transfer
@@ -2566,16 +2728,22 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: limit
+        - name: page_limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
           required: false
           schema:
             type: integer
             format: int32
-        - name: pageToken
+        - name: page_token
           in: query
           description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: program_id
+          in: query
+          description: Filter the inbound transfers to a single program.
           required: false
           schema:
             type: string
@@ -2826,6 +2994,194 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes:
+    get:
+      summary: List Lockboxes
+      description: |-
+        List lockboxes for your account.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot.
+      operationId: listLockboxes
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListLockboxesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/lockboxes/{id}:
+    get:
+      summary: Get a Lockbox
+      description: |-
+        Get a lockbox by its unique identifier.
+
+        A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+      operationId: getLockbox
+      tags:
+        - lockboxes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the lockbox
+          required: true
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the lockbox.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lockbox"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items:
+    get:
+      summary: List Mail Items
+      description: |-
+        List mail items for your account.
+
+        A Mail Item is a unit of physical mail received at a Lockbox. It has its own lifecycle
+        and is the operational unit reviewers act on. Each Mail Item may produce zero or more
+        Donations and zero or one Deposit.
+      operationId: listMailItems
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: lockbox_id
+          in: query
+          description: The unique identifier for the lockbox to filter mail items by.
+          required: false
+          schema:
+            type: string
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        - name: status.in
+          in: query
+          description: |-
+            Filter Mail Items to only those with the specified status.
+            For GET requests, this should be encoded as a comma-delimited string,
+            such as `?status.in=needs_review,processing`.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MailItemStatus"
+          example:
+            - "needs_review"
+        - name: created_at.after
+          in: query
+          description: Return mail items created after the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Return mail items created before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMailItemsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/mail_items/{id}:
+    get:
+      summary: Get a Mail Item
+      description: |-
+        Get a mail item by its unique identifier.
+
+        A Mail Item is a unit of physical mail received at a Lockbox.
+      operationId: getMailItem
+      tags:
+        - mailItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the mail item
+          required: true
+          schema:
+            type: string
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the mail item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailItem"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
@@ -2878,6 +3234,12 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: dafpay_tracking_id
+          in: query
+          description: The DAFpay tracking identifier to filter donations by. Use this to reconcile a donation against the DAFpay grant that started it.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           $ref: "#/components/responses/ListDonationsResponse"
@@ -3015,6 +3377,187 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/files:
+    get:
+      summary: List Files
+      description: |-
+        List files that Chariot stores on your behalf. [Create a File Link](/api/files/create-link) to download
+        the file's contents.
+      operationId: listFiles
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Upload a File
+      description: |-
+        Upload a file with a given purpose to Chariot as `multipart/form-data`.
+      operationId: uploadFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/UploadFileRequest"
+      responses:
+        "201":
+          $ref: "#/components/responses/UploadFileResponse"
+        "200":
+          $ref: "#/components/responses/UploadFileReplayResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}:
+    get:
+      summary: Get a file
+      description: |-
+        Retrieve a file's metadata.
+      operationId: getFile
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The file
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/link:
+    get:
+      summary: Create a File Link
+      description: |-
+        Creates an unauthenticated temporary URL to download the file's contents. Note
+        that this link expires and therefore should not be cached.
+      operationId: createFileLink
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The file link
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/files/{id}/contents:
+    get:
+      summary: Get File Contents
+      description: |-
+        Returns a 302 to a temporary, unauthenticated URL, allowing clients to download file contents directly
+      operationId: getFileContents
+      tags:
+        - files
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the file
+          required: true
+          schema:
+            type: string
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "302":
+          description: A redirect to a temporary URL that serves the file's bytes.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/properties:
     get:
       summary: List Properties
@@ -3073,7 +3616,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "property_01j8rs605a4gctmbm58d87mvsj"
+          example: "prop_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: The property was retrieved
@@ -3108,7 +3651,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "property_01j8rs605a4gctmbm58d87mvsj"
+          example: "prop_01j8rs605a4gctmbm58d87mvsj"
         - name: limit
           in: query
           description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
@@ -3154,7 +3697,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "property_01j8rs605a4gctmbm58d87mvsj"
+          example: "prop_01j8rs605a4gctmbm58d87mvsj"
       requestBody:
         $ref: "#/components/requestBodies/AssignPropertyRequest"
       responses:
@@ -3358,6 +3901,16 @@ components:
           type: string
           description: The state of the organization.
           example: NY
+    SandboxSettlement:
+      type: string
+      description: |-
+        The electronic rail on which disbursements to an onboarded sandbox
+        organization settle. `SANDBOX_SETTLEMENT_ACCOUNT_TRANSFER` settles as an
+        in-network transfer between accounts on the same bank. `SANDBOX_SETTLEMENT_ACH`
+        settles via ACH across banks.
+      enum:
+        - SANDBOX_SETTLEMENT_ACCOUNT_TRANSFER
+        - SANDBOX_SETTLEMENT_ACH
     Organization:
       type: object
       description: |-
@@ -3737,11 +4290,121 @@ components:
     Lockbox:
       type: object
       description: |-
-        A US mailing address to process incoming physical mail and checks.
-        This is only available for lockbox payment sources.
+        A Lockbox represents a physical mailing address operated by a third-party provider (e.g., Stable, CDS)
+        that receives physical mail and scans checks on Chariot's behalf.
+        Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
+        Lockboxes are provisioned and managed by Chariot in partnership with the provider.
+      required:
+        - id
+        - created_at
       properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the lockbox.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
         address:
-          $ref: "#/components/schemas/PostalAddress"
+          description: The physical mailing address for the lockbox.
+          allOf:
+            - $ref: "#/components/schemas/PostalAddress"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the lockbox was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItem:
+      type: object
+      description: |-
+        A Mail Item represents a unit of physical mail. It has its own lifecycle and is the
+        operational unit that reviewers act on. A Mail Item may produce zero or more Donations
+        and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
+        paperwork) associated with the receipt.
+
+        Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
+        They are not created via the public API — to bring donation data and money in directly,
+        use the Donations and Deposits APIs.
+      required:
+        - id
+        - status
+        - received_at
+        - scans
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the mail item.
+          example: "mail_01j8rs605a4gctmbm58d87mvsj"
+        lockbox_id:
+          type: string
+          description: The unique identifier for the lockbox that received the mail item.
+          example: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        status:
+          $ref: "#/components/schemas/MailItemStatus"
+        received_at:
+          type: string
+          format: date-time
+          description: The date and time when the mail item was physically received at the lockbox.
+          example: "2020-01-31T23:59:59Z"
+        scans:
+          type: array
+          description: |-
+            The scans taken of the mail item, newest first. A mail item typically has one scan;
+            a second scan appears after an admin requests a rescan of the physical mail.
+          items:
+            $ref: "#/components/schemas/MailItemScan"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was created.
+          example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the mail item record was last updated.
+          example: "2020-01-31T23:59:59Z"
+    MailItemScan:
+      type: object
+      description: A single scan of a Mail Item. Multiple entries represent rescans.
+      required:
+        - file_id
+        - created_at
+      properties:
+        file_id:
+          type: string
+          description: The unique identifier for the scanned document file. Fetch contents via the File API.
+          example: "file_01j8rs605a4gctmbm58d87mvsj"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the scan was taken.
+          example: "2020-01-31T23:59:59Z"
+    MailItemStatus:
+      type: string
+      description: |-
+        The processing status of a Mail Item.
+
+        - `processing`: The mail item is being scanned and parsed.
+        - `needs_review`: Extraction completed but produced ambiguous results that require human review.
+        - `processed`: The mail item has been successfully parsed and classified, and is ready for any downstream automations or workflows to run on it.
+        - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
+      enum:
+        - processing
+        - needs_review
+        - processed
+        - rejected
+      example: "processed"
     FinancialAddress:
       type: object
       description: |-
@@ -3787,6 +4450,13 @@ components:
           readOnly: true
           description: The unique identifier for the donation
           example: donation_01j8rs605a4gctmbm58d87mvsj
+        external_id:
+          type: string
+          readOnly: true
+          description: |-
+            A short human-readable identifier for the donation, useful for reconciling against your own systems.
+            This is the same identifier shown on the donation in the Chariot dashboard.
+          example: "29247869"
         payment_source_id:
           type: string
           description: |-
@@ -3949,39 +4619,63 @@ components:
           example: "donation_receipt.pdf"
         description:
           type: string
+          nullable: true
           description: The description of the file.
           example: "Donation receipt for donation to the nonprofit"
         purpose:
-          type: string
-          description: The purpose of the file.
-          enum:
-            - integration_download
-            - inbound_mail_item
-            - inbound_email
-            - grant_letter
-            - manual_upload
+          $ref: "#/components/schemas/FilePurpose"
         content_type:
           type: string
           description: The MIME type of the file.
           example: "application/pdf"
+        size_bytes:
+          type: integer
+          format: int64
+          readOnly: true
+          description: The size of the file in bytes.
+          example: 20841
         created_at:
           type: string
           format: date-time
           readOnly: true
           description: The date and time when the file was created.
           example: "2020-01-31T23:59:59Z"
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the file was last updated.
+          example: "2020-01-31T23:59:59Z"
+    FilePurpose:
+      type: string
+      description: |-
+        The file's purpose. Note that entries may be added to this list without notice.
+      enum:
+        - manual_upload
+        - grant_letter
+        - integration_download
+        - inbound_mail_item
+        - inbound_mail_item_thumbnail
+        - inbound_email
+        - inbound_email_attachment
+        - bank_check_image_front
+        - bank_check_image_back
+        - check_attachment
+        - bank_statement
+        - bank_account_verification_letter
+        - automation_output
+        - export
+        - other
+      example: "manual_upload"
     FileLink:
       type: object
       description: |-
-        A file link is a URL that can be used to download a file.
+        A file link is a temporary URL that downloads a file's bytes without a Chariot
+        credential. It expires an hour after it is issued.
       properties:
-        file_id:
+        url:
           type: string
-          description: The unique identifier for the file.
-          example: "file_01j8rs605a4gctmbm58d87mvsj"
-        unauthenticated_url:
-          type: string
-          description: The unauthenticated URL to download the file.
+          description: The URL to download the file. It needs no Chariot credential.
           example: "https://cdn.givechariot.com/files/file.pdf"
         expires_at:
           type: string
@@ -3996,7 +4690,7 @@ components:
         property_id:
           type: string
           description: The unique identifier for the property.
-          example: "property_01j8rs605a4gctmbm58d87mvsj"
+          example: "prop_01j8rs605a4gctmbm58d87mvsj"
         value:
           $ref: "#/components/schemas/PropertyValue"
     PropertyType:
@@ -4057,7 +4751,7 @@ components:
           type: string
           readOnly: true
           description: The unique identifier for the property.
-          example: "property_01j8rs605a4gctmbm58d87mvsj"
+          example: "prop_01j8rs605a4gctmbm58d87mvsj"
         name:
           type: string
           description: The name of the property.
@@ -4383,10 +5077,22 @@ components:
           description: A subhash containing information about the inbound ACH transfer associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
+        ach_transfer:
+          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot debits an external bank account to fund the account.
+          allOf:
+            - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
           description: A subhash containing information about the check deposit associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A subhash containing information about the inbound real-time payments transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A subhash containing information about the inbound wire transfer associated with the transfer.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
     InboundAccountTransfer:
       type: object
       description: |-
@@ -4429,8 +5135,8 @@ components:
         effective_date:
           type: string
           format: date-time
-          description: The effective date for the ACH transfer.
-          example: "2020-01-31T23:00:00Z"
+          description: The effective date for the ACH transfer. The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         status:
           type: string
           description: The status of the ACH transfer.
@@ -4440,6 +5146,10 @@ components:
             - declined
             - accepted
             - returned
+        company_discretionary_data:
+          type: string
+          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          example: "GRANT-2024-001"
     CheckDeposit:
       type: object
       description: |-
@@ -4471,6 +5181,74 @@ components:
             - deposited
             - rejected
             - returned
+    InboundRealTimePaymentsTransfer:
+      type: object
+      description: |-
+        A Real-Time Payments transfer initiated outside of Chariot to your financial account.
+        Inbound Real-Time Payments transfers settle immediately.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound real-time payments transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+            - declined
+        debtor_name:
+          type: string
+          description: The name of the debtor who sent the transfer.
+          example: "Charity Good"
+        debtor_routing_number:
+          type: string
+          description: The routing number of the debtor's financial account.
+          example: "1234567890"
+        debtor_account_number:
+          type: string
+          description: The account number of the debtor's financial account.
+          example: "9876543210"
+        transaction_identification:
+          type: string
+          description: The transaction identification assigned by the sender.
+          example: "20240101ABC123"
+        remittance_information:
+          type: string
+          description: Unstructured remittance information sent with the transfer.
+          example: "Grant payment"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
+    InboundWireTransfer:
+      type: object
+      description: |-
+        A wire transfer initiated outside of Chariot to your financial account.
+      properties:
+        status:
+          type: string
+          description: The status of the inbound wire transfer.
+          example: "confirmed"
+          enum:
+            - pending_confirmation
+            - confirmed
+        originator_name:
+          type: string
+          description: The name of the originator who sent the transfer.
+          example: "Charity Good"
+        originator_routing_number:
+          type: string
+          description: The routing number of the originator's financial account.
+          example: "1234567890"
+        originator_account_number:
+          type: string
+          description: The account number of the originator's financial account.
+          example: "9876543210"
+        confirmed_at:
+          type: string
+          format: date-time
+          description: The date and time the transfer was confirmed.
+          example: "2020-01-31T23:00:00Z"
     Connect:
       type: object
       description: |-
@@ -5079,7 +5857,7 @@ components:
         status:
           type: string
           description: The status of the grant
-          example: awaiting_daf_submission
+          example: Initiated
         feeDetail:
           type: object
           readOnly: true
@@ -5626,6 +6404,12 @@ components:
           description: The list of transactions for the disbursement
           items:
             $ref: "#/components/schemas/Transaction"
+        idempotency_key:
+          type: string
+          description: |-
+            The `Idempotency-Key` header value the disbursement was created with. Only set for single-create disbursements; bulk-created disbursements omit this field.
+          example: "8e91b2f3-d7c4-4a59-9a91-72a40b1f2c3d"
+          readOnly: true
     DisbursementStatus:
       type: string
       description: |-
@@ -6021,17 +6805,21 @@ components:
             The lifecycle status of the ACH transfer.
             Possible values include:
               - `initiated`: The ACH transfer has been initiated and is pending submission to the Federal Reserve.
+              - `pending_submission`: The ACH transfer is queued for submission to the Federal Reserve.
               - `submitted`: The ACH transfer has been submitted to the Federal Reserve.
               - `completed`: The ACH transfer has been completed. Funds should be settled.
               - `rejected`: The ACH transfer was rejected.
               - `returned`: The ACH transfer was returned by the receiving organization.
+              - `canceled`: The ACH transfer was canceled before submission.
           example: "initiated"
           enum:
             - initiated
+            - pending_submission
             - submitted
             - completed
             - rejected
             - returned
+            - canceled
         direction:
           type: string
           description: |-
@@ -6048,7 +6836,9 @@ components:
           enum:
             - corporate_credit_or_debit
             - prearranged_payments_and_deposit
+            - international_ach_transaction
             - internet_initiated
+            - corporate_trade_exchange
         company_entry_description:
           type: string
           description: |-
@@ -6068,7 +6858,8 @@ components:
           description: |-
             The ACH transfer's effective date as sent to the Federal Reserve.
             This is the date the funds will be available to the receiving organization.
-          example: "2020-01-31T23:00:00Z"
+            The time component is always midnight UTC.
+          example: "2020-01-31T00:00:00Z"
         submitted_at:
           type: string
           format: date-time
@@ -6418,6 +7209,11 @@ components:
                 description: "A note to the recipient. Maximum length: 600 characters."
                 maxLength: 600
                 example: "Allocate to education"
+              recipient_name:
+                type: string
+                description: "The intended recipient of the grant (for example, a fiscal sponsor's project). Maximum length: 255 characters."
+                maxLength: 255
+                example: "Clean Water Project"
               donors:
                 $ref: "#/components/schemas/TransactionDonors"
               daf_grant:
@@ -6435,6 +7231,7 @@ components:
         An inbound transfer represents a transfer of funds from an external bank account to a financial account.
       required:
         - id
+        - program_id
         - amount
         - created_at
       properties:
@@ -6443,6 +7240,10 @@ components:
           description: The unique identifier for the inbound transfer
           example: "inbound_transfer_01j8rs605a4gctmbm58d87mvsj"
           readOnly: true
+        program_id:
+          type: string
+          description: The unique identifier for the program that the inbound transfer belongs to.
+          example: "program_01j8rs605a4gctmbm58d87mvsj"
         amount:
           type: integer
           format: int64
@@ -6469,6 +7270,10 @@ components:
             - completed
             - canceled
             - failed
+        transfer:
+          description: A subhash containing information about the transfer associated with the inbound transfer.
+          allOf:
+            - $ref: "#/components/schemas/Transfer"
         created_at:
           type: string
           format: date-time
@@ -6538,6 +7343,11 @@ components:
           description: "A note to the recipient."
           nullable: true
           example: "Allocate to education"
+        recipient_name:
+          type: string
+          description: "The intended recipient of the grant (for example, a fiscal sponsor's project)."
+          nullable: true
+          example: "Clean Water Project"
         donors:
           $ref: "#/components/schemas/TransactionDonors"
         daf_grant:
@@ -6784,30 +7594,38 @@ components:
           example: "eyJpZCI6IjEyMzQ1Njc4OTAiLCJ0aW1lc3RhbXAiOiIyMDIwLTA3LTEwIDE1OjAwOjAwLjAwMCJ9"
         total:
           type: integer
-    Error:
+    ProblemDetails:
       type: object
+      description: >-
+        RFC 7807 problem-details error (media type application/problem+json).
+        The `status` field is an integer HTTP status code.
       required:
-        - timestamp
-        - code
-        - error
-        - message
+        - type
+        - title
+        - status
+        - detail
       properties:
-        timestamp:
+        type:
           type: string
-          description: time when the error was reported. Expressed in RFC 3339 format.
-          example: "2020-01-31T23:00:00Z"
-        code:
-          type: number
-          description: HTTP status code of the error
+          description: A URI reference identifying the problem type.
+          example: about:blank
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type.
+          example: API Error
+        status:
+          type: integer
+          description: The HTTP status code for this error.
           example: 400
-        error:
+        detail:
           type: string
-          description: A short name of the error; usually the HTTP status.
-          example: Bad Request
-        message:
-          type: string
-          description: The description of the error
-          example: Expected an API key to be provided in the header `x-chariot-api-key`
+          description: A human-readable explanation specific to this occurrence.
+          example: The request is invalid or contains invalid parameters.
+      example:
+        type: about:blank
+        title: "API Error"
+        status: 400
+        detail: The request is invalid or contains invalid parameters.
   headers:
     X-Request-Id:
       description: The unique identifier for the request
@@ -6822,20 +7640,27 @@ components:
       schema:
         type: string
   requestBodies:
-    CreateFileLinkRequest:
-      description: The request body for the File Links.create endpoint
+    UploadFileRequest:
+      description: The file to upload, its purpose, and an optional description.
       required: true
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             required:
-              - file_id
+              - file
+              - purpose
             properties:
-              file_id:
+              file:
                 type: string
-                description: The unique identifier for the file to create a link for.
-                example: "file_01j8rs605a4gctmbm58d87mvsj"
+                format: binary
+                description: The file's bytes. At most 100 MiB.
+              purpose:
+                $ref: "#/components/schemas/FilePurpose"
+              description:
+                type: string
+                description: A description of the file.
+                example: "Donation receipt for donation to the nonprofit"
     CreateNonprofitAddressSuggestionRequest:
       description: Address entries to upload, each matched to a nonprofit by EIN.
       required: true
@@ -7369,19 +8194,19 @@ components:
             type: object
             required:
               - amount
-              - account_id
             properties:
               amount:
-                type: number
+                type: integer
+                format: int64
                 description: |-
                   The amount of the transfer in cents.
                   This amount must be positive.
                 example: 10000
-              account_id:
+              program_id:
                 type: string
                 description: |-
-                  The identifier of the financial account that will receive the transfer.
-                example: "account_01jpjenf5q6cawy43yxfcrxhct"
+                  The unique identifier for the program that the inbound transfer belongs to.
+                example: "program_01jpjenf5q6cawy43yxfcrxhct"
               description:
                 type: string
                 description: An arbitrary string attached to the object. Often useful for displaying to users.
@@ -7648,34 +8473,19 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only substituting the pageToken with this value). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
-                    orgName: "National Philanthropic Trust"
-                    address: "123 Main St."
-                    address2: "Apt 100"
-                    city: "New York"
-                    state: "NY"
-                    zip: "12345"
-                    supported: true
-                    minimumGrantAmount: 5000
-                    institutionDown: false
+          example:
+            results:
+              - id: "0bf40881-8ee2-47fb-98ca-f58c7999aa34"
+                orgName: "National Philanthropic Trust"
+                address: "123 Main St."
+                address2: "Apt 100"
+                city: "New York"
+                state: "NY"
+                zip: "12345"
+                supported: true
+                minimumGrantAmount: 5000
+                institutionDown: false
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAccountsResponse:
       description: The response for DonorAccounts.list
       headers:
@@ -7695,43 +8505,24 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the page_token). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "approved"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: "Warren"
-                      last_name: "Buffet"
-                      phone: "+12125550100"
-                    external_id: "ACME-DAF-DONOR-1042"
-                    approval:
-                      approved_at: "2026-04-02T18:30:00Z"
-                      approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-02T18:30:00Z"
-                next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-                    status: "pending"
-                    donor:
-                      email: "warrenBuffet@example.com"
-                      first_name: null
-                      last_name: null
-                      phone: null
-                    external_id: null
-                    approval: null
-                    rejection: null
-                    disabled: false
-                    created_at: "2026-04-01T12:00:00Z"
-                    updated_at: "2026-04-01T12:00:00Z"
-                next_page_token: null
+          example:
+            results:
+              - id: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+                status: "approved"
+                donor:
+                  email: "warrenBuffet@example.com"
+                  first_name: "Warren"
+                  last_name: "Buffet"
+                  phone: "+12125550100"
+                external_id: "ACME-DAF-DONOR-1042"
+                approval:
+                  approved_at: "2026-04-02T18:30:00Z"
+                  approved_by: "daf:fid_01jpjenf5q6cawy43yxfcrxhct"
+                rejection: null
+                disabled: false
+                created_at: "2026-04-01T12:00:00Z"
+                updated_at: "2026-04-02T18:30:00Z"
+            next_page_token: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListDonorAuthorizationTokensResponse:
       description: The response for DonorAccounts.listAuthorizationTokens
       headers:
@@ -7781,29 +8572,16 @@ components:
                 nullable: true
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    status: "awaiting_daf_submission"
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
-                    status: "Received"
-                nextPageToken: null
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                status: "Initiated"
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListRecurringGrantsResponse:
       description: The response for RecurringGrants.list
       headers:
@@ -7822,28 +8600,16 @@ components:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call to the same endpoint with the same parameters (only changing the pageToken). If specified, then more results exist on the server that were not returned, otherwise no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
-                    workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                    frequency: MONTHLY
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "579e2864-d65a-4a21-a056-1c91d0a95b5c"
-                    workflowSessionId: "ee27b65b-22f5-42fa-b966-0f83cac8fd2c"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 16:00:00.000"
-                    updatedAt: "2021-08-11 15:25:00.000"
-                    amount: 20000
-                    frequency: MONTHLY
+          example:
+            results:
+              - id: "29650c10-1eb3-4f97-a63e-f2e41c145b53"
+                workflowSessionId: "b76fa69f-c554-43b2-af9a-1d4bb9a02016"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+                frequency: MONTHLY
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListUnintegratedGrantsResponse:
       description: The response for UnintegratedGrants.list
       headers:
@@ -7865,26 +8631,15 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-          examples:
-            MoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 15000
-                nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
-            NoMoreResults:
-              value:
-                results:
-                  - id: "1e60800e-849b-43d1-870e-57afc8d75473"
-                    workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
-                    fundId: "daf-id"
-                    createdAt: "2021-08-10 15:00:00.000"
-                    updatedAt: "2021-08-11 15:34:00.000"
-                    amount: 20000
+          example:
+            results:
+              - id: "1e60800e-849b-43d1-870e-57afc8d75473"
+                workflowSessionId: "cfe09e64-6a74-4dab-a565-361185a6f248"
+                fundId: "daf-id"
+                createdAt: "2021-08-10 15:00:00.000"
+                updatedAt: "2021-08-11 15:34:00.000"
+                amount: 15000
+            nextPageToken: "c3f685f2-2dda-4956-815b-39867a5e5638"
     ListEventsResponse:
       description: The response for Events.list
       headers:
@@ -7979,11 +8734,11 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/InboundTransfer"
-              nextPageToken:
+              next_page_token:
                 type: string
                 description: |-
                   A cursor token to use to retrieve the next page of results by making another API call
-                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   to the same endpoint with the same parameters (only changing the page_token). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
     ListOutboundTransfersResponse:
@@ -8021,6 +8776,48 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Donation"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListLockboxesResponse:
+      description: The response for Lockboxes.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lockbox"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the pageToken). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListMailItemsResponse:
+      description: The response for MailItems.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MailItem"
               next_page_token:
                 type: string
                 description: |-
@@ -8133,6 +8930,26 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    UploadFileResponse:
+      description: The file was stored.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/File"
+    UploadFileReplayResponse:
+      description: |-
+        The `Idempotency-Key` had already stored this file, so the existing File is
+        returned and nothing was uploaded again.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/File"
     AssignPropertyResponse:
       description: The response for Properties.assign
       headers:
@@ -8194,112 +9011,128 @@ components:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 400
-            error: "Bad Request"
-            message: "Expected an API key to be provided in the header `x-chariot-api-key`"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            BadRequest:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 400
+                detail: "The request is invalid or contains invalid parameters."
     AuthenticationError:
       description: Unauthorized. The request is missing the security (OAuth2 Bearer token) requirements and the server is unable to verify the identify of the caller.
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 401
-            error: "Unauthorized"
-            message: "Unauthorized"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Unauthorized:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 401
+                detail: "Authentication credentials were missing or invalid."
     ForbiddenError:
       description: Access denied
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 403
-            error: "Forbidden"
-            message: "User is not allowed to access this resource"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Forbidden:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 403
+                detail: "You do not have permission to access this resource."
     NotFoundError:
       description: Resource Not Found
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 404
-            error: "Not Found"
-            message: "Resource is not found"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            NotFound:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 404
+                detail: "The requested resource was not found."
     ConflictError:
       description: Resource Conflicts
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 409
-            error: "Conflict"
-            message: "Request conflicts with an already existing resource"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Conflict:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 409
+                detail: "The request conflicts with the current state of the resource."
     GoneError:
       description: Resource Gone or Expired
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 410
-            error: "Gone"
-            message: "The resource has expired"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            Gone:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 410
+                detail: "The resource is no longer available."
     PreconditionFailedError:
       description: Precondition Failed
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 412
-            error: "Precondition Failed"
-            message: "The requested action has a failed precondition"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            PreconditionFailed:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 412
+                detail: "A precondition for the request was not met."
     InternalServerError:
       description: Internal Server Error
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error"
-          example:
-            timestamp: "2020-01-31T23:00:00Z"
-            code: 500
-            error: "Internal server error"
-            message: "The server encountered an error processing your request"
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            InternalServerError:
+              value:
+                type: about:blank
+                title: "API Error"
+                status: 500
+                detail: "The server encountered an error processing your request."
   examples:
     DafGrantDisbursement:
       summary: Disbursement with DAF grant transactions

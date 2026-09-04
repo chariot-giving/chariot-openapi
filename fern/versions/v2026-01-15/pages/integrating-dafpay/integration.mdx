@@ -3,6 +3,54 @@ title: Integrating Connect
 hidden: false
 ---
 
+## Content Security Policy
+
+DAFpay is distributed as a cross-origin web component. The button renders inline on your page, but the checkout itself runs in either a cross-origin **iframe** embedded in your page (most desktop browsers, when the viewport supports the modal) or a cross-origin **popup window** at `https://secure.dafpay.com` (mobile devices, Safari, or when the parent viewport is too small for the modal).
+
+In both modes, the DAFpay JavaScript bundle is loaded from Chariot's CDN and the web component injects `@font-face` declarations and inline styles into your page's document. If your site sends a [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) (CSP) header — via either `Content-Security-Policy` or `Content-Security-Policy-Report-Only` — you must allow the directives below or the integration will silently fail to load.
+
+### Required Directives
+
+| Directive    | Add to allowlist                              | Why it's needed                                                                                                                                                            |
+|--------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `script-src` | `https://cdn.givechariot.com`                 | Loads `chariot-connect.umd.js` from Chariot's CDN.           |
+| `frame-src`  | `https://secure.dafpay.com`                   | Embeds the DAFpay checkout in a cross-origin iframe. If `frame-src` is not set, browsers fall back to `child-src`, then `default-src`.                                     |
+| `font-src`   | `https://cdn.givechariot.com`                 | The DAFpay web component injects `@font-face` rules into your document referencing Chariot-hosted fonts.                         |
+| `style-src`  | `'unsafe-inline'` (or a matching nonce/hash)  | The web component injects inline `<style>` blocks into the parent document.                       |
+| `img-src`    | `https://cdn.givechariot.com`                 | DAFpay tile and extended button themes reference DAF provider logos and other imagery hosted on Chariot's CDN.                                                             |
+
+The parent page does **not** need to allow `connect-src` for Chariot — all DAFpay API traffic originates inside the iframe (`secure.dafpay.com`), which has its own CSP that we manage.
+
+### Example Header
+
+A minimal CSP that permits a DAFpay integration alongside your existing `'self'` policy:
+
+```http
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' https://cdn.givechariot.com;
+  frame-src   https://secure.dafpay.com;
+  font-src    'self' https://cdn.givechariot.com;
+  style-src   'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src     'self' https://cdn.givechariot.com data:;
+```
+
+Merge each directive into your existing policy — do not replace your full CSP with the example above.
+
+<Tip title="Meta Tag Limitation">
+If you deliver CSP via a `<meta http-equiv="Content-Security-Policy">` tag instead of an HTTP header, the same directives apply, but `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are silently ignored from meta tags. Use a response header whenever possible.
+</Tip>
+
+### Troubleshooting
+
+If the DAFpay button does not render, or clicking it does nothing:
+
+1. Open your browser's developer console. CSP violations are logged as errors prefixed with `Refused to load the script/frame/font/style` and name the directive that blocked the request.
+2. Check the **Network** tab for blocked requests to `cdn.givechariot.com` or `secure.dafpay.com`.
+3. If you ship a `Content-Security-Policy-Report-Only` header alongside your live policy, your reporting endpoint will receive `csp-violation` events naming the affected URLs.
+
+If you cannot relax your CSP — for example because of PCI scope or a vendor security policy — reach out to Chariot support to discuss alternative integration paths.
+
 ## Collecting Form Data
 DAFpay can auto-populate the donor contact fields or your platform can pass donor information directly into the onDonationRequest.
 

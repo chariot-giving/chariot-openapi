@@ -1,309 +1,94 @@
 ---
-title: "OAuth"
-subtitle: "OAuth allows external applications to access the Chariot API on behalf of a nonprofit organization"
+title: "OAuth Integration"
+subtitle: "Let donors link their DAF account to DAFpay and give seamlessly at checkout."
 hidden: false
-createdAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
 ---
 
-<Warning>
-  OAuth access is not self-service. Contact
-  [support@givechariot.com](mailto:support@givechariot.com) to register your
-  application and receive client credentials. Include your application's display
-  name, a logo, and the callback URLs you want registered — the name and logo
-  are shown to nonprofits on the consent screen, and only the registered
-  callback URLs can be used as a `redirect_uri`.
-</Warning>
-
-## How It Works
-
-Chariot implements the **OAuth 2.0 Authorization Code** flow with **PKCE** (Proof Key for Code Exchange):
-
-1. Your application generates a PKCE code verifier and code challenge
-2. Your application redirects a nonprofit user to Chariot's authorization page with the code challenge
-3. The user reviews the requested permissions and approves access
-4. Chariot redirects back to your application with an authorization code
-5. Your server exchanges the code and the code verifier for access and refresh tokens
-6. You use the access token to call the Chariot API on behalf of the organization
-
-## Authentication
-
-When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server uses these credentials (via HTTP Basic Auth) to authenticate with Chariot during the OAuth token exchange and refresh flows. Once you have an access token, your server uses that token — not the client credentials — to call the Chariot API on behalf of the nonprofit.
-
-Your client secret should be kept secure and should never be exposed to the public.
-
-## Scopes
-
-Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration — requesting a scope outside that set will fail the authorization request.
-
-**Grantmaking**
-
-| Scope                        | Grants                                                                             |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `read:payouts`               | Read and list disbursements and inbound transfers                                  |
-| `create:payouts`             | Create disbursements, approve, cancel, and stop them, and create inbound transfers |
-| `read:nonprofits`            | Search and read recipient organizations                                            |
-| `read:events`                | Read events and webhook subscriptions                                              |
-| `create:event_subscriptions` | Create and update webhook subscriptions                                            |
-
-**Identity**
-
-| Scope            | Grants                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------------- |
-| `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
-| `offline_access` | Accepted for compatibility with OIDC clients. Refresh tokens are issued regardless           |
-
-<Note>
-  A token only receives the permissions your client, the authorization, and the
-  consenting user's role all have in common. Because only Owners and Admins hold
-  every permission above, ask the nonprofit to have an Owner or Admin approve
-  your application — a user on a more limited role can complete the flow and
-  still receive a token with less access than you requested.
+<Note title="Audience">
+This guide is for **Donor Advised Fund (DAF) providers** who operate their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a few API calls, see [Donor Accounts](/guides/dafpay/donor-accounts/overview) instead.
 </Note>
 
-## Authorization Code Flow
+## Overview
 
-### Step 1: Generate a PKCE Code Verifier and Challenge
+The OAuth Integration is a way to connect your DAF to DAFpay. Instead of verifying donors with one-time codes, donors authenticate **directly on your login page** and are redirected back to DAFpay to complete their donation. DAFpay then communicates with your APIs to display fund balances, create grants, and track grant status — all under the donor's authorization.
 
-Before redirecting the user, generate a cryptographically random code verifier (43-128 characters, using `A-Z`, `a-z`, `0-9`, `-`, `.`, `_`, `~`), then compute its SHA-256 hash and base64url-encode it to create the code challenge:
+This is the same model used across open finance — it's how banks connect customer accounts to payment apps through aggregators like Plaid — scoped down to the handful of endpoints a DAF actually needs. If you already run Okta, Auth0, Cognito, or a custom OIDC-compliant identity provider, most of the authentication work is configuration rather than code.
 
-<CodeBlocks>
-```javascript NodeJS
-const crypto = require("crypto");
+## Why this model
 
-function generatePKCE() {
-const codeVerifier = crypto.randomBytes(32).toString("base64url");
-const codeChallenge = crypto
-.createHash("sha256")
-.update(codeVerifier)
-.digest("base64url");
-return { codeVerifier, codeChallenge };
-}
+**For your donors:**
 
-````
-```python Python
-import os
-import hashlib
-import base64
+- They sign in with the credentials they already have — on your branded login page. You control the authentication experience, including MFA.
+- They see their real fund names and grantable balances inside the donation flow.
+- **They rarely re-link.** Every donor creates a persistent DAFpay Donor Account at their first checkout. While their connection to your DAF is active, returning donors authenticate with DAFpay only — they're asked to re-link only when the connection expires or is revoked. (See [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).)
 
-def generate_pkce():
-    code_verifier = base64.urlsafe_b64encode(os.urandom(32)).rstrip(b"=").decode()
-    code_challenge = (
-        base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest())
-        .rstrip(b"=")
-        .decode()
-    )
-    return code_verifier, code_challenge
-````
+**For you:**
 
-```go Go
-package main
+- Grants are created through your own API, so they flow through your existing review and disbursement pipeline. No separate decisioning queue.
+- You never share donor credentials with Chariot — only scoped, revocable tokens.
+- Real-time, accurate balances mean fewer failed grants.
 
-import (
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
-)
+## How it compares to Donor Accounts
 
-func generatePKCE() (string, string) {
-	b := make([]byte, 32)
-	rand.Read(b)
-	codeVerifier := base64.RawURLEncoding.EncodeToString(b)
-	h := sha256.Sum256([]byte(codeVerifier))
-	codeChallenge := base64.RawURLEncoding.EncodeToString(h[:])
-	return codeVerifier, codeChallenge
-}
-```
+| | **Donor Accounts** | **OAuth Integration** |
+|---|---|---|
+| Engineering lift | One API call | OAuth server + 4–5 API endpoints |
+| Donor verification | One-time code exchange | Donor signs in on your login page |
+| Fund balances shown | No | Yes, real-time |
+| Grant creation | You decision Grant Requests via Chariot's API | Chariot creates grants via your API |
+| Best for | DAFs without API infrastructure | DAFs with OAuth + APIs |
 
-```java Java
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.util.Base64;
+Both integrations result in the same thing for donors: after the initial setup, giving via DAFpay is instant.
 
-public static String[] generatePKCE() throws Exception {
-    SecureRandom random = new SecureRandom();
-    byte[] bytes = new byte[32];
-    random.nextBytes(bytes);
-    String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-
-    byte[] hash = MessageDigest.getInstance("SHA-256").digest(codeVerifier.getBytes("US-ASCII"));
-    String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-    return new String[]{codeVerifier, codeChallenge};
-}
-```
-
-</CodeBlocks>
-
-Store the `codeVerifier` — you'll need it in Step 5.
-
-### Step 2: Redirect to Chariot
-
-Direct the user's browser to Chariot's authorization endpoint:
+## The flow
 
 ```
-GET https://dashboard.givechariot.com/oauth/authorize
+Donor                      DAFpay (Chariot)                 DAF (you)
+  │                          │                                │
+  │  1. Select your DAF      │                                │
+  │ ────────────────────────▶│                                │
+  │                          │  2. Redirect to your           │
+  │                          │     Authorize URL (popup)      │
+  │ ◄────────────────────────│                                │
+  │                          │                                │
+  │  3. Sign in & consent on your login page                  │
+  │ ─────────────────────────────────────────────────────────▶│
+  │                          │                                │
+  │                          │  4. Redirect to Chariot        │
+  │                          │     callback with auth code    │
+  │                          │ ◄──────────────────────────────│
+  │                          │                                │
+  │                          │  5. Exchange code for tokens   │
+  │                          │     (access + refresh + id)    │
+  │                          │ ◄─────────────────────────────▶│
+  │                          │                                │
+  │                          │  6. GET /funds, /customers     │
+  │                          │ ◄─────────────────────────────▶│
+  │  7. Review fund & balance│                                │
+  │ ◄────────────────────────│                                │
+  │  8. Submit grant         │                                │
+  │ ────────────────────────▶│  9. POST /grants               │
+  │                          │ ──────────────────────────────▶│
+  │                          │  10. Grant status updates      │
+  │                          │ ◄──────────────────────────────│
 ```
 
-| Parameter               | Required    | Description                                                                                                        |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `client_id`             | Yes         | Your application's client ID                                                                                       |
-| `redirect_uri`          | Yes         | URL to redirect back to (must match a registered URI). See [Redirect URI Requirements](#redirect-uri-requirements) |
-| `response_type`         | Yes         | Must be `code`                                                                                                     |
-| `scope`                 | Yes         | Space-separated list of requested scopes, percent-encoded (`%20`) as a single query parameter value                |
-| `state`                 | Recommended | An opaque value to prevent CSRF attacks                                                                            |
-| `nonce`                 | Yes         | Cryptographically random string to prevent replay attacks. See [Identity](/guides/oauth/identity)                  |
-| `code_challenge`        | Yes         | Base64url-encoded SHA-256 hash of the code verifier                                                                |
-| `code_challenge_method` | Yes         | Must be `S256`                                                                                                     |
+**On future donations**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the refresh token from step 5 and proceeds straight to steps 6–9. Your login page reappears only when the connection ends — when the donor's refresh token expires (reauthorization) or the connection is revoked (see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)).
 
-**Example:**
+## What you'll build
 
-```
-https://dashboard.givechariot.com/oauth/authorize
-  ?client_id=YOUR_CLIENT_ID
-  &redirect_uri=https://example.com/callback
-  &response_type=code
-  &scope=openid%20read:payouts%20create:payouts
-  &state=RANDOM_CSRF_TOKEN
-  &code_challenge=YOUR_CODE_CHALLENGE
-  &code_challenge_method=S256
-```
+1. **An OAuth 2.0 / OIDC authorization server** with a Chariot client registration — see [OAuth & Token Requirements](/guides/dafpay/oauth/oauth-requirements)
+2. **Resource APIs** that Chariot calls with the donor's access token — see [API Endpoints](/guides/dafpay/oauth/api-endpoints)
+3. **A sandbox environment** with test donor accounts for integration testing — see [Integration Checklist](/guides/dafpay/oauth/integration-checklist)
 
-### Step 3: User Provides Consent
+Throughout the build, follow the [Security Best Practices](/guides/dafpay/oauth/security) — transport security, credential handling, token policy, and the scope boundaries that keep Chariot's access limited to DAF granting and nothing else.
 
-Chariot presents the nonprofit user with a consent screen showing your application name, logo, and the permissions being requested.
+## Estimated timeline
 
-### Step 4: Receive the Authorization Code
+| Your current setup | Estimated effort |
+|---|---|
+| Existing Okta / Auth0 / Cognito + internal grant APIs | ~2–4 weeks of configuration + API adaptation |
+| Existing identity provider, no external-facing APIs | ~1–2 months |
+| Building auth and APIs from scratch | ~1–2 months |
 
-After approval, Chariot redirects back to your [`redirect_uri`](#redirect-uri-requirements):
-
-```
-https://example.com/callback?code=AUTHORIZATION_CODE&state=RANDOM_CSRF_TOKEN
-```
-
-<Warning>
-  Always verify that the returned `state` matches the value you sent in Step 2
-  to prevent CSRF attacks.
-</Warning>
-
-Authorization codes expire shortly after they were issued and can only be used once.
-
-### Step 5: Exchange the Code for Tokens
-
-Make a server-side `POST` request to the token endpoint, authenticating with HTTP Basic Auth. Include the `code_verifier` you generated in Step 1:
-
-```curl
-curl -X POST https://api.givechariot.com/auth/oauth/token \
-  -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
-  -d "grant_type=authorization_code" \
-  -d "code=<AUTHORIZATION_CODE>" \
-  -d "code_verifier=<YOUR_CODE_VERIFIER>"
-```
-
-**Response:**
-
-```json
-{
-  "access_token": "ACCESS_TOKEN",
-  "refresh_token": "REFRESH_TOKEN",
-  "expires_in": 900,
-  "token_type": "Bearer"
-}
-```
-
-## Using Access Tokens
-
-Include the access token in the `Authorization` header of your API requests:
-
-```curl
-curl https://api.givechariot.com/v1/donations \
-  -H "Authorization: Bearer ACCESS_TOKEN"
-```
-
-Access tokens expire after **15 minutes**. Use the refresh token to obtain a new one.
-
-## Refreshing Tokens
-
-When an access token expires, exchange your refresh token for a new token pair.
-
-<Warning>
-  Refresh tokens are single-use. After a successful exchange, you must use the
-  new refresh token returned in the response. Reusing a previously exchanged
-  refresh token may result in authorization revocation, requiring the nonprofit
-  to re-authorize your application.
-</Warning>
-
-```curl
-curl -X POST https://api.givechariot.com/auth/oauth/token \
-  -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
-  -d "grant_type=refresh_token" \
-  -d "refresh_token=REFRESH_TOKEN"
-```
-
-**Response:**
-
-```json
-{
-  "access_token": "NEW_ACCESS_TOKEN",
-  "refresh_token": "NEW_REFRESH_TOKEN",
-  "expires_in": 900,
-  "token_type": "Bearer"
-}
-```
-
-Refresh tokens use a **sliding window** expiration:
-
-- Each use extends the refresh token's lifetime by **14 days**
-- The absolute maximum lifetime is **180 days**
-- After 180 days, the user must re-authorize your application
-
-## Token Lifetimes
-
-| Token              | Lifetime                        |
-| ------------------ | ------------------------------- |
-| Authorization code | 1 minute                        |
-| Access token       | 15 minutes                      |
-| Refresh token      | 14 days (sliding), 180 days max |
-
-## Error Handling
-
-Common errors during the token exchange:
-
-| HTTP Status | Cause                                                                |
-| ----------- | -------------------------------------------------------------------- |
-| `400`       | Malformed request (invalid parameters, missing fields)               |
-| `401`       | Invalid authorization code, expired token, or bad client credentials |
-| `412`       | User lacks the required permissions for the requested scopes         |
-
-## Redirect URI Requirements
-
-Redirect URIs are validated when your application is registered and again at authorization time. Each URI must meet the following requirements:
-
-| Rule                    | Requirement                                                     |
-| ----------------------- | --------------------------------------------------------------- |
-| **Scheme**              | Must use `https`                                                |
-| **Host**                | Must include a hostname                                         |
-| **Path**                | Must include a path beyond `/` (e.g., `/callback`)              |
-| **No query parameters** | Query strings are not allowed                                   |
-| **No fragments**        | URL fragments (`#`) are not allowed                             |
-| **No user info**        | Credentials in the URL (e.g., `user:pass@host`) are not allowed |
-| **Length**              | Must be 255 characters or fewer                                 |
-| **Max count**           | You can register up to 5 redirect URIs per client               |
-
-At authorization time, the `redirect_uri` parameter must **exactly match** one of your registered URIs. Scheme and host are compared case-insensitively, but the path must match exactly. Wildcard or pattern matching is not supported.
-
-**Valid examples:**
-
-```
-https://example.com/callback
-https://example.com/auth/chariot/callback
-https://example.com:443/callback
-```
-
-**Invalid examples:**
-
-```
-http://example.com/callback        # HTTP not allowed in production
-https://example.com                # Missing path
-https://example.com/               # Root path not allowed
-https://example.com/cb?foo=bar     # Query parameters not allowed
-```
+Chariot requires roughly **1–2 weeks** to build, test, and certify the integration on our side once your sandbox is available.
