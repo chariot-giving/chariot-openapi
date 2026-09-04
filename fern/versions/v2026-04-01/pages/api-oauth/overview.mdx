@@ -34,13 +34,14 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
 
-**Grantmaking**
+**Disbursements**
 
-| Scope                 | Grants                                                                |
-| --------------------- | --------------------------------------------------------------------- |
-| `disbursements:read`  | Read and list disbursements and the transfers that fund them          |
-| `disbursements:write` | Create disbursements and transfers, and approve, cancel, or stop them |
-| `organizations:read`  | Search and read recipient organizations                               |
+| Scope                 | Grants                                                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `disbursements:read`  | Read and list disbursements and the transfers that fund them                                                            |
+| `disbursements:write` | Create disbursements and transfers, approve, cancel, or stop them, and request verification of an unlisted organization |
+
+Searching for and reading organizations requires no scope — those endpoints are public.
 
 **Webhooks**
 
@@ -54,7 +55,7 @@ Scopes define what your application can access. Specify them as a space-separate
 | Scope            | Grants                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------- |
 | `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
-| `offline_access` | Accepted for compatibility with OIDC clients. Refresh tokens are issued regardless           |
+| `offline_access` | Accepted for compatibility with OIDC clients                                                 |
 
 <Note>
   A token only receives the permissions your client, the authorization, and the
