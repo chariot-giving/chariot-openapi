@@ -10,9 +10,7 @@ updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
   OAuth access is not self-service. Contact
   [support@givechariot.com](mailto:support@givechariot.com) to register your
   application and receive client credentials. Include your application's display
-  name, a logo, and the callback URLs you want registered — the name and logo
-  are shown to nonprofits on the consent screen, and only the registered
-  callback URLs can be used as a `redirect_uri`.
+  name, logo, and callback URLs.
 </Warning>
 
 ## How It Works
@@ -34,7 +32,7 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 ## Scopes
 
-Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration — requesting a scope outside that set will fail the authorization request.
+Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
 
 **Grantmaking**
 
@@ -55,10 +53,7 @@ Scopes define what your application can access. Specify them as a space-separate
 
 <Note>
   A token only receives the permissions your client, the authorization, and the
-  consenting user's role all have in common. Because only Owners and Admins hold
-  every permission above, ask the nonprofit to have an Owner or Admin approve
-  your application — a user on a more limited role can complete the flow and
-  still receive a token with less access than you requested.
+  consenting user's role all have in common.
 </Note>
 
 ## Authorization Code Flow
