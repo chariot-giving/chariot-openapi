@@ -36,13 +36,18 @@ Scopes define what your application can access. Specify them as a space-separate
 
 **Grantmaking**
 
-| Scope                        | Grants                                                                             |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `read:payouts`               | Read and list disbursements and inbound transfers                                  |
-| `create:payouts`             | Create disbursements, approve, cancel, and stop them, and create inbound transfers |
-| `read:nonprofits`            | Search and read recipient organizations                                            |
-| `read:events`                | Read events and webhook subscriptions                                              |
-| `create:event_subscriptions` | Create and update webhook subscriptions                                            |
+| Scope                 | Grants                                                                |
+| --------------------- | --------------------------------------------------------------------- |
+| `disbursements:read`  | Read and list disbursements and the transfers that fund them          |
+| `disbursements:write` | Create disbursements and transfers, and approve, cancel, or stop them |
+| `organizations:read`  | Search and read recipient organizations                               |
+
+**Webhooks**
+
+| Scope          | Grants                                  |
+| -------------- | --------------------------------------- |
+| `events:read`  | Read events and webhook subscriptions   |
+| `events:write` | Create and update webhook subscriptions |
 
 **Identity**
 
@@ -157,7 +162,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=openid%20read:payouts%20create:payouts
+  &scope=openid%20disbursements:read%20disbursements:write
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
