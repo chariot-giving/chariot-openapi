@@ -10,20 +10,20 @@ Chariot supports OpenID Connect (OIDC) on top of its OAuth 2.0 implementation. T
 
 ## How It Works
 
-When your application includes the `profile` scope in the authorization request, the token response will include an `id_token` — a signed JWT containing identity claims about the authenticated user.
+When your application includes the `openid` scope in the authorization request, the token response will include an `id_token` — a signed JWT containing identity claims about the authenticated user.
 
 This works within the same [Authorization Code Flow](/guides/oauth). No additional endpoints or flows are required.
 
 ## Requesting Identity
 
-Add the `profile` scope to your authorization request:
+Add the `openid` scope to your authorization request:
 
 ```
 https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=profile
+  &scope=openid
   &state=RANDOM_CSRF_TOKEN
   &nonce=RANDOM_NONCE
   &code_challenge=YOUR_CODE_CHALLENGE

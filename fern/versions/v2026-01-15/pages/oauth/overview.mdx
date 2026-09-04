@@ -9,7 +9,10 @@ updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
 <Warning>
   OAuth access is not self-service. Contact
   [support@givechariot.com](mailto:support@givechariot.com) to register your
-  application and receive client credentials.
+  application and receive client credentials. Include your application's display
+  name, a logo, and the callback URLs you want registered — the name and logo
+  are shown to nonprofits on the consent screen, and only the registered
+  callback URLs can be used as a `redirect_uri`.
 </Warning>
 
 ## How It Works
@@ -31,7 +34,21 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 ## Scopes
 
-Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. Available scopes are configured during client registration.
+Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration — requesting a scope outside that set will fail the authorization request.
+
+| Scope            | Grants                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------- |
+| `read:grants`    | Read and list grants and recurring grants                                                    |
+| `create:grants`  | Create grants and recurring grants                                                           |
+| `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
+| `offline_access` | Accepted for compatibility with OIDC clients. Refresh tokens are issued regardless           |
+
+<Note>
+  The consenting user's role must itself carry the permissions behind the scopes
+  you request. A token only receives the permissions your client, the
+  authorization, and the user's role all share, so a user with a read-only role
+  who approves `create:grants` will receive read access only.
+</Note>
 
 ## Authorization Code Flow
 
@@ -121,7 +138,7 @@ GET https://dashboard.givechariot.com/oauth/authorize
 | `client_id`             | Yes         | Your application's client ID                                                                                       |
 | `redirect_uri`          | Yes         | URL to redirect back to (must match a registered URI). See [Redirect URI Requirements](#redirect-uri-requirements) |
 | `response_type`         | Yes         | Must be `code`                                                                                                     |
-| `scope`                 | Yes         | Space-separated list of requested scopes                                                                           |
+| `scope`                 | Yes         | Space-separated list of requested scopes, percent-encoded (`%20`) as a single query parameter value                |
 | `state`                 | Recommended | An opaque value to prevent CSRF attacks                                                                            |
 | `nonce`                 | Yes         | Cryptographically random string to prevent replay attacks. See [Identity](/guides/oauth/identity)                  |
 | `code_challenge`        | Yes         | Base64url-encoded SHA-256 hash of the code verifier                                                                |
@@ -134,7 +151,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=read:bank_accounts read:transactions
+  &scope=openid%20read:grants
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
