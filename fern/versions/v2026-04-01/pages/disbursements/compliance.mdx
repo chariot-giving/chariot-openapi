@@ -1,0 +1,30 @@
+---
+title: "Compliance and Fraud Prevention"
+subtitle: "As a fintech company partnering with a nationally chartered, federally regulated bank, Chariot adheres to stringent banking compliance standards, including the Bank Secrecy Act (BSA), U.S. Department of the Treasury's Anti-Money Laundering (AML) protocols, and a Customer Identification Program (CIP). Our Compliance Program aligns with industry best practices to mitigate risk and fraud. This ensures nonprofit eligibility and payment destinations are thoroughly evaluated and continuously monitored."
+hidden: false
+createdAt: "Sun May 21 2023 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+## Compliance
+Chariot stays up to date with the latest IRS guidelines to determine which organizations are eligible to receive donations.
+
+Chariot simplifies eligibility into a simple boolean field `organization.compliance.daf_eligible` on the `Organization` object.
+For details on how this boolean is calculated, please [click here to learn more.](https://intercom.help/givechariot/en/articles/10950166-how-does-chariot-assess-a-nonprofit-s-eligibility). If you'd like to determine organization eligibility independently,
+you can use the additional fields in the `organization.compliance` section.
+
+## Fraud Prevention
+Chariot has rigorous verification procedures designed to help reduce fraud for both electronic and check payments.
+
+#### Electronic Payments
+Chariot's Electronic Payment Verification process represents an advancement over current industry practices.
+Instead of simply validating payment pointers (account/routing numbers) using bank statements, Chariot focuses on validating officer
+identities through IRS master files and top-tier identity verification providers.
+
+#### Check Payments
+Chariot's Check Payment Verification process tailors validation methods based on donation amount, prior payment history,
+and address verification through sources like the IRS Business Master File and the nonprofit's website. The system
+incorporates automated outreach, direct contact for larger payments, an adaptable risk engine to help reduce fraud,
+and important controls like Positive Pay protections and delivery tracking to ensure payment reaches the intended nonprofit.
+
+## Learn More
+To learn more about Chariot's compliance and fraud prevention practices, please contact us at [compliance@givechariot.com](mailto:compliance@givechariot.com).

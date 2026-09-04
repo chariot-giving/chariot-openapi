@@ -1,0 +1,67 @@
+---
+title: "Mail Uploads"
+createdAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Mar 13 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+
+Lockbox providers upload batches of mail items to Chariot using presigned URLs. See the [Get a Mailbox Upload URL](/v2026-01-15/api/mailbox/get-upload-url) API reference for endpoint details.
+
+Also see: [Batch Format](/v2026-01-15/guides/lockbox-providers/batch-format) | [Provisioning](/v2026-01-15/guides/lockbox-providers/provisioning)
+
+## Upload Process
+
+<Steps>
+
+### Prepare the batch
+
+Create a ZIP file containing TIFF images and a CSV index file. See the [Batch Format](/v2026-01-15/guides/lockbox-providers/batch-format) guide for the expected format and examples.
+
+### Request a presigned upload URL
+
+Send a request to the Chariot API:
+
+```json title="POST /mailbox/upload_url"
+{
+  "location_id": "po_543"
+}
+```
+
+Returns:
+
+```json
+{
+  "url": "https://chariot-lockbox-uploads.s3.us-east-1.amazonaws.com/provider_id/location_id/2026/03/16/12/01jf7x8m9n0p1q2r3s4t5u6v.zip"
+}
+```
+
+### Upload the batch
+
+Upload the ZIP file via PUT request to the returned URL:
+
+```bash
+curl -X PUT -T batch.zip "https://chariot-lockbox-uploads.s3.us-east-1.amazonaws.com/provider_id/location_id/2026/03/16/12/01jf7x8m9n0p1q2r3s4t5u6v.zip"
+```
+
+</Steps>
+
+## Rescans
+
+When a mail item requires a rescan, Chariot will send a request via email to the lockbox provider with the following information:
+
+- The provider's ID of the mail item that requires a rescan
+- The location ID (or PO box) that the mail item was sent to
+
+Once received, the lockbox provider should re-upload the batch using the same process as above, with one additional parameter: `rescan = true`.
+
+```json title="POST /mailbox/upload_url"
+{
+  "location_id": "po_543",
+  "rescan": true
+}
+```
+
+### Notes
+
+- The batch must include both the rescanned TIFF image(s) **and** the standard CSV index file
+- The CSV must contain only the line items for the rescanned mail item
+- The CSV must use the **same `mail_item_id`** (described in the [Batch Format](/v2026-01-15/guides/lockbox-providers/batch-format) guide) as the original submission so Chariot can match the rescan to the original data

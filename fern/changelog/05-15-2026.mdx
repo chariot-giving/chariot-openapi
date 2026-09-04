@@ -1,0 +1,16 @@
+## Summary
+
+FDX API v6 (Beta)
+
+### What's new?
+
+We've added support for the [Financial Data Exchange (FDX)](https://financialdataexchange.org/) v6.3 standard, providing authorized financial data aggregators with read-only access to bank account data.
+
+The FDX API includes 7 endpoints organized around deposit accounts:
+
+- **Accounts** — List accounts, get account details, and get account contact information
+- **Statements** — List statements and download statement documents (PDF, CSV, BAI2)
+- **Customers** — List organization identity associated with an account
+- **Transactions** — List transaction history with pagination and date filtering
+
+Authentication uses OAuth 2.0 Authorization Code flow with IP whitelisting. To request FDX API credentials, contact us at [support@givechariot.com](mailto:support@givechariot.com).

@@ -1,0 +1,151 @@
+---
+title: "Authentication"
+subtitle: ""
+hidden: false
+createdAt: "Wed Jun 01 2022 23:44:11 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Mon Feb 25 2025 16:00:00 GMT+0000 (Coordinated Universal Time)"
+---
+## API access
+
+The Chariot API uses API keys to authenticate requests.
+
+
+Your API keys carry many privileges, so be sure to keep them secure!
+Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, and so forth.
+
+Authentication to the API is performed via HTTP Bearer Token. Provide your API key as the `Authentication: Bearer {TOKEN}` value.
+
+All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
+
+<Aside>
+  <CodeBlocks>
+    ```curl
+    curl https://api.givechariot.com/v1/nonprofit/530196605 \
+      -H "Authorization: Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+    ```
+    ```csharp C#
+    var client = new RestClient("https://api.givechariot.com/v1/nonprofit/530196605");
+    var request = new RestRequest(Method.GET);
+    request.AddHeader("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc");
+    IRestResponse response = client.Execute(request);
+    ```
+    ```go Go
+    package main
+
+    import (
+      "fmt"
+      "net/http"
+      "io/ioutil"
+    )
+
+    func main() {
+
+      url := "https://api.givechariot.com/v1/nonprofit/530196605"
+
+      req, _ := http.NewRequest("GET", url, nil)
+
+      // Add the Authorization header with the Bearer token
+      req.Header.Add("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc")
+
+      res, _ := http.DefaultClient.Do(req)
+
+      defer res.Body.Close()
+      body, _ := ioutil.ReadAll(res.Body)
+
+      fmt.Println(res)
+      fmt.Println(string(body))
+    }
+    ```
+    ```java Java
+    HttpResponse<String> response = Unirest.get("https://api.givechariot.com/v1/nonprofit/530196605")
+      .header("Authorization", "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc")
+      .asString();
+    ```
+    ```javascript jQuery
+    var settings = {
+      "async": true,
+      "crossDomain": true,
+      "url": "https://api.givechariot.com/v1/nonprofit/530196605",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+      }
+    }
+
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+    });
+    ```
+    ```javascript NodeJS
+    var request = require("request");
+
+    var options = { method: 'GET',
+      url: 'https://api.givechariot.com/v1/nonprofit/530196605',
+      headers: { 'Authorization': 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc' } };
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+
+      console.log(body);
+    });
+    ```
+    ```php PHP
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => "https://api.givechariot.com/v1/nonprofit/530196605",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 30,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "GET",
+      CURLOPT_HTTPHEADER => array(
+        "Authorization: Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+      ),
+    ));
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    if ($err) {
+      echo "cURL Error #:" . $err;
+    } else {
+      echo $response;
+    }
+    ```
+    ```python Python
+    import http.client
+
+    conn = http.client.HTTPSConnection("api.givechariot.com")
+
+    headers = { 'Authorization': "Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc" }
+
+    conn.request("GET", "/v1/nonprofit/530196605", headers=headers)
+
+    res = conn.getresponse()
+    data = res.read()
+
+    print(data.decode("utf-8"))
+    ```
+    ```ruby Ruby
+    require 'uri'
+    require 'net/http'
+
+    url = URI("https://api.givechariot.com/v1/nonprofit/530196605")
+
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+    request = Net::HTTP::Get.new(url)
+    request["Authorization"] = 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+
+    response = http.request(request)
+    puts response.read_body
+    ```
+    </CodeBlocks>
+</Aside>
+

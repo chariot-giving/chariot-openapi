@@ -1,0 +1,45 @@
+---
+title: "FAQ"
+subtitle: "Common questions about the Donor Accounts integration."
+hidden: false
+---
+
+<AccordionGroup>
+
+<Accordion title="**Which verification flow should I use?**">
+You can support either or both flows — they are not mutually exclusive.
+
+**Donor-Initiated Verification** works well for donors who give at the point of inspiration with no pre-setup. The donor submits a grant, receives a code by email, and passes it to you — one API call to verify.
+
+**DAF-Initiated Setup** works well when you want explicit donor consent before any grant is submitted. Donors authenticate with your portal and opt in, giving you more control before any grant activity.
+</Accordion>
+
+<Accordion title="**Can one donor have multiple Donor Accounts?**">
+No — a donor has one Donor Account. That Donor Account can be associated with multiple Giving Pools, where each Giving Pool represents a specific set of funds within a donor's DAF account.
+</Accordion>
+
+<Accordion title="**What is `external_id` and when should I set it?**">
+`external_id` is your internal identifier for the user's account. Setting it links the Donor Account to your internal record and makes reconciliation easier. You can set it on [Create Donor Account](/api/donor-accounts/create) or update it later via [Update Donor Account](/api/donor-accounts/update).
+</Accordion>
+
+<Accordion title="**What happens if a donor loses their verification code?**">
+Codes expire 30 days after creation by default (configurable from 60 seconds to 90 days via `expires_in` on [Create Authorization Token](/api/authorization-tokens/create)). When a code expires, the donor will need a new one.
+
+For **Donor-Initiated Verification**: The next Grant Request the donor submits will trigger a new token and email automatically.
+
+For **DAF-Initiated Setup**: You can also [Revoke](/api/authorization-tokens/revoke) the existing token early and [Create](/api/authorization-tokens/create) a new one, then surface the new code to the donor. Creating a new token automatically revokes any existing active token for the Donor Account.
+</Accordion>
+
+<Accordion title="**Can I submit a Grant Request before the Donor Account is approved?**">
+No. A Grant Request in `awaiting_account_decision` cannot be moved to `submitted` until its linked Donor Account is approved. Once the Donor Account is approved, the Grant Request automatically advances to `pending` and becomes eligible for you to act on.
+</Accordion>
+
+<Accordion title="**What happens to open Grant Requests when a Donor Account is rejected?**">
+All open Grant Requests tied to a rejected Donor Account are automatically moved to `rejected`. You do not need to reject them individually. A `grant_request.updated` webhook is emitted for each one.
+</Accordion>
+
+<Accordion title="**Can a decided Donor Account be changed?**">
+Donor Account approval decisions are terminal — once `approved` or `rejected`, the status cannot be changed. However, an approved Donor Account can be disabled via [Disable Donor Account](/api/donor-accounts/disable), which prevents new Grant Requests from being submitted without affecting past activity. Call [Enable Donor Account](/api/donor-accounts/enable) to reverse it. Disabling is a toggle, not a terminal state.
+</Accordion>
+
+</AccordionGroup>

@@ -52,6 +52,94 @@ paths:
       x-fern-sdk-group-name:
         - grants
       x-fern-sdk-method-name: get
+  /v1/grant_requests:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: list
+  /v1/grant_requests/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: get
+  /v1/grant_requests/{id}/submit:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: submit
+  /v1/grant_requests/{id}/reject:
+    post:
+      x-fern-sdk-group-name:
+        - grantRequests
+      x-fern-sdk-method-name: reject
+  /v1/giving_pools:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - givingPools
+      x-fern-sdk-method-name: list
+  /v1/giving_pools/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - givingPools
+      x-fern-sdk-method-name: get
+  /v1/donor_accounts:
+    post:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: list
+  /v1/donor_accounts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: get
+    patch:
+      x-fern-sdk-group-name:
+        - donorAccounts
+      x-fern-sdk-method-name: update
+  /v1/donor_accounts/{id}/authorization_tokens:
+    post:
+      x-fern-sdk-group-name:
+        - authorizationTokens
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - authorizationTokens
+      x-fern-sdk-method-name: list
+  /v1/authorization_tokens/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - authorizationTokens
+      x-fern-sdk-method-name: get
+  /v1/authorization_tokens/{id}/revoke:
+    post:
+      x-fern-sdk-group-name:
+        - authorizationTokens
+      x-fern-sdk-method-name: revoke
+  /v1/authorization_tokens/verify:
+    post:
+      x-fern-sdk-group-name:
+        - authorizationTokens
+      x-fern-sdk-method-name: verify
   /v1/recurring_grants:
     get:
       x-fern-pagination: true

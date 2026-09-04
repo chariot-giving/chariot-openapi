@@ -1,0 +1,36 @@
+## Summary
+
+DAFpay Donor Accounts (Beta)
+
+### What's new?
+
+We've introduced **DAFpay Donor Accounts** — a new identity-based DAFpay flow designed for Donor Advised Fund providers integrating with DAFpay.
+
+Donors authenticate with their DAFpay Identity (email-verified, DAFpay-managed) and submit Grant Requests. DAFs use new Chariot APIs to verify the donor and decision Grant Requests. Two flows are supported on the same data model:
+
+1. **Donor-Initiated Verification** — DAFpay emails a one-time code to the donor after they submit a Grant Request; the donor relays it to the DAF; the DAF calls a single API to verify and approve the Donor Account.
+2. **DAF-Initiated Setup** — DAF creates a Donor Account and Authorization Token in advance via their portal; donor enters the code into DAFpay during profile setup, auto-approving their account.
+
+### New APIs
+
+- [Donor Accounts](/api/donor-accounts) — create, list, get, update, disable, enable.
+- [Authorization Tokens](/api/authorization-tokens) — create, list, get, revoke, verify.
+- [Giving Pools](/api/giving-pools) — list, get.
+- [Grant Requests](/api/grant-requests) — list, get, submit, reject (DAF decisioning on Grant Requests).
+
+### New webhook events
+
+- `donor_account.created`, `donor_account.updated`
+- `authorization_token.created`, `authorization_token.updated`
+- `grant_request.created`, `grant_request.updated`
+
+### New guides
+
+- [Donor Accounts overview](/guides/dafpay/donor-accounts/overview)
+- [Donor-Initiated Verification](/guides/dafpay/donor-accounts/donor-initiated-verification)
+- [DAF-Initiated Setup](/guides/dafpay/donor-accounts/daf-initiated-setup)
+- [Grants Lifecycle](/guides/dafpay/donor-accounts/grants-lifecycle)
+
+### Availability
+
+Donor Accounts are currently in beta and are available as part of a pilot program with a handful of design partners. If you're a DAF provider and interested in integrating with DAFpay this way, please reach out to contact@givechariot.com.
