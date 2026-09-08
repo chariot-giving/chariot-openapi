@@ -228,9 +228,9 @@ When an access token expires, exchange your refresh token for a new token pair.
 
 <Warning>
   Refresh tokens are single-use. After a successful exchange, you must use the
-  new refresh token returned in the response. Reusing a previously exchanged
-  refresh token may result in authorization revocation, requiring the nonprofit
-  to re-authorize your application.
+  new refresh token returned in the response — a previously exchanged token
+  fails as invalid. Serialize your refresh requests: concurrent exchanges can
+  invalidate a token you just received.
 </Warning>
 
 ```curl
@@ -253,9 +253,9 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
 
 Refresh tokens use a **sliding window** expiration:
 
-- Each use extends the refresh token's lifetime by **14 days**
-- The absolute maximum lifetime is **180 days**
-- After 180 days, the user must re-authorize your application
+- Each use extends the refresh token's lifetime by **31 days**
+- The absolute maximum lifetime is **365 days**, and refreshing does not extend it
+- After 365 days, the user must re-authorize your application
 
 ## Token Lifetimes
 
@@ -263,7 +263,7 @@ Refresh tokens use a **sliding window** expiration:
 | ------------------ | ------------------------------- |
 | Authorization code | 1 minute                        |
 | Access token       | 15 minutes                      |
-| Refresh token      | 14 days (sliding), 180 days max |
+| Refresh token      | 31 days (sliding), 365 days max |
 
 ## Error Handling
 
