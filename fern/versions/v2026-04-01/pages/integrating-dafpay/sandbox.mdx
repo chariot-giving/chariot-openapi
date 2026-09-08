@@ -11,7 +11,7 @@ Sandbox uses separate API keys, Connects, and data. No real money moves.
 | Sandbox | `https://sandboxapi.givechariot.com` |
 | Production | `https://api.givechariot.com` |
 
-Sandbox Connect IDs begin with `test_`. Keep API keys server-side and never mix environment-specific IDs or hosts.
+Sandbox Connect IDs begin with `test_`. Keep API keys server-side and never mix environment-specific IDs or hosts. See [Authentication](/api/authentication) for how to send the key.
 
 ## DAF login
 
@@ -33,6 +33,8 @@ Test with at least two nonprofits before launch:
 These tests catch hardcoded, cached, or shared-state Connect IDs.
 
 Also test one-time and recurring success, every exit path your UI handles, CSP, webhook signature verification, and your idempotent retry path.
+
+To exercise your `grant.updated` handler, drive the status change yourself with [Sandbox: Complete a grant](/api/grants/simulate-grant-completion) or [Sandbox: Cancel a grant](/api/grants/simulate-grant-cancellation). See [Sandbox simulations](/api/sandbox-simulations) for the full list.
 
 ## Browser and device matrix
 

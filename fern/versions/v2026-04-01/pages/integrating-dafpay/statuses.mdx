@@ -12,7 +12,7 @@ Use the exact status values returned by the API. Present them to users in langua
 | `Completed` | Chariot records the grant as completed. | Received |
 | `Canceled` | The grant will not be paid. | Canceled |
 
-Subscribe to `grant.updated` and retrieve the current Grant when an event arrives. Make the handler idempotent and retain a periodic recovery process if status freshness is important.
+Subscribe to `grant.updated` and retrieve the current Grant when an event arrives. Make the handler idempotent and retain a periodic recovery process if status freshness is important. See [Webhooks and events](/api/webhooks) for endpoint setup and signature verification, and [Create an Event Subscription](/api/event-subscriptions/create) to subscribe.
 
 If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
 
