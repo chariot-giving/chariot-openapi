@@ -8,7 +8,7 @@ The Chariot FDX API implements the [Financial Data Exchange (FDX)](https://finan
 
 ## Overview
 
-The FDX API exposes 7 read-only endpoints organized around deposit accounts:
+The FDX API exposes 7 read-only endpoints organized around deposit accounts<span title="Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held."><sup><Icon icon="fa-regular fa-circle-info" size="2.5"/></sup></span>:
 
 | Category | Endpoints | Description |
 |----------|-----------|-------------|
@@ -74,3 +74,7 @@ All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem
 | `403 Forbidden` | Insufficient permissions or IP not whitelisted |
 | `404 Not Found` | Resource does not exist (e.g., invalid account or statement ID) |
 | `500 Internal Server Error` | Unexpected server error |
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
