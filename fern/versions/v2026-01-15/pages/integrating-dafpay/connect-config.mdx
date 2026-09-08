@@ -74,6 +74,15 @@ Make your choices below and send them to integrations@givechariot.com. The form 
     </div>
 
     <div class="csb-setting">
+      <span class="csb-name">Nonprofits that have not claimed their Chariot account</span>
+      <span class="csb-help">Search Organizations returns <code>claimed: false</code> until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. Gifts to an unclaimed nonprofit are held until it claims. Whether you may offer DAFpay before that happens is set by your Chariot agreement — say what you expect and Chariot will confirm it.</span>
+      <select data-key="unclaimed">
+        <option value="Allow gifts before the nonprofit claims">Allow gifts before the nonprofit claims</option>
+        <option value="Require the claim first">Require the claim first</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
       <span class="csb-name">Donors whose DAF provider is not connected</span>
       <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and instruct them to finish in their own portal, or return them to your form to pay another way. Recorded intents are not completed gifts.</span>
       <select data-key="unconnected">
@@ -182,6 +191,7 @@ connect:
   details_to_show: [name, email, address, note]
   details_to_require: [name, email]
   monthly_recurring_grants: Allow
+  unclaimed_nonprofits: Allow gifts before the nonprofit claims
   unconnected_daf_providers: Record what they intended
   close_window_on_confirm: no
 

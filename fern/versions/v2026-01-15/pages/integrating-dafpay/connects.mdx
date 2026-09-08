@@ -13,6 +13,8 @@ Use Search Organizations with the nonprofit's EIN whenever possible. Names can b
 
 <EndpointRequestSnippet endpoint="GET /v1/organizations/search" />
 
+The response also carries `claimed`, which is `false` until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. Gifts to an unclaimed nonprofit are held until it claims, so whether you offer DAFpay before that point is a decision your Chariot agreement settles — see [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config).
+
 If the organization is not returned or is ineligible, do not create a placeholder or substitute another record. Tell the user this nonprofit cannot accept DAF gifts through your platform yet, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is unexpected.
 
 ### Create the Connect

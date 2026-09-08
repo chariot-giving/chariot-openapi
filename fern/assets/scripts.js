@@ -127,6 +127,7 @@
     lines.push("  details_to_show: " + list(show, "<none selected>"));
     lines.push("  details_to_require: " + list(require, "<none>"));
     lines.push("  monthly_recurring_grants: " + scalar(val(scope, "recurring")));
+    lines.push("  unclaimed_nonprofits: " + scalar(val(scope, "unclaimed")));
     lines.push("  unconnected_daf_providers: " + scalar(val(scope, "unconnected")));
     lines.push("  close_window_on_confirm: " + scalar(closeOnConfirm));
     if (closeOnConfirm === "yes") {
