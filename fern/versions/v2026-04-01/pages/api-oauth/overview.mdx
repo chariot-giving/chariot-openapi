@@ -228,9 +228,9 @@ When an access token expires, exchange your refresh token for a new token pair.
 
 <Warning>
   Refresh tokens are single-use. After a successful exchange, you must use the
-  new refresh token returned in the response — a previously exchanged token
-  fails as invalid. Serialize your refresh requests: concurrent exchanges can
-  invalidate a token you just received.
+  new refresh token returned in the response. Reusing a previously exchanged
+  refresh token may result in authorization revocation, requiring the nonprofit
+  to re-authorize your application.
 </Warning>
 
 ```curl
