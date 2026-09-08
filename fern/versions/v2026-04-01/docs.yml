@@ -35,9 +35,6 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
-          - page: Do I Need to Use the APIs?
-            slug: start-here
-            path: ./pages/nonprofits/start-here.mdx
           - section: Add DAFpay to Your Form
             slug: initiate
             contents:
