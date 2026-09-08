@@ -6,7 +6,7 @@ hidden: false
 Follow this section only if your organization owns and operates the donation form. If a fundraising platform hosts your form, check whether it supports DAFpay and enable DAFpay there.
 
 <Note>
-If you build a fundraising platform that serves many nonprofits, use [Add DAFpay to your fundraising platform](/guides/dafpay/overview) instead. This section sets up one form for one organization.
+If you are a fundraising platform that serves many nonprofits, use [Add DAFpay to your fundraising platform](/guides/dafpay/overview) instead.
 </Note>
 
 By the end of this section your donation form will open DAFpay, receive the donor's authorization, and create the grant from your server.
@@ -21,10 +21,6 @@ Server-side calls in this section need an API key and the base URL for the envir
 | Production | `https://api.givechariot.com` |
 
 Sandbox and production use separate API keys, and each key works only against its own base URL. See [Authentication](/api/authentication) for how to send the key.
-
-<Warning>
-Never infer the environment from an ID alone. Configure the base URL, API key, and Connect ID together.
-</Warning>
 
 The integration has four parts:
 

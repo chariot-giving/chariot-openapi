@@ -17,10 +17,10 @@ Two fields on the result decide whether you can go ahead.
 
 | Field | Meaning | What to do |
 | --- | --- | --- |
-| `compliance.daf_eligible` | Whether the entity may receive donations from a donor advised fund at all. | `false` means no Connect. Do not create one and do not show DAFpay. |
+| `compliance.daf_eligible` | Whether the entity may receive donations from a donor advised fund at all. See [Eligibility and Guidelines](https://help.givechariot.com/dafpay/eligibility-and-guidelines). | `false` means no Connect. Do not create one and do not show DAFpay. |
 | `claimed` | `false` until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. | Gifts are held until the nonprofit claims. Whether you may offer DAFpay first is settled by your agreement — see [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config). |
 
-If search returns nothing, the organization is not in Chariot's directory. Either way — no result, or `daf_eligible: false` — do not create a placeholder or substitute another record. Tell the user this nonprofit cannot accept DAF gifts through your platform yet, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is unexpected.
+If search returns nothing, the organization is not in Chariot's directory — see [Unlisted Organizations](https://help.givechariot.com/onboarding/unlisted-organizations). Either way — no result, or `daf_eligible: false` — do not create a placeholder or substitute another record. Tell the user this nonprofit cannot accept DAF gifts through your platform yet, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is unexpected.
 
 ### Create the Connect
 
