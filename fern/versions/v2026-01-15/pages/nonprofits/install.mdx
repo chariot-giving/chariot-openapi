@@ -3,12 +3,24 @@ title: "Install the Button"
 hidden: false
 ---
 
-Load Chariot Connect with the JavaScript bundle or the React package. Both are covered in the [Chariot Connect reference](/guides/dafpay/connect-reference#mount-the-component).
+Load Chariot Connect with the JavaScript bundle or the React package.
 
-```html
+<CodeBlocks>
+```html HTML
 <script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
 <chariot-connect id="chariot" cid="YOUR_CONNECT_ID"></chariot-connect>
 ```
+```javascript React
+import ChariotConnect from "react-chariot-connect";
+
+<ChariotConnect cid="YOUR_CONNECT_ID" onDonationRequest={onDonationRequest} />;
+```
+</CodeBlocks>
+
+| Attribute | Required | Use |
+| --- | --- | --- |
+| `cid` | Yes | Your Connect ID. Safe in browser code. |
+| `theme` | No | A built-in theme name, or one you registered. See [Styling](#styling). |
 
 Use your sandbox Connect ID in sandbox and your production Connect ID in production. A Connect ID may appear in browser code. An API key may not.
 
@@ -28,7 +40,33 @@ If your site uses CSP, allow the Chariot script and DAFpay frame according to th
 
 ## Styling
 
-Pass one of the built-in themes — `DefaultTheme`, `LightModeTheme`, `LightBlueTheme`, or `GradientTheme` — or register your own from the supported properties. See [Themes](/guides/dafpay/connect-reference#themes). Do not depend on internal DOM or CSS selectors inside the component.
+Pass one of the built-in themes, or omit `theme` to get `DefaultTheme`.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect id="chariot" cid="YOUR_CONNECT_ID" theme="LightModeTheme"></chariot-connect>
+```
+```javascript React
+<ChariotConnect cid="YOUR_CONNECT_ID" theme="LightModeTheme" />
+```
+</CodeBlocks>
+
+The built-in themes are `DefaultTheme`, `LightModeTheme`, `LightBlueTheme` and `GradientTheme`.
+
+To customize further, register an object of Tailwind CSS values. Only the properties below are supported — the bundle ships a subset of Tailwind, so arbitrary classes will not apply.
+
+```javascript
+const chariot = document.getElementById("chariot");
+chariot.registerTheme("myTheme", { width: "w-12", height: "h-8" });
+```
+
+| Property | Use | Allowed value |
+| --- | --- | --- |
+| `width` | Button width | [width](https://tailwindcss.com/docs/width) up to `16` (`64px`) |
+| `height` | Button height | [height](https://tailwindcss.com/docs/height) from `9` (`36px`) to `12` (`48px`) |
+| `showExtendedText` | Show the longer "Give with Donor Advised Fund" label | `true` or `false`. Defaults to `false`. |
+
+Do not depend on internal DOM or CSS selectors inside the component.
 
 Next: [Send donor data](/guides/nonprofits/initiate/donor-data)
 

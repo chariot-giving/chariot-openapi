@@ -3,19 +3,15 @@ title: "Request Your Connect"
 hidden: false
 ---
 
-A Connect configures DAFpay for your nonprofit. Chariot provides separate Connect IDs for sandbox and production. Send the request below to get your sandbox Connect, build against it, then confirm production when you are ready to launch.
+A Connect controls how DAFpay works for your nonprofit. Use the form below to choose your settings, then email the generated request to [implementations@givechariot.com](mailto:implementations@givechariot.com).
 
-Make your choices below and send them to implementations@givechariot.com. The form assembles the request for you, and includes:
+Chariot will send you a sandbox Connect ID to use while you build and test. When your integration is ready, we will review it and issue a separate production Connect ID.
 
-- your organization name and EIN;
-- which donor details are required and which DAFpay should collect from the donor's DAF account; and
-- how you want to handle DAF providers that DAFpay cannot connect to directly.
+Sandbox Connect IDs begin with `test_`.
 
-## Use the integration Connect ID
-
+<Warning>
 Use the Connect ID created for your API integration. Your Chariot account also has Connect IDs for the dashboard's no-code button and link, which submit the gift themselves; pointing your form at one of those produces two gifts for one checkout.
-
-Connect IDs are environment-specific. Sandbox IDs begin with `test_`.
+</Warning>
 
 <div id="chariot-setup-builder">
 
@@ -131,11 +127,13 @@ connect:
 For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send Donor Data](/guides/nonprofits/initiate/donor-data).
 </Tip>
 
-Chariot replies with your sandbox Connect ID. Build against it, then work through [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch) — that page covers what to send when you want production.
+## What happens next
 
-## Update your configuration
+Chariot will email your sandbox Connect ID. Use it to build and test your integration, then complete [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch) to request your production Connect ID.
 
-If you need to change the fields or unconnected-provider behavior later, contact implementations@givechariot.com. Sandbox and production are separate configurations, so say whether a change applies to one or both. Chariot updates both unless you say otherwise.
+## Change your settings
+
+To update your Connect later, email [implementations@givechariot.com](mailto:implementations@givechariot.com). Tell us whether the change should apply to sandbox, production, or both.
 
 Next: [Install the button](/guides/nonprofits/initiate/install)
 
