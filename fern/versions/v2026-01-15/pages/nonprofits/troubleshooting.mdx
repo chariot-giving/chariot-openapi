@@ -19,7 +19,7 @@ The donation association may be created asynchronously. Retry Get Grant with bou
 | `400 Bad Request` | Validate the body, field limits, whole-dollar amount, and fee limit. |
 | `409 Conflict` | Creation is in progress. Wait, then retrieve the grant. |
 | `410 Gone` | The authorization expired. Restart DAFpay. |
-| `401` or `403` | Confirm the key and base URL belong to the same environment. |
+| `401` or `403` | Confirm the key and base URL belong to the same environment. Sandbox keys work only against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`. |
 
 ## Webhooks are missing
 

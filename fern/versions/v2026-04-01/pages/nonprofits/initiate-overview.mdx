@@ -6,6 +6,21 @@ hidden: false
 
 Follow this section only if your organization owns and operates the donation form. If a fundraising platform hosts your form, check whether it supports DAFpay and enable DAFpay there.
 
+## Before you start
+
+Server-side calls in this section need an API key and the base URL for the environment you are working in.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox and production use separate API keys, and each key works only against its own base URL. See [Authentication](/api/authentication) for how to send the key.
+
+<Warning>
+Never infer the environment from an ID alone. Configure the base URL, API key, and Connect ID together.
+</Warning>
+
 The integration has four parts:
 
 <Steps>

@@ -32,7 +32,7 @@ Use Assign Property. The ID in the path is the property ID; donation IDs belong 
 ```json
 {
   "value": {
-    "type": "ENUM",
+    "type": "enum",
     "enum_value_id": "propopt_..."
   },
   "resources": {
@@ -43,7 +43,7 @@ Use Assign Property. The ID in the path is the property ID; donation IDs belong 
 
 </Steps>
 
-You can assign the property to multiple donations in one request, up to the endpoint limit. Update the property only after your CRM or ERP write succeeds. Donation fields themselves are read-only; properties are how your integration writes its own status back to Chariot.
+You can assign the property to up to 100 donations in one request. Update the property only after your CRM or ERP write succeeds. Donation fields themselves are read-only; properties are how your integration writes its own status back to Chariot.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

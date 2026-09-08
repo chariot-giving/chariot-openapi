@@ -6,6 +6,21 @@ hidden: false
 
 Use the Gift Processing API to bring Chariot donation data into your CRM or ERP.
 
+## Before you start
+
+Server-side calls in this section need an API key and the base URL for the environment you are working in.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox and production use separate API keys, and each key works only against its own base URL. See [Authentication](/api/authentication) for how to send the key.
+
+<Warning>
+Never infer the environment from an ID alone. Configure the base URL and API key together.
+</Warning>
+
 ## Data model
 
 | Record | Use |
@@ -18,9 +33,27 @@ One deposit may contain many donations. Store both IDs so finance can reconcile 
 
 Donation records may include donor details, gross and net amounts, fees, designation or purpose, source information, DAFpay metadata, and properties configured in the dashboard. Treat the API reference as the source of truth for fields.
 
+### Where the IDs are
+
+| Value | Where to read it |
+| --- | --- |
+| Donation ID | `id`. Use it as the idempotency key for your sync. |
+| Deposit ID | `settlement.deposit_id`. |
+| Funds-received timestamp | `settlement.received_at`. |
+| DAFpay tracking ID | `initiation.dafpay_tracking_id`. Links the gift back to the DAFpay session that started it. Reconcile with it; do not use it as your database key. |
+| Dashboard identifier | `external_id`. The short identifier shown on the donation in the dashboard. Use it when finance needs to match a record to the UI, not as your database key. |
+
+<Note>
+`settlement` is present only once Chariot has received the money for the gift. A donation with no `settlement` has no deposit yet, or its funds never arrive in a Chariot Account at all. See [A donation has no deposit](/guides/nonprofits/troubleshooting).
+</Note>
+
+List Donations also accepts `dafpay_tracking_id` as a filter, so you can look a gift up directly from the tracking ID your form recorded.
+
 ## Decide when to create the CRM record
 
 The safest default is to create the CRM gift when your organization considers the payment received. If your team needs an earlier record, create a pending record at initiation and update it later. That approach requires handling grants that are delayed or never funded.
+
+`settlement.received_at` is the signal that Chariot received the money, so it is the field most teams key the "payment received" rule on.
 
 Define this rule with fundraising operations and finance before implementing the sync.
 
