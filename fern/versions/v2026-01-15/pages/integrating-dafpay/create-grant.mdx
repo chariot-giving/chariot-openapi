@@ -68,7 +68,7 @@ minimum grant of $50" lets them raise the amount; a generic failure does not.
 
 ## Platform fees
 
-Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents. The sum of Chariot's fee and `applicationFeeAmount` cannot exceed 5% of the grant amount; exceeding it returns `400 Bad Request`. See [Create Grant](/api/grants/create) for the current limit.
+Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement — that agreement governs your rate. It is denominated in cents. Chariot's fee and `applicationFeeAmount` are capped together, and exceeding the cap returns `400 Bad Request`; see [Create Grant](/api/grants/create) for the limit the API enforces.
 
 A donor-covered fee increases the grant amount; it is not a separate tip. Do not offer a for-profit platform tip in a DAF transaction.
 

@@ -153,7 +153,7 @@
 
     if (val(scope, "platform_fee") === "Yes" ) {
       notes.push(
-        "A platform fee has to be the one in your Chariot agreement, and Chariot's fee plus yours cannot exceed 5% of the grant. See Create Grant in the API reference."
+        "A platform fee has to be the one in your Chariot agreement. Chariot's fee and yours are capped together — see Create Grant in the API reference for the limit."
       );
     }
 
