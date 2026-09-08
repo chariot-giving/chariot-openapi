@@ -188,6 +188,9 @@ navigation:
               - page: Sandbox Simulations
                 slug: sandbox-simulations
                 path: ./pages/api/sandbox-simulations.mdx
+              - page: OAuth
+                slug: oauth
+                path: ./pages/api/oauth.mdx
           - section: Core Resources
             skip-slug: true
             icon: network-wired
