@@ -55,5 +55,11 @@ All activity in the Production environment is real.
 
 Production API requests should be to `https://api.givechariot.com` and sandbox requests should be to `https://sandboxapi.givechariot.com`.
 
+## Versioning
+
+Every endpoint lives under `/v1`. There is no version header and no per-request version selection: the base URL and API key choose the environment, and nothing chooses an API version.
+
+The dated versions in this documentation are snapshots of the reference — the most recent one documents the most endpoints. If you need a fixed surface to build against, pin the SDK release rather than a documentation version.
+
 We strongly encourage you to read through the [Integration Checklist](/guides/dafpay/integrating-dafpay/checklist) to understand best practices for creating
 a successful DAFpay integration with Chariot.

@@ -32,6 +32,8 @@ Never infer the environment from an ID alone. Configure the base URL and API key
 
 One deposit may contain many donations. Store both IDs so finance can reconcile the transfer to its component gifts.
 
+Amounts on a Donation are in minor units of that record's `currency`, an [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) code — `USD` and cents for US gifts. Read the field rather than assuming it.
+
 Donation records may include donor details, gross and net amounts, fees, designation or purpose, source information, DAFpay metadata, and properties configured in the dashboard. Treat the API reference as the source of truth for fields.
 
 ### Where the IDs are
