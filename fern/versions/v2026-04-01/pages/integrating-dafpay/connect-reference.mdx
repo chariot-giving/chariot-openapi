@@ -1,0 +1,186 @@
+---
+title: "Chariot Connect Reference"
+hidden: false
+---
+
+The contract for the `chariot-connect` browser component: what you pass in, what it emits, and how to style it. The [API Reference](/api) covers the server-side REST API; this page covers the component your donation page loads.
+
+## Mount the component
+
+<CodeBlocks>
+```html HTML
+<script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
+<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID"></chariot-connect>
+```
+```javascript React
+import ChariotConnect from "react-chariot-connect";
+
+<ChariotConnect cid="NONPROFIT_CONNECT_ID" onDonationRequest={onDonationRequest} />;
+```
+</CodeBlocks>
+
+| Attribute | Required | Use |
+| --- | --- | --- |
+| `cid` | Yes | The Connect ID of the nonprofit whose form the donor is viewing. Safe in browser code. |
+| `theme` | No | A built-in theme name or one you registered. See [Themes](#themes). |
+
+The API key is never used in the browser. Keep it on your server.
+
+## `onDonationRequest`
+
+Return the current form values. Chariot uses them to prefill DAFpay and to record the gift.
+
+```javascript
+const chariot = document.getElementById("chariot");
+
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  firstName: "Michael",
+  lastName: "Scott",
+  email: "michael@example.org",
+  designation: "Community programs",
+  metadata: { platformTransactionId: "txn_123" },
+}));
+```
+
+Return `false` instead of an object when the form is not ready to proceed.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `amount` | number | The amount in cents. Omit it and Chariot recommends an amount from the donor's account balance, which can be far larger than intended. |
+| `firstName` | string | Max 255 characters. |
+| `lastName` | string | Max 255 characters. |
+| `email` | string | Must be an email address. Max 255 characters. |
+| `phone` | string | Include the country code, no special characters. Max 255 characters. |
+| `note` | string | A note from the donor to the nonprofit. Max 400 characters. |
+| `anonymous` | boolean | Send the gift anonymously. Defaults to `false`. |
+| `designation` | string | Defaults to "Where needed most". A custom designation can slow the provider's approval. Truncated over 100 characters; max 255. |
+| `address` | object | `line1`, `line2`, `city`, `state`, `postalCode`. Max 255 characters each. |
+| `metadata` | object | Name-value pairs tied to the workflow session. Use it for campaign, appeal, form, and your own transaction ID. |
+| `fundId` | string | Preselects a DAF provider and skips the provider dropdown. |
+| `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. See [Recurring grants](/guides/dafpay/integrating-dafpay/recurring). |
+
+Every field is optional, and all of them describe the **donor** — never the nonprofit administrator or the platform account owner.
+
+<Warning>
+Omit a field you do not have. An empty string counts as a supplied value, so DAFpay will not prefill it from the donor's DAF account. Inputs over the maximum length are truncated rather than rejected.
+</Warning>
+
+## Events
+
+| Event | Fires when | `detail` |
+| --- | --- | --- |
+| `CHARIOT_INIT` | The component is initialized and ready. | None. |
+| `CHARIOT_SUCCESS` | The donor authorized the grant request. | `OnSuccessMetadata` |
+| `CHARIOT_EXIT` | The donor left, an error occurred, or the donor confirmed an unintegrated grant. | `OnExitMetadata` |
+
+`CHARIOT_SUCCESS` does not create the Grant. Your server must call [Create Grant](/api/grants/create), or [Create Recurring Grant](/api/recurring-grants/create) when the payload carries `recurringGrantIntent` instead of `grantIntent`.
+
+<CodeBlocks>
+```json OnSuccessMetadata
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "grantIntent": {
+    "userFriendlyId": "100020",
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "metadata": {}
+  }
+}
+```
+```json OnExitMetadata
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "nodeId": "consent-node-id",
+  "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+  "reason": "USER_EXIT",
+  "description": "User exited the flow"
+}
+```
+</CodeBlocks>
+
+Use the `amount` returned in `grantIntent`. The donor may have changed it inside DAFpay.
+
+## Exit reasons
+
+Branch on `detail.reason`. Treat an unrecognized value as an internal error rather than a completed gift.
+
+| Reason | Meaning |
+| --- | --- |
+| `USER_EXIT` | The donor exited the flow. |
+| `UNINTEGRATED_DAF` | The provider is not connected to Chariot. |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor confirmed an unintegrated grant. Not a completed gift — see [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated). |
+| `UNINTEGRATED_DAF_NOT_SUPPORTED` | DAFpay does not support unintegrated grants for this provider. |
+| `CID_NOT_FOUND` | The Connect ID was not found. |
+| `SERVICE_DEACTIVATED` | The nonprofit's Connect is deactivated. |
+| `INELIGIBLE_ORGANIZATION` | The organization cannot receive DAF donations. |
+| `EIN_NOT_FOUND` | The provider does not support grants to this nonprofit. |
+| `CREDENTIALS_ERROR` | Invalid credentials. |
+| `TFA_ERROR` | Two-factor authentication failed. |
+| `ACCESS_RESTRICTED` | The donor's provider account has electronic access restricted. |
+| `NO_CHARITABLE_ACCOUNTS` | The signed-in account holds no charitable accounts. |
+| `INVALID_PRESELECTED_DAF` | The preselected `fundId` is invalid. |
+| `INVALID_CARD` | Invalid card number. |
+| `INACTIVE_CARD` | Inactive card. |
+| `ZERO_AMOUNT` | The grant amount is zero. |
+| `RECURRING_NOT_SUPPORTED` | The provider does not support recurring grants. |
+| `CONNECTION_FAILED` | The connection to the provider failed. |
+| `INSTITUTION_DOWN_ERROR` | The provider is down; the donor should try again later. |
+| `SESSION_NOT_FOUND` | The session was not found and may have expired. |
+| `CUSTOM_ERROR` | A custom error. |
+| `INTERNAL_ERROR` | An internal error. |
+
+[Handle the result](/guides/dafpay/integrating-dafpay/events) groups these into the UI behavior each one calls for.
+
+## Themes
+
+Pass a built-in theme name, or omit `theme` to get `DefaultTheme`.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID" theme="LightModeTheme"></chariot-connect>
+```
+```javascript React
+<ChariotConnect cid="NONPROFIT_CONNECT_ID" theme="LightModeTheme" />
+```
+</CodeBlocks>
+
+**DefaultTheme**
+
+<img src='../../images/8155407-DefaultTheme.svg' />
+
+**LightModeTheme**
+
+<img src='../../images/a7b65c5-LightMode.svg' />
+
+**LightBlueTheme**
+
+<img src='../../images/9c06770-LightBlue.svg' />
+
+**GradientTheme**
+
+<img src='../../images/446fbf1-Gradient.svg' />
+
+### Custom themes
+
+Register an object of Tailwind CSS values. Only the properties below are supported — the bundle ships a subset of Tailwind, so arbitrary classes will not apply, and targeting the component's internal markup is not supported.
+
+<CodeBlocks>
+```javascript JavaScript
+const chariot = document.getElementById("chariot");
+chariot.registerTheme("myTheme", { width: "w-12", height: "h-8" });
+```
+```javascript React
+<ChariotConnect cid="NONPROFIT_CONNECT_ID" theme={{ width: "w-12", height: "h-8" }} />
+```
+</CodeBlocks>
+
+| Property | Use | Allowed value |
+| --- | --- | --- |
+| `width` | Button width | [width](https://tailwindcss.com/docs/width) up to `16` (`64px`) |
+| `height` | Button height | [height](https://tailwindcss.com/docs/height) from `9` (`36px`) to `12` (`48px`) |
+| `showExtendedText` | Show the longer "Give with Donor Advised Fund" label | `true` or `false`. Defaults to `false`. |
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

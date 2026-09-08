@@ -125,6 +125,9 @@ navigation:
               - page: Request Production Access
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
+              - page: Chariot Connect Reference
+                slug: connect-reference
+                path: ./pages/integrating-dafpay/connect-reference.mdx
           - section: After the Gift
             slug: gifts
             contents:
