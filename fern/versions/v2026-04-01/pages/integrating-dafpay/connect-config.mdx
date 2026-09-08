@@ -3,19 +3,233 @@ title: "Configure Your Connects"
 hidden: false
 ---
 
-Agree on the production behavior before you build. Ask [integrations@givechariot.com](mailto:integrations@givechariot.com) to apply the same configuration in sandbox so your test covers the real flow.
+Agree on the production behavior before you build. Chariot applies the same configuration to your sandbox Connects before QA and your production Connects before launch, so your test covers the real flow.
 
-Decide:
+Make your choices below and send them to integrations@givechariot.com. The form assembles the request for you.
 
-- which donor details DAFpay collects or receives from your form;
-- whether monthly recurring grants are enabled;
-- what happens when the donor's DAF provider is not supported;
-- whether the unsupported-provider confirmation closes automatically;
-- which fees can be added and whether the donor may cover them;
-- where DAFpay appears across standard donations, tickets, registrations, merchandise, sponsorships, and other form types; and
-- whether DAFpay gifts pass through your CRM integrations and receive hard or soft credit.
+<div id="chariot-platform-setup-builder">
 
-Send these decisions to [integrations@givechariot.com](mailto:integrations@givechariot.com) in the implementation questionnaire. Chariot will use them to configure your sandbox Connects before QA and your production Connects before launch.
+  <p class="csb-section">Your platform</p>
+
+  <div class="csb-grid">
+    <label class="csb-field">
+      <span>Platform name</span>
+      <input type="text" data-key="platform" placeholder="Example Fundraising" />
+    </label>
+
+    <label class="csb-field">
+      <span>Environment</span>
+      <select data-key="environment">
+        <option value="Both">Both</option>
+        <option value="Sandbox">Sandbox only</option>
+        <option value="Production">Production only</option>
+      </select>
+    </label>
+  </div>
+
+  <p class="csb-section">Connect settings</p>
+
+  <div class="csb-settings">
+
+    <div class="csb-setting">
+      <span class="csb-name">Donor details step</span>
+      <span class="csb-help">The step inside the DAFpay window where the donor's name, email, and address appear. DAFpay fills them from the donor's DAF account so they retype nothing, and collects anything your form does not ask for. Skip it and DAFpay knows only what your form sends.</span>
+      <select data-key="donor_step">
+        <option value="Show">Show</option>
+        <option value="Skip">Skip</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Details to show</span>
+      <span class="csb-help">What you want on the gift record. Leave out what your forms already collect so donors are not asked twice.</span>
+      <div class="csb-checks">
+        <label><input type="checkbox" data-group="show" value="name" checked /> Name</label>
+        <label><input type="checkbox" data-group="show" value="email" checked /> Email</label>
+        <label><input type="checkbox" data-group="show" value="phone" /> Phone</label>
+        <label><input type="checkbox" data-group="show" value="address" checked /> Mailing address</label>
+        <label><input type="checkbox" data-group="show" value="note" checked /> Note to the nonprofit</label>
+        <label><input type="checkbox" data-group="show" value="anonymous" /> Give anonymously</label>
+      </div>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Details to require</span>
+      <span class="csb-help">Required fields must be completed before the donor can continue.</span>
+      <div class="csb-checks">
+        <label><input type="checkbox" data-group="require" value="name" checked /> Name</label>
+        <label><input type="checkbox" data-group="require" value="email" checked /> Email</label>
+        <label><input type="checkbox" data-group="require" value="phone" /> Phone</label>
+        <label><input type="checkbox" data-group="require" value="address" /> Mailing address</label>
+      </div>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Monthly recurring grants</span>
+      <span class="csb-help">Lets a donor set up a monthly grant from their DAF. Route those intents to Create Recurring Grant. The provider owns the schedule, so Chariot is not notified of cancellations and later payments arrive as separate gifts.</span>
+      <select data-key="recurring">
+        <option value="Allow">Allow</option>
+        <option value="Do not allow">Do not allow</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Donors whose DAF provider is not connected</span>
+      <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and instruct them to finish in their own portal, or return them to your form to pay another way. Recorded intents are not completed gifts.</span>
+      <select data-key="unconnected">
+        <option value="Record what they intended">Record what they intended</option>
+        <option value="Return them to the form">Return them to the form</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Close the window as soon as they confirm</span>
+      <span class="csb-help">Applies only to donors whose DAF provider is not connected. DAFpay normally shows a final confirmation screen, and your system is not notified until they close it.</span>
+      <select data-key="close_window">
+        <option value="no">No (default)</option>
+        <option value="yes">Yes</option>
+      </select>
+    </div>
+
+  </div>
+
+  <p class="csb-section">Fees</p>
+
+  <div class="csb-settings">
+
+    <div class="csb-setting">
+      <span class="csb-name">Platform fee</span>
+      <span class="csb-help">Whether you take the <code>applicationFeeAmount</code> defined in your Chariot agreement.</span>
+      <select data-key="platform_fee">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Donor may cover fees</span>
+      <span class="csb-help">A donor-covered fee increases the grant amount rather than being deducted from it.</span>
+      <select data-key="donor_covers">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+  </div>
+
+  <p class="csb-section">Placement</p>
+
+  <div class="csb-settings">
+
+    <div class="csb-setting">
+      <span class="csb-name">Form types</span>
+      <span class="csb-help">Where DAFpay appears across your platform. A nonprofit that enables DAFpay and then never sees a gift is usually a form type that was missed.</span>
+      <div class="csb-checks">
+        <label><input type="checkbox" data-group="placement" value="standard_donations" checked /> Standard donations</label>
+        <label><input type="checkbox" data-group="placement" value="tickets" /> Tickets</label>
+        <label><input type="checkbox" data-group="placement" value="registrations" /> Registrations</label>
+        <label><input type="checkbox" data-group="placement" value="merchandise" /> Merchandise</label>
+        <label><input type="checkbox" data-group="placement" value="sponsorships" /> Sponsorships</label>
+        <label><input type="checkbox" data-group="placement" value="peer_to_peer" /> Peer to peer</label>
+      </div>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Button position</span>
+      <span class="csb-help">Express Checkout puts DAFpay above the donor fields. Otherwise it sits next to the primary payment methods.</span>
+      <select data-key="position">
+        <option value="Express Checkout">Express Checkout</option>
+        <option value="Beside the payment methods">Beside the payment methods</option>
+      </select>
+    </div>
+
+  </div>
+
+  <p class="csb-section">CRM</p>
+
+  <div class="csb-settings">
+
+    <div class="csb-setting">
+      <span class="csb-name">Sync DAFpay gifts through your CRM integrations</span>
+      <span class="csb-help">Decide this per integration before launch. Nonprofits notice immediately when a DAFpay gift does not reach their CRM.</span>
+      <select data-key="crm_sync">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+        <option value="Varies by integration">Varies by integration</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Credit</span>
+      <span class="csb-help">How the gift is credited. The DAF sponsor is the legal donor, but nonprofits usually want the advisor recognized.</span>
+      <select data-key="credit">
+        <option value="Hard credit to the donor">Hard credit to the donor</option>
+        <option value="Hard credit to the DAF sponsor, soft credit to the donor">Hard credit to the DAF sponsor, soft credit to the donor</option>
+      </select>
+    </div>
+
+  </div>
+
+  <p class="csb-section">Testing</p>
+
+  <div class="csb-grid">
+    <label class="csb-field">
+      <span>Test form URL</span>
+      <input type="url" data-key="test_form_url" placeholder="https://example.com/sandbox-form" />
+    </label>
+
+    <label class="csb-field">
+      <span>Target go-live date</span>
+      <input type="date" data-key="go_live" />
+    </label>
+  </div>
+
+  <p class="csb-section">Your request</p>
+
+  <ul class="csb-warnings" data-warnings hidden></ul>
+
+  <pre><code data-output>{`platform: <your platform's name>
+environment: Both
+
+connect:
+  donor_details_step: Show
+  details_to_show: [name, email, address, note]
+  details_to_require: [name, email]
+  monthly_recurring_grants: Allow
+  unconnected_daf_providers: Record what they intended
+  close_window_on_confirm: no
+
+fees:
+  platform_fee: No
+  donor_may_cover: No
+
+placement:
+  form_types: [standard_donations]
+  button_position: Express Checkout
+
+crm:
+  sync_dafpay_gifts: Yes
+  credit: Hard credit to the donor
+
+qa:
+  test_form_url: <link to a sandbox form on your platform>
+  target_go_live: <date>
+`}</code></pre>
+
+  <div class="csb-actions">
+    <button type="button" class="csb-btn csb-btn-primary" data-copy>Copy request</button>
+    <a class="csb-btn" data-mailto href="mailto:integrations@givechariot.com?subject=DAFpay%20platform%20setup%20request">Email it to us</a>
+  </div>
+
+</div>
+
+<Tip title="Getting DAF prefill to work">
+For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send donation data](/guides/dafpay/integrating-dafpay/donor-data).
+</Tip>
+
+## Change it later
+
+To change the configuration after launch, contact [integrations@givechariot.com](mailto:integrations@givechariot.com). Sandbox and production are separate configurations, so say whether a change applies to one or both.
 
 Next: [Install DAFpay](/guides/dafpay/integrating-dafpay/installation)
 

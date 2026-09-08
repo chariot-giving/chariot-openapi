@@ -1,27 +1,26 @@
 /*
- * Connect setup request builder.
+ * Connect setup request builders.
  *
- * Powers the picker on the "Configure and Request Your Connect" guide page:
- * the reader selects their options, and we assemble a YAML block they can copy
- * or send straight to integrations@givechariot.com.
+ * Powers the pickers on the two "configure your Connect" guide pages: the
+ * reader selects their options, and we assemble a YAML block they can copy or
+ * send straight to the team that configures Connects for their audience.
+ *
+ *   #chariot-setup-builder           nonprofits  -> implementations@
+ *   #chariot-platform-setup-builder  platforms   -> integrations@
+ *
+ * Each builder declares its own root id, destination address and YAML shape in
+ * BUILDERS below; everything else here is shared.
  *
  * The docs are a client-routed SPA, so this uses event delegation on `document`
  * plus a MutationObserver rather than per-element listeners, so it keeps
  * working when Fern re-renders or the reader navigates back to the page.
  *
- * Progressive enhancement: the page ships a valid default block inside the
+ * Progressive enhancement: each page ships a valid default block inside its
  * output element, so if this script never runs the reader still has a usable
  * template to copy by hand.
  */
 (function () {
   "use strict";
-
-  var ROOT_ID = "chariot-setup-builder";
-  var REQUEST_EMAIL = "integrations@givechariot.com";
-
-  function root() {
-    return document.getElementById(ROOT_ID);
-  }
 
   function val(scope, key) {
     var el = scope.querySelector('[data-key="' + key + '"]');
@@ -48,7 +47,13 @@
     return '"' + v.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
   }
 
-  function build(scope) {
+  function list(items, empty) {
+    return "[" + (items.length ? items.join(", ") : empty) + "]";
+  }
+
+  // --- nonprofit builder -----------------------------------------------
+
+  function buildNonprofit(scope) {
     var show = checkedList(scope, "show");
     var require = checkedList(scope, "require");
     var closeOnConfirm = val(scope, "close_window");
@@ -59,8 +64,8 @@
     lines.push("");
     lines.push("connect:");
     lines.push("  donor_details_step: " + scalar(val(scope, "donor_step")));
-    lines.push("  details_to_show: [" + (show.length ? show.join(", ") : "<none selected>") + "]");
-    lines.push("  details_to_require: [" + (require.length ? require.join(", ") : "<none>") + "]");
+    lines.push("  details_to_show: " + list(show, "<none selected>"));
+    lines.push("  details_to_require: " + list(require, "<none>"));
     lines.push("  monthly_recurring_gifts: " + scalar(val(scope, "recurring")));
     lines.push("  unconnected_daf_providers: " + scalar(val(scope, "unconnected")));
     lines.push("  close_window_on_confirm: " + scalar(closeOnConfirm));
@@ -75,7 +80,7 @@
     return lines.join("\n") + "\n";
   }
 
-  function warnings(scope) {
+  function warnNonprofit(scope) {
     var notes = [];
     var show = checkedList(scope, "show");
     var require = checkedList(scope, "require");
@@ -109,16 +114,107 @@
     return notes;
   }
 
-  function render() {
-    var scope = root();
+  // --- platform builder ------------------------------------------------
+
+  function buildPlatform(scope) {
+    var show = checkedList(scope, "show");
+    var require = checkedList(scope, "require");
+    var placements = checkedList(scope, "placement");
+    var closeOnConfirm = val(scope, "close_window");
+
+    var lines = [];
+    lines.push("platform: " + scalar(val(scope, "platform"), "<your platform's name>"));
+    lines.push("environment: " + scalar(val(scope, "environment")));
+    lines.push("");
+    lines.push("connect:");
+    lines.push("  donor_details_step: " + scalar(val(scope, "donor_step")));
+    lines.push("  details_to_show: " + list(show, "<none selected>"));
+    lines.push("  details_to_require: " + list(require, "<none>"));
+    lines.push("  monthly_recurring_grants: " + scalar(val(scope, "recurring")));
+    lines.push("  unconnected_daf_providers: " + scalar(val(scope, "unconnected")));
+    lines.push("  close_window_on_confirm: " + scalar(closeOnConfirm));
+    if (closeOnConfirm === "yes") {
+      lines.push("  # confirmed: our page shows tracking ID, EIN, org name, provider link");
+    }
+    lines.push("");
+    lines.push("fees:");
+    lines.push("  platform_fee: " + scalar(val(scope, "platform_fee")));
+    lines.push("  donor_may_cover: " + scalar(val(scope, "donor_covers")));
+    lines.push("");
+    lines.push("placement:");
+    lines.push("  form_types: " + list(placements, "<none selected>"));
+    lines.push("  button_position: " + scalar(val(scope, "position")));
+    lines.push("");
+    lines.push("crm:");
+    lines.push("  sync_dafpay_gifts: " + scalar(val(scope, "crm_sync")));
+    lines.push("  credit: " + scalar(val(scope, "credit")));
+    lines.push("");
+    lines.push("qa:");
+    lines.push("  test_form_url: " + scalar(val(scope, "test_form_url"), "<link to a sandbox form on your platform>"));
+    lines.push("  target_go_live: " + scalar(val(scope, "go_live"), "<date>"));
+
+    return lines.join("\n") + "\n";
+  }
+
+  function warnPlatform(scope) {
+    var notes = warnNonprofit(scope);
+
+    if (val(scope, "platform_fee") === "Yes" ) {
+      notes.push(
+        "A platform fee has to be the one in your Chariot agreement, and Chariot's fee plus yours cannot exceed 5% of the grant. See Create Grant in the API reference."
+      );
+    }
+
+    if (val(scope, "donor_covers") === "Yes") {
+      notes.push(
+        "A donor-covered fee increases the grant amount. It is not a tip, and a for-profit platform tip is not allowed on a DAF grant."
+      );
+    }
+
+    if (!checkedList(scope, "placement").length) {
+      notes.push("Pick at least one form type, or Chariot cannot tell where DAFpay should appear on your platform.");
+    }
+
+    return notes;
+  }
+
+  // --- registry --------------------------------------------------------
+
+  var BUILDERS = [
+    {
+      id: "chariot-setup-builder",
+      email: "implementations@givechariot.com",
+      subject: "DAFpay setup request",
+      build: buildNonprofit,
+      warnings: warnNonprofit,
+    },
+    {
+      id: "chariot-platform-setup-builder",
+      email: "integrations@givechariot.com",
+      subject: "DAFpay platform setup request",
+      build: buildPlatform,
+      warnings: warnPlatform,
+    },
+  ];
+
+  function builderFor(node) {
+    for (var i = 0; i < BUILDERS.length; i++) {
+      var scope = document.getElementById(BUILDERS[i].id);
+      if (scope && node && scope.contains(node)) return BUILDERS[i];
+    }
+    return null;
+  }
+
+  function renderOne(spec) {
+    var scope = document.getElementById(spec.id);
     if (!scope) return;
 
     var out = scope.querySelector("[data-output]");
-    if (out) out.textContent = build(scope);
+    if (out) out.textContent = spec.build(scope);
 
     var notesEl = scope.querySelector("[data-warnings]");
     if (notesEl) {
-      var notes = warnings(scope);
+      var notes = spec.warnings(scope);
       notesEl.innerHTML = "";
       notesEl.hidden = notes.length === 0;
       notes.forEach(function (n) {
@@ -133,13 +229,17 @@
       mail.setAttribute(
         "href",
         "mailto:" +
-          REQUEST_EMAIL +
+          spec.email +
           "?subject=" +
-          encodeURIComponent("DAFpay setup request") +
+          encodeURIComponent(spec.subject) +
           "&body=" +
-          encodeURIComponent(build(scope))
+          encodeURIComponent(spec.build(scope))
       );
     }
+  }
+
+  function render() {
+    BUILDERS.forEach(renderOne);
   }
 
   function flash(btn, message) {
@@ -148,62 +248,64 @@
     btn.textContent = message;
     setTimeout(function () {
       btn.textContent = btn.getAttribute("data-label") || original;
-    }, 1600);
+    }, 1500);
   }
 
   function copy(scope, btn) {
-    var text = build(scope);
+    var out = scope.querySelector("[data-output]");
+    if (!out) return;
+    var text = out.textContent || "";
 
-    function fallback() {
-      // Older browsers, and any context where the async clipboard API is
-      // unavailable (e.g. a non-secure origin during local preview).
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = false;
-      try {
-        ok = document.execCommand("copy");
-      } catch (e) {
-        ok = false;
-      }
-      document.body.removeChild(ta);
-      flash(btn, ok ? "Copied" : "Press ⌘C to copy");
+    function done() {
+      flash(btn, "Copied");
+    }
+    function fail() {
+      flash(btn, "Press Ctrl+C");
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(
-        function () {
-          flash(btn, "Copied");
-        },
-        fallback
-      );
-    } else {
-      fallback();
+      navigator.clipboard.writeText(text).then(done, fail);
+      return;
+    }
+
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "absolute";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      done();
+    } catch (err) {
+      fail();
     }
   }
 
   document.addEventListener("input", function (e) {
-    if (e.target.closest && e.target.closest("#" + ROOT_ID)) render();
+    var spec = builderFor(e.target);
+    if (spec) renderOne(spec);
   });
 
   document.addEventListener("change", function (e) {
-    if (e.target.closest && e.target.closest("#" + ROOT_ID)) render();
+    var spec = builderFor(e.target);
+    if (spec) renderOne(spec);
   });
 
   document.addEventListener("click", function (e) {
     var btn = e.target.closest && e.target.closest("[data-copy]");
     if (!btn) return;
-    var scope = root();
+    var spec = builderFor(btn);
+    if (!spec) return;
+    var scope = document.getElementById(spec.id);
     if (!scope) return;
     e.preventDefault();
     copy(scope, btn);
   });
 
-  // Render as soon as the builder exists, and again whenever the SPA swaps it in.
+  // Render as soon as a builder exists, and again whenever the SPA swaps one in.
   if (document.readyState !== "loading") render();
   document.addEventListener("DOMContentLoaded", render);
 
