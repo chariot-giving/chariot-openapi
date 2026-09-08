@@ -3802,7 +3802,6 @@ components:
           example: 15000
         status:
           $ref: "#/components/schemas/DafpayGrantStatus"
-          example: Initiated
         feeDetail:
           type: object
           readOnly: true
