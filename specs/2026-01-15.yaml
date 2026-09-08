@@ -5648,6 +5648,13 @@ components:
                       type: string
                       description: The unique identifier for the resource
                       example: "donation_01j8rs605a4gctmbm58d87mvsj"
+          example:
+            value:
+              type: enum
+              enum_value_id: "propopt_01j8rs605a4gctmbm58d87mvsj"
+            resources:
+              ids:
+                - "donation_01j8rs605a4gctmbm58d87mvsj"
     GrantCaptureRequest:
       description: |-
         The request to create and submit a grant. This is useful to capture a grant intent associated with DAFpay workflow session.
