@@ -4,7 +4,9 @@ subtitle: OAuth 2.0 and IP whitelisting for FDX API access
 slug: fdx/authentication
 ---
 
-The FDX API uses OAuth 2.0 Bearer token authentication combined with IP address whitelisting.
+The FDX API uses Chariot's OAuth 2.0 Bearer token authentication combined with IP address whitelisting.
+
+The authorization code flow, token exchange, refresh, and redirect URI rules are the same as the rest of the Chariot API — see the [OAuth guide](/guides/oauth) for the full flow. This page covers what is specific to FDX.
 
 ## Client Setup
 
@@ -17,28 +19,19 @@ To access the FDX API, you need a client name and client secret for each environ
 
 Each environment has its own set of credentials. Staging credentials cannot be used in production and vice versa.
 
-## OAuth 2.0
+## Scopes
 
-All requests must include a valid OAuth 2.0 Bearer token in the `Authorization` header:
+The FDX API is read-only. Request the [`read_only` scope](/guides/oauth#scopes):
 
 ```
-Authorization: Bearer <access_token>
+&scope=read_only
 ```
 
-Tokens must include exactly one of the following scopes — they are mutually exclusive per authorization. An authorization containing both will be rejected.
+Requests without a valid token receive a `401 Unauthorized` response.
 
-| Scope | Description |
-|-------|-------------|
-| `read:bank_accounts` | Read access to bank account data |
-| `sync:connected_accounts` | Sync access to connected account data |
+## Environment Endpoints
 
-A client may hold both scopes, but each FDX authorization must contain exactly one. Requests without a valid token receive a `401 Unauthorized` response.
-
-## Token Exchange
-
-The FDX API uses the OAuth 2.0 Authorization Code flow. After receiving client credentials from Chariot, follow these steps to obtain an access token.
-
-### OAuth Endpoints
+The [OAuth guide](/guides/oauth#authorization-code-flow) documents the production endpoints. For FDX, use the endpoints for your environment:
 
 | Environment | Authorization | Token |
 |-------------|---------------|-------|
@@ -51,78 +44,6 @@ The FDX API uses the OAuth 2.0 Authorization Code flow. After receiving client c
 |-------------|-----|
 | **Production** | `https://api.givechariot.com/.well-known/openid-configuration` |
 | **Staging** | `https://devapi.givechariot.com/.well-known/openid-configuration` |
-
-### 1. Authorize
-
-Redirect the user to the authorization endpoint:
-
-```
-GET https://dashboard.givechariot.com/oauth/authorize
-  ?client_id=<client_id>
-  &redirect_uri=<redirect_uri>
-  &response_type=code
-  &scope=read:bank_accounts
-```
-
-| Parameter | Description |
-|-----------|-------------|
-| `client_id` | Your client identifier |
-| `redirect_uri` | The URI to redirect to after authorization (must match a registered URI) |
-| `response_type` | Must be `code` |
-| `scope` | Must be `read:bank_accounts` |
-
-After the user authorizes, the browser redirects to your `redirect_uri` with an authorization `code` query parameter.
-
-### 2. Exchange code for token
-
-Exchange the authorization code for an access token and refresh token.
-
-`POST https://api.givechariot.com/auth/oauth/token`
-
-**Header** — authenticate with HTTP Basic using your client credentials. Requests without this header will be rejected with 403 Unauthorized.
-
-```
-Authorization: Basic base64(client_id:client_secret)
-```
-
-**Body** (`application/x-www-form-urlencoded`):
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `grant_type` | Yes | `authorization_code` |
-| `code` | Yes | The authorization code from step 1 |
-| `redirect_uri` | Yes | Must match the URI used in step 1 |
-| `code_verifier` | No | PKCE code verifier, if PKCE was used |
-
-**Response**:
-
-```json
-{
-  "access_token": "...",
-  "token_type": "Bearer",
-  "refresh_token": "...",
-  "scope": "read:bank_accounts"
-}
-```
-
-### 3. Refresh token
-
-When the access token expires, use the refresh token to obtain a new one.
-
-`POST https://api.givechariot.com/auth/oauth/token`
-
-**Header** — authenticate with HTTP Basic using your client credentials. Requests without this header will be rejected with 403 Unauthorized.
-
-```
-Authorization: Basic base64(client_id:client_secret)
-```
-
-**Body** (`application/x-www-form-urlencoded`):
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `grant_type` | Yes | `refresh_token` |
-| `refresh_token` | Yes | The refresh token from the original token exchange |
 
 ## IP Whitelisting
 
@@ -143,15 +64,7 @@ All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem
 }
 ```
 
-### Token Exchange Errors
-
-Errors returned by `POST /auth/oauth/token`:
-
-| Status | Condition |
-|--------|-----------|
-| `400 Bad Request` | Missing or invalid `grant_type`, `code`, `refresh_token`, or `scope` parameter |
-| `401 Unauthorized` | Invalid client credentials, expired authorization code, or invalid refresh token |
-| `500 Internal Server Error` | Unexpected server error |
+For errors returned by the token endpoint, see [Error Handling](/guides/oauth#error-handling).
 
 ### API Request Errors
 

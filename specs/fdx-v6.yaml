@@ -284,17 +284,15 @@ components:
     oauth2:
       type: oauth2
       description: >-
-        OAuth 2.0 Bearer token. A client may hold both scopes, but each
-        FDX authorization must contain exactly one — they are mutually
-        exclusive per authorization. An authorization containing both will
-        be rejected. See the Authentication page for token exchange details.
+        OAuth 2.0 Bearer token. The FDX API is read-only and requires the
+        read_only scope. See the Authentication page for token exchange
+        details.
       flows:
         authorizationCode:
           authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
           tokenUrl: https://api.givechariot.com/auth/oauth/token
           scopes:
-            "read:bank_accounts": Read access to bank account data
-            "sync:connected_accounts": Sync access to connected account data
+            "read_only": Read access to the nonprofit's data across the Chariot API
 
   parameters:
     AccountId:

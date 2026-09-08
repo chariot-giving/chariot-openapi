@@ -34,20 +34,10 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
 
-**Grantmaking**
-
-| Scope                        | Grants                                                                             |
-| ---------------------------- | ---------------------------------------------------------------------------------- |
-| `read:payouts`               | Read and list disbursements and inbound transfers                                  |
-| `create:payouts`             | Create disbursements, approve, cancel, and stop them, and create inbound transfers |
-| `read:nonprofits`            | Search and read recipient organizations                                            |
-| `read:events`                | Read events and webhook subscriptions                                              |
-| `create:event_subscriptions` | Create and update webhook subscriptions                                            |
-
-**Identity**
-
 | Scope            | Grants                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------- |
+| `read_only`      | Read access to the nonprofit's data across the Chariot API                                   |
+| `read_write`     | Read and write access across the Chariot API                                                 |
 | `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
 | `offline_access` | Accepted for compatibility with OIDC clients. Refresh tokens are issued regardless           |
 
@@ -157,7 +147,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=openid%20read:payouts%20create:payouts
+  &scope=openid%20read_write
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
