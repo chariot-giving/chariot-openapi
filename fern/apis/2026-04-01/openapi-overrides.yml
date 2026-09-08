@@ -425,6 +425,24 @@ paths:
       x-fern-sdk-group-name:
         - nonprofitAddresses
       x-fern-sdk-method-name: create
+  /v1/payment_methods:
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: list
+    post:
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: create
+  /v1/payment_methods/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: get
   /v1/nonprofit_contacts:
     post:
       x-fern-sdk-group-name:

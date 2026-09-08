@@ -3816,6 +3816,9 @@ paths:
       description: |-
         Submit mailing addresses for one or more nonprofits. Uploaded
         addresses are used as suggestions for where to send disbursements.
+
+        This endpoint will be superseded by [Create a Payment Method](/api/payment-methods/create),
+        which returns the submitted address as a Payment Method you can track to verification.
       operationId: createNonprofitAddressSuggestion
       tags:
         - nonprofitAddresses
@@ -3826,6 +3829,166 @@ paths:
       responses:
         "200":
           description: All addresses were accepted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/payment_methods:
+    get:
+      summary: List Payment Methods
+      description: |-
+        List the payment methods Chariot holds for an organization.
+
+        A Payment Method is a destination Chariot can pay an organization through: its Chariot deposit account,
+        a verified bank account, or a verified mailing address. The default list is active methods plus your own
+        submissions awaiting verification. Pass `status=inactive` to see destinations Chariot will no longer pay to
+        and why, for example every mailing address that has proven undeliverable.
+      operationId: listPaymentMethods
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: The unique identifier of the organization whose payment methods to list.
+          required: true
+          schema:
+            type: string
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        - name: status
+          in: query
+          description: Filter by status. When unset, returns active methods plus your own submissions awaiting verification.
+          required: false
+          schema:
+            type: string
+            enum:
+              - active
+              - pending_verification
+              - inactive
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPaymentMethodsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Payment Method
+      description: |-
+        Submit a mailing address for an organization.
+
+        The payment method is created with status `pending_verification` and is visible only to your account
+        until a Chariot operator verifies it. Poll [Get a Payment Method](/api/payment-methods/get) or listen
+        for the `payment_method.updated` event to learn when it becomes `active`.
+      operationId: createPaymentMethod
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentMethodRequest"
+            examples:
+              MailingAddress:
+                value:
+                  organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                  type: "mailing_address"
+                  mailing_address:
+                    line1: "200 Harvest Way"
+                    city: "Springfield"
+                    state: "IL"
+                    postal_code: "62701"
+                    country: "US"
+      responses:
+        "201":
+          description: The payment method was created and is awaiting verification.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+              example:
+                id: "pm_01j8rs605a4gctmbm58d87mvsj"
+                organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                type: "mailing_address"
+                status: "pending_verification"
+                inactive_reason: null
+                verified_at: null
+                expires_at: null
+                bank_account: null
+                mailing_address:
+                  line1: "200 Harvest Way"
+                  city: "Springfield"
+                  state: "IL"
+                  postal_code: "62701"
+                  country: "US"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/payment_methods/{id}:
+    get:
+      summary: Get a Payment Method
+      description: |-
+        Get a payment method by its unique identifier.
+      operationId: getPaymentMethod
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the payment method
+          required: true
+          schema:
+            type: string
+          example: "pm_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: Successfully retrieved the payment method.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3893,6 +4056,8 @@ components:
           type: boolean
           description: Whether the organization is eligible to receive donations from a Donor Advised Fund.
           example: true
+        payment_preferences:
+          $ref: "#/components/schemas/PaymentPreferences"
         city:
           type: string
           description: The city of the organization.
@@ -3951,6 +4116,8 @@ components:
           $ref: "#/components/schemas/NonprofitClassification"
         compliance:
           $ref: "#/components/schemas/NonprofitCompliance"
+        payment_preferences:
+          $ref: "#/components/schemas/PaymentPreferences"
         mission_statement:
           type: string
           description: The mission statement of the organization
@@ -4039,6 +4206,187 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
+    PaymentPreferences:
+      type: object
+      description: |-
+        What the organization has told Chariot about receiving payments at this EIN.
+        When no preference is on file, `accepts_payments` is `true` and `redirect_to` is `null`.
+      required:
+        - accepts_payments
+      properties:
+        accepts_payments:
+          type: boolean
+          description: Whether this EIN accepts payments.
+          example: true
+        redirect_to:
+          nullable: true
+          description: |-
+            The organization to pay instead, when this EIN has been retired in favor of another.
+            Only set when `accepts_payments` is `false`.
+          allOf:
+            - $ref: "#/components/schemas/PaymentPreferencesRedirectTarget"
+      example:
+        accepts_payments: true
+        redirect_to: null
+    PaymentPreferencesRedirectTarget:
+      type: object
+      required:
+        - id
+        - ein
+        - name
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the organization to pay instead.
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        ein:
+          type: string
+          description: The EIN of the organization to pay instead.
+          example: "13-1635294"
+        name:
+          type: string
+          description: The name of the organization to pay instead.
+          example: "Springfield Food Bank"
+    PaymentMethod:
+      type: object
+      description: |-
+        A Payment Method is a destination Chariot can pay an organization through: its Chariot deposit account,
+        a verified bank account, or a verified mailing address. Payment Methods are shared across every account
+        that pays the organization, except that a submission awaiting verification is visible only to the account
+        that submitted it.
+      required:
+        - id
+        - organization_id
+        - type
+        - status
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the payment method.
+          example: "pm_01j8rs605a4gctmbm58d87mvsj"
+        organization_id:
+          type: string
+          description: The unique identifier of the organization this payment method belongs to.
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        type:
+          type: string
+          description: |-
+            The kind of destination.
+            - `chariot_deposit_account`: the organization's Chariot deposit account. Opened by the organization; not creatable through the API.
+            - `bank_account`: a bank account Chariot has verified.
+            - `mailing_address`: a mailing address Chariot has verified for checks.
+          enum:
+            - chariot_deposit_account
+            - bank_account
+            - mailing_address
+          example: "mailing_address"
+        status:
+          type: string
+          description: |-
+            Whether Chariot will pay to this destination.
+            - `active`: Chariot will pay to this destination.
+            - `pending_verification`: submitted through the API and awaiting Chariot's review. Visible only to the account that submitted it.
+            - `inactive`: Chariot will no longer pay to this destination. See `inactive_reason`.
+          enum:
+            - active
+            - pending_verification
+            - inactive
+          example: "active"
+        inactive_reason:
+          type: string
+          nullable: true
+          description: |-
+            Why the payment method is inactive. Only set when `status` is `inactive`.
+            - `undeliverable`: a payment sent here did not reach the organization. A check was returned or never deposited, or an ACH transfer was returned.
+            - `superseded`: a newer verified destination of the same kind replaced it.
+            - `rejected`: Chariot declined the submission, or verified a different submission of the same destination.
+            - `expired`: the destination passed its expiry without renewal.
+            - `closed`: the Chariot deposit account was closed.
+          enum:
+            - undeliverable
+            - superseded
+            - rejected
+            - expired
+            - closed
+          example: null
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When Chariot verified the destination. `null` while pending verification.
+          example: "2026-08-20T15:04:00Z"
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the destination stops being usable, for destinations that expire.
+          example: null
+        bank_account:
+          nullable: true
+          description: Bank account details. Set when `type` is `bank_account`.
+          allOf:
+            - $ref: "#/components/schemas/PaymentMethodBankAccount"
+        mailing_address:
+          nullable: true
+          description: Mailing address details. Set when `type` is `mailing_address`.
+          allOf:
+            - $ref: "#/components/schemas/Address"
+      example:
+        id: "pm_01j8rs605a4gctmbm58d87mvsj"
+        organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        type: "mailing_address"
+        status: "active"
+        inactive_reason: null
+        verified_at: "2026-08-20T15:04:00Z"
+        expires_at: null
+        bank_account: null
+        mailing_address:
+          line1: "200 Harvest Way"
+          city: "Springfield"
+          state: "IL"
+          postal_code: "62701"
+          country: "US"
+    PaymentMethodBankAccount:
+      type: object
+      required:
+        - last4
+        - routing_number
+        - wire_eligible
+      properties:
+        last4:
+          type: string
+          description: The last four digits of the account number.
+          example: "1234"
+        routing_number:
+          type: string
+          description: The routing number.
+          example: "071000013"
+        wire_eligible:
+          type: boolean
+          description: Whether the account can receive wires.
+          example: false
+    CreatePaymentMethodRequest:
+      type: object
+      required:
+        - organization_id
+        - type
+        - mailing_address
+      properties:
+        organization_id:
+          type: string
+          description: The organization the destination belongs to.
+          example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+        type:
+          type: string
+          description: The kind of destination. Only `mailing_address` may be submitted.
+          enum:
+            - mailing_address
+          example: "mailing_address"
+        mailing_address:
+          description: The mailing address to submit.
+          allOf:
+            - $ref: "#/components/schemas/Address"
     NonprofitAddressSuggestionEntry:
       type: object
       description: A mailing address uploaded for a nonprofit, identified by its EIN.
@@ -8888,6 +9236,63 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
+    ListPaymentMethodsResponse:
+      description: The response for PaymentMethods.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentMethod"
+              next_page_token:
+                type: string
+                nullable: true
+                description: The cursor for the next page of results. `null` when there are no more results.
+          example:
+            results:
+              - id: "pm_01j9c2h7y5k4wq8n3d6f1a0zxe"
+                organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                type: "chariot_deposit_account"
+                status: "active"
+                inactive_reason: null
+                verified_at: "2026-09-03T09:00:00Z"
+                expires_at: null
+                bank_account: null
+                mailing_address: null
+              - id: "pm_01j9d4v2m8r6xk1p7t3b5c9qwa"
+                organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                type: "bank_account"
+                status: "active"
+                inactive_reason: null
+                verified_at: "2026-07-15T14:30:00Z"
+                expires_at: "2026-10-13T14:30:00Z"
+                bank_account:
+                  last4: "1234"
+                  routing_number: "071000013"
+                  wire_eligible: true
+                mailing_address: null
+              - id: "pm_01j8rs605a4gctmbm58d87mvsj"
+                organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
+                type: "mailing_address"
+                status: "active"
+                inactive_reason: null
+                verified_at: "2026-08-20T15:04:00Z"
+                expires_at: null
+                bank_account: null
+                mailing_address:
+                  line1: "200 Harvest Way"
+                  line2: null
+                  city: "Springfield"
+                  state: "IL"
+                  postal_code: "62701"
+                  country: "US"
+            next_page_token: null
     ListPaymentSourcesResponse:
       description: The response for PaymentSources.list
       headers:
@@ -9193,6 +9598,9 @@ components:
               naics4_description: "Civic and Social Organizations"
               naics6: "813410"
               naics6_description: "Civic and Social Organizations"
+          payment_preferences:
+            accepts_payments: true
+            redirect_to: null
           compliance:
             daf_eligible: true
             irs_pub_78:
@@ -9328,6 +9736,9 @@ components:
               naics4_description: "Civic and Social Organizations"
               naics6: "813410"
               naics6_description: "Civic and Social Organizations"
+          payment_preferences:
+            accepts_payments: true
+            redirect_to: null
           compliance:
             daf_eligible: true
             irs_pub_78:
