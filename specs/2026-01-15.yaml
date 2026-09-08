@@ -3792,6 +3792,10 @@ components:
         status:
           type: string
           description: The status of the grant
+          enum:
+            - Initiated
+            - Completed
+            - Canceled
           example: Initiated
         feeDetail:
           type: object
