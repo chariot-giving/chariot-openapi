@@ -3,7 +3,7 @@ title: "Install the Button"
 hidden: false
 ---
 
-Load Chariot Connect with the JavaScript package or the React package documented for your integration.
+Load Chariot Connect with the JavaScript bundle or the React package. Both are covered in the [Chariot Connect reference](/guides/dafpay/integrating-dafpay/connect-reference#mount-the-component).
 
 ```html
 <script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
@@ -24,11 +24,9 @@ We recommend placing DAFpay above your form as an Express Checkout option. This 
 
 If your site uses CSP, allow the Chariot script and DAFpay frame according to the current [Content Security Policy requirements](/guides/dafpay/integrating-dafpay/csp). Merge the required sources into your existing policy; do not replace the policy with a copied example.
 
-That page sits in the fundraising-platform guide and is shared with platform integrators. The CSP sources apply to any site embedding DAFpay; the platform-specific setup around them does not apply to you.
-
 ## Styling
 
-Choose one of the supported themes: Light, Dark, or Automatic. Use the documented theme properties for additional customization. Do not depend on internal DOM or CSS selectors inside the component.
+Pass one of the built-in themes — `DefaultTheme`, `LightModeTheme`, `LightBlueTheme`, or `GradientTheme` — or register your own from the supported properties. See [Themes](/guides/dafpay/integrating-dafpay/connect-reference#themes). Do not depend on internal DOM or CSS selectors inside the component.
 
 Next: [Send donor data](/guides/nonprofits/initiate/donor-data)
 

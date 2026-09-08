@@ -7,9 +7,9 @@ Listen for all three Chariot Connect events.
 
 | Event | Meaning | What to do |
 | --- | --- | --- |
-| `CHARIOT_INIT` | The component is ready. | Enable any UI that depends on initialization. |
+| `CHARIOT_INIT` | The component is ready. | Enable your DAFpay button now that it can open. |
 | `CHARIOT_SUCCESS` | The donor authorized a one-time or recurring grant request. | Send the workflow session and returned amount to your server. |
-| `CHARIOT_EXIT` | The donor left the flow or DAFpay could not complete it. | Read the exit reason and return the donor to an appropriate state. |
+| `CHARIOT_EXIT` | The donor left the flow or DAFpay could not complete it. | Read the exit reason, then put the donor back on your form or offer another way to give. |
 
 ```javascript
 const chariot = document.getElementById("chariot")
@@ -19,7 +19,7 @@ chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
 })
 
 chariot.addEventListener("CHARIOT_EXIT", ({ detail }) => {
-  // Read detail.reason and return the donor to an appropriate state.
+  // Read detail.reason, then put the donor back on the form or offer another way to give.
 })
 ```
 
@@ -50,7 +50,7 @@ Use the exact exit reason returned by the component — the full list is in the 
 - offer another payment method when the selected grant cannot be made; and
 - log configuration or internal errors with the workflow session ID before contacting support.
 
-If the donor confirmed a request for an unsupported provider, follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated). That page is shared with platform integrators; the donor-facing behavior it describes applies to your form too.
+If the donor confirmed a request for an unsupported provider, follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
 
 Next: [Create the grant](/guides/nonprofits/initiate/create-grant)
 

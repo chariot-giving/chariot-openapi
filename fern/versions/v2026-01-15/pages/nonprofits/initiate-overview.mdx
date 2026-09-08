@@ -30,19 +30,19 @@ The integration has four parts:
 
 ### Get a Connect ID for your form
 
-See [Request your Connect](/guides/nonprofits/initiate/connect-config).
+Chariot configures a Connect for your organization and gives you separate sandbox and production IDs. See [Request your Connect](/guides/nonprofits/initiate/connect-config).
 
 ### Add Chariot Connect to the page
 
-See [Install the button](/guides/nonprofits/initiate/install).
+Load the script and place the DAFpay button on your form. See [Install the button](/guides/nonprofits/initiate/install).
 
 ### Pass donation data into the DAFpay session and handle its events
 
-See [Send donor data](/guides/nonprofits/initiate/donor-data) and [Handle the result](/guides/nonprofits/initiate/events).
+Return your form's current values so the donor does not retype them, then handle the three events the component emits. See [Send donor data](/guides/nonprofits/initiate/donor-data) and [Handle the result](/guides/nonprofits/initiate/events).
 
 ### Create the grant from your server after `CHARIOT_SUCCESS`
 
-See [Create the grant](/guides/nonprofits/initiate/create-grant).
+The browser flow only authorizes the gift. Your server still has to create it, once, within 15 minutes. See [Create the grant](/guides/nonprofits/initiate/create-grant).
 
 </Steps>
 

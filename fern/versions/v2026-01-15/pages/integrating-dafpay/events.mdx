@@ -5,7 +5,7 @@ hidden: false
 
 | Event | Meaning | Required action |
 | --- | --- | --- |
-| `CHARIOT_INIT` | The component is ready. | Update the page state if needed. |
+| `CHARIOT_INIT` | The component is ready. | Enable your DAFpay button now that it can open. |
 | `CHARIOT_SUCCESS` | The donor authorized a one-time or recurring grant request. | Persist the session and create the grant from your server. |
 | `CHARIOT_EXIT` | The donor left or DAFpay could not complete the flow. | Handle the returned reason. |
 

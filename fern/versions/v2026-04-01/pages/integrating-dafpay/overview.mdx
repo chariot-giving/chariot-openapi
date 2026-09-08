@@ -23,27 +23,27 @@ Never use one platform-wide Connect ID. The Connect identifies the recipient and
 
 ### Search for the nonprofit
 
-See [Create Connects](/guides/dafpay/integrating-dafpay/connects).
+Look the organization up by EIN, so the Connect attaches to the right one. See [Create Connects](/guides/dafpay/integrating-dafpay/connects).
 
 ### Create or retrieve its Connect and store the Connect ID
 
-See [Create Connects](/guides/dafpay/integrating-dafpay/connects) and [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config).
+One Connect per nonprofit, created when they turn DAFpay on, stored on their record in your database. See [Create Connects](/guides/dafpay/integrating-dafpay/connects) and [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config).
 
 ### Render Chariot Connect on that nonprofit's form
 
-See [Install DAFpay](/guides/dafpay/integrating-dafpay/installation) and [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
+Load the component with that nonprofit's Connect ID, and allow Chariot's sources in your CSP. See [Install DAFpay](/guides/dafpay/integrating-dafpay/installation) and [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
 
 ### Pass current form data into DAFpay
 
-See [Send donation data](/guides/dafpay/integrating-dafpay/donor-data).
+Return the live form values so the donor does not retype what they already entered. See [Send donation data](/guides/dafpay/integrating-dafpay/donor-data).
 
 ### After `CHARIOT_SUCCESS`, create the Grant from your server
 
-See [Handle the result](/guides/dafpay/integrating-dafpay/events) and [Create the grant](/guides/dafpay/integrating-dafpay/create-grant).
+The event authorizes the gift; your server creates it, exactly once, within 15 minutes. See [Handle the result](/guides/dafpay/integrating-dafpay/events) and [Create the grant](/guides/dafpay/integrating-dafpay/create-grant).
 
 ### Store Chariot identifiers and listen for status changes
 
-See [Reconciliation](/guides/dafpay/gifts/reconciliation) and [Grant statuses](/guides/dafpay/gifts/statuses).
+Keep the workflow session, Grant and Donation IDs so support and finance can trace a gift later. See [Reconciliation](/guides/dafpay/gifts/reconciliation) and [Grant statuses](/guides/dafpay/gifts/statuses).
 
 </Steps>
 
