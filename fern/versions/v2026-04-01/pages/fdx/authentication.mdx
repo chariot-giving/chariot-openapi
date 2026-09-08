@@ -4,20 +4,7 @@ subtitle: OAuth 2.0 and IP whitelisting for FDX API access
 slug: fdx/authentication
 ---
 
-The FDX API uses Chariot's OAuth 2.0 Bearer token authentication combined with IP address whitelisting.
-
-The authorization code flow, token exchange, refresh, and redirect URI rules are the same as the rest of the Chariot API — see the [OAuth guide](/guides/oauth) for the full flow. This page covers what is specific to FDX.
-
-## Client Setup
-
-To access the FDX API, you need a client name and client secret for each environment. Contact Chariot at [support@givechariot.com](mailto:support@givechariot.com) to request credentials.
-
-| Environment | Base URL | Credentials |
-|-------------|----------|-------------|
-| **Production** | `https://api.givechariot.com/fdx/v6` | Separate client name and secret |
-| **Staging** | `https://devapi.givechariot.com/fdx/v6` | Separate client name and secret |
-
-Each environment has its own set of credentials. Staging credentials cannot be used in production and vice versa.
+The FDX API uses Chariot's OAuth 2.0. The authorization code flow, token exchange, refresh, and redirect URI rules are documented in the [OAuth guide](/guides/oauth). Two things are specific to FDX: the scope you request and IP whitelisting.
 
 ## Scopes
 
@@ -27,53 +14,20 @@ The FDX API is read-only. Request the [`read_only` scope](/guides/oauth#scopes):
 &scope=read_only
 ```
 
-Requests without a valid token receive a `401 Unauthorized` response.
+## Environments
 
-## Environment Endpoints
+Each environment has its own client name and secret — staging credentials cannot be used in production and vice versa. Contact Chariot at [support@givechariot.com](mailto:support@givechariot.com) to request credentials for each environment.
 
-The [OAuth guide](/guides/oauth#authorization-code-flow) documents the production endpoints. For FDX, use the endpoints for your environment:
+The [OAuth guide](/guides/oauth#authorization-code-flow) documents the production endpoints. Their staging equivalents:
 
-| Environment | Authorization | Token |
-|-------------|---------------|-------|
-| **Production** | `https://dashboard.givechariot.com/oauth/authorize` | `https://api.givechariot.com/auth/oauth/token` |
-| **Staging** | `https://staging.dashboard.givechariot.com/oauth/authorize` | `https://devapi.givechariot.com/auth/oauth/token` |
-
-### OIDC Well-Known Configuration
-
-| Environment | URL |
-|-------------|-----|
-| **Production** | `https://api.givechariot.com/.well-known/openid-configuration` |
-| **Staging** | `https://devapi.givechariot.com/.well-known/openid-configuration` |
+| Endpoint | Staging |
+|----------|---------|
+| Authorization | `https://staging.dashboard.givechariot.com/oauth/authorize` |
+| Token | `https://devapi.givechariot.com/auth/oauth/token` |
+| OIDC configuration | `https://devapi.givechariot.com/.well-known/openid-configuration` |
 
 ## IP Whitelisting
 
 In addition to OAuth 2.0, all requests are validated against an IP whitelist. Requests from non-whitelisted IP addresses receive a `403 Forbidden` response.
 
 Contact Chariot to register IP addresses for FDX API access.
-
-## Error Responses
-
-All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details format:
-
-```json
-{
-  "type": "about:blank",
-  "title": "Unauthorized",
-  "status": 401,
-  "detail": "Missing or invalid Bearer token"
-}
-```
-
-For errors returned by the token endpoint, see [Error Handling](/guides/oauth#error-handling).
-
-### API Request Errors
-
-Errors returned by FDX API endpoints:
-
-| Status | Condition |
-|--------|-----------|
-| `400 Bad Request` | Invalid query parameters or missing required fields |
-| `401 Unauthorized` | Missing, invalid, or expired Bearer token |
-| `403 Forbidden` | Insufficient permissions or IP not whitelisted |
-| `404 Not Found` | Resource does not exist (e.g., invalid account or statement ID) |
-| `500 Internal Server Error` | Unexpected server error |

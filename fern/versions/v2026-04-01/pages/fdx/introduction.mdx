@@ -46,4 +46,21 @@ The statement document endpoint supports multiple formats via the `Accept` heade
 
 ### Error Format
 
-All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details standard with content type `application/problem+json`.
+All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details standard with content type `application/problem+json`:
+
+```json
+{
+  "type": "about:blank",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Missing or invalid Bearer token"
+}
+```
+
+| Status | Condition |
+|--------|-----------|
+| `400 Bad Request` | Invalid query parameters or missing required fields |
+| `401 Unauthorized` | Missing, invalid, or expired Bearer token |
+| `403 Forbidden` | Insufficient permissions or IP not whitelisted |
+| `404 Not Found` | Resource does not exist (e.g., invalid account or statement ID) |
+| `500 Internal Server Error` | Unexpected server error |
