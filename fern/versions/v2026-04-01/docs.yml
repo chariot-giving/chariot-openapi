@@ -281,9 +281,6 @@ navigation:
               - page: Introduction
                 slug: /
                 path: ./pages/fdx/introduction.mdx
-              - page: Authentication
-                slug: authentication
-                path: ./pages/fdx/authentication.mdx
           - section: Accounts
             skip-slug: true
             icon: building-columns

@@ -14,8 +14,8 @@ info:
 servers:
   - url: https://api.givechariot.com/fdx/v6
     description: Production
-  - url: https://devapi.givechariot.com/fdx/v6
-    description: Staging
+  - url: https://sandboxapi.givechariot.com/fdx/v6
+    description: Sandbox
 
 security:
   - oauth2: []

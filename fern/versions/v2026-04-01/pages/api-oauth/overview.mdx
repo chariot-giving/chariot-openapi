@@ -30,6 +30,24 @@ When Chariot registers your application, you'll receive a `client_id` and `clien
 
 Your client secret should be kept secure and should never be exposed to the public.
 
+## Environments
+
+| Environment | Authorization | Token |
+| ----------- | ------------- | ----- |
+| **Production** | `https://dashboard.givechariot.com/oauth/authorize` | `https://api.givechariot.com/auth/oauth/token` |
+| **Sandbox** | `https://dashboard.givechariot.com/oauth/sandbox/authorize` | `https://sandboxapi.givechariot.com/auth/oauth/token` |
+
+Sandbox authorization is served from the production dashboard — only the path differs, so donors sign in at the hostname they already know. The token, UserInfo, and discovery endpoints are on the sandbox API host.
+
+Each environment issues its own `client_id` and `client_secret`. Sandbox credentials cannot be used in production and vice versa.
+
+Rather than hardcoding these, read them from the discovery document for your environment:
+
+| Environment | OIDC configuration |
+| ----------- | ------------------ |
+| **Production** | `https://api.givechariot.com/.well-known/openid-configuration` |
+| **Sandbox** | `https://sandboxapi.givechariot.com/.well-known/openid-configuration` |
+
 ## Scopes
 
 Scopes define what your application can access. Specify them as a space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
@@ -258,6 +276,21 @@ Common errors during the token exchange:
 | `400`       | Malformed request (invalid parameters, missing fields)               |
 | `401`       | Invalid authorization code, expired token, or bad client credentials |
 | `412`       | User lacks the required permissions for the requested scopes         |
+
+## IP Whitelisting
+
+Some APIs restrict access to a set of registered IP addresses in addition to OAuth. Where this applies, the check runs before the token is validated — a request from an unregistered address receives a `403 Forbidden` even with a valid access token:
+
+```json
+{
+  "type": "about:blank",
+  "title": "You have insufficient permissions to perform this action.",
+  "status": 403,
+  "detail": "Your IP address is not in the allowed CIDR range to access this resource."
+}
+```
+
+Addresses are registered as CIDR ranges when your application is set up. Contact [support@givechariot.com](mailto:support@givechariot.com) to add or change them.
 
 ## Redirect URI Requirements
 
