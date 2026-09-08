@@ -5,11 +5,13 @@ hidden: false
 
 Use the exact status values returned by [Get Grant](/api/grants/get). Present them to users in language that does not overstate the movement of funds.
 
-| API status | Meaning | Suggested label |
-| --- | --- | --- |
-| `Initiated` | The request was submitted and has not been confirmed as received. | Submitted |
-| `Completed` | Chariot records the grant as completed. | Received |
-| `Canceled` | The grant will not be paid. | Canceled |
+| API status | Meaning | Suggested label | Terminal |
+| --- | --- | --- | --- |
+| `Initiated` | The request was submitted and has not been confirmed as received. | Submitted | No |
+| `Completed` | Chariot records the grant as completed. | Received | Yes |
+| `Canceled` | The grant will not be paid. | Canceled | Yes |
+
+A grant starts at `Initiated` and leaves it for either `Completed` or `Canceled`. Those three are the whole set, so a value you do not recognize means something has changed — surface it rather than treating it as success.
 
 Subscribe to `grant.updated` and retrieve the current Grant when an event arrives. Make the handler idempotent and retain a periodic recovery process if status freshness is important. See [Webhooks and events](/api/webhooks) for endpoint setup and signature verification, and [Create an Event Subscription](/api/event-subscriptions/create) to subscribe.
 

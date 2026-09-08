@@ -14,6 +14,10 @@ Listen for all three Chariot Connect events.
 ```javascript
 const chariot = document.getElementById("chariot")
 
+chariot.addEventListener("CHARIOT_INIT", () => {
+  // The component can open now — enable your DAFpay button.
+})
+
 chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
   // Send detail.workflowSessionId and the returned amount to your server.
 })
@@ -43,14 +47,14 @@ Show a loading state while your server saves the transaction and calls Create Gr
 
 ## On exit
 
-Use the exact exit reason returned by the component — the full list is in the [Chariot Connect reference](/guides/dafpay/integrating-dafpay/connect-reference#exit-reasons). In general:
+Use the exact exit reason returned by the component — the full list is in the [Chariot Connect reference](/guides/dafpay/connect-reference#exit-reasons). In general:
 
 - allow a donor who closed the window to resume the form;
 - ask the donor to restart an expired session;
 - offer another payment method when the selected grant cannot be made; and
 - log configuration or internal errors with the workflow session ID before contacting support.
 
-If the donor confirmed a request for an unsupported provider, follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
+If the donor confirmed a request for an unconnected provider, follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
 
 Next: [Create the grant](/guides/nonprofits/initiate/create-grant)
 

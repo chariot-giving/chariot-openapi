@@ -3,7 +3,7 @@ title: "Request Your Connect"
 hidden: false
 ---
 
-A Connect configures DAFpay for your nonprofit. Chariot provides separate Connect IDs for sandbox and production.
+A Connect configures DAFpay for your nonprofit. Chariot provides separate Connect IDs for sandbox and production. Send the request below to get your sandbox Connect, build against it, then confirm production when you are ready to launch.
 
 Make your choices below and send them to implementations@givechariot.com. The form assembles the request for you, and includes:
 
@@ -104,20 +104,6 @@ Connect IDs are environment-specific. Sandbox IDs begin with `test_`.
 
   </div>
 
-  <p class="csb-section">Testing</p>
-
-  <div class="csb-grid">
-    <label class="csb-field">
-      <span>Test form URL</span>
-      <input type="url" data-key="test_form_url" placeholder="https://example.org/donate-test" />
-    </label>
-
-    <label class="csb-field">
-      <span>Target go-live date</span>
-      <input type="date" data-key="go_live" />
-    </label>
-  </div>
-
   <p class="csb-section">Your request</p>
 
   <ul class="csb-warnings" data-warnings hidden></ul>
@@ -132,10 +118,6 @@ connect:
   monthly_recurring_gifts: Allow
   unconnected_daf_providers: Record what they intended
   close_window_on_confirm: no
-
-qa:
-  test_form_url: <link to your form running the sandbox connect>
-  target_go_live: <date>
 `}</code></pre>
 
   <div class="csb-actions">
@@ -149,11 +131,11 @@ qa:
 For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send Donor Data](/guides/nonprofits/initiate/donor-data).
 </Tip>
 
-Before you send it, work through [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch). Chariot tests your form against it.
+Chariot replies with your sandbox Connect ID. Build against it, then work through [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch) — that page covers what to send when you want production.
 
 ## Update your configuration
 
-If you need to change the fields or unsupported-provider behavior later, contact implementations@givechariot.com. Sandbox and production are separate configurations, so say whether a change applies to one or both. Chariot updates both unless you say otherwise.
+If you need to change the fields or unconnected-provider behavior later, contact implementations@givechariot.com. Sandbox and production are separate configurations, so say whether a change applies to one or both. Chariot updates both unless you say otherwise.
 
 Next: [Install the button](/guides/nonprofits/initiate/install)
 

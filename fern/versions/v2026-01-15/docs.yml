@@ -88,9 +88,6 @@ navigation:
           - section: Integrating DAFpay
             slug: integrating-dafpay
             contents:
-              - page: Integration Checklist
-                slug: checklist
-                path: ./pages/integrating-dafpay/checklist.mdx
               - page: Create Connects
                 slug: connects
                 path: ./pages/integrating-dafpay/connects.mdx
@@ -118,12 +115,12 @@ navigation:
               - page: Unconnected DAF Providers
                 slug: unintegrated
                 path: ./pages/integrating-dafpay/unintegrated.mdx
+              - page: Integration Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
               - page: Request Production Access
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
-              - page: Chariot Connect Reference
-                slug: connect-reference
-                path: ./pages/integrating-dafpay/connect-reference.mdx
           - section: After the Gift
             slug: gifts
             contents:
@@ -142,6 +139,9 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
+          - page: Chariot Connect Reference
+            slug: connect-reference
+            path: ./pages/integrating-dafpay/connect-reference.mdx
       - section: For Grantmakers
         skip-slug: true
         contents:

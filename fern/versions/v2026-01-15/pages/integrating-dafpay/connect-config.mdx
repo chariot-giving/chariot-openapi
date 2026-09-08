@@ -5,7 +5,7 @@ hidden: false
 
 Agree on the production behavior before you build. Chariot applies the same configuration to your sandbox Connects before QA and your production Connects before launch, so your test covers the real flow.
 
-Make your choices below and send them to integrations@givechariot.com. The form assembles the request for you.
+Make your choices below and send them to integrations@givechariot.com. The form assembles the request for you. Send it before you build; your sandbox test form and launch date come later, with [Request production access](/guides/dafpay/integrating-dafpay/prod-keys).
 
 <div id="chariot-platform-setup-builder">
 
@@ -170,20 +170,6 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
   </div>
 
-  <p class="csb-section">Testing</p>
-
-  <div class="csb-grid">
-    <label class="csb-field">
-      <span>Test form URL</span>
-      <input type="url" data-key="test_form_url" placeholder="https://example.com/sandbox-form" />
-    </label>
-
-    <label class="csb-field">
-      <span>Target go-live date</span>
-      <input type="date" data-key="go_live" />
-    </label>
-  </div>
-
   <p class="csb-section">Your request</p>
 
   <ul class="csb-warnings" data-warnings hidden></ul>
@@ -210,10 +196,6 @@ placement:
 crm:
   sync_dafpay_gifts: Yes
   credit: Hard credit to the donor
-
-qa:
-  test_form_url: <link to a sandbox form on your platform>
-  target_go_live: <date>
 `}</code></pre>
 
   <div class="csb-actions">

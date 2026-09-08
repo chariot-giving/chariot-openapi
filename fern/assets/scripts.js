@@ -72,10 +72,6 @@
     if (closeOnConfirm === "yes") {
       lines.push("  # confirmed: our page shows tracking ID, EIN, org name, provider link");
     }
-    lines.push("");
-    lines.push("qa:");
-    lines.push("  test_form_url: " + scalar(val(scope, "test_form_url"), "<link to your form running the sandbox connect>"));
-    lines.push("  target_go_live: " + scalar(val(scope, "go_live"), "<date>"));
 
     return lines.join("\n") + "\n";
   }
@@ -148,10 +144,6 @@
     lines.push("crm:");
     lines.push("  sync_dafpay_gifts: " + scalar(val(scope, "crm_sync")));
     lines.push("  credit: " + scalar(val(scope, "credit")));
-    lines.push("");
-    lines.push("qa:");
-    lines.push("  test_form_url: " + scalar(val(scope, "test_form_url"), "<link to a sandbox form on your platform>"));
-    lines.push("  target_go_live: " + scalar(val(scope, "go_live"), "<date>"));
 
     return lines.join("\n") + "\n";
   }

@@ -12,6 +12,10 @@ hidden: false
 ```javascript
 const chariot = document.getElementById("chariot")
 
+chariot.addEventListener("CHARIOT_INIT", () => {
+  // The component can open now — enable your DAFpay button.
+})
+
 chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
   // Persist detail.workflowSessionId with your transaction, then create the grant.
 })
@@ -40,7 +44,7 @@ The confirmation page should say that the request was submitted to the donor's D
 
 ## On `CHARIOT_EXIT`
 
-Use the exact exit-reason enum from the [Chariot Connect reference](/guides/dafpay/integrating-dafpay/connect-reference#exit-reasons). Group the UI behavior by action:
+Use the exact exit-reason enum from the [Chariot Connect reference](/guides/dafpay/connect-reference#exit-reasons). Group the UI behavior by action:
 
 - resume the form after a normal donor exit;
 - restart an expired session;
@@ -48,7 +52,7 @@ Use the exact exit-reason enum from the [Chariot Connect reference](/guides/dafp
 - offer another payment method when the grant cannot be made; and
 - log configuration or internal failures with the workflow session ID.
 
-An unsupported-provider confirmation is not a completed grant. Follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
+An unconnected-provider confirmation is not a completed grant. Follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
 
 Next: [Create the grant](/guides/dafpay/integrating-dafpay/create-grant)
 
