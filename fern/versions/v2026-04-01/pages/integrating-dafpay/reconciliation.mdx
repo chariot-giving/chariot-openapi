@@ -23,7 +23,7 @@ A donor gives $250 to a nonprofit on your platform.
 2. The donor authorizes. `CHARIOT_SUCCESS` returns `workflowSessionId`, which you store on your transaction **before** calling Chariot.
 3. Your server calls Create Grant and stores the Grant ID it returns.
 4. Get Grant later returns the Donation ID. Store that too.
-5. Weeks on, the provider's payment arrives quoting a tracking identifier. Support finds your transaction from the Grant ID or Donation ID rather than guessing from donor name and amount.
+5. Weeks on, the provider's payment arrives quoting a tracking identifier. Look that identifier up in Chariot to reach the Grant or Donation, then use the Chariot ID you stored to reach your own transaction — rather than guessing from donor name and amount.
 
 Steps 2 and 3 are where reconciliation is usually lost: if the workflow session is not written down before the Create Grant call, a failure between them leaves a grant in Chariot that your system cannot match to anything.
 

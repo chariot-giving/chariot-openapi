@@ -60,7 +60,7 @@
 
     var lines = [];
     lines.push("organization: " + scalar(val(scope, "organization"), "<your nonprofit's name>"));
-    lines.push("environment: " + scalar(val(scope, "environment")));
+    lines.push("configuration_applies_to: " + scalar(val(scope, "applies_to")));
     lines.push("");
     lines.push("connect:");
     lines.push("  donor_details_step: " + scalar(val(scope, "donor_step")));
@@ -120,7 +120,7 @@
 
     var lines = [];
     lines.push("platform: " + scalar(val(scope, "platform"), "<your platform's name>"));
-    lines.push("environment: " + scalar(val(scope, "environment")));
+    lines.push("configuration_applies_to: " + scalar(val(scope, "applies_to")));
     lines.push("");
     lines.push("connect:");
     lines.push("  donor_details_step: " + scalar(val(scope, "donor_step")));

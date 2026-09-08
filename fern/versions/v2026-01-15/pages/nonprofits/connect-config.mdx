@@ -28,11 +28,11 @@ Connect IDs are environment-specific. Sandbox IDs begin with `test_`.
     </label>
 
     <label class="csb-field">
-      <span>Environment</span>
-      <select data-key="environment">
-        <option value="Both">Sandbox and production</option>
-        <option value="Sandbox">Sandbox only</option>
-        <option value="Production">Production only</option>
+      <span>This configuration applies to</span>
+      <select data-key="applies_to">
+        <option value="Sandbox and production">Sandbox and production</option>
+        <option value="Sandbox only">Sandbox only</option>
+        <option value="Production only">Production only</option>
       </select>
     </label>
   </div>
@@ -109,7 +109,7 @@ Connect IDs are environment-specific. Sandbox IDs begin with `test_`.
   <ul class="csb-warnings" data-warnings hidden></ul>
 
   <pre><code data-output>{`organization: <your nonprofit's name>
-environment: Both
+configuration_applies_to: Sandbox and production
 
 connect:
   donor_details_step: Show

@@ -51,20 +51,22 @@ Use the amount returned by `CHARIOT_SUCCESS`. Validate that it is a whole-dollar
 
 ## Provider limits
 
-Two of the three reasons Create Grant returns `400 Bad Request` come from the
-donor's provider, not from your request:
+Create Grant can also return `400 Bad Request` when the amount is below the
+provider's minimum or above the donor's available DAF balance.
 
-- the amount is below that provider's minimum grant amount; or
-- the amount is above the donor's DAF account balance.
+**Minimum.** Once you have the `fundId` — from preselecting it, or after the
+donor chooses — pass it to [Get DAF](/api/donor-advised-funds/get) and read
+`minimumGrantAmount`. If the amount is short, tell the donor the figure they
+need: "this provider requires a minimum grant of $50" recovers the gift where a
+generic failure loses it.
 
-Both belong to the fund, so you know them once you know the fund — either
-because you preselected `fundId`, or after the donor chooses their provider.
-Pass the `fundId` to [Get DAF](/api/donor-advised-funds/get) to read
-`minimumGrantAmount`, and `institutionDown` to see whether that provider is
-currently unavailable.
+**Balance.** The DAF carries no balance field, so you cannot check this before
+you call. Treat the `400` as the signal, and offer the donor the choice of
+lowering the amount or using another provider.
 
-Surface a minimum as a message the donor can act on. "This provider requires a
-minimum grant of $50" lets them raise the amount; a generic failure does not.
+**Availability.** The same Get DAF response carries `institutionDown`. Handle a
+provider that is down as a temporary error worth retrying, not as a failed
+gift.
 
 ## Platform fees
 

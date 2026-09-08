@@ -18,11 +18,11 @@ Make your choices below and send them to integrations@givechariot.com. The form 
     </label>
 
     <label class="csb-field">
-      <span>Environment</span>
-      <select data-key="environment">
-        <option value="Both">Both</option>
-        <option value="Sandbox">Sandbox only</option>
-        <option value="Production">Production only</option>
+      <span>This configuration applies to</span>
+      <select data-key="applies_to">
+        <option value="Sandbox and production">Both</option>
+        <option value="Sandbox only">Sandbox only</option>
+        <option value="Production only">Production only</option>
       </select>
     </label>
   </div>
@@ -184,7 +184,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
   <ul class="csb-warnings" data-warnings hidden></ul>
 
   <pre><code data-output>{`platform: <your platform's name>
-environment: Both
+configuration_applies_to: Sandbox and production
 
 connect:
   donor_details_step: Show
