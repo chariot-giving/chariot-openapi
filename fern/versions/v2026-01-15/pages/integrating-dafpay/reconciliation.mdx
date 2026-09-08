@@ -1,52 +1,39 @@
 ---
 title: "Reconciliation"
-subtitle: "Matching an inbound gift to the grant that started it"
+subtitle: "Reconcile grants and donations"
 hidden: false
 ---
 
-DAFpay never handles the funds. Each DAF provider pays the nonprofit directly, by transfer or mailed check, and stamps the payment with identifiers you can match back to the grant.
+Store Chariot identifiers as soon as they become available.
 
-| Identifier | What it is |
-| --- | --- |
-| Tracking ID | A 10-digit code from DAFpay, sent with the grant request. Appears in the provider's data as a `Tracking ID:` string in the grant note or purpose. |
-| External Grant ID | The provider's own grant identifier, returned after a successful initiation. Format varies; usually shows up as "Grant ID". |
+| Identifier | Source | Use |
+| --- | --- | --- |
+| Your transaction ID | Your platform | Primary key in your system. |
+| Nonprofit ID | Your platform | Identifies the intended recipient. |
+| Connect ID | Nonprofit onboarding | Confirms which nonprofit's Connect opened. |
+| `workflowSessionId` | `CHARIOT_SUCCESS` | Ties the browser session to grant creation. |
+| Grant ID | Create Grant | Stable Chariot grant identifier. |
+| Donation ID | Grant or donation data | Links the request to Chariot's gift record. |
+| Tracking or external grant ID | Grant data | Helps operations match provider remittance. |
 
-Payments also carry a "Gift via DAFpay" callout in the memo.
+Use your transaction ID, Chariot Grant ID, and Donation ID as durable keys. Treat human-readable tracking identifiers as reconciliation aids, not database keys; they may be absent or provider-dependent.
 
-<Warning title="Make both searchable">
-Display `trackingId` and `externalGrantId` as searchable fields on your transactions dashboard. Without them nobody can match a payment to a grant.
-</Warning>
+## How the funds arrive
 
-<Frame caption="Example of how nonprofits will receive check grants initiated via DAFpay. Note that the funds are sent directly to the nonprofit from the DAF provider, not DAFpay.">
+DAFpay does not handle the funds. Each DAF provider pays the nonprofit directly, by transfer or mailed check, and stamps the payment with identifiers that can be matched back to the grant.
+
+<Frame caption="Example of a check grant initiated through DAFpay. Funds are sent to the nonprofit by the DAF provider, not by DAFpay.">
     <img src='../../images/SchwabGrantLetter.png' width="400" height="500"/>
 </Frame>
 
-<Frame caption="Example of how nonprofits will receive Fidelity grants initiated via DAFpay. Note that the funds are sent directly to the nonprofit from the DAF provider, not DAFpay.">
-    <img src='../../images/fidelity.png' />
-</Frame>
+To show the provider's name, pass the grant's `fundId` to [Get DAF](/api/donor-advised-funds/get).
 
+Before launch, document which Grant statuses are billable, which date controls an invoice period, how cancellations or adjustments are handled, and how grant-level reconciliation is delivered. These rules come from your Chariot agreement and operating plan; do not infer them from a single API status.
 
-To show the provider's name, like Fidelity Charitable, pass the grant's `fundId` to [Get DAF](/api/donor-advised-funds/get).
+Expose the relevant identifiers to your support team and, where appropriate, nonprofit users. This lets them match a platform transaction to Chariot and provider records without searching by donor name and amount.
 
-<Warning title="Not every provider sends a tracking ID">
-Fall back to the external grant ID, then to the donor's fund name, amount and other grant details.
-</Warning>
+Next: [Grant statuses](/guides/dafpay/gifts/statuses)
 
-## What to persist
-
-One row per checkout, on your side, is what makes reconciliation possible later.
-
-| Field | When you get it | Notes |
-| --- | --- | --- |
-| Your transaction ID | At checkout | Your key, not ours |
-| `nonprofit_id` | At checkout | Which of your customers this belongs to |
-| `connect_id` (CID) | At nonprofit onboarding | Proves which connect the session ran on |
-| `workflowSessionId` | `CHARIOT_SUCCESS` | Ties the browser session to the capture |
-| Grant `id` | Create Grant response | Stable |
-| `donationId` | Asynchronously, from Get Grant | Absent at first; retry with backoff |
-| Grant status | `grant.updated` webhook | `Initiated` until the nonprofit has the money |
-| Tracking ID, external grant ID | On the grant | What appears on the provider's remittance |
-
-Reconcile on the grant ID and the donation ID. Don't use the tracking ID as a key, since about 8% of grants don't have one.
-
-Next: [Grant Statuses](/guides/dafpay/gifts/statuses).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

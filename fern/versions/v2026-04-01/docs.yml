@@ -35,16 +35,10 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
-          - page: Do I Need to Integrate?
+          - page: Do I Need to Use the APIs?
             slug: start-here
             path: ./pages/nonprofits/start-here.mdx
-          - page: Set Up Your Account
-            slug: setup
-            path: ./pages/nonprofits/setup.mdx
-          - page: Sandbox Testing
-            slug: sandbox
-            path: ./pages/nonprofits/sandbox.mdx
-          - section: Initiate Gifts
+          - section: Add DAFpay to Your Form
             slug: initiate
             contents:
               - page: Overview
@@ -65,7 +59,10 @@ navigation:
               - page: Create the Grant
                 slug: create-grant
                 path: ./pages/nonprofits/create-grant.mdx
-          - section: Retrieve Donations
+              - page: Test Before Launch
+                slug: before-launch
+                path: ./pages/nonprofits/initiate-before-launch.mdx
+          - section: Sync Donations to Your CRM or ERP
             slug: donations
             contents:
               - page: Overview
@@ -74,12 +71,12 @@ navigation:
               - page: Poll for Donations
                 slug: poll
                 path: ./pages/nonprofits/poll.mdx
-              - page: Record the Gift
+              - page: Record Processing Status
                 slug: record
                 path: ./pages/nonprofits/record.mdx
-          - page: Before You Launch
-            slug: before-launch
-            path: ./pages/nonprofits/before-launch.mdx
+              - page: Test Before Launch
+                slug: before-launch
+                path: ./pages/nonprofits/donations-before-launch.mdx
           - page: Troubleshooting
             slug: troubleshooting
             path: ./pages/nonprofits/troubleshooting.mdx
@@ -104,16 +101,16 @@ navigation:
               - page: Create Connects
                 slug: connects
                 path: ./pages/integrating-dafpay/connects.mdx
-              - page: Configure Your Connect
+              - page: Configure Your Connects
                 slug: connect-config
                 path: ./pages/integrating-dafpay/connect-config.mdx
-              - page: Install the Button
+              - page: Install DAFpay
                 slug: installation
                 path: ./pages/integrating-dafpay/installation.mdx
               - page: Content Security Policy
                 slug: csp
                 path: ./pages/integrating-dafpay/csp.mdx
-              - page: Send Donor Data
+              - page: Send Donation Data
                 slug: donor-data
                 path: ./pages/integrating-dafpay/donor-data.mdx
               - page: Handle the Result
@@ -128,7 +125,7 @@ navigation:
               - page: Unconnected DAF Providers
                 slug: unintegrated
                 path: ./pages/integrating-dafpay/unintegrated.mdx
-              - page: Production API Keys
+              - page: Request Production Access
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
           - section: After the Gift
@@ -140,6 +137,9 @@ navigation:
               - page: Grant Statuses
                 slug: statuses
                 path: ./pages/integrating-dafpay/statuses.mdx
+          - page: After Launch
+            slug: post-launch
+            path: ./pages/integrating-dafpay/post-launch.mdx
           - page: Troubleshooting
             slug: troubleshooting
             path: ./pages/integrating-dafpay/troubleshooting.mdx

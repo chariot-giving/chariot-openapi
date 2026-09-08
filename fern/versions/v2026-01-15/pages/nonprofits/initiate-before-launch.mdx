@@ -1,0 +1,27 @@
+---
+title: "Test DAFpay Before Launch"
+subtitle: "Test DAFpay before launch"
+hidden: false
+---
+
+Complete this checklist before adding DAFpay to your production form.
+
+* [ ] Sandbox and production Connect IDs are stored separately.
+* [ ] The page uses the Connect ID issued for the API integration.
+* [ ] The API key is server-side only.
+* [ ] `onDonationRequest` omits unknown fields instead of sending empty strings.
+* [ ] The application handles `CHARIOT_INIT`, `CHARIOT_SUCCESS`, and `CHARIOT_EXIT`.
+* [ ] The server uses the amount returned by `CHARIOT_SUCCESS`.
+* [ ] Create Grant runs within the 15-minute authorization window and is retried safely.
+* [ ] Recurring intents use Create Recurring Grant.
+* [ ] One donor session produces one grant.
+* [ ] The confirmation page says the grant request was submitted, not that funds were received.
+* [ ] The mobile popup opens without slow work after the click.
+* [ ] The full flow works in Chrome, Safari, and Firefox on desktop.
+* [ ] The full flow works in Safari and Chrome on iPhone.
+* [ ] The full flow works in Chrome on Android.
+* [ ] The full flow works in any in-app or embedded browsers your site supports.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

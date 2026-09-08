@@ -1,46 +1,46 @@
 ---
 title: "Poll for Donations"
-subtitle: "Retrieving what arrived"
+subtitle: "Poll for donations"
 hidden: false
 ---
 
-Poll for donations on a schedule. A poll reflects what's actually in Chariot, where a webhook can be dropped.
+Use a scheduled sync to retrieve new donations. If you also use webhooks, the scheduled sync can pick up anything your webhook endpoint missed.
 
-Keep the two passes below in one job. Deposits tell you what settled, and donations by date catch the gifts that never get a deposit at all.
-
-Hold a checkpoint rather than always asking for "the last day". Read from your last successful checkpoint to now, page through everything, process each donation by its Chariot ID so a repeat is harmless, and only move the checkpoint once the whole window succeeded. A job that always looks back a fixed distance loses anything that arrives while it's failing.
+## A reliable sync pattern
 
 <Steps>
 
-### List deposits that settled in your window
+### Read from the last successful checkpoint to the current time
 
-<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+### Request every page in the window
 
-Filter with `settled_at.after` and `settled_at.before`.
+### Process each record idempotently using the Chariot donation ID
 
-### List the donations on each deposit
+### Advance the checkpoint only after the entire window succeeds
 
-<EndpointRequestSnippet endpoint="GET /v1/donations" />
-
-Pass `deposit_id`. Pages hold up to 100 records, and each response carries a `next_page_token` you pass back as `page_token` to get the following page.
-
-### Catch the gifts that have no deposit
-
-<EndpointRequestSnippet endpoint="GET /v1/donations" />
-
-Filter by `created_at.after` and `created_at.before` instead of `deposit_id`.
-
-A donation only gets a deposit when the money reaches your Chariot Account. Gifts from payers you haven't linked arrive by their own route and never get one, so a loop built only on deposits never sees them. This second pass is what surfaces them.
-
-### Get the full record
-
-<EndpointRequestSnippet endpoint="GET /v1/donations/{id}" example="GetDonation" />
+Keep a small overlap between windows and deduplicate by ID.
 
 </Steps>
 
+Use this as a starting point and adapt it to your system. The important part is keeping a checkpoint and requesting every page so a failed job does not leave a permanent gap.
+
+## Retrieve deposits and their donations
+
+Use List Deposits for the settlement window, then List Donations with each `deposit_id` to retrieve the gifts in the transfer.
+
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+Follow `next_page_token` until no token is returned. Do not process pages concurrently unless your implementation preserves ordering, rate limits, and checkpoint safety.
+
+## Retrieve donations by creation time
+
+Run a donation query by `created_at` as a second pass. This catches donation records that are not associated with a Chariot deposit, including gifts received through a route your organization has not connected to its Chariot Account.
+
 ## Webhooks
 
-Webhooks tell you sooner, but treat them as a prompt to go look rather than a record of what arrived. Deliveries can fail. In production we retry a non-2xx response up to 10 times with backoff and disable the endpoint after 5 days of failures; in sandbox there are no retries at all.
+Subscribe to donation and deposit events if you need updates sooner than your scheduled sync runs. Verify the signature, then retrieve the current Donation or Deposit from the API. Process repeated events safely; Chariot may send the same event more than once.
 
 | Event | Fires when |
 | --- | --- |
@@ -50,10 +50,10 @@ Webhooks tell you sooner, but treat them as a prompt to go look rather than a re
 
 Subscribe with [Create Event Subscription](/api/event-subscriptions/create). Signature verification is covered in [Webhooks and Events](/api/webhooks).
 
-Subscribe to donation events, not grant events. A donation covers every gift you receive, DAFpay and everything else, so building on donations means building one pipeline instead of two. `grant.created` only fires for gifts you initiated yourself, and initiation is not payment.
+Use Donation events for your CRM sync. This gives you one workflow for DAFpay gifts and gifts received from other sources.
 
-If you use webhooks, keep polling as a fallback.
+Next: [Record processing status](/guides/nonprofits/donations/record)
 
-Chariot rate-limits the API. Space out your pages rather than firing them in parallel, back off and retry rather than looping on failures, and contact us if your volume needs more headroom.
-
-Next: [Record the Gift](/guides/nonprofits/donations/record).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

@@ -1,73 +1,56 @@
 ---
 title: "Sandbox Testing"
-subtitle: "Where you build everything before production"
+subtitle: "Test your platform integration in sandbox"
 hidden: false
 ---
 
-Sandbox is isolated from production, with its own API key and its own connects. No real money moves. Everything in this guide is built and tested here first, and [production keys](/guides/dafpay/integrating-dafpay/prod-keys) come only after Chariot QAs your form.
-
-## Keys and hosts
-
-Ask for a sandbox key at [support@givechariot.com](mailto:support@givechariot.com) if you don't have one yet.
+Sandbox uses separate API keys, Connects, and data. No real money moves.
 
 | Environment | Base URL |
 | --- | --- |
 | Sandbox | `https://sandboxapi.givechariot.com` |
 | Production | `https://api.givechariot.com` |
 
-Keys only work against their own environment, and sandbox Connect IDs are prefixed `test_`. Keep one key per environment; with more than one, webhook delivery can resolve to the wrong key and events look like they disappeared.
+Sandbox Connect IDs begin with `test_`. Keep API keys server-side and never mix environment-specific IDs or hosts.
 
-## Nonprofits and DAF logins
-
-Any real EIN resolves in [Search Organization](/api/organizations/search). American Red Cross is `53-0196605`.
-
-<Tip title="Sandbox DAF credentials">
-Use these to log in to any DAF provider in sandbox.
+## DAF login
 
 ```
 username: good-user
 password: password123
 ```
-</Tip>
 
-## What to exercise
+## Required multi-tenant tests
 
-| Flow | How |
-| --- | --- |
-| Search organization, create connect | [Create Connects](/guides/dafpay/integrating-dafpay/connects) |
-| Render the button and run a session | Compare against the [demo page](https://secure.dafpay.com/demo) |
-| DAF prefill and `onDonationRequest` | Confirm you send no empty strings |
-| Capture a grant intent | [Create Grant](/api/grants/create) inside the 15-minute window |
-| Recurring grant intents | Select the monthly option, then [Create Recurring Grant](/api/recurring-grants/create) |
-| Unconnected DAF provider flow | Select The Boston Foundation to trigger it |
-| Grant status webhooks | Subscribe to `grant.updated` and confirm signature verification |
-| Content Security Policy | Load the form with your real CSP header, not a relaxed dev one |
+Test with at least two nonprofits before launch:
 
-## Test more than one nonprofit
+- create a separate Connect for each nonprofit;
+- open both donation forms at the same time;
+- confirm each form initializes with the correct Connect ID;
+- confirm each grant belongs to the intended nonprofit; and
+- confirm DAFpay is absent or disabled for a nonprofit that has not enabled it.
 
-A single-tenant test passes on a platform that misroutes gifts. Before you launch, run two nonprofits through sandbox at once and confirm that a donor on Nonprofit A's form initializes A's connect, and that the grant lands against A rather than B.
+These tests catch hardcoded, cached, or shared-state Connect IDs.
 
-| Test | Why |
-| --- | --- |
-| Two nonprofits, two connects | Catches a hardcoded or cached CID |
-| Two donor sessions at the same time | Catches a CID held in shared state |
-| Grant attribution per nonprofit | Confirms the money would reach the right organization |
-| A nonprofit with DAFpay off | Confirms you don't render the button without a connect |
+Also test one-time and recurring success, every exit path your UI handles, CSP, webhook signature verification, and your idempotent retry path.
 
-## Two things sandbox will not tell you
+## Browser and device matrix
 
-**Webhooks are not retried here.** Production retries a non-2xx response up to 10 times with backoff. Sandbox does not retry at all, so a handler that is briefly down misses the event outright. Check [List Events](/api/events/list) before concluding an event never fired.
+Test the complete donor flow, not only whether the button renders, on:
 
-**Funds never move.** A sandbox grant stays at `Initiated`. Matching an inbound gift to its grant has to be confirmed against real remittances after go-live. See [Reconciliation](/guides/dafpay/gifts/reconciliation).
+- Chrome, Safari, and Firefox on desktop;
+- Safari and Chrome on iPhone;
+- Chrome on Android; and
+- the in-app or embedded browser surfaces your platform supports.
 
-## Tell us your connect configuration up front
+For every surface, confirm that the button appears, the window opens from the donor's click, the request completes, the confirmation state loads, and the expected Grant exists. Mobile browsers may block DAFpay as a popup if your click handler performs asynchronous work before opening it.
 
-Ask for the donor fields you actually want when you request sandbox keys, not at QA. A sandbox connect that doesn't match what production will do means you build against the wrong shape and find out at the end. A field you never passed in sandbox is a field you never tested.
+<Warning>
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those after launch with Chariot and a participating nonprofit.
+</Warning>
 
-Same for unintegrated grants: decide early whether you want them, because the confirmation page you have to build depends on it.
+Next: the [Integration checklist](/guides/dafpay/integrating-dafpay/checklist)
 
-## Your own thank-you email may not fire here
-
-Depending on how your platform is configured, a sandbox gift may not trigger your thank-you email at all. Test it deliberately rather than assuming it works because nothing errored.
-
-Next: the [Integration Checklist](/guides/dafpay/integrating-dafpay/checklist).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

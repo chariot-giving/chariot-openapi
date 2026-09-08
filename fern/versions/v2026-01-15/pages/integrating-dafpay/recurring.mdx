@@ -1,53 +1,21 @@
 ---
 title: "Recurring Grants"
-subtitle: "Monthly gifts from a DAF"
+subtitle: "Recurring grants"
 hidden: false
 ---
 
-A donor can set up a `MONTHLY` gift from their DAF instead of giving once.
+When enabled, a donor can ask their DAF provider to send a monthly grant.
 
-The DAF provider owns the schedule. Chariot records the initial grant with `frequency: MONTHLY` and doesn't create a new grant each month, and we aren't notified when a donor cancels or changes one, because they do that in their provider's portal.
+A recurring success contains `recurringGrantIntent` instead of `grantIntent`. Call [Create Recurring Grant](/api/recurring-grants/create), not Create Grant.
 
-A recurring session returns a `recurringGrantIntent` on `CHARIOT_SUCCESS` instead of a `grantIntent`.
+The DAF provider owns the schedule. Chariot records the initial setup but may not receive a new Grant record for each later payment or notice when the donor changes or cancels the schedule.
 
-<CodeBlocks>
-```json onSuccessMetadata
-  {
-    "workflowSessionId":"79e772be-547d-4c9c-8b76-4ac4ed4c441a", //Id of the Connect session
-    "recurringGrantIntent": {
-      "userFriendlyId": "100020", //The user-friendly identifier for the grant intent
-      "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
-      "amount": 2000, //The grant amount expressed in units of cents; USD only
-      "frequency": "MONTHLY", // The frequency of the recurring schedule for the donation
-      "metadata": {} // The same metadata object that was passed in the onDonationRequest callback referenced above
-    }
-  }
-```
+Model the initial record as the start of a recurring arrangement, not as proof of future payments. Treat each received Donation as its own gift and reconcile it independently.
 
-```json onExitMetadata
-  {
-    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a", // Id of the Connect workflow session.
-    "nodeId": "consent-node-id", // The id representing the pane where the user exited the Connect flow.
-    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", // The id of the donor advised fund that the user selected.
-    "reason": "USER_EXIT", // An enum giving a reason to why the modal exited.
-    "description": "User exited the flow" // A human readable string containing a brief sentence explaining the exit reason.
-  }
-```
+Do not promise nonprofits a complete recurring schedule unless your own data source can support it.
 
-</CodeBlocks>
+Next: [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated)
 
-After you submit your own donation form, don't forget to call the [Create Recurring Grant](/api/recurring-grants/create) API to complete the transaction.
-
-<Note title="Create Recurring Grant API">
-If your platform enables recurring donations through Chariot, you will need to differentiate which of Chariot's APIs you use to capture the donation based on the information of the `CHARIOT_SUCCESS` event.
-</Note>
-
-## How to model it on your side
-
-Don't model a monthly gift as one long-running grant. Chariot records the first one and nothing after it, so each later payment arrives as its own donation with nothing linking it back.
-
-Store the original grant as the start of a series and reconcile each subsequent donation separately, grouping by donor name, provider, fund name and amount. `initiation.frequency` on the donation tells you a gift belongs to a monthly series rather than being a one-time gift.
-
-You won't be told when a donor cancels or changes the amount, since that happens in their provider's portal. Treat a series as open-ended and let the absence of payments speak for itself rather than promising the nonprofit a schedule.
-
-Next: [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

@@ -1,18 +1,22 @@
 ---
 title: "Request Your Connect"
-subtitle: "Configure DAFpay for your form"
+subtitle: "Request your Connect"
 hidden: false
 ---
 
-A **connect** is your DAFpay configuration, and it controls what the window does when a donor opens it from your form. Chariot creates connects, so make your choices below and send them to us. We set up sandbox and production together, each with its own Connect ID (CID).
+A Connect configures DAFpay for your nonprofit. Chariot provides separate Connect IDs for sandbox and production.
 
-## Use the right Connect ID
+Make your choices below and send them to integrations@givechariot.com. The form assembles the request for you, and includes:
 
-Your account may have more than one. Claiming your Chariot Deposit Account gives you a Connect ID for the no-code button, tile and web link, and the connect you request here gives you another for your own form.
+- your organization name and EIN;
+- which donor details are required and which DAFpay should collect from the donor's DAF account; and
+- how you want to handle DAF providers that DAFpay cannot connect to directly.
 
-They aren't interchangeable. The no-code one submits the gift from inside the window, so pointing your form at it means the window submits a grant and your backend submits another, which is how one checkout produces two gifts. Use the Connect ID we issue for your integration, and contact [support@givechariot.com](mailto:support@givechariot.com) if you're not sure which you have.
+## Use the integration Connect ID
 
-You can leave any setting at its default. Copy the result, or send it in one click.
+Use the Connect ID created for your API integration. Your Chariot account also has Connect IDs for the dashboard's no-code button and link, which submit the gift themselves; pointing your form at one of those produces two gifts for one checkout.
+
+Connect IDs are environment-specific. Sandbox IDs begin with `test_`.
 
 <div id="chariot-setup-builder">
 
@@ -146,11 +150,13 @@ qa:
 For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send Donor Data](/guides/nonprofits/initiate/donor-data).
 </Tip>
 
-<Note title="Changing your setup later">
-Send the same request again with what you want changed. Sandbox and production are separate configurations, so say whether a change applies to one or both. We apply it to both unless you tell us otherwise.
-</Note>
+Before you send it, work through [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch). Chariot tests your form against it.
 
-Before you send it, work through the [pre-launch checklist](/guides/nonprofits/before-launch). We test your form against it.
+## Update your configuration
+
+If you need to change the fields or unsupported-provider behavior later, contact integrations@givechariot.com. Sandbox and production are separate configurations, so say whether a change applies to one or both. Chariot updates both unless you say otherwise.
+
+Next: [Install the button](/guides/nonprofits/initiate/install)
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.

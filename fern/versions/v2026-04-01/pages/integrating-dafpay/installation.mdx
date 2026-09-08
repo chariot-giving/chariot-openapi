@@ -1,146 +1,34 @@
 ---
-title: "Install the Button"
-subtitle: "Adding Chariot Connect to your donation form"
+title: "Install DAFpay"
+subtitle: "Install DAFpay"
 hidden: false
 ---
 
-## Install the JavaScript package
+Use the supported JavaScript bundle or React package and initialize it with the Connect ID stored for the current nonprofit.
 
-DAFpay is a JavaScript package. Load it from the Chariot CDN, or install it from [NPM](https://www.npmjs.com/package/react-chariot-connect) or Yarn. If you use the CDN, the script has to load from `https://cdn.givechariot.com` at runtime, so bundling it or hosting your own copy will break it.
-
-<CodeBlocks>
-```html CDN
+```html
 <script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
+<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID"></chariot-connect>
 ```
-```shell NPM
-npm install --save react-chariot-connect
-```
-```shell Yarn
-yarn add react-chariot-connect
-```
-</CodeBlocks>
 
-## Add the component
+The Connect ID is safe in browser code. The API key is not; keep it on your server.
 
-Put the component where you want the button, with the nonprofit's Connect ID (CID) on it. Create Connect runs once per nonprofit, so store the CID rather than fetching it.
+## Prevent tenant mix-ups
 
-<CodeBlocks>
-```html HTML
-<chariot-connect id="chariot" cid="GENERATED_CONNECT_IDENTIFIER"></chariot-connect>
-```
-```javascript React
-import React, { useState } from 'react';
-import ChariotConnect from 'react-chariot-connect';
+Resolve the Connect ID from the same nonprofit record used to render the form. Do not store it in process-wide mutable state, reuse a last-seen value, or fall back to a platform default.
 
-const App = () => {
-    return (
-        <div>
-            <ChariotConnect
-                cid="GENERATED_CONNECT_IDENTIFIER"
-            />
-        </div>
-    );
-};
-```
-</CodeBlocks>
+## Placement and styling
 
-
-<Tip title="Sandbox Credentials">
-  Use the following credentials to log in to any DAF provider in the sandbox environment.
-
-  ```
-  username: good-user
-  password: password123
-  ```
-</Tip>
-
-<Note title="Keep your API key server-side">
-The Connect ID belongs in your page's markup, so it's safe in client-side code. Your Chariot API key must stay on your server.
-</Note>
-
-## Where to put the button
-
-List DAFpay alongside your primary payment methods, next to credit card, bank transfer and Apple Pay. Put it above the amount and the contact fields, since [Express Checkout](/guides/dafpay/integrating-dafpay/donor-data) can only prefill when the button comes first.
+Show DAFpay alongside other primary payment methods. Place it before donor fields when using Express Checkout. Use only the supported themes and customization properties; do not target internal component markup.
 
 <Frame caption="Button placement">
     <img src='../../images/button-placement.png' />
 </Frame>
 
-## Themes
+Test the real production layout at mobile widths before QA.
 
-Add a theme name to the component. If you leave it off, you get `DefaultTheme`.
+Next: [Content Security Policy](/guides/dafpay/integrating-dafpay/csp)
 
-<CodeBlocks>
-```html HTML
-<chariot-connect 
-	id="chariot" 
-	cid="GENERATED_CONNECT_IDENTIFIER" 
-	theme="THEME_NAME" <!-- Add this parameter ->
->
-</chariot-connect>
-```
-```javascript React
-<ChariotConnect 
-  cid="GENERATED_CONNECT_IDENTIFIER" 
-  theme="THEME_NAME" <!-- Add this parameter -> 
-  ...
-/>
-```
-</CodeBlocks>
-
-**DefaultTheme**
-
-<img src='../../images/8155407-DefaultTheme.svg' />
-
-
-**LightModeTheme**
-
-<img src='../../images/a7b65c5-LightMode.svg' />
-
-
-**LightBlueTheme**
-
-<img src='../../images/9c06770-LightBlue.svg' />
-
-
-**GradientTheme**
-
-<img src='../../images/446fbf1-Gradient.svg' />
-
-**Custom Theme**
-
-For a custom theme, register an object with the properties you want to change, using [Tailwind CSS](https://tailwindcss.com/) values. Only the three properties below are adjustable. Supporting more would mean shipping all of Tailwind in the bundle.
-
-<CodeBlocks>
-```javascript JavaScript
-// get the element from the DOM
-const chariot = document.getElementById("chariot")
-
-// define your alterations using valid properties from the table below
-const alterations = {
-	width: "w-12",
-	height: "h-8",
-};
-
-// register your new theme with a custom name
-chariot.registerTheme("myTheme", alterations);
-```
-```javascript React
-<ChariotConnect 
-  cid="GENERATED_CONNECT_IDENTIFIER" 
-  theme={
-        width: "w-12",
-        height: "h-8",
-    }
-  ...
-/>
-```
-</CodeBlocks>
-
-| Parameter Name     | Use                                                                                      | Allowed value                                                                             |
-| :----------------- | :--------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
-| `width`            | The width of the button                                                                  | [width](https://tailwindcss.com/docs/width) up to `16` or `64px`                          |
-| `height`           | The height of the button                                                                 | [height](https://tailwindcss.com/docs/height) at least `9` or `36px` up to `12` or `48px` |
-| `showExtendedText` | Show an extended text (`Give with Donor Advised Fund`) version of the DAFpay button text | `true` or `false` (this value is `false` by default)                                      |
-
-Next: [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

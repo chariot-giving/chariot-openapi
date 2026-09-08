@@ -4,67 +4,39 @@ subtitle: "Common issues"
 hidden: false
 ---
 
-## Webhooks are not arriving
+## DAFpay completed, but no grant exists
 
-<Steps>
+`CHARIOT_SUCCESS` does not create a grant. Confirm that your server received the workflow session and called Create Grant. Then use [List Grants](/api/grants/list) or [Get Grant](/api/grants/get).
 
-### Confirm you subscribed to a donation event
+## The grant does not have a donation ID yet
 
-`grant.created` only fires when a gift is initiated through your own donation form. If you're waiting for a gift record and only subscribed to grant events, nothing will arrive.
+The donation association may be created asynchronously. Retry Get Grant with bounded backoff. Do not use a display or tracking identifier as your database key.
 
-### Confirm the key came from this environment's dashboard
+## Create Grant returned an error
 
-Keys you generate cover both grant and donation events. A key issued some other way may be scoped to grants only, and a donation subscription then shows zero deliveries with no error.
+| Response | Action |
+| --- | --- |
+| `400 Bad Request` | Validate the body, field limits, whole-dollar amount, and fee limit. |
+| `409 Conflict` | Creation is in progress. Wait, then retrieve the grant. |
+| `410 Gone` | The authorization expired. Restart DAFpay. |
+| `401` or `403` | Confirm the key and base URL belong to the same environment. |
 
-### Confirm you have one key for this environment
+## Webhooks are missing
 
-With more than one, delivery can resolve to the wrong key and events look like they disappeared.
+Confirm the subscription includes the expected event type and was created in the correct environment. Use [List Events](/api/events/list) to determine whether the event exists. If it exists, investigate delivery; if it does not, investigate the operation expected to create it.
 
-### Check List Events
+The scheduled sync should recover any missed webhook.
 
-<EndpointRequestSnippet endpoint="GET /v1/events" />
+## A donation has no deposit
 
-If the event is listed but never arrived, it's a delivery problem. If it isn't listed, it never fired.
+Some Donation records describe gifts whose funds did not arrive in a Chariot Account. For example, a DAFpay gift may be sent directly to your organization, or another platform may manage the funds. These Donations do not have a Chariot Deposit.
 
-</Steps>
+Retrieve Donations by creation time as well as by Deposit so these gifts are not missed. Use the payment source and payment status to determine how each gift was received.
 
-Sandbox never retries a failed delivery, so a handler that was briefly down misses the event outright.
+## Support request
 
-## Create Grant returned 200 instead of 201
+Send support@givechariot.com the environment, organization name, endpoint, event type, and relevant grant, donation, or workflow session ID. Never send an API key.
 
-A `200` means that session was already captured, and the response is the grant that exists. `201` means you created it just now.
-
-## A checkout looked successful but there is no grant
-
-Call [List Grants](/api/grants/list). An empty list means Create Grant was never called. Receiving `CHARIOT_SUCCESS` does not create a grant.
-
-## One checkout produced two grants
-
-You're initializing with a component connect's CID rather than your API connect's. The window submits the grant and so does your backend.
-
-You're initializing with the Connect ID for the no-code button rather than the one for your integration. That one submits the gift from inside the window, so your backend submits a second. See [which Connect ID to use](/guides/nonprofits/initiate/connect-config).
-
-## A grant has no donation ID
-
-The donation is created asynchronously, so `donationId` isn't on the Create Grant response and isn't always there the first time you call [Get Grant](/api/grants/get). Retry with a short backoff. Don't fall back to matching on the DAFpay tracking ID; about 8% of grants don't have one.
-
-## A donation never settles
-
-This is expected in sandbox, where settlement can't be triggered at all. Test your reconciliation handler against a payload you build yourself, then confirm it in production with one small live gift. We'll run that test with you.
-
-## What the errors mean
-
-| Code | Where | Meaning |
-|---|---|---|
-| `410 Gone` | Create Grant | The intent is older than 15 minutes. The donor has to start over. |
-| `409 Conflict` | Create Grant | A capture for that session is still in flight. Wait, then read the grant instead of submitting again. |
-| `400 Bad Request` | Create Grant | An amount that isn't divisible by 100, or a field over its maximum length. |
-| `400 Bad Request` | Assign Property | The resource IDs don't match the property's `resource_type`, or you sent more than 100. |
-| `404 Not Found` | `PATCH /v1/donations/{id}` | That route isn't available to external API keys. Use [Assign Property](/api/properties/assign) instead. |
-| `401` / `403` | Anywhere | Wrong environment for the key. Sandbox keys only work against `sandboxapi.givechariot.com`. |
-
-Grants, donations and deposits are read-only over the API. You change what your integration sees by assigning properties, not by writing to those objects.
-
-## Still stuck
-
-Send us the environment, your organization name, the endpoint URL you registered, the event categories you subscribed to, and a grant or donation ID you expected an event for: [support@givechariot.com](mailto:support@givechariot.com).
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

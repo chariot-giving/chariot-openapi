@@ -1,32 +1,27 @@
 ---
 title: "Grant Statuses"
-subtitle: "What a grant's status means, and cancellations"
+subtitle: "Grant statuses"
 hidden: false
 ---
 
-A grant carries one of three statuses.
+Use the exact status values returned by the API. Present them to users in language that does not overstate the movement of funds.
 
-| Status | Meaning | Money with the nonprofit? | What to show |
-| --- | --- | --- | --- |
-| `Initiated` | Submitted to the DAF provider, which is still processing it. Every DAFpay grant starts here and usually stays here one to two weeks. | No | Submitted or pending, never "received" |
-| `Completed` | The nonprofit has the money, either into their Chariot Account or marked received offline. | Yes | Received |
-| `Canceled` | The grant will not be paid. | No | Canceled |
+| API status | Meaning | Suggested label |
+| --- | --- | --- |
+| `Initiated` | The request was submitted and has not been confirmed as received. | Submitted |
+| `Completed` | Chariot records the grant as completed. | Received |
+| `Canceled` | The grant will not be paid. | Canceled |
 
-Chariot sets these, not you. A grant leaves `Initiated` when the money lands and the nonprofit marks the gift received, so subscribe to `grant.updated` rather than polling for it.
+Subscribe to `grant.updated` and retrieve the current Grant when an event arrives. Make the handler idempotent and retain a periodic recovery process if status freshness is important.
 
-Match on these values exactly. The dashboard says "received", but the API returns `Completed` for that and for received-offline alike.
+If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
 
-Subscribe to the `grant.updated` [webhook event](/api/webhooks) so you can show the current status on your own dashboard. If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
+## Cancellations and refunds
 
+Do not offer a "refund" action for a completed DAF grant. DAF assets are controlled by the sponsoring organization, and grant cancellation depends on the provider and the stage of processing. Direct donors to their provider for a pending request and contact Chariot support when operational help is required.
 
-## Cancellations & Refunds
+Next: [After launch](/guides/dafpay/post-launch)
 
-Donors may have the option to cancel their grants from their Donor Advised Fund portal before disbursement, subject to the specific policies of their DAF provider.
-As funds in DAFs are no longer under the donor's direct ownership, the concept of refunds after the money leaves the DAF, does not apply.
-
-Donations made via DAFpay are typically **final and irrevocable** gifts (depending on the specific policies of the DAF provider).
-
-<Info title="Cancellation Procedures">
-    Canceled grants come back with status `Canceled` and do not incur any processing fees.
-    If you believe a grant should be cancelled, please contact the donor first to confirm the cancellation and then send a request to the Chariot support team.
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
 </Info>

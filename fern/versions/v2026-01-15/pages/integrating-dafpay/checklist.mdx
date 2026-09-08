@@ -1,41 +1,52 @@
 ---
 title: "Integration Checklist"
-subtitle: "Everything that has to be true before you get production keys"
+subtitle: "Integration checklist"
 hidden: false
 ---
 
-<Tip title="Sandbox key first">
-You need a sandbox API key before you start. Request one at [support@givechariot.com](mailto:support@givechariot.com), and see [Sandbox Testing](/guides/dafpay/sandbox).
-</Tip>
+## Onboard nonprofits
 
-### Set up
+* [ ] Search for each nonprofit by EIN.
+* [ ] Create one Connect per nonprofit on your platform.
+* [ ] Store the Connect ID on the corresponding nonprofit record.
+* [ ] Define how existing and new nonprofits will be enabled.
+* [ ] Use a nonprofit-specific contact email, not your platform support address.
+* [ ] Follow the opt-in, default-on, or other enablement rule in your Chariot agreement.
+* [ ] Give nonprofits clear setup instructions and the co-branded Chariot signup link supplied for your platform.
 
-* [ ] [Search Chariot's database for the nonprofit](/guides/dafpay/integrating-dafpay/connects#search-organization)
-* [ ] [Create a connect per nonprofit](/guides/dafpay/integrating-dafpay/connects#create-connect)
-* [ ] [Plan how connects get created at scale](/guides/dafpay/integrating-dafpay/connects#create-a-launch-plan)
-* [ ] [Tell us your connect configuration](/guides/dafpay/integrating-dafpay/connect-config)
+## Add DAFpay
 
-### Install
+* [ ] Load the supported JavaScript or React package.
+* [ ] Initialize with the current nonprofit's Connect ID.
+* [ ] Keep the API key on your server; never expose it in browser code.
+* [ ] Place DAFpay above the form as Express Checkout or next to the primary payment methods.
+* [ ] Apply required CSP directives.
 
-* [ ] [Install the Chariot Connect package](/guides/dafpay/integrating-dafpay/installation#install-the-javascript-package)
-* [ ] [Wire the Connect ID to the component](/guides/dafpay/integrating-dafpay/installation#add-the-component)
-* [ ] [Place the button alongside your primary payment methods](/guides/dafpay/integrating-dafpay/installation#where-to-put-the-button)
-* [ ] [Pick a theme](/guides/dafpay/integrating-dafpay/installation#themes)
-* [ ] [Allowlist Chariot in your Content Security Policy](/guides/dafpay/integrating-dafpay/csp)
+## Complete the transaction
 
-### Integrate
+* [ ] Return current form data from `onDonationRequest`.
+* [ ] Omit unknown donor fields instead of sending empty strings.
+* [ ] Handle all Chariot Connect events.
+* [ ] Save your transaction before calling Create Grant.
+* [ ] Make Create Grant idempotent and complete it within 15 minutes.
+* [ ] Route recurring intents to Create Recurring Grant.
+* [ ] Implement the configured unsupported-provider behavior.
+* [ ] Create the Grant exactly once after `CHARIOT_SUCCESS`.
+* [ ] Pass campaign, form, designation, appeal, comment, and tribute data when the form collects it.
+* [ ] Use accurate copy for loading, success, exit, unclaimed-account, and missing-EIN states.
 
-* [ ] [Pass form data into the Connect session, with no empty strings](/guides/dafpay/integrating-dafpay/donor-data)
-* [ ] [Handle every event the window fires](/guides/dafpay/integrating-dafpay/events)
-* [ ] [Capture the grant intent from your backend](/guides/dafpay/integrating-dafpay/create-grant)
-* [ ] [Branch recurring intents to Create Recurring Grant](/guides/dafpay/integrating-dafpay/recurring)
-* [ ] [Decide how you handle unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated)
+## Operate the integration
 
-### After the gift
+* [ ] Store workflow session, Grant, and Donation identifiers.
+* [ ] Subscribe to grant status events and verify signatures.
+* [ ] Expose reconciliation identifiers to support and nonprofit users.
+* [ ] Test two nonprofits concurrently in sandbox.
+* [ ] Complete Chariot's production review.
+* [ ] Decide whether DAFpay gifts sync through each CRM integration and how hard and soft credit are assigned.
+* [ ] Give support teams access to the platform transaction ID, Chariot Grant ID, and Donation ID.
+* [ ] Document how nonprofits enable DAFpay and whether they enable it once or per form.
+* [ ] Plan a production test and post-launch review.
 
-* [ ] [Display the tracking ID and external ID as searchable fields](/guides/dafpay/gifts/reconciliation)
-* [ ] [Subscribe to the `grant.updated` webhook](/guides/dafpay/gifts/statuses)
-
-### Go live
-
-* [ ] [Send the production key request](/guides/dafpay/integrating-dafpay/prod-keys)
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
