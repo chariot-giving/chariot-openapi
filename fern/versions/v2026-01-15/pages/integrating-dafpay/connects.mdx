@@ -35,7 +35,7 @@ Create the Connect when the nonprofit enables DAFpay, not during donor checkout.
 
 ## Plan the launch backfill
 
-Use the same search-and-create sequence for eligible nonprofits already on your platform. Rate-limit the backfill, persist individual failures, and make it restartable.
+Use the same search-and-create sequence for eligible nonprofits already on your platform. Chariot does not publish a request limit for these endpoints, so size the run conservatively rather than to a number: keep concurrency bounded, back off and retry on 5xx, persist individual failures instead of aborting the batch, and make the whole run restartable from where it stopped. Tell integrations@givechariot.com before a large backfill.
 
 Next: [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config)
 

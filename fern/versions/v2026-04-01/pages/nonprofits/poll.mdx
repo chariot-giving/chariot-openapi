@@ -31,7 +31,7 @@ Use List Deposits for the settlement window, then List Donations with each `depo
 
 <EndpointRequestSnippet endpoint="GET /v1/donations" />
 
-Each list endpoint returns at most 100 records. Pass the response's `next_page_token` back as the `page_token` query parameter, keeping every other parameter identical, until no token is returned. Do not process pages concurrently unless your implementation preserves ordering, rate limits, and checkpoint safety.
+Each list endpoint returns at most 100 records. Pass the response's `next_page_token` back as the `page_token` query parameter, keeping every other parameter identical, until no token is returned. Do not process pages concurrently unless your implementation preserves ordering and checkpoint safety.
 
 ## Retrieve donations by creation time
 
