@@ -3941,10 +3941,8 @@ paths:
                 organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
                 type: "mailing_address"
                 status: "pending_verification"
-                inactive_reason: null
                 verified_at: null
                 expires_at: null
-                bank_account: null
                 mailing_address:
                   line1: "200 Harvest Way"
                   city: "Springfield"
@@ -4219,6 +4217,7 @@ components:
           description: Whether this EIN accepts payments.
           example: true
         redirect_to:
+          type: object
           nullable: true
           description: |-
             The organization to pay instead, when this EIN has been retired in favor of another.
@@ -4227,7 +4226,6 @@ components:
             - $ref: "#/components/schemas/PaymentPreferencesRedirectTarget"
       example:
         accepts_payments: true
-        redirect_to: null
     PaymentPreferencesRedirectTarget:
       type: object
       required:
@@ -4309,7 +4307,7 @@ components:
             - rejected
             - expired
             - closed
-          example: null
+          example: undeliverable
         verified_at:
           type: string
           format: date-time
@@ -4323,11 +4321,13 @@ components:
           description: When the destination stops being usable, for destinations that expire.
           example: null
         bank_account:
+          type: object
           nullable: true
           description: Bank account details. Set when `type` is `bank_account`.
           allOf:
             - $ref: "#/components/schemas/PaymentMethodBankAccount"
         mailing_address:
+          type: object
           nullable: true
           description: Mailing address details. Set when `type` is `mailing_address`.
           allOf:
@@ -4337,10 +4337,8 @@ components:
         organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
         type: "mailing_address"
         status: "active"
-        inactive_reason: null
         verified_at: "2026-08-20T15:04:00Z"
         expires_at: null
-        bank_account: null
         mailing_address:
           line1: "200 Harvest Way"
           city: "Springfield"
@@ -9260,34 +9258,26 @@ components:
                 organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
                 type: "chariot_deposit_account"
                 status: "active"
-                inactive_reason: null
                 verified_at: "2026-09-03T09:00:00Z"
                 expires_at: null
-                bank_account: null
-                mailing_address: null
               - id: "pm_01j9d4v2m8r6xk1p7t3b5c9qwa"
                 organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
                 type: "bank_account"
                 status: "active"
-                inactive_reason: null
                 verified_at: "2026-07-15T14:30:00Z"
                 expires_at: "2026-10-13T14:30:00Z"
                 bank_account:
                   last4: "1234"
                   routing_number: "071000013"
                   wire_eligible: true
-                mailing_address: null
               - id: "pm_01j8rs605a4gctmbm58d87mvsj"
                 organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
                 type: "mailing_address"
                 status: "active"
-                inactive_reason: null
                 verified_at: "2026-08-20T15:04:00Z"
                 expires_at: null
-                bank_account: null
                 mailing_address:
                   line1: "200 Harvest Way"
-                  line2: null
                   city: "Springfield"
                   state: "IL"
                   postal_code: "62701"
@@ -9600,7 +9590,6 @@ components:
               naics6_description: "Civic and Social Organizations"
           payment_preferences:
             accepts_payments: true
-            redirect_to: null
           compliance:
             daf_eligible: true
             irs_pub_78:
@@ -9738,7 +9727,6 @@ components:
               naics6_description: "Civic and Social Organizations"
           payment_preferences:
             accepts_payments: true
-            redirect_to: null
           compliance:
             daf_eligible: true
             irs_pub_78:
