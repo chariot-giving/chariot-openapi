@@ -14,11 +14,11 @@ Remove slow work between the donor's click and the popup. Prefetch data and run 
 
 ## DAFpay completed, but no Grant exists
 
-Verify that your server received `CHARIOT_SUCCESS` and called Create Grant. If it did, preserve the workflow session and Connect ID and contact Chariot.
+Verify that your server received `CHARIOT_SUCCESS` and called Create Grant. If it did, preserve the workflow session and Connect ID and contact [integrations@givechariot.com](mailto:integrations@givechariot.com).
 
 ## The wrong nonprofit received the Grant
 
-Treat this as a tenant-routing incident. Preserve the workflow session, transaction, nonprofit, and Connect IDs; stop any affected rollout; and contact Chariot immediately. Check for hardcoded, cached, fallback, or process-wide Connect state.
+Treat this as a tenant-routing incident. Preserve the workflow session, transaction, nonprofit, and Connect IDs; stop any affected rollout; and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) immediately. Check for hardcoded, cached, fallback, or process-wide Connect state.
 
 ## Create Grant errors
 
@@ -33,7 +33,7 @@ Treat this as a tenant-routing incident. Preserve the workflow session, transact
 
 Confirm the event type, environment, endpoint, and signature code. Use [List Events](/api/events/list) to separate event creation from delivery failure. Keep a recovery process for important state.
 
-When contacting support, send IDs and timestamps, never an API key.
+When contacting Chariot, send IDs and timestamps, never an API key.
 
 <Info>
 Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
