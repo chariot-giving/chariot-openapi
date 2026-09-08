@@ -3,7 +3,7 @@ title: "Send Donor Data"
 hidden: false
 ---
 
-Return the data currently in your form from `onDonationRequest`. Use the field names and limits in the [Chariot Connect reference](/guides/dafpay/connect-reference#ondonationrequest).
+Use `onDonationRequest` to send the current values from your form to DAFpay. See the [Chariot Connect reference](/guides/dafpay/connect-reference#ondonationrequest) for supported fields and limits.
 
 ```javascript
 chariot.onDonationRequest(async () => ({
@@ -19,21 +19,95 @@ chariot.onDonationRequest(async () => ({
 }));
 ```
 
-Amounts are in cents. $250.00 is `25000`.
+Amounts are in cents. For example, send `25000` for a $250 gift.
 
-## Omit unknown donor fields
+## Omit donor details you do not have
 
-An empty string counts as a supplied value. If your form does not have a donor field, omit it instead of sending `""`. DAFpay can then retrieve available donor details from the donor's DAF account.
+If your form does not collect a donor detail, omit the field completely. Do not send an empty string.
+
+DAFpay treats an empty string as a supplied value, which prevents it from filling the field with information from the donor's DAF account.
+
+```javascript
+// Omit fields you do not have
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  designation: "Community programs"
+}));
+```
 
 ## Pass identifiers you will need later
 
-Put your campaign, form, source, appeal, or designation identifiers in `metadata`. Store your own transaction ID on your server and associate it with the DAFpay workflow session after success.
+Use `metadata` for identifiers such as campaign, form, source, appeal, or designation codes. These values help your team match and code the gift later.
 
-## Keep the click path fast
+Store your own transaction ID on your server. After `CHARIOT_SUCCESS`, associate it with the DAFpay workflow session returned by the event.
 
-Browsers may block a popup if too much asynchronous work occurs between the donor's click and the window opening. Fetch prerequisites before the click. Return `false` from `onDonationRequest` when form validation fails.
+## Prevent blocked popups
 
-<img src='../../images/on-donation-false.png' />
+DAFpay needs to open in direct response to the donor's click. If `onDonationRequest` waits for a network request or other slow work, the browser may no longer recognize the window as user initiated and may block it.
+
+Load any information you need before the donor clicks DAFpay. When `onDonationRequest` runs, read the current form values and return them as quickly as possible.
+
+Avoid doing this inside `onDonationRequest`:
+
+```javascript
+chariot.onDonationRequest(async () => {
+  // Waiting for this request may cause the browser to block DAFpay
+  const campaign = await fetch("/api/current-campaign");
+
+  return {
+    amount: 25000,
+    metadata: {
+      campaignId: campaign.id
+    }
+  };
+});
+```
+
+Fetch the information earlier and keep it available when the donor clicks:
+
+```javascript
+const campaign = await fetch("/api/current-campaign")
+  .then(response => response.json());
+
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  metadata: {
+    campaignId: campaign.id
+  }
+}));
+```
+
+Using an `async` callback is fine. The risk comes from waiting for slow work before the callback returns.
+
+Test the complete click path on the browsers and devices your form supports, especially Safari on iPhone and any in-app or embedded browsers.
+
+## Stop when the form is not ready
+
+Return `false` from `onDonationRequest` when the donor cannot continue, such as when a required amount or designation is missing or invalid. This stops DAFpay from opening.
+
+Show the validation error on your form so the donor knows what to fix.
+
+```javascript
+chariot.onDonationRequest(async () => {
+  const amount = getAmountInCents();
+
+  if (!amount || amount <= 0) {
+    showAmountError();
+    return false;
+  }
+
+  return {
+    amount,
+    designation: getSelectedDesignation(),
+    metadata: {
+      campaignId: "spring-2026",
+      formId: "main-donation-form"
+    }
+  };
+});
+```
+
+Only validate information your form requires before opening DAFpay. If your Connect is configured to collect or fill donor details, do not block the donor simply because those fields are blank on your form.
 
 Next: [Handle the result](/guides/nonprofits/initiate/events)
 
