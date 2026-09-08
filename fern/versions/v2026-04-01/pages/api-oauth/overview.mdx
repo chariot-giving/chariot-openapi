@@ -38,7 +38,9 @@ Your client secret should be kept secure and should never be exposed to the publ
 | Token | `https://api.givechariot.com/auth/oauth/token` | `https://sandboxapi.givechariot.com/auth/oauth/token` |
 | OIDC configuration | `https://api.givechariot.com/.well-known/openid-configuration` | `https://sandboxapi.givechariot.com/.well-known/openid-configuration` |
 
-Sandbox authorization is served from the production dashboard; only the path differs. Each environment issues its own `client_id` and `client_secret`.
+Note that each environment issues its own `client_id` and `client_secret`. This means that sandbox credentials cannot be used in production and vice versa.
+
+Additional OAuth 2.0 and OIDC metadata can be found at the environment's well-known discovery document.
 
 ## Scopes
 
