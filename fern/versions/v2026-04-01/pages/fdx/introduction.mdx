@@ -22,7 +22,17 @@ The FDX API exposes 7 read-only endpoints organized around deposit accounts:
 | Environment | Base URL |
 |-------------|----------|
 | **Production** | `https://api.givechariot.com/fdx/v6` |
-| **Staging** | `https://devapi.givechariot.com/fdx/v6` |
+| **Sandbox** | `https://sandboxapi.givechariot.com/fdx/v6` |
+
+## Authentication
+
+The FDX API uses Chariot's [OAuth 2.0](/guides/oauth).
+
+| | Value |
+|---|-------|
+| **Scope** | [`read_only`](/guides/oauth#scopes) |
+| **Credentials** | Client name and secret per [environment](/guides/oauth#environments), from [support@givechariot.com](mailto:support@givechariot.com) |
+| **IP whitelisting** | [Required](/guides/oauth#ip-whitelisting) |
 
 ## Key Concepts
 
@@ -46,4 +56,21 @@ The statement document endpoint supports multiple formats via the `Accept` heade
 
 ### Error Format
 
-All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details standard with content type `application/problem+json`.
+All errors follow the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) Problem Details standard with content type `application/problem+json`:
+
+```json
+{
+  "type": "about:blank",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Missing or invalid Bearer token"
+}
+```
+
+| Status | Condition |
+|--------|-----------|
+| `400 Bad Request` | Invalid query parameters or missing required fields |
+| `401 Unauthorized` | Missing, invalid, or expired Bearer token |
+| `403 Forbidden` | Insufficient permissions or IP not whitelisted |
+| `404 Not Found` | Resource does not exist (e.g., invalid account or statement ID) |
+| `500 Internal Server Error` | Unexpected server error |
