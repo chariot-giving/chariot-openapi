@@ -56,6 +56,23 @@ Do not retry blindly with a new workflow session.
 
 Use the amount from `CHARIOT_SUCCESS`, not a stale amount from your form. DAF grants must be whole-dollar amounts, so cents must be divisible by 100.
 
+### Provider limits
+
+Two of the three reasons Create Grant returns `400 Bad Request` come from the
+donor's provider, not from your request:
+
+- the amount is below that provider's minimum grant amount; or
+- the amount is above the donor's DAF account balance.
+
+Both belong to the fund, so you know them once you know the fund — either
+because you preselected `fundId`, or after the donor chooses their provider.
+Pass the `fundId` to [Get DAF](/api/donor-advised-funds/get) to read
+`minimumGrantAmount`, and `institutionDown` to see whether that provider is
+currently unavailable.
+
+Surface a minimum as a message the donor can act on. "This provider requires a
+minimum grant of $50" lets them raise the amount; a generic failure does not.
+
 If `CHARIOT_SUCCESS` contains a recurring intent, use [Create Recurring Grant](/api/recurring-grants/create) instead of Create Grant.
 
 Next: [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch)

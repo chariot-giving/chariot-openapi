@@ -31,6 +31,7 @@ Settle these before you write code. Each one changes what you build, and Chariot
 * [ ] Omit unknown donor fields instead of sending empty strings.
 * [ ] Pass campaign, form, designation, appeal, comment, and tribute data when the form collects it.
 * [ ] Handle all Chariot Connect events.
+* [ ] Write the copy for the loading, success, exit, unclaimed-account and missing-EIN states.
 * [ ] Save your transaction before calling Create Grant.
 * [ ] Create the Grant exactly once after `CHARIOT_SUCCESS`.
 * [ ] Make Create Grant idempotent and complete it within 15 minutes.
@@ -45,7 +46,6 @@ Settle these before you write code. Each one changes what you build, and Chariot
 * [ ] Exercise your idempotent retry path, including a repeated Create Grant for one session.
 * [ ] Drive a grant to `Completed` and to `Canceled` and confirm your handler reacts.
 * [ ] Run the full donor flow on the browsers and devices your platform supports.
-* [ ] Use accurate copy for loading, success, exit, unclaimed-account, and missing-EIN states.
 * [ ] Expose reconciliation identifiers to support and nonprofit users.
 
 See [Sandbox testing](/guides/dafpay/sandbox) for how to run each of these.

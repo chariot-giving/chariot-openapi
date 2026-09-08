@@ -49,6 +49,23 @@ Your first call times out and you do not know whether the grant exists.
 
 Use the amount returned by `CHARIOT_SUCCESS`. Validate that it is a whole-dollar amount.
 
+## Provider limits
+
+Two of the three reasons Create Grant returns `400 Bad Request` come from the
+donor's provider, not from your request:
+
+- the amount is below that provider's minimum grant amount; or
+- the amount is above the donor's DAF account balance.
+
+Both belong to the fund, so you know them once you know the fund — either
+because you preselected `fundId`, or after the donor chooses their provider.
+Pass the `fundId` to [Get DAF](/api/donor-advised-funds/get) to read
+`minimumGrantAmount`, and `institutionDown` to see whether that provider is
+currently unavailable.
+
+Surface a minimum as a message the donor can act on. "This provider requires a
+minimum grant of $50" lets them raise the amount; a generic failure does not.
+
 ## Platform fees
 
 Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents. The sum of Chariot's fee and `applicationFeeAmount` cannot exceed 5% of the grant amount; exceeding it returns `400 Bad Request`. See [Create Grant](/api/grants/create) for the current limit.

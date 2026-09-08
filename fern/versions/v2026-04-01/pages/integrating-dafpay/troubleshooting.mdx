@@ -23,7 +23,7 @@ Treat this as a tenant-routing incident. Preserve the workflow session, transact
 
 | Response | Action |
 | --- | --- |
-| `400 Bad Request` | Validate fields, amount increments, and fee limits. |
+| `400 Bad Request` | Check the whole-dollar amount, the provider's minimum, the donor's balance, field limits, and fee limits. |
 | `409 Conflict` | Wait, then retrieve the existing or in-progress Grant. |
 | `410 Gone` | Restart DAFpay; the authorization expired. |
 | `401` or `403` | Match the API key to the environment and base URL. |
