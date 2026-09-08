@@ -3730,6 +3730,17 @@ components:
           readOnly: true
           description: A flag to indicate if the institution is down.
           example: false
+    DafpayGrantStatus:
+      type: string
+      description: |-
+        The status of a DAFpay grant.
+          * Initiated: The request was submitted and has not been confirmed as received.
+          * Completed: Chariot records the grant as completed.
+          * Canceled: The grant will not be paid.
+      enum:
+        - Initiated
+        - Completed
+        - Canceled
     Grant:
       type: object
       description: |-
@@ -3790,12 +3801,7 @@ components:
           description: The grant amount expressed in units of whole cents
           example: 15000
         status:
-          type: string
-          description: The status of the grant
-          enum:
-            - Initiated
-            - Completed
-            - Canceled
+          $ref: "#/components/schemas/DafpayGrantStatus"
           example: Initiated
         feeDetail:
           type: object
