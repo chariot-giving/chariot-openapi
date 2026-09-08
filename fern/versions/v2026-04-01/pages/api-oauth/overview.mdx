@@ -73,15 +73,15 @@ Before redirecting the user, generate a cryptographically random code verifier (
 const crypto = require("crypto");
 
 function generatePKCE() {
-const codeVerifier = crypto.randomBytes(32).toString("base64url");
-const codeChallenge = crypto
-.createHash("sha256")
-.update(codeVerifier)
-.digest("base64url");
-return { codeVerifier, codeChallenge };
+  const codeVerifier = crypto.randomBytes(32).toString("base64url");
+  const codeChallenge = crypto
+    .createHash("sha256")
+    .update(codeVerifier)
+    .digest("base64url");
+  return { codeVerifier, codeChallenge };
 }
+```
 
-````
 ```python Python
 import os
 import hashlib
@@ -95,7 +95,7 @@ def generate_pkce():
         .decode()
     )
     return code_verifier, code_challenge
-````
+```
 
 ```go Go
 package main
