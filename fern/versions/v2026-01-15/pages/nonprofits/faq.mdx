@@ -1,0 +1,88 @@
+---
+title: "FAQ"
+hidden: false
+---
+
+## DAFpay
+
+<AccordionGroup>
+
+    <Accordion title="Do I need to integrate DAFpay if my fundraising platform supports it?">
+
+        No. Enable DAFpay through the platform. Build the Chariot donation sync only if you need a separate path into your CRM or ERP.
+
+    </Accordion>
+
+    <Accordion title="Can I add DAFpay without engineering work?">
+
+        Yes. Use a no-code button or link from the dashboard when you do not need to pass form data into DAFpay or receive the result in your page.
+
+    </Accordion>
+
+    <Accordion title="Does completing DAFpay mean the nonprofit received the money?">
+
+        No. It means the donor completed the DAFpay flow. The DAF provider still processes and sends the grant.
+
+    </Accordion>
+
+    <Accordion title="Can I test settlement in sandbox?">
+
+        Sandbox does not move real funds. Test your handlers with representative payloads, then confirm the end-to-end path with a small production gift.
+
+    </Accordion>
+
+</AccordionGroup>
+
+## Gift processing
+
+<AccordionGroup>
+
+    <Accordion title="Is a Grant the same as a Donation?">
+
+        No. A Grant is the request sent to the DAF provider. A Donation is Chariot's gift record. A Deposit is the transfer containing funds.
+
+    </Accordion>
+
+    <Accordion title="Can I update a donation through the API?">
+
+        Donation fields are read-only. Use donation properties to record your processing status or internal identifiers.
+
+    </Accordion>
+
+    <Accordion title="Should I use webhooks or polling?">
+
+        Use both when you need timely updates. Webhooks reduce latency; a checkpointed scheduled sync provides recovery.
+
+    </Accordion>
+
+    <Accordion title="Why does a donation have no deposit?">
+
+        The funds may not have arrived through a payment source connected to your Chariot Account. Retrieve donations directly by time window so these records are not missed.
+
+    </Accordion>
+
+</AccordionGroup>
+
+## Finance and receipting
+
+<AccordionGroup>
+
+    <Accordion title="When should I create the gift in my CRM?">
+
+        Use the rule your finance and fundraising teams follow for recognizing a received gift. The simplest implementation creates the CRM gift once the payment is considered received. If you create a pending gift earlier, you must update it later and handle grants that never fund.
+
+    </Accordion>
+
+    <Accordion title="How do we acknowledge a DAF gift?">
+
+        Chariot does not advise on receipting. A DAF grant is not a direct contribution from the donor — the donor already took their deduction when they funded the DAF — so the tax-deductible acknowledgment language you use for a card gift does not apply. Confirm your acknowledgment and substantiation policy with your finance team and your own tax advisor before sending anything automatically from a Chariot-sourced record.
+
+        `attribution.primary_donor` carries the donor's name, email, and mailing address when DAFpay collected them, which is what most teams use to send a thank-you rather than a tax receipt.
+
+    </Accordion>
+
+</AccordionGroup>
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

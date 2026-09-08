@@ -1,0 +1,63 @@
+---
+title: "Handle the Result"
+hidden: false
+---
+
+Listen for all three Chariot Connect events.
+
+| Event | Meaning | What to do |
+| --- | --- | --- |
+| `CHARIOT_INIT` | The component is ready. | Enable your DAFpay button now that it can open. |
+| `CHARIOT_SUCCESS` | The donor authorized a one-time or recurring grant request. | Send the workflow session and returned amount to your server. |
+| `CHARIOT_EXIT` | The donor left the flow or DAFpay could not complete it. | Read the exit reason, then put the donor back on your form or offer another way to give. |
+
+```javascript
+const chariot = document.getElementById("chariot")
+
+chariot.addEventListener("CHARIOT_INIT", () => {
+  // The component can open now — enable your DAFpay button.
+})
+
+chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
+  // Send detail.workflowSessionId and the returned amount to your server.
+})
+
+chariot.addEventListener("CHARIOT_EXIT", ({ detail }) => {
+  // Read detail.reason, then put the donor back on the form or offer another way to give.
+})
+```
+
+## On success
+
+Persist the relationship between:
+
+- the transaction ID your own system uses for this donation;
+- the `workflowSessionId`;
+- the Connect ID; and
+- the nonprofit account.
+
+Use the amount returned by `CHARIOT_SUCCESS`. The donor may have changed the amount inside DAFpay.
+
+Show a loading state while your server saves the transaction and calls Create Grant. Once that succeeds, tell the donor: "Your grant request was sent to your DAF provider." Do not say that your organization has received the gift yet.
+
+<Frame caption="Loading screen example">
+    <img src='../../images/dafpay_form_click.png' />
+    <img src='../../images/dafpay_loading_screen.png' />
+</Frame>
+
+## On exit
+
+Use the exact exit reason returned by the component — the full list is in the [Chariot Connect reference](/guides/dafpay/connect-reference#exit-reasons). In general:
+
+- allow a donor who closed the window to resume the form;
+- ask the donor to restart an expired session;
+- offer another payment method when the selected grant cannot be made; and
+- log configuration or internal errors with the workflow session ID before contacting support.
+
+If the donor confirmed a request for an unconnected provider, follow [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated).
+
+Next: [Create the grant](/guides/nonprofits/initiate/create-grant)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

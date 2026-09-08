@@ -18,7 +18,7 @@ Chariot does not require you to implement an exact API specification. What Chari
 
 ## Conventions
 
-- All endpoints are served over **TLS 1.2+** and authorized by **Bearer access tokens** issued by your authorization server — see [Security Best Practices](/guides/dafpay/oauth/security#token-security).
+- All endpoints are served over **TLS 1.2+** and authorized by **Bearer access tokens** issued by your authorization server — see [Security Best Practices](/guides/oauth/security#token-security).
 - All requests and responses are `application/json`.
 - All monetary amounts are **integer cents in USD** (e.g., `25000` = $250.00) unless we agree otherwise during onboarding.
 - Error responses should use conventional HTTP status codes (`401` invalid/expired token, `403` insufficient scope, `404` not found, `422` validation, `429` rate limited). RFC 7807 Problem Details bodies are recommended but not required.
@@ -195,4 +195,4 @@ Map your internal statuses onto this set:
 - Target **99.9% availability** on these endpoints (99.5% minimum), measured monthly and excluding maintenance windows announced to Chariot in advance. An outage during a donation attempt means an abandoned gift.
 - Keep response times under **~3.5 seconds** (ideally P95 under 2 seconds) — donors are waiting on these calls inside the checkout flow.
 - Support at least **10 requests/second** from Chariot per environment, or share your limits so we can configure client-side throttling.
-- Chariot's calls originate from a static IP range (provided during onboarding) if you require allowlisting — see [Security Best Practices](/guides/dafpay/oauth/security#ip-allowlisting).
+- Chariot's calls originate from a static IP range (provided during onboarding) if you require allowlisting — see [Security Best Practices](/guides/oauth/security#ip-allowlisting).

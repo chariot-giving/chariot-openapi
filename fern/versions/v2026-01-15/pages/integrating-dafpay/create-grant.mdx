@@ -1,0 +1,81 @@
+---
+title: "Create the Grant"
+hidden: false
+---
+
+Call Create Grant from your server after `CHARIOT_SUCCESS`. A successful browser session does not create the Grant by itself.
+
+<EndpointRequestSnippet endpoint="POST /v1/grants" />
+
+## Sequence
+
+<Steps>
+
+### Receive the workflow session and returned amount
+
+### Resolve the nonprofit and platform transaction from your stored session record
+
+### Save your transaction
+
+### Call Create Grant with the server-side API key
+
+### Store the Chariot grant ID and response
+
+</Steps>
+
+<Warning>
+Create the grant within 15 minutes of authorization.
+</Warning>
+
+## Retry safely
+
+Create Grant is idempotent for the workflow session:
+
+| Response | Meaning |
+| --- | --- |
+| `201 Created` | The grant was created. |
+| `200 OK` | The grant already existed and was returned. |
+| `409 Conflict` | Creation is still in progress; wait and retrieve it. |
+| `410 Gone` | The authorization expired; restart DAFpay. |
+
+### A retry, step by step
+
+Your first call times out and you do not know whether the grant exists.
+
+1. Call Create Grant again with the same `workflowSessionId`. Never mint a new one — that is how one authorization becomes two grants.
+2. `200 OK` means it already existed. Store the grant it returns and stop.
+3. `409 Conflict` means creation is still running. Wait, then call again.
+4. `410 Gone` means the 15 minutes elapsed. No grant exists and none will; send the donor back through DAFpay.
+
+Use the amount returned by `CHARIOT_SUCCESS`. Validate that it is a whole-dollar amount.
+
+## Provider limits
+
+Create Grant can also return `400 Bad Request` when the amount is below the
+provider's minimum or above the donor's available DAF balance.
+
+**Minimum.** Once you have the `fundId` — from preselecting it, or after the
+donor chooses — pass it to [Get DAF](/api/donor-advised-funds/get) and read
+`minimumGrantAmount`. If the amount is short, tell the donor the figure they
+need: "this provider requires a minimum grant of $50" recovers the gift where a
+generic failure loses it.
+
+**Balance.** The DAF carries no balance field, so you cannot check this before
+you call. Treat the `400` as the signal, and offer the donor the choice of
+lowering the amount or using another provider.
+
+**Availability.** The same Get DAF response carries `institutionDown`. Handle a
+provider that is down as a temporary error worth retrying, not as a failed
+gift.
+
+## Platform fees
+
+Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement — that agreement governs your rate. It is denominated in cents. Chariot's fee and `applicationFeeAmount` are capped together, and exceeding the cap returns `400 Bad Request`; see [Create Grant](/api/grants/create) for the limit the API enforces.
+
+A donor-covered fee increases the grant amount; it is not a separate tip. Do not offer a for-profit platform tip in a DAF transaction.
+
+Next: [Recurring grants](/guides/dafpay/integrating-dafpay/recurring)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

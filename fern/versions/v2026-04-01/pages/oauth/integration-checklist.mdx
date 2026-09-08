@@ -11,11 +11,11 @@ hidden: false
 * [ ]  OAuth 2.0 / OIDC authorization server reachable at a public issuer URL (Okta, Auth0, Cognito, or custom)
 * [ ]  Hosted login page that renders at popup dimensions (~460×720) and on mobile web
 * [ ]  Confidential client registered for Chariot with staging and production redirect URIs
-* [ ]  Authorization Code flow with `state` round-trip (PKCE recommended — see [Security Best Practices](/guides/dafpay/oauth/security#pkce))
+* [ ]  Authorization Code flow with `state` round-trip (PKCE recommended — see [Security Best Practices](/guides/oauth/security#pkce))
 * [ ]  Scopes: `openid profile email offline_access` (plus any custom scopes you require)
-* [ ]  Tokens scoped to DAF granting only — never to investment, banking, or brokerage systems (see [Scope of access](/guides/dafpay/oauth/security#scope-of-access))
+* [ ]  Tokens scoped to DAF granting only — never to investment, banking, or brokerage systems (see [Scope of access](/guides/oauth/security#scope-of-access))
 * [ ]  ID Token with stable `sub` and `email` claims
-* [ ]  Refresh tokens rotated with each use (preferred) or expiring after 13+ months — see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)
+* [ ]  Refresh tokens rotated with each use (preferred) or expiring after 13+ months — see [Connection Lifetime](/guides/oauth/oauth-requirements#connection-lifetime)
 * [ ]  Error redirects on cancel/failure (`error`, `error_description`)
 * [ ]  Token revocation endpoint (recommended)
 
@@ -80,7 +80,7 @@ Once certified, we launch your DAF in DAFpay production behind a flag, run a sma
 
 **Do grants still go through the Donor Accounts decisioning API?**
 
-No. In the OAuth model, grants are created directly in your system via your Create Grant API and flow through your normal internal review pipeline. The [Donor Accounts](/guides/dafpay/donor-accounts/overview) decisioning API is for DAFs without their own APIs.
+No. In the OAuth model, grants are created directly in your system via your Create Grant API and flow through your normal internal review pipeline. The [Donor Accounts](/guides/donor-accounts/overview) decisioning API is for DAFs without their own APIs.
 
 **Can we support both integrations?**
 

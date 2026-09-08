@@ -1,0 +1,37 @@
+---
+title: "Install the Button"
+hidden: false
+---
+
+Load Chariot Connect with the JavaScript bundle or the React package. Both are covered in the [Chariot Connect reference](/guides/dafpay/connect-reference#mount-the-component).
+
+```html
+<script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
+<chariot-connect id="chariot" cid="YOUR_CONNECT_ID"></chariot-connect>
+```
+
+Use your sandbox Connect ID in sandbox and your production Connect ID in production. A Connect ID may appear in browser code. An API key may not.
+
+That is the whole installation. The snippet does nothing useful until you add `onDonationRequest`, which the next page covers.
+
+## Placement
+
+We recommend placing DAFpay above your form as an Express Checkout option. This lets donors open DAFpay before typing information Chariot can retrieve from their DAF account. If that placement does not fit your form, place DAFpay next to your other payment methods.
+
+<Frame caption="Button placement">
+    <img src='../../images/button-placement.png' />
+</Frame>
+
+## Content Security Policy
+
+If your site uses CSP, allow the Chariot script and DAFpay frame according to the current [Content Security Policy requirements](/guides/dafpay/integrating-dafpay/csp). Merge the required sources into your existing policy; do not replace the policy with a copied example.
+
+## Styling
+
+Pass one of the built-in themes — `DefaultTheme`, `LightModeTheme`, `LightBlueTheme`, or `GradientTheme` — or register your own from the supported properties. See [Themes](/guides/dafpay/connect-reference#themes). Do not depend on internal DOM or CSS selectors inside the component.
+
+Next: [Send donor data](/guides/nonprofits/initiate/donor-data)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

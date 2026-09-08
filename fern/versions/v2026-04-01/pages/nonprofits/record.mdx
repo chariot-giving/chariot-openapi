@@ -1,0 +1,49 @@
+---
+title: "Record Processing Status"
+hidden: false
+---
+
+Use a donation property to show whether your integration has created or updated the corresponding record in your CRM or ERP.
+
+<Steps>
+
+### Create the property
+
+Create a property such as CRM status in your Chariot dashboard. See [Properties](https://help.givechariot.com/gift-processing/custom-tables#properties) in the Help Center. Use values that match your workflow, for example:
+
+- Ready to sync
+- Recorded
+- Needs review
+- Received outside Chariot
+
+### Retrieve IDs
+
+Use [List Properties](/api/properties/list) to find the property ID. For an enum property, use [List Property Options](/api/properties/list-options) to retrieve every option ID.
+
+Store these configuration IDs. Do not look them up once per donation.
+
+### Assign the property
+
+Use Assign Property. The ID in the path is the property ID; donation IDs belong in `resources.ids`.
+
+<EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
+
+```json
+{
+  "value": {
+    "type": "enum",
+    "enum_value_id": "propopt_..."
+  },
+  "resources": {
+    "ids": ["donation_..."]
+  }
+}
+```
+
+</Steps>
+
+You can assign the property to up to 100 donations in one request. Update the property only after your CRM or ERP write succeeds. Donation fields themselves are read-only; properties are how your integration writes its own status back to Chariot.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

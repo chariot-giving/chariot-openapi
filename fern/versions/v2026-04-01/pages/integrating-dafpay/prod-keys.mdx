@@ -1,16 +1,58 @@
 ---
-title: "Requesting Prod Keys"
+title: "Request Production Access"
 hidden: false
 ---
 
-Once you have completed all the steps on the [Integrating DAFpay Checklist](/guides/dafpay/integrating-dafpay/checklist), please send an email to `integrations@givechariot.com` with the following information to request production API keys.
+Complete the sandbox integration and Chariot review before switching to production.
 
+Send your Chariot contact, or [integrations@givechariot.com](mailto:integrations@givechariot.com):
 
-|                                          |                                                                 |
-| :-------------------------------------   | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Unintegrated DAF Configuration           | Let us know which [configuration option](/guides/dafpay/integrating-dafpay/integration#unintegrated-daf-providers) to use for unintegrated DAF providers |
-| Test Form URL                            | Provide link to donation form with DAFpay Sandbox instance for Chariot QA.     |
-| End to End Recording                     | Provide a recording of the full end to end flow from nonprofit onboarding (if applicable) through submitting a donation and seeing it in the back end. |
-| Target Go-Live                           | What date are you planning on launching DAFpay in production?   |
-| Launch Plan (fundraising platforms only)     | Outline plan to create the DAFpay connect (instance od DAFpay) for each nonprofit    |
-| Initial Non-Profit (fundraising platforms only)| In order to test on production, we will need to give a real donation to a real nonprofit. Which nonprofit can we use to make the test donation ? |
+- platform name and production domains;
+- technical and operational contacts;
+- sandbox test form and test instructions;
+- your target go-live date;
+- nonprofit onboarding and launch-backfill plan;
+- Connect configuration choices;
+- webhook endpoint and subscribed event types;
+- supported payment, fee, recurring, and unconnected-provider behavior; and
+- screenshots or recordings of success, exit, loading, and confirmation states.
+
+Before production keys are issued, also confirm:
+
+- a live form Chariot can use for production QA;
+- your public help article for nonprofits;
+- the co-branded onboarding link your team will distribute;
+- your launch and nonprofit-enablement plan; and
+- billing contacts, ACH information, and a W-9 when your agreement includes revenue-share payments.
+
+Chariot will review tenant routing, donor experience, grant creation, retries, fees, and reconciliation support.
+
+## After approval
+
+<Steps>
+
+### Store the production key in your secret manager
+
+### Switch to `https://api.givechariot.com`
+
+### Use production Connect IDs only
+
+### Create production event subscriptions
+
+See [Create an Event Subscription](/api/event-subscriptions/create).
+
+### Run a small live gift with Chariot and a participating nonprofit
+
+</Steps>
+
+Production access is not the end of QA. Confirm that the platform is actually live, the Grant is created, the nonprofit can find the transaction, CRM behavior matches the agreed hard/soft-credit rules, and the donor receives the intended confirmation email.
+
+<Warning>
+Never infer the environment from an ID alone. Configure the base URL, API key, and Connect ID together.
+</Warning>
+
+Next: [Reconciliation](/guides/dafpay/gifts/reconciliation)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

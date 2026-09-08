@@ -1,0 +1,42 @@
+---
+title: "Send Donor Data"
+hidden: false
+---
+
+Return the data currently in your form from `onDonationRequest`. Use the field names and limits in the [Chariot Connect reference](/guides/dafpay/connect-reference#ondonationrequest).
+
+```javascript
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  firstName: "Michael",
+  lastName: "Scott",
+  email: "michael@example.org",
+  designation: "Community programs",
+  metadata: {
+    campaignId: "spring-2026",
+    formId: "main-donation-form"
+  }
+}));
+```
+
+Amounts are in cents. $250.00 is `25000`.
+
+## Omit unknown donor fields
+
+An empty string counts as a supplied value. If your form does not have a donor field, omit it instead of sending `""`. DAFpay can then retrieve available donor details from the donor's DAF account.
+
+## Pass identifiers you will need later
+
+Put your campaign, form, source, appeal, or designation identifiers in `metadata`. Store your own transaction ID on your server and associate it with the DAFpay workflow session after success.
+
+## Keep the click path fast
+
+Browsers may block a popup if too much asynchronous work occurs between the donor's click and the window opening. Fetch prerequisites before the click. Return `false` from `onDonationRequest` when form validation fails.
+
+<img src='../../images/on-donation-false.png' />
+
+Next: [Handle the result](/guides/nonprofits/initiate/events)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

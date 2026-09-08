@@ -1,0 +1,59 @@
+---
+title: "Sandbox Testing"
+hidden: false
+---
+
+Sandbox uses separate API keys, Connects, and data. No real money moves.
+
+Use the credentials here while you build. Come back before you request production access to work through the full test matrix below — most of it needs a finished integration.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox Connect IDs begin with `test_`. Keep API keys server-side and never mix environment-specific IDs or hosts. See [Authentication](/api/authentication) for how to send the key.
+
+## DAF login
+
+```
+username: good-user
+password: password123
+```
+
+## Required multi-tenant tests
+
+Test with at least two nonprofits before launch:
+
+- create a separate Connect for each nonprofit;
+- open both donation forms at the same time;
+- confirm each form initializes with the correct Connect ID;
+- confirm each grant belongs to the intended nonprofit; and
+- confirm DAFpay is absent or disabled for a nonprofit that has not enabled it.
+
+These tests catch hardcoded, cached, or shared-state Connect IDs.
+
+Also test one-time and recurring success, every exit path your UI handles, CSP, webhook signature verification, and your idempotent retry path.
+
+To exercise your `grant.updated` handler, drive the status change yourself with [Sandbox: Complete a grant](/api/grants/simulate-grant-completion) or [Sandbox: Cancel a grant](/api/grants/simulate-grant-cancellation). See [Sandbox simulations](/api/sandbox-simulations) for the full list.
+
+## Browser and device matrix
+
+Test the complete donor flow, not only whether the button renders, on:
+
+- Chrome, Safari, and Firefox on desktop;
+- Safari and Chrome on iPhone;
+- Chrome on Android; and
+- the in-app or embedded browser surfaces your platform supports.
+
+For every surface, confirm that the button appears, the window opens from the donor's click, the request completes, the confirmation state loads, and the expected Grant exists. Mobile browsers may block DAFpay as a popup if your click handler performs asynchronous work before opening it.
+
+<Warning>
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those after launch with Chariot and a participating nonprofit.
+</Warning>
+
+Next: [Create Connects](/guides/dafpay/integrating-dafpay/connects)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

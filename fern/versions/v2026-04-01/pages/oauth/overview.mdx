@@ -5,7 +5,7 @@ hidden: false
 ---
 
 <Note title="Audience">
-This guide is for **Donor Advised Fund (DAF) providers** who operate their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a few API calls, see [Donor Accounts](/guides/dafpay/donor-accounts/overview) instead.
+This guide is for **Donor Advised Fund (DAF) providers** who operate their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a few API calls, see [Donor Accounts](/guides/donor-accounts/overview) instead.
 </Note>
 
 ## Overview
@@ -20,7 +20,7 @@ This is the same model used across open finance — it's how banks connect custo
 
 - They sign in with the credentials they already have — on your branded login page. You control the authentication experience, including MFA.
 - They see their real fund names and grantable balances inside the donation flow.
-- **They rarely re-link.** Every donor creates a persistent DAFpay Donor Account at their first checkout. While their connection to your DAF is active, returning donors authenticate with DAFpay only — they're asked to re-link only when the connection expires or is revoked. (See [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).)
+- **They rarely re-link.** Every donor creates a persistent DAFpay Donor Account at their first checkout. While their connection to your DAF is active, returning donors authenticate with DAFpay only — they're asked to re-link only when the connection expires or is revoked. (See [Connection Lifetime](/guides/oauth/oauth-requirements#connection-lifetime).)
 
 **For you:**
 
@@ -73,15 +73,15 @@ Donor                      DAFpay (Chariot)                 DAF (you)
   │                          │ ◄──────────────────────────────│
 ```
 
-**On future donations**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the refresh token from step 5 and proceeds straight to steps 6–9. Your login page reappears only when the connection ends — when the donor's refresh token expires (reauthorization) or the connection is revoked (see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)).
+**On future donations**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the refresh token from step 5 and proceeds straight to steps 6–9. Your login page reappears only when the connection ends — when the donor's refresh token expires (reauthorization) or the connection is revoked (see [Connection Lifetime](/guides/oauth/oauth-requirements#connection-lifetime)).
 
 ## What you'll build
 
-1. **An OAuth 2.0 / OIDC authorization server** with a Chariot client registration — see [OAuth & Token Requirements](/guides/dafpay/oauth/oauth-requirements)
-2. **Resource APIs** that Chariot calls with the donor's access token — see [API Endpoints](/guides/dafpay/oauth/api-endpoints)
-3. **A sandbox environment** with test donor accounts for integration testing — see [Integration Checklist](/guides/dafpay/oauth/integration-checklist)
+1. **An OAuth 2.0 / OIDC authorization server** with a Chariot client registration — see [OAuth & Token Requirements](/guides/oauth/oauth-requirements)
+2. **Resource APIs** that Chariot calls with the donor's access token — see [API Endpoints](/guides/oauth/api-endpoints)
+3. **A sandbox environment** with test donor accounts for integration testing — see [Integration Checklist](/guides/oauth/integration-checklist)
 
-Throughout the build, follow the [Security Best Practices](/guides/dafpay/oauth/security) — transport security, credential handling, token policy, and the scope boundaries that keep Chariot's access limited to DAF granting and nothing else.
+Throughout the build, follow the [Security Best Practices](/guides/oauth/security) — transport security, credential handling, token policy, and the scope boundaries that keep Chariot's access limited to DAF granting and nothing else.
 
 ## Estimated timeline
 

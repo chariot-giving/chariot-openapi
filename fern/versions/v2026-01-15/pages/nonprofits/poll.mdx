@@ -1,0 +1,68 @@
+---
+title: "Poll for Donations"
+hidden: false
+---
+
+Use a scheduled sync to retrieve new donations. If you also use webhooks, the scheduled sync can pick up anything your webhook endpoint missed.
+
+## A reliable sync pattern
+
+<Steps>
+
+### Read from the last successful checkpoint to the current time
+
+### Request every page in the window
+
+### Process each record idempotently using the Chariot donation ID
+
+### Advance the checkpoint only after the entire window succeeds
+
+Keep a small overlap between windows and deduplicate by ID.
+
+</Steps>
+
+Use this as a starting point and adapt it to your system. The important part is keeping a checkpoint and requesting every page so a failed job does not leave a permanent gap.
+
+## Retrieve deposits and their donations
+
+Use List Deposits for the settlement window, then List Donations with each `deposit_id` to retrieve the gifts in the transfer.
+
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+Each list endpoint returns at most 100 records. Pass the response's `next_page_token` back as the `page_token` query parameter, keeping every other parameter identical, until no token is returned. Do not process pages concurrently unless your implementation preserves ordering and checkpoint safety.
+
+## Retrieve donations by creation time
+
+Run a donation query by `created_at` as a second pass. This catches donation records that are not associated with a Chariot deposit, including gifts received through a route your organization has not connected to its Chariot Account.
+
+```bash cURL
+curl -G https://api.givechariot.com/v1/donations \
+  -H "Authorization: Bearer $CHARIOT_API_KEY" \
+  -d 'created_at.after=2026-04-01T00:00:00Z' \
+  -d 'created_at.before=2026-04-02T00:00:00Z' \
+  -d 'limit=100'
+```
+
+Both bounds are RFC 3339 timestamps. Use your last checkpoint as `created_at.after` and the start of the current run as `created_at.before`, then page with `page_token` before advancing the checkpoint.
+
+## Webhooks
+
+Subscribe to donation and deposit events if you need updates sooner than your scheduled sync runs. Verify the signature, then retrieve the current Donation or Deposit from the API. Process repeated events safely; Chariot may send the same event more than once.
+
+| Event | Fires when |
+| --- | --- |
+| `donation.created` | A gift is recorded in Chariot |
+| `donation.updated` | A donation changes, including settling against a deposit |
+| `deposit.created`, `deposit.updated` | A transfer lands or changes status |
+
+Subscribe with [Create Event Subscription](/api/event-subscriptions/create). Signature verification is covered in [Webhooks and Events](/api/webhooks).
+
+Use Donation events for your CRM sync. This gives you one workflow for DAFpay gifts and gifts received from other sources.
+
+Next: [Record processing status](/guides/nonprofits/donations/record)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

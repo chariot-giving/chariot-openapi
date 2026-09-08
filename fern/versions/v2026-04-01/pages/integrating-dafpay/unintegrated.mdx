@@ -1,0 +1,32 @@
+---
+title: "Unconnected DAF Providers"
+hidden: false
+---
+
+Some DAF providers cannot accept a grant directly through DAFpay. Choose one behavior during Connect configuration:
+
+- Return the donor to your form to choose another payment method; or
+- Record the donor's intent and instruct the donor to complete the grant in the provider's portal.
+
+<Frame caption="Handling unconnected DAF providers. Left: record a grant intent. Right: return the donor to your form.">
+    <img src='../../images/disconnected-submit.png' />
+    <img src='../../images/disconnected-return.png' />
+</Frame>
+
+The second option does not create a completed DAFpay grant. Your confirmation page must clearly say that the donor still needs to submit the grant through their provider. Show the nonprofit name, EIN, designation or note, and any tracking identifier the donor should include.
+
+<Frame caption="Unintegrated grant confirmation page">
+    <img src='../../images/unintegrated-grant-intent.png' />
+</Frame>
+
+Because the donor completes the request outside DAFpay, do not mark the platform transaction paid. Track it as an unconfirmed intent and update it only when later evidence supports the gift.
+
+Use the unintegrated-grant resources and events documented in the API reference for this separate object type.
+
+<EndpointRequestSnippet endpoint="GET /v1/unintegrated_grants" />
+
+Next: the [Integration checklist](/guides/dafpay/integrating-dafpay/checklist)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

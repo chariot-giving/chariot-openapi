@@ -1,0 +1,41 @@
+---
+title: "Troubleshooting"
+hidden: false
+---
+
+## DAFpay completed, but no grant exists
+
+`CHARIOT_SUCCESS` does not create a grant. Confirm that your server received the workflow session and called Create Grant. Then use [List Grants](/api/grants/list) or [Get Grant](/api/grants/get).
+
+## The grant does not have a donation ID yet
+
+The donation association may be created asynchronously. Retry Get Grant with bounded backoff. Do not use a display or tracking identifier as your database key.
+
+## Create Grant returned an error
+
+| Response | Action |
+| --- | --- |
+| `400 Bad Request` | Check the whole-dollar amount, the provider's minimum, the donor's balance, field limits, and the fee limit. |
+| `409 Conflict` | Creation is in progress. Wait, then retrieve the grant. |
+| `410 Gone` | The authorization expired. Restart DAFpay. |
+| `401` or `403` | Confirm the key and base URL belong to the same environment. Sandbox keys work only against `https://sandboxapi.givechariot.com`, production keys only against `https://api.givechariot.com`. |
+
+## Webhooks are missing
+
+Confirm the subscription includes the expected event type and was created in the correct environment. Use [List Events](/api/events/list) to determine whether the event exists. If it exists, investigate delivery; if it does not, investigate the operation expected to create it.
+
+The scheduled sync should recover any missed webhook.
+
+## A donation has no deposit
+
+Some Donation records describe gifts whose funds did not arrive in a Chariot Account. For example, a DAFpay gift may be sent directly to your organization, or another platform may manage the funds. These Donations do not have a Chariot Deposit.
+
+Retrieve Donations by creation time as well as by Deposit so these gifts are not missed. Use the payment source and payment status to determine how each gift was received.
+
+## Support request
+
+Send [implementations@givechariot.com](mailto:implementations@givechariot.com) the environment, organization name, endpoint, event type, and relevant grant, donation, or workflow session ID. Never send an API key.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

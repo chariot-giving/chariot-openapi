@@ -1,0 +1,20 @@
+---
+title: "Recurring Grants"
+hidden: false
+---
+
+When enabled, a donor can ask their DAF provider to send a monthly grant.
+
+A recurring success contains `recurringGrantIntent` instead of `grantIntent`. Call [Create Recurring Grant](/api/recurring-grants/create), not Create Grant.
+
+The DAF provider owns the schedule. Chariot records the initial setup but may not receive a new Grant record for each later payment or notice when the donor changes or cancels the schedule.
+
+Model the initial record as the start of a recurring arrangement, not as proof of future payments. Treat each received Donation as its own gift and reconcile it independently.
+
+Do not promise nonprofits a complete recurring schedule unless your own data source can support it.
+
+Next: [Unconnected DAF providers](/guides/dafpay/integrating-dafpay/unintegrated)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

@@ -1,0 +1,46 @@
+---
+title: "Send Donation Data"
+hidden: false
+---
+
+Return the current form values from `onDonationRequest`. Use the field names, types, and limits in the [Chariot Connect reference](/guides/dafpay/connect-reference#ondonationrequest).
+
+```javascript
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  firstName: "Michael",
+  lastName: "Scott",
+  email: "michael@example.org",
+  designation: "Community programs",
+  metadata: {
+    platformTransactionId: "txn_123",
+    campaignId: "spring-2026"
+  }
+}));
+```
+
+Amounts are in cents. DAF grants must ultimately be whole-dollar amounts.
+
+## Omit fields you do not have
+
+Do not send empty strings. Chariot treats an empty string as a supplied value, which prevents DAFpay from prefilling that field from the donor's DAF account.
+
+All donor fields must describe the donor, not the nonprofit administrator or platform account owner.
+
+## Preserve attribution
+
+Pass the identifiers the nonprofit will need for CRM coding in `metadata`, such as campaign, appeal, designation, source, and form IDs. These values can later appear with the grant and donation.
+
+Do not stop at the page URL. If the form collects a designation, comment, dedication, tribute, campaign code, or form ID, pass that value under a stable key. Test the exact metadata returned for at least two forms with different values.
+
+## Do not delay the popup
+
+Fetch data and validate eligibility before the donor clicks DAFpay. Slow asynchronous work after the click can cause mobile browsers to block the popup. Return `false` when the form is not ready to proceed.
+
+<img src='../../images/on-donation-false.png' />
+
+Next: [Handle the result](/guides/dafpay/integrating-dafpay/events)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

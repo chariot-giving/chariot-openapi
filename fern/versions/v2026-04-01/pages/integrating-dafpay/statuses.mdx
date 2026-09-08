@@ -1,0 +1,32 @@
+---
+title: "Grant Statuses"
+hidden: false
+---
+
+Use the exact status values returned by [Get Grant](/api/grants/get). They describe where the money is, not what the donor did.
+
+| API status | What it means | Suggested label | Terminal |
+| --- | --- | --- | --- |
+| `Initiated` | The request has been submitted to the donor's DAF provider. The provider may already have approved it — approval on its own does not change this status. The nonprofit has not received the funds. | Submitted | No |
+| `Completed` | The nonprofit has received the funds, either into its Chariot Account or directly from the provider, such as by mailed check. | Received | Yes |
+| `Canceled` | The provider voided the request. It will not be paid. | Canceled | Yes |
+
+A grant stays `Initiated` through the provider's review and approval, and moves only once the money lands. So `Completed` is a statement about funds reaching the nonprofit, not about the provider's decision.
+
+This is also why `CHARIOT_SUCCESS` and `Completed` are not the same event. The donor authorizing the request is what starts `Initiated`; it is nowhere near the end of it.
+
+Those three are the whole set, so a value you do not recognize means something has changed — surface it rather than treating it as success.
+
+Subscribe to `grant.updated` and retrieve the current Grant when an event arrives. Make the handler idempotent and retain a periodic recovery process if status freshness is important. See [Webhooks and events](/api/webhooks) for endpoint setup and signature verification, and [Create an Event Subscription](/api/event-subscriptions/create) to subscribe.
+
+If you accept unintegrated grants, subscribe to `unintegrated_grant.updated` as well; those are separate objects with their own events.
+
+## Cancellations and refunds
+
+Do not offer a "refund" action for a completed DAF grant. DAF assets are controlled by the donor's DAF provider, and whether a grant can be canceled depends on that provider and how far along it is. Direct donors to their provider for a pending request and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when operational help is required.
+
+Next: [After launch](/guides/dafpay/post-launch)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

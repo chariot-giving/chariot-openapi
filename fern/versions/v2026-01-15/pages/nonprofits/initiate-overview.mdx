@@ -1,0 +1,72 @@
+---
+title: "Add DAFpay to a Donation Form You Own"
+hidden: false
+---
+
+Follow this section only if your organization owns and operates the donation form. If a fundraising platform hosts your form, check whether it supports DAFpay and enable DAFpay there.
+
+<Note>
+If you build a fundraising platform that serves many nonprofits, use [Add DAFpay to your fundraising platform](/guides/dafpay/overview) instead. This section sets up one form for one organization.
+</Note>
+
+By the end of this section your donation form will open DAFpay, receive the donor's authorization, and create the grant from your server.
+
+## Before you start
+
+Server-side calls in this section need an API key and the base URL for the environment you are working in.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox and production use separate API keys, and each key works only against its own base URL. See [Authentication](/api/authentication) for how to send the key.
+
+<Warning>
+Never infer the environment from an ID alone. Configure the base URL, API key, and Connect ID together.
+</Warning>
+
+The integration has four parts:
+
+<Steps>
+
+### Get a Connect ID for your form
+
+Chariot configures a Connect for your organization and gives you separate sandbox and production IDs. See [Request your Connect](/guides/nonprofits/initiate/connect-config).
+
+### Add Chariot Connect to the page
+
+Load the script and place the DAFpay button on your form. See [Install the button](/guides/nonprofits/initiate/install).
+
+### Pass donation data into the DAFpay session and handle its events
+
+Return your form's current values so the donor does not retype them, then handle the three events the component emits. See [Send donor data](/guides/nonprofits/initiate/donor-data) and [Handle the result](/guides/nonprofits/initiate/events).
+
+### Create the grant from your server after `CHARIOT_SUCCESS`
+
+The browser flow only authorizes the gift. Your server still has to create it, once, within 15 minutes. See [Create the grant](/guides/nonprofits/initiate/create-grant).
+
+</Steps>
+
+```
+Donation form → DAFpay session → CHARIOT_SUCCESS → your server → Create Grant
+```
+
+<Warning>
+`CHARIOT_SUCCESS` means the donor authorized the request. It does not create the grant and does not mean the nonprofit has received money.
+</Warning>
+
+## Test login
+
+Use these credentials to complete the DAFpay flow in sandbox:
+
+```
+username: good-user
+password: password123
+```
+
+Next: [Request your Connect](/guides/nonprofits/initiate/connect-config)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

@@ -1,0 +1,49 @@
+---
+title: "Create Connects"
+hidden: false
+---
+
+A Connect is one nonprofit's DAFpay configuration on your platform. Its Connect ID tells Chariot which nonprofit should receive the grant.
+
+<Steps>
+
+### Search for the nonprofit
+
+Use Search Organizations with the nonprofit's EIN whenever possible. Names can be ambiguous; EINs are not.
+
+<EndpointRequestSnippet endpoint="GET /v1/organizations/search" />
+
+Two fields on the result decide whether you can go ahead.
+
+| Field | Meaning | What to do |
+| --- | --- | --- |
+| `compliance.daf_eligible` | Whether the entity may receive donations from a donor advised fund at all. | `false` means no Connect. Do not create one and do not show DAFpay. |
+| `claimed` | `false` until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. | Gifts are held until the nonprofit claims. Whether you may offer DAFpay first is settled by your agreement — see [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config). |
+
+If search returns nothing, the organization is not in Chariot's directory. Either way — no result, or `daf_eligible: false` — do not create a placeholder or substitute another record. Tell the user this nonprofit cannot accept DAF gifts through your platform yet, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is unexpected.
+
+### Create the Connect
+
+Call Create Connect with the organization ID and a contact email that belongs to the nonprofit. Do not use a generic platform support address.
+
+<EndpointRequestSnippet endpoint="POST /v1/connects" />
+
+Store the returned Connect ID on the nonprofit's record in your database.
+
+```
+platform_nonprofit_id → chariot_organization_id → chariot_connect_id
+```
+
+</Steps>
+
+Create the Connect when the nonprofit enables DAFpay, not during donor checkout. Treat the operation as idempotent and reuse the returned existing Connect when applicable.
+
+## Plan the launch backfill
+
+Use the same search-and-create sequence for eligible nonprofits already on your platform. Chariot does not publish a request limit for these endpoints, so size the run conservatively rather than to a number: keep concurrency bounded, back off and retry on 5xx, persist individual failures instead of aborting the batch, and make the whole run restartable from where it stopped. Tell integrations@givechariot.com before a large backfill.
+
+Next: [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

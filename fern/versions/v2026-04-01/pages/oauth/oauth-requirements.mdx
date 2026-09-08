@@ -39,7 +39,7 @@ Your server must:
 - Redirect back to `redirect_uri` with `code` and the unmodified `state`.
 - On failure or donor cancellation, redirect back with standard `error` and `error_description` parameters (`access_denied`, `login_required`, etc.) rather than dead-ending the donor.
 
-Chariot always includes PKCE (S256) parameters. Supporting PKCE is recommended as defense-in-depth — see [Security Best Practices](/guides/dafpay/oauth/security#pkce) — but not required: Chariot is a confidential client, and servers that don't support PKCE can ignore the parameters.
+Chariot always includes PKCE (S256) parameters. Supporting PKCE is recommended as defense-in-depth — see [Security Best Practices](/guides/oauth/security#pkce) — but not required: Chariot is a confidential client, and servers that don't support PKCE can ignore the parameters.
 
 <Tip title="Popup-friendly login page">
 The authorization page opens in a **popup window**, not an iframe — so `X-Frame-Options` restrictions are fine. It must, however, render correctly at popup dimensions (~460×720) and on mobile web, where the flow runs as a full-page redirect.
@@ -140,7 +140,7 @@ Like Plaid's Permissions Manager model, you may optionally offer donors a consen
 
 - `ISSUER_BASE_URL` — your OIDC issuer (ideally with a discovery document)
 - `client_id` and `client_secret` for each environment
-- API base URLs and documentation for the [resource endpoints](/guides/dafpay/oauth/api-endpoints)
+- API base URLs and documentation for the [resource endpoints](/guides/oauth/api-endpoints)
 - Sandbox environment details and at least 2 test donor accounts (one with multiple funds)
 - Configured refresh-token policy — rotation on/off, lifetime, idle timeout (so we can verify it meets the Connection Lifetime guidance)
 

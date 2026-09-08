@@ -1,27 +1,66 @@
 ---
 title: "Overview"
-subtitle: "DAFpay is a payment option that enables donors to initiate donations using their Donor-Advised Fund (DAF) accounts."
 hidden: false
 ---
+
 <img src='../../images/a080c51-api_doc_image.png' />
 
-## How it works
+This guide is for fundraising platforms that want to offer DAFpay to multiple nonprofit customers. If you are a nonprofit adding DAFpay to a form you own, use [Chariot for nonprofits](/guides/nonprofits).
 
+You integrate once, but each nonprofit receives its own Connect. Your platform must load the Connect ID that belongs to the nonprofit whose form the donor is viewing.
 
-DAFpay manages the entire grant submission process, including credential verification, multi-factor authentication, error management, and fee collection, for each Donor Advised Fund supported.
+```
+Nonprofit record → Connect ID → DAFpay session → Grant
+```
 
-The initial step involves **searching** Chariot's database for an organization and **creating** a Connect.
-Once created, you will receive a Connect ID (CID) that can be used to **initialize** Chariot Connect, the web component that renders the DAFpay button.
-Lastly, **query** Chariot's APIs to gather all the data generated through Connect. 
+<Warning>
+Never use one platform-wide Connect ID. The Connect identifies the recipient and the source of the gift.
+</Warning>
 
-<Frame>
-    <img src='../../images/DAFpay_API_Docs_Image.png' />
-</Frame>
+By the end you will create a Connect for each nonprofit you serve, render DAFpay on their forms with the right one, create grants from your server, and reconcile them afterwards.
+
+## Integration flow
+
+<Steps>
+
+### Search for the nonprofit
+
+Look the organization up by EIN, so the Connect attaches to the right one. See [Create Connects](/guides/dafpay/integrating-dafpay/connects).
+
+### Create or retrieve its Connect and store the Connect ID
+
+One Connect per nonprofit, created when they turn DAFpay on, stored on their record in your database. See [Create Connects](/guides/dafpay/integrating-dafpay/connects) and [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config).
+
+### Render Chariot Connect on that nonprofit's form
+
+Load the component with that nonprofit's Connect ID, and allow Chariot's sources in your CSP. See [Install DAFpay](/guides/dafpay/integrating-dafpay/installation) and [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
+
+### Pass current form data into DAFpay
+
+Return the live form values so the donor does not retype what they already entered. See [Send donation data](/guides/dafpay/integrating-dafpay/donor-data).
+
+### After `CHARIOT_SUCCESS`, create the Grant from your server
+
+The event authorizes the gift; your server creates it, exactly once, within 15 minutes. See [Handle the result](/guides/dafpay/integrating-dafpay/events) and [Create the grant](/guides/dafpay/integrating-dafpay/create-grant).
+
+### Store Chariot identifiers and listen for status changes
+
+Keep the workflow session, Grant and Donation IDs so support and finance can trace a gift later. See [Reconciliation](/guides/dafpay/gifts/reconciliation) and [Grant statuses](/guides/dafpay/gifts/statuses).
+
+</Steps>
+
+Your platform's Connects require your server to create the Grant after the donor completes DAFpay. `CHARIOT_SUCCESS` alone does not create a Grant or mean the nonprofit has received funds.
+
+Start with [Sandbox testing](/guides/dafpay/sandbox). The [Integration checklist](/guides/dafpay/integrating-dafpay/checklist) is the whole job in one page — use it as a roadmap now and work through it before you ask for production access.
 
 ## Try it out
 
-Try out the [DAFpay Demo](https://secure.dafpay.com/demo) for yourself and see what it might look like on your website after you've completed the integration.
+Try the [DAFpay Demo](https://secure.dafpay.com/demo) to see the donor experience before you build.
 
 ## Are you a DAF provider?
 
-If you are a Donor Advised Fund provider integrating with DAFpay (rather than a nonprofit accepting DAFpay donations), see the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for the API surface and operational flows tailored to DAFs — including manual approval, token verification, and pre-established access flows.
+If you are a Donor Advised Fund provider integrating with DAFpay rather than a fundraising platform offering it, see the [Donor Accounts overview](/guides/donor-accounts/overview) for the flows tailored to DAFs.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

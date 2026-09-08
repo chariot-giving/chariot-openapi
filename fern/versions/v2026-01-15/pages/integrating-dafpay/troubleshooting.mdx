@@ -1,0 +1,39 @@
+---
+title: "Troubleshooting"
+hidden: false
+---
+
+## The button does not render or open
+
+Check the browser console and Network panel for CSP violations or blocked requests to the Chariot CDN and `secure.dafpay.com`. Test with production-equivalent headers.
+
+## The mobile popup is blocked
+
+Remove slow work between the donor's click and the popup. Prefetch data and run validation before the click when possible.
+
+## DAFpay completed, but no Grant exists
+
+Verify that your server received `CHARIOT_SUCCESS` and called Create Grant. If it did, preserve the workflow session and Connect ID and contact [integrations@givechariot.com](mailto:integrations@givechariot.com).
+
+## The wrong nonprofit received the Grant
+
+Treat this as a tenant-routing incident. Preserve the workflow session, transaction, nonprofit, and Connect IDs; stop any affected rollout; and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) immediately. Check for hardcoded, cached, fallback, or process-wide Connect state.
+
+## Create Grant errors
+
+| Response | Action |
+| --- | --- |
+| `400 Bad Request` | Check the whole-dollar amount, the provider's minimum, the donor's balance, field limits, and fee limits. |
+| `409 Conflict` | Wait, then retrieve the existing or in-progress Grant. |
+| `410 Gone` | Restart DAFpay; the authorization expired. |
+| `401` or `403` | Match the API key to the environment and base URL. |
+
+## Webhook events are missing
+
+Confirm the event type, environment, endpoint, and signature code. Use [List Events](/api/events/list) to separate event creation from delivery failure. Keep a recovery process for important state.
+
+When contacting Chariot, send IDs and timestamps, never an API key.
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

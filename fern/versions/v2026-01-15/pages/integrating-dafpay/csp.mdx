@@ -1,0 +1,40 @@
+---
+title: "Content Security Policy"
+hidden: false
+---
+
+Chariot Connect loads a script from Chariot's CDN and opens DAFpay from `secure.dafpay.com`. If your donation pages send a Content Security Policy, merge these sources into the applicable directives.
+
+| Directive | Required source |
+| --- | --- |
+| `script-src` | `https://cdn.givechariot.com` |
+| `frame-src` | `https://secure.dafpay.com` |
+| `font-src` | `https://cdn.givechariot.com` |
+| `img-src` | `https://cdn.givechariot.com` |
+| `style-src` | A policy that permits the component's injected styles, using the approach approved by your security team. |
+
+```http
+Content-Security-Policy:
+  default-src 'self';
+  script-src  'self' https://cdn.givechariot.com;
+  frame-src   https://secure.dafpay.com;
+  font-src    'self' https://cdn.givechariot.com;
+  style-src   'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src     'self' https://cdn.givechariot.com data:;
+```
+
+Merge the sources into your existing policy. Do not replace your full CSP with a documentation example.
+
+If the button does not render or clicking it does nothing, check the browser console and Network panel for a blocked Chariot script, frame, font, image, or style.
+
+<Tip title="Meta tag limitation">
+If you deliver CSP through a `<meta http-equiv="Content-Security-Policy">` tag, the same directives apply, but `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are ignored from meta tags. Use a response header where possible.
+</Tip>
+
+Validate CSP with the same response headers used in production. A relaxed development policy does not test this requirement.
+
+Next: [Send donation data](/guides/dafpay/integrating-dafpay/donor-data)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

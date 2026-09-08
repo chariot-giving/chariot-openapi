@@ -1,0 +1,64 @@
+---
+title: "Retrieve Donations"
+hidden: false
+---
+
+Use the Gift Processing API to bring Chariot donation data into your CRM or ERP.
+
+By the end of this section your system will pull new donations on a schedule, match them to the deposits that funded them, and write a processing status back to Chariot.
+
+## Before you start
+
+Server-side calls in this section need an API key and the base URL for the environment you are working in.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox and production use separate API keys, and each key works only against its own base URL. See [Authentication](/api/authentication) for how to send the key.
+
+<Warning>
+Never infer the environment from an ID alone. Configure the base URL and API key together.
+</Warning>
+
+## Data model
+
+| Record | Use |
+| --- | --- |
+| Payment source | Identifies where funds or remittance data came from. |
+| Deposit | Represents a transfer received through a payment source. |
+| Donation | Represents an individual donor's gift. |
+
+One deposit may contain many donations. Store both IDs so finance can reconcile the transfer to its component gifts.
+
+Amounts on a Donation are in minor units of that record's `currency`, an [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) code — `USD` and cents for US gifts. Read the field rather than assuming it.
+
+Donation records may include donor details, gross and net amounts, fees, designation or purpose, source information, DAFpay metadata, and properties configured in the dashboard. Treat the API reference as the source of truth for fields.
+
+### Where the IDs are
+
+| Value | Where to read it |
+| --- | --- |
+| Donation ID | `id`. Use it as the idempotency key for your sync. |
+| Deposit ID | `settlement.deposit_id`. |
+| Funds-received timestamp | `settlement.received_at`. |
+| DAFpay tracking ID | `initiation.dafpay_tracking_id`. Links the gift back to the DAFpay session that started it. Reconcile with it; do not use it as your database key. |
+
+<Note>
+`settlement` is present only once Chariot has received the money for the gift. A donation with no `settlement` has no deposit yet, or its funds never arrive in a Chariot Account at all. See [A donation has no deposit](/guides/nonprofits/troubleshooting).
+</Note>
+
+## Decide when to create the CRM record
+
+The safest default is to create the CRM gift when your organization considers the payment received. If your team needs an earlier record, create a pending record at initiation and update it later. That approach requires handling grants that are delayed or never funded.
+
+`settlement.received_at` is the signal that Chariot received the money, so it is the field most teams key the "payment received" rule on.
+
+Define this rule with fundraising operations and finance before implementing the sync.
+
+Next: [Poll for donations](/guides/nonprofits/donations/poll)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

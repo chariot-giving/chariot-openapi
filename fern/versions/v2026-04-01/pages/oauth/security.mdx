@@ -4,13 +4,13 @@ subtitle: "Keeping the connection scoped, encrypted, and revocable — on both s
 hidden: false
 ---
 
-The integration is designed so that Chariot holds **scoped, revocable tokens — never donor credentials**. This page collects the security practices we recommend (and a few we require) on top of the [OAuth & Token Requirements](/guides/dafpay/oauth/oauth-requirements). If you run a standards-compliant identity provider, most of these are configuration rather than code.
+The integration is designed so that Chariot holds **scoped, revocable tokens — never donor credentials**. This page collects the security practices we recommend (and a few we require) on top of the [OAuth & Token Requirements](/guides/oauth/oauth-requirements). If you run a standards-compliant identity provider, most of these are configuration rather than code.
 
 ## Scope of access
 
 Many DAF providers operate within a larger financial institution, where the same donor login also reaches brokerage, banking, or investment accounts. **The access you grant Chariot must never extend to those systems.**
 
-- Tokens issued to Chariot should authorize only the capabilities in [API Endpoints](/guides/dafpay/oauth/api-endpoints): the donor's profile, their funds and grantable balances, grant creation, and grant status.
+- Tokens issued to Chariot should authorize only the capabilities in [API Endpoints](/guides/oauth/api-endpoints): the donor's profile, their funds and grantable balances, grant creation, and grant status.
 - If your authorization server fronts multiple lines of business, issue DAF tokens with a dedicated scope or audience, and reject those tokens everywhere else.
 - Never return investment positions, bank balances, or transaction history from the endpoints Chariot calls — DAFpay neither needs nor wants that data.
 
@@ -28,7 +28,7 @@ Many DAF providers operate within a larger financial institution, where the same
 
 ## Token security
 
-- Issue **short-lived access tokens** (15 minutes recommended) and long-lived refresh tokens per [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).
+- Issue **short-lived access tokens** (15 minutes recommended) and long-lived refresh tokens per [Connection Lifetime](/guides/oauth/oauth-requirements#connection-lifetime).
 - Validate the Bearer token on every resource API request — signature (or introspection), expiry, and scope/audience.
 - Build a way to revoke tokens when a donor disconnects or you detect suspicious activity. A standard revocation endpoint (RFC 7009) is recommended; Chariot calls it when a donor unlinks your DAF.
 
@@ -54,7 +54,7 @@ All Chariot traffic — token exchanges, refreshes, and resource API calls — o
 
 ## How Chariot protects your tokens
 
-Chariot stores refresh tokens encrypted at rest (envelope encryption, per-token data keys), never logs token values, and scopes each token to a single Donor Account. Tokens are used exclusively for the donor-authorized operations described in [API Endpoints](/guides/dafpay/oauth/api-endpoints), and stored tokens are deleted when a connection ends.
+Chariot stores refresh tokens encrypted at rest (envelope encryption, per-token data keys), never logs token values, and scopes each token to a single Donor Account. Tokens are used exclusively for the donor-authorized operations described in [API Endpoints](/guides/oauth/api-endpoints), and stored tokens are deleted when a connection ends.
 
 ## Incident coordination
 
