@@ -26,19 +26,13 @@ The FDX API exposes 7 read-only endpoints organized around deposit accounts:
 
 ## Authentication
 
-The FDX API uses Chariot's OAuth 2.0 — see the [OAuth guide](/guides/oauth) for the authorization code flow, token exchange, refresh, and the [environment endpoints](/guides/oauth#environments). For FDX:
+The FDX API uses Chariot's [OAuth 2.0](/guides/oauth).
 
 | | Value |
 |---|-------|
-| **Scope** | [`read_only`](/guides/oauth#scopes) — the FDX API is read-only |
-| **Credentials** | A client name and secret per environment, from [support@givechariot.com](mailto:support@givechariot.com) |
-| **IP whitelisting** | Required. Your addresses must be registered before any request succeeds — see [IP Whitelisting](/guides/oauth#ip-whitelisting) |
-
-Pass the access token as a Bearer token:
-
-```
-Authorization: Bearer <access_token>
-```
+| **Scope** | [`read_only`](/guides/oauth#scopes) |
+| **Credentials** | Client name and secret per [environment](/guides/oauth#environments), from [support@givechariot.com](mailto:support@givechariot.com) |
+| **IP whitelisting** | [Required](/guides/oauth#ip-whitelisting) |
 
 ## Key Concepts
 

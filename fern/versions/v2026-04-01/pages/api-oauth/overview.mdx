@@ -10,7 +10,7 @@ updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
   OAuth access is not self-service. Contact
   [support@givechariot.com](mailto:support@givechariot.com) to register your
   application and receive client credentials. Include your application's display
-  name, logo, and callback URLs.
+  name, logo, callback URLs, and optionally the IP addresses to whitelist.
 </Warning>
 
 ## How It Works
@@ -32,21 +32,13 @@ Your client secret should be kept secure and should never be exposed to the publ
 
 ## Environments
 
-| Environment | Authorization | Token |
-| ----------- | ------------- | ----- |
-| **Production** | `https://dashboard.givechariot.com/oauth/authorize` | `https://api.givechariot.com/auth/oauth/token` |
-| **Sandbox** | `https://dashboard.givechariot.com/oauth/sandbox/authorize` | `https://sandboxapi.givechariot.com/auth/oauth/token` |
+| Endpoint | Production | Sandbox |
+| -------- | ---------- | ------- |
+| Authorization | `https://dashboard.givechariot.com/oauth/authorize` | `https://dashboard.givechariot.com/oauth/sandbox/authorize` |
+| Token | `https://api.givechariot.com/auth/oauth/token` | `https://sandboxapi.givechariot.com/auth/oauth/token` |
+| OIDC configuration | `https://api.givechariot.com/.well-known/openid-configuration` | `https://sandboxapi.givechariot.com/.well-known/openid-configuration` |
 
-Sandbox authorization is served from the production dashboard — only the path differs, so donors sign in at the hostname they already know. The token, UserInfo, and discovery endpoints are on the sandbox API host.
-
-Each environment issues its own `client_id` and `client_secret`. Sandbox credentials cannot be used in production and vice versa.
-
-Rather than hardcoding these, read them from the discovery document for your environment:
-
-| Environment | OIDC configuration |
-| ----------- | ------------------ |
-| **Production** | `https://api.givechariot.com/.well-known/openid-configuration` |
-| **Sandbox** | `https://sandboxapi.givechariot.com/.well-known/openid-configuration` |
+Sandbox authorization is served from the production dashboard; only the path differs. Each environment issues its own `client_id` and `client_secret`.
 
 ## Scopes
 
@@ -54,10 +46,12 @@ Scopes define what your application can access. Specify them as a space-separate
 
 | Scope            | Grants                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------- |
-| `read_only`      | Read access to the nonprofit's data across the Chariot API                                   |
-| `read_write`     | Read and write access across the Chariot API                                                 |
+| `read_only`      | Read access across every resource in the Chariot API                                         |
+| `read_write`     | Read and write access across every resource in the Chariot API                               |
 | `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
 | `offline_access` | Accepted for compatibility with OIDC clients                                                 |
+
+`read_only` and `read_write` are aggregates — they grant their level of access across every resource, so you do not have to enumerate a scope per resource or request new ones as the API grows. Neither grants Chariot's internal administrative operations.
 
 <Note>
   A token only receives the permissions your client, the authorization, and the
