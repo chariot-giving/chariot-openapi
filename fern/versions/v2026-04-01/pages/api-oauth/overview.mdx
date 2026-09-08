@@ -55,7 +55,9 @@ Scopes define what your application can access. Specify them as a space-separate
 
 <Note>
   A token only receives the permissions your client, the authorization, and the
-  consenting user's role all have in common.
+  consenting user's role all have in common. Request `read_only` alongside
+  `read_write` if you serve nonprofits whose users hold read-only roles — a
+  read-only user cannot approve a request for `read_write` alone.
 </Note>
 
 ## Authorization Code Flow
