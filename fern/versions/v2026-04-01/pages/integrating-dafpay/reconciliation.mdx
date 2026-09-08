@@ -5,15 +5,27 @@ hidden: false
 
 Store Chariot identifiers as soon as they become available.
 
-| Identifier | Source | Use |
-| --- | --- | --- |
-| Your transaction ID | Your platform | Primary key in your system. |
-| Nonprofit ID | Your platform | Identifies the intended recipient. |
-| Connect ID | Nonprofit onboarding | Confirms which nonprofit's Connect opened. |
-| `workflowSessionId` | `CHARIOT_SUCCESS` | Ties the browser session to grant creation. |
-| Grant ID | Create Grant | Stable Chariot grant identifier. |
-| Donation ID | Grant or donation data | Links the request to Chariot's gift record. |
-| Tracking or external grant ID | Grant data | Helps operations match provider remittance. |
+| Identifier | Where it comes from | When you get it | Use |
+| --- | --- | --- | --- |
+| Your transaction ID | Your platform | Before DAFpay opens | Primary key in your system. |
+| Nonprofit ID | Your platform | Before DAFpay opens | Identifies the intended recipient. |
+| Connect ID | Nonprofit onboarding | Before DAFpay opens | Confirms which nonprofit's Connect opened. |
+| `workflowSessionId` | `CHARIOT_SUCCESS` | The moment the donor authorizes | Ties the browser session to grant creation. |
+| Grant ID | The Create Grant response | Right after your server call | Stable Chariot grant identifier. |
+| Donation ID | Get Grant | Asynchronously, once Chariot links the gift | Links the request to Chariot's gift record. |
+| Tracking or external grant ID | Grant data | With or after the grant, depending on the provider | Helps operations match provider remittance. |
+
+### A gift, end to end
+
+A donor gives $250 to a nonprofit on your platform.
+
+1. Checkout creates your transaction against that nonprofit's record, and you load its Connect ID to render DAFpay.
+2. The donor authorizes. `CHARIOT_SUCCESS` returns `workflowSessionId`, which you store on your transaction **before** calling Chariot.
+3. Your server calls Create Grant and stores the Grant ID it returns.
+4. Get Grant later returns the Donation ID. Store that too.
+5. Weeks on, the provider's payment arrives quoting a tracking identifier. Support finds your transaction from the Grant ID or Donation ID rather than guessing from donor name and amount.
+
+Steps 2 and 3 are where reconciliation is usually lost: if the workflow session is not written down before the Create Grant call, a failure between them leaves a grant in Chariot that your system cannot match to anything.
 
 Use your transaction ID, Chariot Grant ID, and Donation ID as durable keys. Treat human-readable tracking identifiers as reconciliation aids, not database keys; they may be absent or provider-dependent.
 

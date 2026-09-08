@@ -38,6 +38,15 @@ Create Grant is idempotent for the workflow session:
 | `409 Conflict` | Creation is still in progress; wait and retrieve it. |
 | `410 Gone` | The authorization expired; restart DAFpay. |
 
+### A retry, step by step
+
+Your first call times out and you do not know whether the grant exists.
+
+1. Call Create Grant again with the same `workflowSessionId`. Never mint a new one — that is how one authorization becomes two grants.
+2. `200 OK` means it already existed. Store the grant it returns and stop.
+3. `409 Conflict` means creation is still running. Wait, then call again.
+4. `410 Gone` means the 15 minutes elapsed. No grant exists and none will; send the donor back through DAFpay.
+
 Use the amount returned by `CHARIOT_SUCCESS`. Validate that it is a whole-dollar amount.
 
 ## Platform fees

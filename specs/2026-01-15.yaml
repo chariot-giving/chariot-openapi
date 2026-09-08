@@ -34,6 +34,7 @@ paths:
             The query string to search for. If this is in the format of an EIN, the search will be limited exclusively to the organization with that EIN. Otherwise, this will be a fuzzy search on organization name.
           schema:
             type: string
+            example: "530196605"
         - name: ein
           in: query
           description: |-

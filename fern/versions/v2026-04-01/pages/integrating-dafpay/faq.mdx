@@ -3,62 +3,100 @@ title: "FAQ"
 hidden: false
 ---
 
+## Connects and architecture
+
 <AccordionGroup>
+
     <Accordion title="How many Connects do we need?">
 
         One for each nonprofit on your platform. Store each Connect ID with the corresponding nonprofit record.
 
     </Accordion>
+
     <Accordion title="When should we create a Connect?">
 
         When the nonprofit enables DAFpay. Do not create it during donor checkout. Backfill existing nonprofits with a restartable batch process.
 
     </Accordion>
+
     <Accordion title="Can the Connect ID be exposed in the browser?">
 
         Yes. The Connect ID initializes the component. The API key must remain on your server.
 
     </Accordion>
+
+</AccordionGroup>
+
+## Checkout and grant creation
+
+<AccordionGroup>
+
     <Accordion title="What does CHARIOT_SUCCESS mean?">
 
         The donor completed the DAFpay authorization. Your server must still create the Grant. This event does not mean funds reached the nonprofit.
 
     </Accordion>
+
     <Accordion title="Which amount should Create Grant use?">
 
         Use the amount returned by `CHARIOT_SUCCESS`. The donor may have changed it inside DAFpay.
 
     </Accordion>
+
+</AccordionGroup>
+
+## Fees
+
+<AccordionGroup>
+
     <Accordion title="Can we charge a platform fee?">
 
         Use `applicationFeeAmount` as defined in your Chariot agreement and within the combined fee limit documented on [Create Grant](/api/grants/create). Do not add a for-profit tip to a DAF grant.
 
     </Accordion>
+
     <Accordion title="How should fee coverage work?">
 
         Follow the fee behavior in your Chariot agreement and on [Create Grant](/api/grants/create). Confirm the calculation with Chariot during sandbox review, including how donor-covered fees affect the total Grant amount and any whole-dollar requirement.
 
     </Accordion>
+
+</AccordionGroup>
+
+## Recurring and unconnected providers
+
+<AccordionGroup>
+
     <Accordion title="How do recurring grants work?">
 
         The DAF provider manages the schedule. Chariot records the initial recurring setup but may not know when the donor changes or cancels it. Reconcile later Donations individually.
 
     </Accordion>
+
     <Accordion title="What is an unconnected DAF provider?">
 
         It is a provider through which DAFpay cannot directly submit the request. If you enable the intent flow, the donor must still complete the grant in the provider's portal. Do not mark that intent paid.
 
     </Accordion>
+
+</AccordionGroup>
+
+## Operations
+
+<AccordionGroup>
+
     <Accordion title="How should we reconcile a platform transaction?">
 
         Store your transaction ID, workflow session, Connect ID, Grant ID, and Donation ID. Show provider tracking identifiers as secondary lookup fields rather than primary keys.
 
     </Accordion>
+
     <Accordion title="Should we subscribe to webhooks?">
 
         Yes, for timely status changes. Verify signatures, process idempotently, and use List Events or a scheduled recovery process when state must not be missed.
 
     </Accordion>
+
 </AccordionGroup>
 
 <Info>
