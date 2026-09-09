@@ -70,7 +70,30 @@ redirects:
   - source: "/v2026-04-01/guides/processing/faq"
     destination: "/v2026-04-01/guides/nonprofits/faq"
     permanent: true
-
+  - source: "/guides/dafpay/donor-accounts/overview"
+    destination: "/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/faq"
+    destination: "/guides/donor-accounts/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/overview"
+    destination: "/v2026-04-01/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/faq"
+    destination: "/v2026-04-01/guides/donor-accounts/faq"
+    permanent: true
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png
@@ -79,6 +102,7 @@ logo:
 
 favicon: assets/favicon.png
 css: assets/styles.css
+js: assets/scripts.js
 
 settings:
   hide-404-page: true

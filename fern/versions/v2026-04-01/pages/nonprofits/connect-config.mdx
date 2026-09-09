@@ -1,0 +1,142 @@
+---
+title: "Request Your Connect"
+hidden: false
+---
+
+A Connect controls how DAFpay works for your nonprofit. Use the form below to choose your settings, then email the generated request to [implementations@givechariot.com](mailto:implementations@givechariot.com).
+
+Chariot will send you a sandbox Connect ID to use while you build and test. When your integration is ready, we will review it and issue a separate production Connect ID.
+
+Sandbox Connect IDs begin with `test_`.
+
+<Warning>
+Use the Connect ID created for your API integration. Your Chariot account also has Connect IDs for the dashboard's no-code button and link, which submit the gift themselves; pointing your form at one of those produces two gifts for one checkout.
+</Warning>
+
+<div id="chariot-setup-builder">
+
+  <p class="csb-section">Your organization</p>
+
+  <div class="csb-grid">
+    <label class="csb-field">
+      <span>Nonprofit name</span>
+      <input type="text" data-key="organization" placeholder="Example Nonprofit" />
+    </label>
+
+    <label class="csb-field">
+      <span>This configuration applies to</span>
+      <select data-key="applies_to">
+        <option value="Sandbox and production">Sandbox and production</option>
+        <option value="Sandbox only">Sandbox only</option>
+        <option value="Production only">Production only</option>
+      </select>
+    </label>
+  </div>
+
+  <p class="csb-section">Connect settings</p>
+
+  <div class="csb-settings">
+
+    <div class="csb-setting">
+      <span class="csb-name">Donor details step</span>
+      <span class="csb-help">The step inside the DAFpay window where the donor's name, email, and address appear. DAFpay fills them from the donor's DAF account so they retype nothing, and collects anything your form does not ask for, such as a mailing address you need for receipting. Skip it and DAFpay knows only what your form sends.</span>
+      <select data-key="donor_step">
+        <option value="Show">Show it (recommended)</option>
+        <option value="Skip">Skip it</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Details to show</span>
+      <span class="csb-help">What you want on the gift record. Leave out what your form already collects so donors are not asked twice, and include what it does not.</span>
+      <div class="csb-checks">
+        <label><input type="checkbox" data-group="show" value="name" checked /> Name</label>
+        <label><input type="checkbox" data-group="show" value="email" checked /> Email</label>
+        <label><input type="checkbox" data-group="show" value="phone" /> Phone</label>
+        <label><input type="checkbox" data-group="show" value="address" checked /> Mailing address</label>
+        <label><input type="checkbox" data-group="show" value="note" checked /> Note to your team</label>
+        <label><input type="checkbox" data-group="show" value="anonymous" /> Give anonymously</label>
+      </div>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Details to require</span>
+      <span class="csb-help">Required fields must be completed before the donor can continue. Require only the fields you need.</span>
+      <div class="csb-checks">
+        <label><input type="checkbox" data-group="require" value="name" checked /> Name</label>
+        <label><input type="checkbox" data-group="require" value="email" checked /> Email</label>
+        <label><input type="checkbox" data-group="require" value="phone" /> Phone</label>
+        <label><input type="checkbox" data-group="require" value="address" /> Mailing address</label>
+      </div>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Monthly recurring gifts</span>
+      <span class="csb-help">Lets a donor set up a monthly gift from their DAF. The provider owns the schedule, so Chariot is not notified of cancellations, and later payments arrive as separate gifts with no link to the first. Your backend handles them on a separate call.</span>
+      <select data-key="recurring">
+        <option value="Allow">Allow monthly</option>
+        <option value="One-time only">One-time only</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Donors whose DAF provider is not connected</span>
+      <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and email them instructions to finish in their own portal, or return them to your form to pay another way. Recording captures gifts you would otherwise lose, but those records represent donor intent rather than funds received.</span>
+      <select data-key="unconnected">
+        <option value="Record what they intended">Record what they intended (default)</option>
+        <option value="Send back to our form">Send them back to our form</option>
+      </select>
+    </div>
+
+    <div class="csb-setting">
+      <span class="csb-name">Close the window as soon as they confirm</span>
+      <span class="csb-help">Applies only to donors whose DAF provider is not connected. DAFpay normally shows them a final confirmation screen, and your system is not notified until they close it. If the donor leaves it open or closes the tab, your application never receives the event. Turning this on closes the window the moment they confirm.</span>
+      <select data-key="close_window">
+        <option value="no">No (default)</option>
+        <option value="yes">Yes</option>
+      </select>
+      <p class="csb-note">Choose yes only once your own confirmation page shows the tracking ID with its <code>Tracking ID:</code> prefix and a copy control, your EIN, your organization name, and a link to the donor's DAF provider. That screen tells the donor how to complete their gift.</p>
+    </div>
+
+  </div>
+
+  <p class="csb-section">Your request</p>
+
+  <ul class="csb-warnings" data-warnings hidden></ul>
+
+  <pre><code data-output>{`organization: <your nonprofit's name>
+configuration_applies_to: Sandbox and production
+
+connect:
+  donor_details_step: Show
+  details_to_show: [name, email, address, note]
+  details_to_require: [name, email]
+  monthly_recurring_gifts: Allow
+  unconnected_daf_providers: Record what they intended
+  close_window_on_confirm: no
+`}</code></pre>
+
+  <div class="csb-actions">
+    <button type="button" class="csb-btn csb-btn-primary" data-copy>Copy request</button>
+    <a class="csb-btn" data-mailto href="mailto:implementations@givechariot.com?subject=DAFpay%20setup%20request">Email it to us</a>
+  </div>
+
+</div>
+
+<Tip title="Getting DAF prefill to work">
+For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send Donor Data](/guides/nonprofits/initiate/donor-data).
+</Tip>
+
+## What happens next
+
+Chariot will email your sandbox Connect ID. Use it to build and test your integration, then complete [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch) to request your production Connect ID.
+
+## Change your settings
+
+To update your Connect later, email [implementations@givechariot.com](mailto:implementations@givechariot.com). Tell us whether the change should apply to sandbox, production, or both.
+
+Next: [Install the button](/guides/nonprofits/initiate/install)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

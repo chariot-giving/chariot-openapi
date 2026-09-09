@@ -1,3 +1,214 @@
+/* ── Connect setup request builder ──────────────────────────────────────────
+   Used by the "Configure and Request Your Connect" guide page. Colors are
+   derived from currentColor and the docs accent so the widget follows the
+   reader's light/dark theme without hardcoding a palette. */
+
+#chariot-setup-builder {
+  --csb-line: color-mix(in srgb, currentColor 18%, transparent);
+  --csb-accent: #35bbf4;
+  margin: 1.25rem 0;
+}
+
+#chariot-setup-builder .csb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* One setting per row: name, explanation, then the control. */
+#chariot-setup-builder .csb-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+#chariot-setup-builder .csb-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid color-mix(in srgb, var(--csb-accent) 45%, transparent);
+}
+
+#chariot-setup-builder .csb-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+#chariot-setup-builder .csb-help {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+#chariot-setup-builder .csb-setting select,
+#chariot-setup-builder .csb-setting input[type="text"],
+#chariot-setup-builder .csb-setting input[type="url"],
+#chariot-setup-builder .csb-setting input[type="date"] {
+  max-width: 26rem;
+}
+
+#chariot-setup-builder .csb-note {
+  margin: 0.15rem 0 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, #e8a33d 45%, transparent);
+  background: color-mix(in srgb, #e8a33d 10%, transparent);
+}
+
+#chariot-setup-builder .csb-section {
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  border-bottom: 1px solid var(--csb-line);
+}
+
+#chariot-setup-builder .csb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+#chariot-setup-builder .csb-field > span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+#chariot-setup-builder select,
+#chariot-setup-builder input[type="text"],
+#chariot-setup-builder input[type="url"],
+#chariot-setup-builder input[type="date"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  border: 1px solid var(--csb-line);
+  border-radius: 6px;
+}
+
+#chariot-setup-builder select:focus-visible,
+#chariot-setup-builder input:focus-visible {
+  outline: 2px solid var(--csb-accent);
+  outline-offset: 1px;
+}
+
+#chariot-setup-builder .csb-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+}
+
+#chariot-setup-builder .csb-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#chariot-setup-builder .csb-checks input {
+  accent-color: var(--csb-accent);
+  margin: 0;
+}
+
+#chariot-setup-builder .csb-fieldset {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+#chariot-setup-builder .csb-fieldset > legend {
+  padding: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+#chariot-setup-builder pre {
+  overflow-x: auto;
+  padding: 0.9rem 1rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  border: 1px solid var(--csb-line);
+  border-radius: 8px;
+}
+
+#chariot-setup-builder pre code {
+  white-space: pre;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+#chariot-setup-builder .csb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+#chariot-setup-builder .csb-btn {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  color: inherit;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  border: 1px solid var(--csb-line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#chariot-setup-builder .csb-btn:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+#chariot-setup-builder .csb-btn-primary {
+  color: #0b1c26;
+  background: var(--csb-accent);
+  border-color: var(--csb-accent);
+}
+
+#chariot-setup-builder .csb-btn-primary:hover {
+  background: color-mix(in srgb, var(--csb-accent) 85%, #000);
+}
+
+#chariot-setup-builder .csb-warnings {
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 0.9rem 0.7rem 1.9rem;
+  font-size: 0.85rem;
+  border: 1px solid color-mix(in srgb, #e8a33d 45%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, #e8a33d 10%, transparent);
+}
+
+#chariot-setup-builder .csb-warnings li + li {
+  margin-top: 0.35rem;
+}
+
 /* :not(.dark) body {
     color: #364757 !important;
 }

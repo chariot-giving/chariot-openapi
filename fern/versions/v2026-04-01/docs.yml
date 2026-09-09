@@ -35,45 +35,45 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
-          - section: Add DAFpay to a Form You Own
+          - section: Add DAFpay to Your Form
             slug: initiate
             contents:
               - page: Overview
                 slug: /
-                path: ./pages/nonprofits/initiate/overview.mdx
+                path: ./pages/nonprofits/initiate-overview.mdx
               - page: Request Your Connect
                 slug: connect-config
-                path: ./pages/nonprofits/initiate/connect-config.mdx
+                path: ./pages/nonprofits/connect-config.mdx
               - page: Install the Button
                 slug: install
-                path: ./pages/nonprofits/initiate/install.mdx
+                path: ./pages/nonprofits/install.mdx
               - page: Send Donor Data
                 slug: donor-data
-                path: ./pages/nonprofits/initiate/donor-data.mdx
+                path: ./pages/nonprofits/donor-data.mdx
               - page: Handle the Result
                 slug: events
-                path: ./pages/nonprofits/initiate/events.mdx
+                path: ./pages/nonprofits/events.mdx
               - page: Create the Grant
                 slug: create-grant
-                path: ./pages/nonprofits/initiate/create-grant.mdx
+                path: ./pages/nonprofits/create-grant.mdx
               - page: Test Before Launch
                 slug: before-launch
-                path: ./pages/nonprofits/initiate/before-launch.mdx
-          - section: Sync Donations
+                path: ./pages/nonprofits/initiate-before-launch.mdx
+          - section: Sync Donations to Your CRM or ERP
             slug: donations
             contents:
-              - page: Retrieve Donations
+              - page: Overview
                 slug: /
-                path: ./pages/nonprofits/donations/overview.mdx
+                path: ./pages/nonprofits/donations-overview.mdx
               - page: Poll for Donations
                 slug: poll
-                path: ./pages/nonprofits/donations/poll.mdx
+                path: ./pages/nonprofits/poll.mdx
               - page: Record Processing Status
                 slug: record
-                path: ./pages/nonprofits/donations/record.mdx
+                path: ./pages/nonprofits/record.mdx
               - page: Test Before Launch
                 slug: before-launch
-                path: ./pages/nonprofits/donations/before-launch.mdx
+                path: ./pages/nonprofits/donations-before-launch.mdx
           - page: Troubleshooting
             slug: troubleshooting
             path: ./pages/nonprofits/troubleshooting.mdx
@@ -86,7 +86,7 @@ navigation:
           - page: Overview
             slug: overview
             path: ./pages/integrating-dafpay/overview.mdx
-          - page: Sandbox Setup and Testing
+          - page: Sandbox Testing
             slug: sandbox
             path: ./pages/integrating-dafpay/sandbox.mdx
           - section: Integrating DAFpay
@@ -125,18 +125,15 @@ navigation:
               - page: Request Production Access
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
-          - section: Gifts
+          - section: After the Gift
             slug: gifts
             contents:
               - page: Reconciliation
                 slug: reconciliation
-                path: ./pages/integrating-dafpay/gifts/reconciliation.mdx
+                path: ./pages/integrating-dafpay/reconciliation.mdx
               - page: Grant Statuses
                 slug: statuses
-                path: ./pages/integrating-dafpay/gifts/statuses.mdx
-          - page: Chariot Connect Reference
-            slug: connect-reference
-            path: ./pages/integrating-dafpay/connect-reference.mdx
+                path: ./pages/integrating-dafpay/statuses.mdx
           - page: After Launch
             slug: post-launch
             path: ./pages/integrating-dafpay/post-launch.mdx
@@ -146,21 +143,9 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
-          - section: Donor Accounts (for DAFs)
-            slug: donor-accounts
-            contents:
-              - page: Overview
-                slug: overview
-                path: ./pages/donor-accounts/overview.mdx
-              - page: Donor Account Lifecycle
-                slug: account-lifecycle
-                path: ./pages/donor-accounts/account-lifecycle.mdx
-              - page: Grant Request Lifecycle
-                slug: grant-request-lifecycle
-                path: ./pages/donor-accounts/grant-request-lifecycle.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/donor-accounts/faq.mdx
+          - page: Chariot Connect Reference
+            slug: connect-reference
+            path: ./pages/integrating-dafpay/connect-reference.mdx
           - section: OAuth Integration (for DAFs)
             slug: oauth
             contents:
@@ -179,30 +164,48 @@ navigation:
               - page: Integration Checklist
                 slug: integration-checklist
                 path: ./pages/oauth/integration-checklist.mdx
-      - section: Disbursements
-        slug: disbursements
+      - section: For Grantmakers
+        skip-slug: true
         contents:
-          - page: Overview
-            slug: /
-            path: ./pages/disbursements/overview.mdx
-          - page: How It Works
-            slug: how-it-works
-            path: ./pages/disbursements/how-it-works.mdx
-          - page: Disbursement Lifecycle
-            slug: disbursement-lifecycle
-            path: ./pages/disbursements/disbursement-lifecycle.mdx
-          - page: Compliance
-            slug: compliance
-            path: ./pages/disbursements/compliance.mdx
-          - page: Sandbox
-            slug: sandbox
-            path: ./pages/disbursements/sandbox.mdx
-          - page: How Chariot Compares
-            slug: comparisons
-            path: ./pages/disbursements/how-chariot-compares.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/disbursements/faq.mdx
+          - section: Donor Accounts
+            slug: donor-accounts
+            contents:
+              - page: Overview
+                slug: overview
+                path: ./pages/donor-accounts/overview.mdx
+              - page: Donor Account Lifecycle
+                slug: account-lifecycle
+                path: ./pages/donor-accounts/account-lifecycle.mdx
+              - page: Grant Request Lifecycle
+                slug: grant-request-lifecycle
+                path: ./pages/donor-accounts/grant-request-lifecycle.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/donor-accounts/faq.mdx
+          - section: Disbursements
+            slug: disbursements
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/disbursements/overview.mdx
+              - page: How It Works
+                slug: how-it-works
+                path: ./pages/disbursements/how-it-works.mdx
+              - page: Disbursement Lifecycle
+                slug: disbursement-lifecycle
+                path: ./pages/disbursements/disbursement-lifecycle.mdx
+              - page: Compliance
+                slug: compliance
+                path: ./pages/disbursements/compliance.mdx
+              - page: Sandbox
+                slug: sandbox
+                path: ./pages/disbursements/sandbox.mdx
+              - page: How Chariot Compares
+                slug: comparisons
+                path: ./pages/disbursements/how-chariot-compares.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/disbursements/faq.mdx
       - section: OAuth
         slug: oauth
         contents:
