@@ -4268,7 +4268,7 @@ components:
           type: string
           description: |-
             The kind of destination, which determines how funds move.
-            - `chariot_deposit_account`: a deposit account the organization holds with Chariot. Opened by the organization; not creatable through the API.
+            - `chariot_deposit_account`: a deposit account the organization holds with Chariot.
             - `us_bank_account`: an account the organization holds at a US bank. Funds are sent by ACH or, when `wire_eligible` is true, by wire.
             - `mailing_address`: a postal address that receives physical mail. Funds are sent by check.
           enum:
