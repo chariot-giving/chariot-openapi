@@ -1,0 +1,55 @@
+---
+title: Create the Grant
+hidden: false
+---
+
+Call Create Grant from your server after `CHARIOT_SUCCESS`. A successful browser session does not create the Grant by itself.
+
+```bash
+curl -X POST https://api.givechariot.com/v1/grants \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflowSessionId": "string",
+    "amount": 15000
+  }'
+```
+
+## Server-side sequence
+
+1. Receive the workflow session ID and amount returned by DAFpay.
+2. Resolve the nonprofit and platform transaction from your stored session record.
+3. Save the platform transaction.
+4. Call Create Grant with the server-side API key.
+5. Store the Grant ID and response.
+
+Complete this sequence within 15 minutes of authorization.
+
+## Retry safely
+
+Create Grant is idempotent for a workflow session. If the first request times out, call Create Grant again with the same `workflowSessionId`.
+
+| Response | What to do |
+| --- | --- |
+| `201 Created` | The Grant was created. Store it and stop retrying. |
+| `200 OK` | A Grant already exists for this workflow session. Store it and stop retrying. |
+| `409 Conflict` | Creation is still running. Wait, then retry with the same workflow session. |
+| `410 Gone` | The authorization expired. Ask the donor to complete DAFpay again. |
+
+Never create a new workflow session to retry the same donor authorization.
+
+## Amount validation
+
+Use the amount returned by `CHARIOT_SUCCESS`. Validate that the amount in cents is divisible by 100.
+
+DAFpay normally helps the donor correct an amount below the provider minimum or above the available account balance before success. Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
+
+When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
+
+## Platform fees
+
+Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents. The API enforces a combined cap across Chariot and platform fees.
+
+A donor-covered fee increases the Grant amount. It is not a separate tip. Do not offer a tip to a for-profit platform in a DAF transaction.
+
+Next: [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring)

@@ -29,36 +29,123 @@ navigation:
           - page: Navigating the Docs
             slug: getting-started/navigating-the-docs
             path: ./pages/getting-started/navigating-the-docs.mdx
+      - section: For Nonprofits
+        slug: nonprofits
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/nonprofits/overview.mdx
+          - section: Add DAFpay to a Form You Own
+            slug: initiate
+            contents:
+              - page: Overview
+                slug: /
+                path: ./pages/nonprofits/initiate/overview.mdx
+              - page: Request Your Connect
+                slug: connect-config
+                path: ./pages/nonprofits/initiate/connect-config.mdx
+              - page: Install the Button
+                slug: install
+                path: ./pages/nonprofits/initiate/install.mdx
+              - page: Send Donor Data
+                slug: donor-data
+                path: ./pages/nonprofits/initiate/donor-data.mdx
+              - page: Handle the Result
+                slug: events
+                path: ./pages/nonprofits/initiate/events.mdx
+              - page: Create the Grant
+                slug: create-grant
+                path: ./pages/nonprofits/initiate/create-grant.mdx
+              - page: Test Before Launch
+                slug: before-launch
+                path: ./pages/nonprofits/initiate/before-launch.mdx
+          - section: Sync Donations
+            slug: donations
+            contents:
+              - page: Retrieve Donations
+                slug: /
+                path: ./pages/nonprofits/donations/overview.mdx
+              - page: Poll for Donations
+                slug: poll
+                path: ./pages/nonprofits/donations/poll.mdx
+              - page: Record Processing Status
+                slug: record
+                path: ./pages/nonprofits/donations/record.mdx
+              - page: Test Before Launch
+                slug: before-launch
+                path: ./pages/nonprofits/donations/before-launch.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/nonprofits/troubleshooting.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/nonprofits/faq.mdx
       - section: DAFpay
         slug: dafpay
         contents:
           - page: Overview
             slug: overview
             path: ./pages/integrating-dafpay/overview.mdx
+          - page: Sandbox Setup and Testing
+            slug: sandbox
+            path: ./pages/integrating-dafpay/sandbox.mdx
           - section: Integrating DAFpay
             slug: integrating-dafpay
             contents:
-              - page: Checklist
-                slug: checklist
-                path: ./pages/integrating-dafpay/checklist.mdx
-              - page: Set Up
-                slug: set-up
-                path: ./pages/integrating-dafpay/set-up.mdx
-              - page: Installing Connect
+              - page: Create Connects
+                slug: connects
+                path: ./pages/integrating-dafpay/connects.mdx
+              - page: Configure Your Connects
+                slug: connect-config
+                path: ./pages/integrating-dafpay/connect-config.mdx
+              - page: Install DAFpay
                 slug: installation
                 path: ./pages/integrating-dafpay/installation.mdx
-              - page: Integrating Connect
-                slug: integration
-                path: ./pages/integrating-dafpay/integration.mdx
-              - page: Transaction Management
-                slug: transactions
-                path: ./pages/integrating-dafpay/transactions.mdx
-              - page: Production API Keys
+              - page: Content Security Policy
+                slug: csp
+                path: ./pages/integrating-dafpay/csp.mdx
+              - page: Send Donation Data
+                slug: donor-data
+                path: ./pages/integrating-dafpay/donor-data.mdx
+              - page: Handle the Result
+                slug: events
+                path: ./pages/integrating-dafpay/events.mdx
+              - page: Create the Grant
+                slug: create-grant
+                path: ./pages/integrating-dafpay/create-grant.mdx
+              - page: Recurring Grants
+                slug: recurring
+                path: ./pages/integrating-dafpay/recurring.mdx
+              - page: Unconnected DAF Providers
+                slug: unintegrated
+                path: ./pages/integrating-dafpay/unintegrated.mdx
+              - page: Integration Checklist
+                slug: checklist
+                path: ./pages/integrating-dafpay/checklist.mdx
+              - page: Request Production Access
                 slug: prod-keys
                 path: ./pages/integrating-dafpay/prod-keys.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/integrating-dafpay/faq.mdx
+          - section: Gifts
+            slug: gifts
+            contents:
+              - page: Reconciliation
+                slug: reconciliation
+                path: ./pages/integrating-dafpay/gifts/reconciliation.mdx
+              - page: Grant Statuses
+                slug: statuses
+                path: ./pages/integrating-dafpay/gifts/statuses.mdx
+          - page: Chariot Connect Reference
+            slug: connect-reference
+            path: ./pages/integrating-dafpay/connect-reference.mdx
+          - page: After Launch
+            slug: post-launch
+            path: ./pages/integrating-dafpay/post-launch.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/integrating-dafpay/troubleshooting.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/integrating-dafpay/faq.mdx
           - section: Donor Accounts (for DAFs)
             slug: donor-accounts
             contents:
@@ -116,21 +203,6 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/disbursements/faq.mdx
-      - section: Gift Processing
-        slug: processing
-        contents:
-          - page: Overview
-            slug: /
-            path: ./pages/processing/overview.mdx
-          - page: How It Works
-            slug: how-it-works
-            path: ./pages/processing/how-it-works.mdx
-          - page: Getting Started
-            slug: getting-started
-            path: ./pages/processing/getting-started.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/processing/faq.mdx
       - section: OAuth
         slug: oauth
         contents:

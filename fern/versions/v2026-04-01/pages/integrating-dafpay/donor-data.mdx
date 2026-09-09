@@ -1,0 +1,86 @@
+---
+title: Send Donation Data
+hidden: false
+---
+
+Use `onDonationRequest` to send the current form values into DAFpay.
+
+```javascript
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  firstName: "Michael",
+  lastName: "Scott",
+  email: "michael@example.org",
+  designation: "Community programs",
+  metadata: {
+    platformTransactionId: "txn_123",
+    campaignId: "spring-2026"
+  }
+}));
+```
+
+## Supported fields
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `amount` | number | Amount in cents. Pass it when the donor selected an amount. If omitted, DAFpay may recommend an amount based on the available DAF balance. |
+| `firstName` | string | Donor's first name. Maximum 255 characters. |
+| `lastName` | string | Donor's last name. Maximum 255 characters. |
+| `email` | string | Valid donor email. Maximum 255 characters. |
+| `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
+| `note` | string | Donor note to the nonprofit. Maximum 400 characters. |
+| `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
+| `designation` | string | Defaults to `Where needed most`. Values over 100 characters may be truncated. |
+| `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
+| `metadata` | object | Name-value pairs associated with the workflow session. |
+| `fundId` | string | Preselects a DAF provider and skips the provider picker. |
+| `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
+
+DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100.
+
+## Omit fields you do not have
+
+Do not send empty strings. Chariot treats an empty string as supplied data, which prevents DAFpay from filling that field from the donor's DAF account.
+
+Every donor field must describe the donor, not the nonprofit administrator or platform account owner.
+
+## Preserve attribution
+
+Pass stable identifiers the nonprofit needs for CRM coding, such as campaign, appeal, designation, source, form, comment, dedication, and tribute data. Do not rely only on a page URL.
+
+Test the exact metadata returned from at least two forms with different values.
+
+## Prevent blocked popups
+
+DAFpay must open in direct response to the donor's click. Keep the time between the click and the DAFpay window opening under one second.
+
+Load required data and validate nonprofit eligibility before the click. Avoid network requests, donation-history lookups, and other slow work inside `onDonationRequest`.
+
+Using an `async` callback is fine. The risk comes from waiting for slow work before it returns.
+
+If your platform uses a custom button or Shadow DOM, do not call your server between the donor's click and triggering DAFpay. Complete the request first, then let the click open DAFpay immediately.
+
+## Stop when the form is not ready
+
+Return `false` when a required amount, designation, or other form value is missing or invalid. Show the error on your form so the donor knows what to fix.
+
+```javascript
+chariot.onDonationRequest(async () => {
+  const amount = getAmountInCents();
+
+  if (!amount || amount <= 0) {
+    showAmountError();
+    return false;
+  }
+
+  return {
+    amount,
+    designation: getSelectedDesignation(),
+    metadata: { platformTransactionId: getTransactionId() }
+  };
+});
+```
+
+Do not block the donor because contact fields are blank when the Connect is configured to collect or fill them.
+
+Next: [Handle the Result](/guides/dafpay/integrating-dafpay/events)

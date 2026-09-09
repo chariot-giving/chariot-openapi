@@ -1,0 +1,54 @@
+---
+title: Create Connects
+hidden: false
+---
+
+Each nonprofit on your platform has its own Connect. The Connect ID tells Chariot which nonprofit should receive the Grant.
+
+## Search for the nonprofit
+
+Use Search Organizations with the nonprofit's EIN whenever possible. Names may be ambiguous, but EINs identify the legal organization.
+
+```bash
+curl -G https://api.givechariot.com/v1/organizations/search \
+  -H "Authorization: Bearer <token>" \
+  -d q=530196605
+```
+
+If the organization is not returned or is ineligible, do not create a placeholder or substitute another nonprofit. Tell the user that the organization cannot accept DAF gifts through your platform yet, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is unexpected.
+
+Your onboarding flow should also account for fiscal sponsors, organizations that change EINs, and users who select the wrong legal organization.
+
+## Create the Connect
+
+Call Create Connect with the Chariot organization ID and a contact email that belongs to the nonprofit. Do not use your platform's support address.
+
+```bash
+curl -X POST https://api.givechariot.com/v1/connects \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "organization_id": "org_1234567890",
+    "contact": {
+      "email": "finance@example.org"
+    }
+  }'
+```
+
+Store the returned Connect ID on the corresponding nonprofit record:
+
+```text
+platform_nonprofit_id → chariot_organization_id → chariot_connect_id
+```
+
+Create the Connect when the nonprofit enables DAFpay, not during donor checkout. Treat the call as idempotent and reuse the existing Connect returned for that organization.
+
+## Plan the launch backfill
+
+Use the same search-and-create sequence for existing eligible nonprofits included in your launch. Rate-limit the job, store individual failures, and make it safe to restart.
+
+<Note title="Confirm the account-claim rule">
+  Before launch, confirm with Chariot whether your agreement allows DAFpay to appear before a nonprofit claims and verifies its Chariot account. Document any effect this has on onboarding, payment routing, fees, and support.
+</Note>
+
+Next: [Configure your Connects](/guides/dafpay/integrating-dafpay/connect-config)

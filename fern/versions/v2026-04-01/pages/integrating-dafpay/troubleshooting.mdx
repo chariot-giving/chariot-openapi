@@ -1,0 +1,39 @@
+---
+title: Troubleshooting
+hidden: false
+---
+
+## The button does not render or open
+
+Check the browser console and Network panel for CSP errors or blocked requests to Chariot's CDN and `secure.dafpay.com`. Test with production-equivalent headers.
+
+## The popup is blocked on mobile
+
+Remove slow work between the donor's click and opening DAFpay. Prefetch data and perform eligibility checks before the click. Keep the interval under one second.
+
+If you use a custom button or Shadow DOM, make sure it triggers DAFpay directly rather than calling your server first.
+
+## DAFpay completed, but no Grant exists
+
+Confirm that your server received `CHARIOT_SUCCESS` and called Create Grant within 15 minutes. Preserve the workflow session, Connect ID, nonprofit, and platform transaction ID for investigation.
+
+## The wrong nonprofit received the Grant
+
+Treat this as a tenant-routing incident. Stop the affected rollout, preserve all identifiers and timestamps, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) immediately.
+
+Check for a hardcoded, cached, fallback, last-seen, or process-wide Connect ID.
+
+## Create Grant returned an error
+
+| Response | What to do |
+| --- | --- |
+| `400 Bad Request` | Validate fields, whole-dollar amount, provider requirements, and fee constraints. |
+| `401` or `403` | Match the API key to the correct environment and base URL. |
+| `409 Conflict` | Wait, then retry with the same workflow session. |
+| `410 Gone` | Ask the donor to complete DAFpay again. |
+
+## Webhook events are missing
+
+Confirm the event type, environment, endpoint, and signature code. Use List Events to determine whether Chariot created the event or delivery failed. Keep a recovery process for state that must not be missed.
+
+When contacting Chariot, send identifiers and timestamps. Never send an API key.

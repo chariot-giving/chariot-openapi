@@ -1,0 +1,40 @@
+---
+title: Chariot for Nonprofits
+hidden: false
+---
+
+Chariot helps nonprofits add DAF giving to their websites and streamline how gifts are processed. Use DAFpay to accept DAF grant requests and Gift Processing to bring payments and data together, automate coding and reconciliation, and sync gifts to your CRM or accounting system.
+
+<Note>
+This guide is for nonprofits using Chariot. If you are a fundraising platform that serves multiple nonprofits, use [Add DAFpay to your fundraising platform](/guides/dafpay/overview) instead.
+</Note>
+
+## Choose the right setup
+
+| What you want to do | Recommended approach |
+| --- | --- |
+| Enable DAFpay on a form hosted by your fundraising platform | Enable DAFpay on one of our [supported fundraising platforms](https://www.givechariot.com/dafpay-setup#integration-search). |
+| Add DAFpay to a page you own without changing your donation form | Add the DAFpay button to a dedicated [Donor Advised Fund giving page](https://help.givechariot.com/dafpay/ways-to-give-page). |
+| Add DAFpay directly to a donation form you own | [Build an integration](/guides/nonprofits/initiate) to embed DAFpay directly into your custom donation flows, customize the donor experience, and integrate DAFpay data with your internal systems. |
+| Bring Chariot donations into your CRM or ERP | Use the [Gift Processing API](/guides/nonprofits/donations) to retrieve donation records from Chariot and write status updates back to Chariot. |
+
+## How Chariot records a gift
+
+| Record | What it represents |
+| --- | --- |
+| Grant | A request sent to a donor's DAF provider through DAFpay. Only gifts initiated through DAFpay have a Grant. |
+| Donation | Chariot's record of a gift, including its donor, amount, coding, source, and payment status. A Donation can exist with or without a Grant or Deposit. |
+| Deposit | A transfer into a Chariot Account. One Deposit can contain funds for multiple Donations. |
+
+## Before you begin
+
+Every organization must claim its Chariot account and complete compliance verification before using Chariot. A control person can complete these steps in the [Chariot dashboard](https://dashboard.givechariot.com/) by following the [Onboarding Guide](https://help.givechariot.com/onboarding/onboarding-guide).
+
+Next, choose the guide that matches your goal:
+
+- [Add DAFpay to a donation form you own](/guides/nonprofits/initiate)
+- [Sync donations to your CRM or ERP](/guides/nonprofits/donations)
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

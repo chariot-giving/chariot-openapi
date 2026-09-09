@@ -1,0 +1,54 @@
+---
+title: Sandbox Setup and Testing
+hidden: false
+---
+
+Use sandbox while you build, then return to this page before requesting production access to complete the full test matrix. Sandbox has separate API keys, Connects, and data. No real funds move.
+
+Configure the sandbox base URL, API key, and Connect IDs together. Keep API keys on your server. Sandbox Connect IDs begin with `test_`.
+
+## DAF login
+
+Use these credentials with any supported provider in sandbox:
+
+```text
+username: good-user
+password: password123
+```
+
+## Multi-tenant tests
+
+Test at least two nonprofits at the same time:
+
+- create a separate Connect for each nonprofit;
+- open both donation forms concurrently;
+- confirm each form loads the correct Connect ID;
+- confirm each Grant belongs to the intended nonprofit; and
+- confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
+
+These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
+
+Also test:
+
+- one-time and recurring success;
+- every exit path your interface handles;
+- an unintegrated Grant, if supported;
+- Content Security Policy behavior;
+- duplicate clicks and Create Grant retries;
+- webhook signature verification and repeated delivery; and
+- sandbox completion and cancellation simulations.
+
+## Browsers and devices
+
+Run the complete donor flow on:
+
+- Chrome, Safari, and Firefox on desktop;
+- Safari and Chrome on iPhone;
+- Chrome on Android; and
+- every in-app or embedded browser your platform supports.
+
+Confirm that the button renders, DAFpay opens from the click, the donor can finish, your loading and confirmation states appear, and exactly one Grant exists.
+
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those after launch with Chariot and a participating nonprofit.
+
+Next: [Create Connects](/guides/dafpay/integrating-dafpay/connects)

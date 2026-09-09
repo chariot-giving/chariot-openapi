@@ -1,0 +1,44 @@
+---
+title: Record Processing Status
+hidden: false
+---
+
+Use a Donation property to show whether your integration created or updated the corresponding record in your CRM or ERP.
+
+## Create the property
+
+Create a property such as **CRM status** in the Chariot dashboard. Choose values that match your workflow, for example:
+
+- Ready to sync
+- Recorded
+- Needs review
+- Received outside Chariot
+
+These are examples, not required values.
+
+## Store the configuration IDs
+
+Use List Properties to find the property ID. For an enum property, use List Property Options to retrieve the option IDs. Store these IDs in your integration configuration instead of looking them up for every Donation.
+
+## Assign the property
+
+Use Assign Property after the CRM or ERP write succeeds. The ID in the path is the property ID, and Donation IDs belong in `resources.ids`.
+
+```bash
+curl -X POST https://api.givechariot.com/v1/properties/prop_01j8rs605a4gctmbm58d87mvsj/assign \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "value": {
+      "type": "enum",
+      "enum_value_id": "propopt_01j8rs605a4gctmbm58d87mvsj"
+    },
+    "resources": {
+      "ids": ["donation_01j8rs605a4gctmbm58d87mvsj"]
+    }
+  }'
+```
+
+You can assign a property to as many as 100 Donations in one request. Donation fields are read-only. Properties are how your integration writes its own status or identifiers back to Chariot.
+
+Next: [Test donation retrieval before launch](/guides/nonprofits/donations/before-launch)

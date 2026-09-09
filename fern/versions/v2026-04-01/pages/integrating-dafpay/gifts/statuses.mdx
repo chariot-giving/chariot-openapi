@@ -1,0 +1,49 @@
+---
+title: Grant Statuses
+hidden: false
+---
+
+Use the exact status values returned by Get Grant and describe them without overstating the movement of funds.
+
+A Grant carries status information in two separate places. Read the one that matches what you are displaying.
+
+## Grant status
+
+`status` on the Grant object is the lifecycle most platforms display. Every DAFpay Grant from an integrated provider starts at `Initiated`.
+
+| API value | Meaning | Terminal | What happens next |
+| --- | --- | --- | --- |
+| `Initiated` | The request was successfully submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when the nonprofit receives the payment, or to `Canceled` if the payment never arrives. |
+| `Completed` | The payment has been completed and the funds are in the nonprofit's bank account. | Yes | Platform fees are taken at this point. |
+| `Canceled` | The donor canceled the grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
+
+There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` usually depends on the nonprofit confirming receipt — in the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
+
+Platforms cannot write a Grant status. Listen for changes and display them; do not offer your users a control that sets one.
+
+## Grant status history
+
+`statuses` on the Grant object is a separate array of `GrantStatus` entries describing submission progress for grants placed through the [Donor Accounts](/guides/dafpay/donor-accounts/overview) flow. These values are lowercase and are not the same field as `status` above.
+
+| API value | Meaning | Terminal |
+| --- | --- | --- |
+| `awaiting_account_approval` | The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved. | No |
+| `awaiting_daf_submission` | The Account is approved and the grant is ready for the DAF to submit in their system. | No |
+| `initiated` | The DAF has submitted the grant. | Yes |
+| `canceled` | The DAF has canceled the grant. | Yes |
+
+Do not merge these values into the `status` lifecycle or compare them across the two fields. A Grant submitted without a linked Donor Account will not have this history.
+
+## Subscribe to updates
+
+Subscribe to `grant.updated`, verify the webhook signature, and retrieve the current Grant when an event arrives. Status transitions are emitted as `updated` events rather than distinct per-status events, so always fetch the object to read its current status. Process repeated events safely and keep a periodic recovery process when status freshness matters.
+
+If you support unintegrated Grants, subscribe to `unintegrated_grant.updated` as well. These are separate resources with their own events.
+
+## Cancellations and refunds
+
+Do not offer a refund action for a completed DAF Grant. DAF funds are controlled by the provider, not the donor, so the concept of a refund after the money leaves the DAF does not apply. A donor may be able to cancel a grant from their provider's portal before disbursement, subject to that provider's policies.
+
+Direct donors to their provider and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when operational help is needed.
+
+Next: [After Launch](/guides/dafpay/post-launch)

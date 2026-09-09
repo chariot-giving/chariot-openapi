@@ -1,0 +1,92 @@
+---
+title: Handle the Result
+hidden: false
+---
+
+Listen for all three Chariot Connect events.
+
+| Event | When it fires | Detail |
+| --- | --- | --- |
+| `CHARIOT_INIT` | The component is initialized and ready | None |
+| `CHARIOT_SUCCESS` | The donor authorized the request | `OnSuccessMetadata` |
+| `CHARIOT_EXIT` | The donor exited, an error occurred, or an unintegrated Grant was confirmed | `OnExitMetadata` |
+
+```javascript
+const chariot = document.getElementById("chariot");
+
+chariot.addEventListener("CHARIOT_INIT", () => {
+  // The component is ready. Enable DAFpay.
+});
+
+chariot.addEventListener("CHARIOT_SUCCESS", ({ detail }) => {
+  // Save the workflow session and create the Grant from your server.
+});
+
+chariot.addEventListener("CHARIOT_EXIT", ({ detail }) => {
+  // Handle the exact value in detail.reason.
+});
+```
+
+A one-time success payload has this shape:
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "grantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "metadata": {}
+  }
+}
+```
+
+## On `CHARIOT_SUCCESS`
+
+Associate `detail.workflowSessionId` with the current platform transaction, nonprofit, and Connect ID. Use the amount returned in the success payload because the donor may have changed it inside DAFpay.
+
+Save your transaction before calling Chariot. Show a loading state while your server calls Create Grant. Do not show final success until the Grant exists or the request has entered a durable retry process.
+
+Tell the donor that the request was submitted to their DAF provider. Do not say that the nonprofit received the funds or that the donor will receive another charitable tax receipt.
+
+## On `CHARIOT_EXIT`
+
+Use the exact value in `detail.reason`:
+
+| Reason | Meaning |
+| --- | --- |
+| `USER_EXIT` | The donor left the flow. |
+| `UNINTEGRATED_DAF` | The selected provider is not integrated with DAFpay. |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor confirmed an unintegrated Grant. This is not a completed gift. |
+| `UNINTEGRATED_DAF_NOT_SUPPORTED` | The selected provider does not support the unintegrated Grant flow. |
+| `CID_NOT_FOUND` | The Connect ID was not found. |
+| `SERVICE_DEACTIVATED` | The nonprofit's Connect is inactive. |
+| `INELIGIBLE_ORGANIZATION` | The organization cannot receive DAF Grants. |
+| `EIN_NOT_FOUND` | The provider does not support Grants to the nonprofit. |
+| `CREDENTIALS_ERROR` | The provider credentials are invalid. |
+| `TFA_ERROR` | Two-factor authentication failed. |
+| `ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. |
+| `NO_CHARITABLE_ACCOUNTS` | The signed-in account has no charitable accounts. |
+| `INVALID_PRESELECTED_DAF` | The supplied `fundId` is invalid. |
+| `INVALID_CARD` | The card number is invalid. |
+| `INACTIVE_CARD` | The card is inactive. |
+| `ZERO_AMOUNT` | The Grant amount is zero. |
+| `RECURRING_NOT_SUPPORTED` | The provider does not support recurring Grants. |
+| `CONNECTION_FAILED` | The connection to the provider failed. |
+| `INSTITUTION_DOWN_ERROR` | The provider is unavailable. The donor should try again later. |
+| `SESSION_NOT_FOUND` | The session was not found or has expired. |
+| `CUSTOM_ERROR` | A custom integration error occurred. |
+| `INTERNAL_ERROR` | An internal error occurred. |
+
+Treat an unrecognized reason as an error, not a completed gift.
+
+In general:
+
+- return a normal donor exit to the form;
+- restart an expired session;
+- retry authentication or provider access when appropriate;
+- offer another payment method when the Grant cannot be made; and
+- log configuration and internal errors with the workflow session ID.
+
+An unintegrated Grant is not a completed gift. Follow [Unintegrated DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).
+
+Next: [Create the Grant](/guides/dafpay/integrating-dafpay/create-grant)

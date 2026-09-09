@@ -1,0 +1,67 @@
+---
+title: Install the Button
+hidden: false
+---
+
+Load Chariot Connect and add the `chariot-connect` element where DAFpay should appear.
+
+```html
+<script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
+<chariot-connect id="chariot" cid="YOUR_CONNECT_ID"></chariot-connect>
+```
+
+| Attribute | Required | Use |
+| --- | --- | --- |
+| `cid` | Yes | The Connect ID for this integration. |
+| `theme` | No | A built-in or registered custom theme. |
+
+Use your sandbox Connect ID while testing and your production Connect ID after launch. A Connect ID may appear in browser code. An API key may not.
+
+The element does not have donation data yet. The next page adds `onDonationRequest` so the button can read the current values from your form.
+
+## Placement
+
+Place DAFpay above your form as an Express Checkout option when you want donors to begin before entering their contact information. DAFpay can then retrieve available donor details from their DAF account.
+
+If Express Checkout does not fit your form, place DAFpay alongside your other primary payment methods.
+
+## Content Security Policy
+
+If your site uses a Content Security Policy, allow the Chariot script and DAFpay frame. Merge the required sources into your existing policy. Do not replace your policy with a documentation example. See [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
+
+## Styling
+
+Choose one of the built-in themes:
+
+- `DefaultTheme`
+- `LightModeTheme`
+- `LightBlueTheme`
+- `GradientTheme`
+
+```html
+<chariot-connect
+  id="chariot"
+  cid="YOUR_CONNECT_ID"
+  theme="LightModeTheme">
+</chariot-connect>
+```
+
+You can also register a custom theme:
+
+```javascript
+chariot.registerTheme("myTheme", {
+  width: "w-12",
+  height: "h-9",
+  showExtendedText: true
+});
+```
+
+| Property | Use | Allowed value |
+| --- | --- | --- |
+| `width` | Button width | Up to `w-16` or 64px |
+| `height` | Button height | `h-9` through `h-12` |
+| `showExtendedText` | Show the longer button label | `true` or `false` |
+
+Do not target internal markup or CSS selectors inside the component.
+
+Next: [Send donor data](/guides/nonprofits/initiate/donor-data)

@@ -1,0 +1,49 @@
+---
+title: Test DAFpay Before Launch
+hidden: false
+---
+
+Complete this checklist before adding DAFpay to your production form.
+
+## Configuration
+
+- Sandbox and production values are stored separately.
+- The page uses the Connect ID issued for this API integration.
+- The base URL, API key, and Connect ID all belong to the same environment.
+- The API key is available only to your server.
+
+## Form and browser behavior
+
+- `onDonationRequest` sends the current amount and form data.
+- Unknown donor fields are omitted rather than sent as empty strings.
+- Invalid required form data returns `false` and shows a useful error.
+- DAFpay opens within one second of the donor's click.
+- The full flow works in Chrome, Safari, and Firefox on desktop.
+- The full flow works in Safari and Chrome on iPhone.
+- The full flow works in Chrome on Android.
+- The full flow works in every in-app or embedded browser you support.
+
+## Events and Grant creation
+
+- The application handles `CHARIOT_INIT`, `CHARIOT_SUCCESS`, and `CHARIOT_EXIT`.
+- The server uses the amount returned by `CHARIOT_SUCCESS`.
+- Create Grant runs within 15 minutes and can be retried safely.
+- Repeated clicks and repeated requests do not create duplicate Grants.
+- Recurring intents use Create Recurring Grant.
+- The configured unintegrated-provider path shows the correct donor instructions.
+- The loading and confirmation states do not claim the funds were received.
+
+## Request production access
+
+When every check passes, email [implementations@givechariot.com](mailto:implementations@givechariot.com) with:
+
+- the URL of your form using the sandbox Connect;
+- instructions for completing a test gift;
+- your target go-live date; and
+- any setting that should differ in production.
+
+Chariot will test the form before issuing the production Connect ID.
+
+After production access is issued, complete one small live gift and confirm that exactly one Grant is created and your team can find the resulting record.
+
+Next: [Retrieve donations](/guides/nonprofits/donations), if you also need Chariot gifts in your CRM or ERP.
