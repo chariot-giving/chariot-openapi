@@ -6,6 +6,12 @@ info:
     Financial Data Exchange (FDX) v6 compatible API for read-only access to
     Chariot bank account data. Implements the FDX v6 standard for account
     information, transactions, and statements.
+
+
+    Chariot is a financial technology company, not a bank. Chariot Accounts come with a
+    Demand Deposit Account through our banking services partner, Column N.A., Member
+    FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000
+    per depositor, for each insurable capacity in which the account is held.
   contact:
     name: Chariot Development Team
     url: https://givechariot.com/contact
@@ -40,7 +46,13 @@ paths:
   /accounts:
     get:
       summary: List accounts
-      description: Search and retrieve customer deposit accounts.
+      description: >-
+        Search and retrieve customer deposit accounts.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       operationId: listAccounts
       tags:
         - Accounts
@@ -69,6 +81,11 @@ paths:
       description: >-
         Get account balances, liabilities, and other detailed account
         information for a single deposit account.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       operationId: getAccount
       tags:
         - Accounts
@@ -453,7 +470,13 @@ components:
 
     DepositAccount:
       type: object
-      description: A deposit (bank) account.
+      description: >-
+        A deposit (bank) account.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       required:
         - accountCategory
         - accountType
@@ -504,7 +527,13 @@ components:
           description: Date the account was closed (YYYY-MM-DD). Present only for closed accounts.
 
     DepositAccountDetails:
-      description: Detailed deposit account information including balances.
+      description: >-
+        Detailed deposit account information including balances.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       allOf:
         - $ref: "#/components/schemas/DepositAccount"
         - type: object
@@ -547,7 +576,13 @@ components:
 
     ListAccountsResponse:
       type: object
-      description: Paginated list of deposit accounts.
+      description: >-
+        Paginated list of deposit accounts.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       required:
         - accounts
       properties:
@@ -778,7 +813,13 @@ components:
 
     DepositTransaction:
       type: object
-      description: A deposit account transaction.
+      description: >-
+        A deposit account transaction.
+
+
+        Chariot is a financial technology company, not a bank. Chariot Accounts come
+        with a Demand Deposit Account through our banking services partner, Column N.A.,
+        Member FDIC.
       required:
         - accountCategory
         - accountId
