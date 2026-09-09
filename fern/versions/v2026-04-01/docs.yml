@@ -131,6 +131,15 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/processing/faq.mdx
+      - section: OAuth
+        slug: oauth
+        contents:
+          - page: Overview
+            slug: /
+            path: ./pages/api-oauth/overview.mdx
+          - page: Identity
+            slug: identity
+            path: ./pages/api-oauth/identity.mdx
       - section: Lockbox Providers
         slug: lockbox-providers
         hidden: true
@@ -179,6 +188,9 @@ navigation:
               - page: Sandbox Simulations
                 slug: sandbox-simulations
                 path: ./pages/api/sandbox-simulations.mdx
+              - page: OAuth
+                slug: oauth
+                path: ./pages/api/oauth.mdx
           - section: Core Resources
             skip-slug: true
             icon: network-wired
@@ -272,9 +284,6 @@ navigation:
               - page: Introduction
                 slug: /
                 path: ./pages/fdx/introduction.mdx
-              - page: Authentication
-                slug: authentication
-                path: ./pages/fdx/authentication.mdx
           - section: Accounts
             skip-slug: true
             icon: building-columns

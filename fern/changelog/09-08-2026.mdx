@@ -1,0 +1,22 @@
+## Summary
+
+OAuth 2.0 for the Chariot API
+
+### What's new?
+
+Applications can now act on a nonprofit's behalf using OAuth 2.0 instead of an API key. The nonprofit authorizes your application, and you receive an access token limited to what they approved.
+
+The new [OAuth guide](/guides/oauth) covers:
+
+- **Authorization Code flow with PKCE** — Generating the code verifier and challenge, the consent screen, and exchanging the code for tokens
+- **Scopes** — `read_only` and `read_write` grant their level of access across every resource, so you don't have to request a scope per resource or add new ones as the API grows
+- **Identity** — Request the `openid` scope to receive an `id_token` and use Chariot as an OpenID Connect provider for single sign-on. See [Identity](/guides/oauth/identity)
+- **Environments** — Authorization, token, and discovery endpoints for production and sandbox
+- **Token lifetimes** — Access tokens last 15 minutes; refresh tokens use a 31-day sliding window with a 365-day maximum
+- **Redirect URI requirements** and **IP whitelisting**
+
+OAuth access is not self-service. Contact us at [support@givechariot.com](mailto:support@givechariot.com) to register your application and receive client credentials.
+
+### FDX API
+
+FDX authentication now points to the OAuth guide instead of repeating the flow, and the [FDX introduction](/fdx) lists the values specific to FDX: the `read_only` scope, per-environment credentials, and IP whitelisting. Sandbox endpoints replace the previous staging endpoints.
