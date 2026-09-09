@@ -3845,10 +3845,11 @@ paths:
       description: |-
         List the payment methods Chariot holds for an organization.
 
-        A Payment Method is a destination Chariot can pay an organization through: its Chariot deposit account,
-        a verified bank account, or a verified mailing address. The default list is active methods plus your own
-        submissions awaiting verification. Pass `status=inactive` to see destinations Chariot will no longer pay to
-        and why, for example every mailing address that has proven undeliverable.
+        A Payment Method is a destination Chariot can pay an organization through: a deposit account the
+        organization holds with Chariot, an account it holds at a US bank, or a postal address that receives
+        checks. The default list is active methods plus submissions awaiting verification. Pass
+        `status=inactive` to see destinations Chariot will no longer pay to and why, for example every postal
+        address that has proven undeliverable.
       operationId: listPaymentMethods
       tags:
         - paymentMethods
@@ -3864,7 +3865,7 @@ paths:
           example: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
         - name: status
           in: query
-          description: Filter by status. When unset, returns active methods plus your own submissions awaiting verification.
+          description: Filter by status. When unset, returns active methods plus submissions awaiting verification.
           required: false
           schema:
             type: string
@@ -3899,11 +3900,11 @@ paths:
     post:
       summary: Create a Payment Method
       description: |-
-        Submit a mailing address for an organization.
+        Submit a postal address where an organization can receive checks.
 
-        The payment method is created with status `pending_verification` and is visible only to your account
-        until a Chariot operator verifies it. Poll [Get a Payment Method](/api/payment-methods/get) or listen
-        for the `payment_method.updated` event to learn when it becomes `active`.
+        The payment method is created with status `pending_verification` and transitions to `active` once
+        Chariot verifies it. See the [Payment Method Lifecycle](/disbursements/payment-method-lifecycle) guide
+        to learn more.
       operationId: createPaymentMethod
       tags:
         - paymentMethods
@@ -4244,10 +4245,10 @@ components:
     PaymentMethod:
       type: object
       description: |-
-        A Payment Method is a destination Chariot can pay an organization through: its Chariot deposit account,
-        a verified bank account, or a verified mailing address. Payment Methods are shared across every account
-        that pays the organization, except that a submission awaiting verification is visible only to the account
-        that submitted it.
+        A Payment Method is a destination Chariot can pay an organization through: a deposit account the
+        organization holds with Chariot, an account it holds at a US bank, or a postal address that receives
+        checks. `type` says which, and the matching detail object is present: `us_bank_account` or
+        `mailing_address`. A Chariot deposit account carries no further details; its `id` is the account.
       required:
         - id
         - organization_id
@@ -4266,13 +4267,13 @@ components:
         type:
           type: string
           description: |-
-            The kind of destination.
-            - `chariot_deposit_account`: the organization's Chariot deposit account. Opened by the organization; not creatable through the API.
-            - `bank_account`: a bank account Chariot has verified.
-            - `mailing_address`: a mailing address Chariot has verified for checks.
+            The kind of destination, which determines how funds move.
+            - `chariot_deposit_account`: a deposit account the organization holds with Chariot. Funds arrive by internal transfer as soon as the disbursement executes. Opened by the organization; not creatable through the API.
+            - `us_bank_account`: an account the organization holds at a US bank. Funds are sent by ACH, or by wire for amounts above $25,000 when `wire_eligible` is true.
+            - `mailing_address`: a postal address that receives physical mail. Funds are sent by check.
           enum:
             - chariot_deposit_account
-            - bank_account
+            - us_bank_account
             - mailing_address
           example: "mailing_address"
         status:
@@ -4280,7 +4281,7 @@ components:
           description: |-
             Whether Chariot will pay to this destination.
             - `active`: Chariot will pay to this destination.
-            - `pending_verification`: submitted through the API and awaiting Chariot's review. Visible only to the account that submitted it.
+            - `pending_verification`: submitted through the API and awaiting Chariot's review.
             - `inactive`: Chariot will no longer pay to this destination. See `inactive_reason`.
           enum:
             - active
@@ -4313,10 +4314,10 @@ components:
           format: date-time
           description: When the destination stops being usable, for destinations that expire. Absent otherwise.
           example: "2026-11-18T15:04:00Z"
-        bank_account:
-          description: Bank account details. Present only when `type` is `bank_account`.
+        us_bank_account:
+          description: Details of the account at a US bank. Present only when `type` is `us_bank_account`.
           allOf:
-            - $ref: "#/components/schemas/PaymentMethodBankAccount"
+            - $ref: "#/components/schemas/PaymentMethodUsBankAccount"
         mailing_address:
           description: Mailing address details. Present only when `type` is `mailing_address`.
           allOf:
@@ -4333,7 +4334,7 @@ components:
           state: "IL"
           postal_code: "62701"
           country: "US"
-    PaymentMethodBankAccount:
+    PaymentMethodUsBankAccount:
       type: object
       required:
         - last4
@@ -4350,7 +4351,7 @@ components:
           example: "071000013"
         wire_eligible:
           type: boolean
-          description: Whether the account can receive wires.
+          description: Whether Chariot may pay this account by wire. Wires are used for amounts above $25,000; smaller amounts are sent by ACH.
           example: false
     CreatePaymentMethodRequest:
       type: object
@@ -9248,11 +9249,11 @@ components:
                 verified_at: "2026-09-03T09:00:00Z"
               - id: "pm_01j9d4v2m8r6xk1p7t3b5c9qwa"
                 organization_id: "org_1LaXpKGUcADgqoEMl0Cx0Ygg"
-                type: "bank_account"
+                type: "us_bank_account"
                 status: "active"
                 verified_at: "2026-07-15T14:30:00Z"
                 expires_at: "2026-10-13T14:30:00Z"
-                bank_account:
+                us_bank_account:
                   last4: "1234"
                   routing_number: "071000013"
                   wire_eligible: true

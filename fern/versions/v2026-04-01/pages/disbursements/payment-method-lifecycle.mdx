@@ -1,0 +1,42 @@
+---
+title: "Payment Method Lifecycle"
+subtitle: ""
+hidden: false
+---
+## Payment Method `status` Lifecycle
+
+A [Payment Method](/api/payment-methods/list) is a destination Chariot can pay an organization through. Its `status` says whether Chariot will pay to it.
+
+| Status | Description |
+|--------|-------------|
+| `pending_verification` | The destination was submitted through the API and is awaiting Chariot's review |
+| `active` | Chariot will pay to this destination |
+| `inactive` | Chariot will no longer pay to this destination. `inactive_reason` says why |
+
+Each `type` becomes `active` in its own way:
+
+| Type | How it becomes active |
+|------|-----------------------|
+| `chariot_deposit_account` | The organization opens a Chariot Deposit Account. It is active while the account is open and cannot be created through the API |
+| `us_bank_account` | Chariot verifies the account. Active until it expires |
+| `mailing_address` | Chariot verifies the address, whether it was submitted with [Create a Payment Method](/api/payment-methods/create) or entered by Chariot |
+
+Verifying one submission of a destination marks any other submission of the same destination `rejected`.
+
+## Inactive reasons
+
+Once a payment method is `inactive` it stays inactive. A replacement is a new payment method with its own `id`.
+
+| Reason | Description |
+|--------|-------------|
+| `undeliverable` | A payment sent to this destination did not reach the organization: a check was returned or never deposited, or an ACH transfer was returned |
+| `superseded` | A newer verified destination of the same kind replaced it |
+| `rejected` | Chariot declined the submission, or verified a different submission of the same destination |
+| `expired` | The destination passed its `expires_at` without renewal |
+| `closed` | The Chariot Deposit Account was closed |
+
+## Staying informed
+
+Every status change emits a `payment_method.updated` [event](/api/webhooks). Subscribe to it to learn when a submission becomes `active` or an active destination becomes `inactive`, or poll [Get a Payment Method](/api/payment-methods/get).
+
+By default, [List Payment Methods](/api/payment-methods/list) returns active methods and submissions awaiting verification. Pass `status=inactive` to see the destinations Chariot will no longer pay to, and why.

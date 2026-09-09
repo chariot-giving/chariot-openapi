@@ -104,6 +104,9 @@ navigation:
           - page: Disbursement Lifecycle
             slug: disbursement-lifecycle
             path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Payment Method Lifecycle
+            slug: payment-method-lifecycle
+            path: ./pages/disbursements/payment-method-lifecycle.mdx
           - page: Compliance
             slug: compliance
             path: ./pages/disbursements/compliance.mdx
