@@ -3903,8 +3903,8 @@ paths:
         Submit a postal address where an organization can receive checks.
 
         The payment method is created with status `pending_verification` and transitions to `active` once
-        Chariot verifies it. See the [Payment Method Lifecycle](/disbursements/payment-method-lifecycle) guide
-        to learn more.
+        Chariot verifies it. See the [Payment Method Lifecycle](/guides/disbursements/payment-method-lifecycle)
+        guide to learn more.
       operationId: createPaymentMethod
       tags:
         - paymentMethods
