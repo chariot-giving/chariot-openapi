@@ -19,8 +19,20 @@ Use the Connect ID created for your API integration. Your Chariot account also h
 
   <div class="csb-grid">
     <label class="csb-field">
-      <span>Nonprofit name</span>
+      <span>Nonprofit name <em class="csb-req">required</em></span>
       <input type="text" data-key="organization" placeholder="Example Nonprofit" />
+    </label>
+
+    <label class="csb-field">
+      <span>EIN <em class="csb-req">required</em></span>
+      <input type="text" data-key="ein" inputmode="numeric" placeholder="53-0196605" />
+      <small>We find your organization by EIN, not by name.</small>
+    </label>
+
+    <label class="csb-field">
+      <span>Nonprofit contact email <em class="csb-req">required</em></span>
+      <input type="email" data-key="contact_email" placeholder="finance@example.org" />
+      <small>Must belong to the nonprofit. Not an agency or platform support address.</small>
     </label>
 
     <label class="csb-field">
@@ -30,6 +42,31 @@ Use the Connect ID created for your API integration. Your Chariot account also h
         <option value="Sandbox only">Sandbox only</option>
         <option value="Production only">Production only</option>
       </select>
+    </label>
+
+    <label class="csb-field">
+      <span>What do you need?</span>
+      <select data-key="connect_type">
+        <option value="New Connect for our API integration">New Connect for our API integration</option>
+        <option value="Reconfigure an existing Connect">Reconfigure an existing Connect</option>
+      </select>
+      <small>Your dashboard's no-code button and link have their own Connect IDs. This request is for the one your form calls.</small>
+    </label>
+
+    <label class="csb-field">
+      <span>Existing Connect ID <em class="csb-opt">if reconfiguring</em></span>
+      <input type="text" data-key="existing_connect_id" placeholder="test_..." />
+    </label>
+
+    <label class="csb-field">
+      <span>Donation form URL <em class="csb-opt">optional</em></span>
+      <input type="text" data-key="form_url" placeholder="https://example.org/donate" />
+      <small>Where DAFpay will appear. Lets us check the setup with you.</small>
+    </label>
+
+    <label class="csb-field">
+      <span>Target go-live <em class="csb-opt">optional</em></span>
+      <input type="text" data-key="go_live" placeholder="2026-11-01" />
     </label>
   </div>
 
@@ -100,12 +137,22 @@ Use the Connect ID created for your API integration. Your Chariot account also h
 
   </div>
 
+  <label class="csb-field csb-field-wide">
+    <span>Custom designations <em class="csb-opt">optional</em></span>
+    <input type="text" data-key="designations" placeholder="Annual Fund, Scholarship Fund" />
+    <small>Leave empty to use "Where needed most". Custom designations can slow a provider's grant approval.</small>
+  </label>
+
   <p class="csb-section">Your request</p>
 
+  <ul class="csb-blockers" data-blockers hidden></ul>
   <ul class="csb-warnings" data-warnings hidden></ul>
 
   <pre><code data-output>{`organization: <your nonprofit's name>
+ein: <your nonprofit's EIN>
+nonprofit_contact_email: <contact at your nonprofit>
 configuration_applies_to: Sandbox and production
+request_type: New Connect for our API integration
 
 connect:
   donor_details_step: Show
@@ -136,7 +183,3 @@ Chariot will email your sandbox Connect ID. Use it to build and test your integr
 To update your Connect later, email [implementations@givechariot.com](mailto:implementations@givechariot.com). Tell us whether the change should apply to sandbox, production, or both.
 
 Next: [Install the button](/guides/nonprofits/initiate/install)
-
-<Info>
-Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
-</Info>

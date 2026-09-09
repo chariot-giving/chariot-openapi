@@ -13,8 +13,25 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
   <div class="csb-grid">
     <label class="csb-field">
-      <span>Platform name</span>
+      <span>Platform name <em class="csb-req">required</em></span>
       <input type="text" data-key="platform" placeholder="Example Fundraising" />
+    </label>
+
+    <label class="csb-field">
+      <span>Technical contact email <em class="csb-req">required</em></span>
+      <input type="email" data-key="contact_email" placeholder="eng@example.com" />
+      <small>Whoever is building the integration. Per-nonprofit contacts go through Create Connect.</small>
+    </label>
+
+    <label class="csb-field">
+      <span>Sandbox form URL <em class="csb-opt">optional</em></span>
+      <input type="text" data-key="form_url" placeholder="https://sandbox.example.com/donate" />
+      <small>A form running your sandbox Connect, so we can review the setup.</small>
+    </label>
+
+    <label class="csb-field">
+      <span>Target go-live <em class="csb-opt">optional</em></span>
+      <input type="text" data-key="go_live" placeholder="2026-11-01" />
     </label>
 
     <label class="csb-field">
@@ -181,9 +198,11 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
   <p class="csb-section">Your request</p>
 
+  <ul class="csb-blockers" data-blockers hidden></ul>
   <ul class="csb-warnings" data-warnings hidden></ul>
 
   <pre><code data-output>{`platform: <your platform's name>
+technical_contact_email: <technical contact at your platform>
 configuration_applies_to: Sandbox and production
 
 connect:
