@@ -4269,7 +4269,7 @@ components:
           description: |-
             The kind of destination, which determines how funds move.
             - `chariot_deposit_account`: a deposit account the organization holds with Chariot. Funds arrive by internal transfer as soon as the disbursement executes. Opened by the organization; not creatable through the API.
-            - `us_bank_account`: an account the organization holds at a US bank. Funds are sent by ACH, or by wire for amounts above $25,000 when `wire_eligible` is true.
+            - `us_bank_account`: an account the organization holds at a US bank. Funds are sent by ACH or, when `wire_eligible` is true, by wire.
             - `mailing_address`: a postal address that receives physical mail. Funds are sent by check.
           enum:
             - chariot_deposit_account
@@ -4351,7 +4351,7 @@ components:
           example: "071000013"
         wire_eligible:
           type: boolean
-          description: Whether Chariot may pay this account by wire. Wires are used for amounts above $25,000; smaller amounts are sent by ACH.
+          description: Whether Chariot may pay this account by wire. Chariot chooses between ACH and wire per disbursement.
           example: false
     CreatePaymentMethodRequest:
       type: object
