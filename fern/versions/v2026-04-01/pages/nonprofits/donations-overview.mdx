@@ -1,0 +1,34 @@
+---
+title: Retrieve Donations
+hidden: false
+---
+
+Use the Gift Processing API to bring Chariot payments and data into your CRM or ERP. This guide covers retrieving Donations, matching them to the Deposits that funded them, and writing status updates back to Chariot.
+
+## Before you start
+
+Server-side calls require an API key and the base URL for the environment you are using. Sandbox and production use separate API keys. Configure the base URL and key together, and see [Authentication](/api/authentication) for how to send the key.
+
+## Data model
+
+One Deposit may contain many Donations. Store both IDs so your finance team can reconcile each transfer to the gifts it contains.
+
+A Donation may include donor details, gross and net amounts, fees, designation, source information, DAFpay metadata, and properties configured in the dashboard. Use the API reference as the source of truth for current fields.
+
+`settlement` appears only when Chariot has received the funds for that gift. A Donation without a settlement either has no Deposit yet or was paid through a route that does not deposit funds into a Chariot Account.
+
+You can also find a gift using the `dafpay_tracking_id` filter on List Donations.
+
+## Decide when to create the CRM gift
+
+The safest default is to create the CRM gift when your organization considers the payment received. Most integrations use `settlement.received_at`, which is when Chariot received the data for the transfer. Use `settlement.settled_at` instead if your rule is that the funds must be available to your organization, since the two timestamps can differ.
+
+If your team needs an earlier record, create it as pending and update it later. That approach must account for grants that are delayed, canceled, or never funded.
+
+Agree on this rule with fundraising operations and finance before you build the sync.
+
+Next: [Poll for donations](/guides/nonprofits/donations/poll)
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

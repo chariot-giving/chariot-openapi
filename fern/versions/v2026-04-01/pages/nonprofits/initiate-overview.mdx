@@ -1,0 +1,43 @@
+---
+title: Add DAFpay to a Donation Form You Own
+hidden: false
+---
+
+Follow this guide if you want to integrate directly with the DAFpay APIs and embed DAFpay in a custom donation flow. If your form is hosted by a fundraising platform, [enable DAFpay through that platform](https://www.givechariot.com/dafpay-setup#integration-search) instead.
+
+By the end of this section, your form will open DAFpay, receive the donor's authorization, and create the Grant from your server.
+
+## Before you start
+
+Server-side calls require an API key and the base URL for the environment you are using.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox and production use separate API keys and Connect IDs. Configure the base URL, API key, and Connect ID together. See [Authentication](/api/authentication) for how to send the API key.
+
+## How the integration works
+
+1. [Request a Connect](/guides/nonprofits/initiate/connect-config) for your form.
+2. [Install the DAFpay button](/guides/nonprofits/initiate/install).
+3. [Send your form data](/guides/nonprofits/initiate/donor-data) into DAFpay.
+4. [Handle the result](/guides/nonprofits/initiate/events) returned to your page.
+5. [Create the Grant](/guides/nonprofits/initiate/create-grant) from your server.
+6. [Test the full integration](/guides/nonprofits/initiate/before-launch) before requesting production access.
+
+<Warning>
+  `CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant and does not mean your organization received the funds. Your server must call Create Grant within 15 minutes.
+</Warning>
+
+## Sandbox login
+
+Use these credentials with any supported DAF provider in sandbox:
+
+```text
+username: good-user
+password: password123
+```
+
+Next: [Request your Connect](/guides/nonprofits/initiate/connect-config)

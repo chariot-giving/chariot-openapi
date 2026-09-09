@@ -1,0 +1,68 @@
+---
+title: Create the Grant
+hidden: false
+---
+
+After `CHARIOT_SUCCESS`, call Create Grant from your server. The browser flow authorizes the request but does not create the Grant.
+
+```bash
+curl -X POST https://api.givechariot.com/v1/grants \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflowSessionId": "string",
+    "amount": 15000
+  }'
+```
+
+## Server-side sequence
+
+1. Receive the workflow session ID and amount returned by DAFpay.
+2. Find the transaction and nonprofit associated with that session.
+3. Save your transaction before calling Chariot.
+4. Call Create Grant using the server-side API key.
+5. Store the returned Grant ID.
+6. Use Get Grant to retrieve the Donation ID when it becomes available.
+
+Create the Grant within 15 minutes of authorization.
+
+## Retry safely
+
+Create Grant is idempotent for a workflow session. If a request times out, call it again with the same `workflowSessionId`. Never create a new workflow session to retry the same donor authorization.
+
+| Response | What to do |
+| --- | --- |
+| `201 Created` | The Grant was created. Store the returned Grant and stop retrying. |
+| `200 OK` | A Grant already exists for this workflow session. Store the returned Grant and stop retrying. |
+| `409 Conflict` | Creation is still in progress. Wait, then retry with the same workflow session. |
+| `410 Gone` | The authorization expired. Ask the donor to complete DAFpay again. |
+
+## Amounts
+
+Use the amount returned by `CHARIOT_SUCCESS`, not the amount originally sent by your form. DAF grants must be whole-dollar amounts, so the amount in cents must be divisible by 100.
+
+DAFpay normally helps the donor correct an amount below the provider minimum or above the available DAF balance before success. Your server should still handle a validation error safely if the final amount cannot be submitted.
+
+<Frame caption="DAFpay prompts the donor to adjust an amount that exceeds their balance or falls below the provider minimum.">
+    <img src='../../images/15e7e65-Error-handling-picture.png' />
+</Frame>
+
+## Recurring Grants
+
+If the success payload contains `recurringGrantIntent`, call Create Recurring Grant instead of Create Grant.
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "recurringGrantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "frequency": "MONTHLY",
+    "metadata": {}
+  }
+}
+```
+
+The DAF provider controls the recurring schedule. Chariot may not learn when the donor changes or cancels it, and later payments arrive as separate gifts without a new Grant for each month.
+
+Next: [Test DAFpay before launch](/guides/nonprofits/initiate/before-launch)

@@ -18,6 +18,82 @@ versions:
     availability: deprecated
     hidden: true
 
+redirects:
+  # v2026-04-01 guides restructure: DAFpay split by audience and Gift Processing
+  # folded into the For Nonprofits section. Older versions keep their own pages
+  # under their version prefix, so only the default and v2026-04-01 paths move.
+  - source: "/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/guides/dafpay/integrating-dafpay/connects"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/integration"
+    destination: "/guides/dafpay/integrating-dafpay/events"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/guides/dafpay/gifts/reconciliation"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/faq"
+    destination: "/guides/dafpay/faq"
+    permanent: true
+  - source: "/guides/processing"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/how-it-works"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/getting-started"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/faq"
+    destination: "/guides/nonprofits/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/connects"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/integration"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/events"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/v2026-04-01/guides/dafpay/gifts/reconciliation"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/faq"
+    destination: "/v2026-04-01/guides/dafpay/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/how-it-works"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/getting-started"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/faq"
+    destination: "/v2026-04-01/guides/nonprofits/faq"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/overview"
+    destination: "/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/faq"
+    destination: "/guides/donor-accounts/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/overview"
+    destination: "/v2026-04-01/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/faq"
+    destination: "/v2026-04-01/guides/donor-accounts/faq"
+    permanent: true
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png
@@ -26,6 +102,7 @@ logo:
 
 favicon: assets/favicon.png
 css: assets/styles.css
+js: assets/scripts.js
 
 settings:
   hide-404-page: true

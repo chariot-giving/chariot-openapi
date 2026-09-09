@@ -1,0 +1,56 @@
+---
+title: FAQ
+hidden: false
+---
+
+## DAFpay
+
+### Do I need to integrate DAFpay if my fundraising platform supports it?
+
+No. Enable DAFpay through the platform. Build a separate Gift Processing sync only if you need another path into your CRM or ERP.
+
+### Can I use DAFpay without an API integration?
+
+Yes. Add the DAFpay button to a dedicated [Donor Advised Fund giving page](https://help.givechariot.com/dafpay/ways-to-give-page) when you do not need to pass form data into DAFpay or receive the result on your page.
+
+### Does completing DAFpay mean we received the money?
+
+No. It means the donor authorized the request and your server can create the Grant. The DAF provider still needs to review and send it.
+
+### Can I test settlement in sandbox?
+
+No real funds move in sandbox. Test your handlers with sandbox simulations, then confirm the complete path with a small production gift.
+
+## Gift Processing
+
+### Is a Grant the same as a Donation?
+
+No. A Grant is the DAF request created after a DAFpay session. A Donation is Chariot's gift record. A Deposit is the transfer that contains funds for one or more Donations.
+
+### Can my integration update a Donation?
+
+Donation fields are read-only. Use properties to record your processing status or internal identifiers.
+
+### Should I use polling or webhooks?
+
+Use both when you need timely updates. Webhooks reduce delay, while a checkpointed scheduled sync recovers missed events.
+
+### Why does a Donation have no Deposit?
+
+The funds may have arrived outside a payment source connected to your Chariot Account. Retrieve Donations directly by creation time so these records are not missed.
+
+## Finance and receipting
+
+### When should I create the gift in my CRM?
+
+Use the rule your finance and fundraising teams follow for recognizing a received gift. The simplest integration creates the CRM gift when the payment is considered received. If you create a pending gift earlier, update it later and account for Grants that never fund.
+
+### How should we acknowledge a DAF gift?
+
+Chariot does not provide tax advice. A DAF grant is not a direct contribution from the donor because the donor generally received the charitable deduction when funding the DAF. Confirm your acknowledgment policy with your finance team and tax advisor before automating messages.
+
+When DAFpay collects the donor's information, `attribution.primary_donor` provides the name, email, and mailing address most teams use to send a thank-you rather than a second tax receipt.
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
