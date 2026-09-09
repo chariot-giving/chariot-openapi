@@ -21,8 +21,6 @@ Each `type` becomes `active` in its own way:
 | `us_bank_account` | Chariot verifies the account. Active until it expires |
 | `mailing_address` | Chariot verifies the address, whether it was submitted with [Create a Payment Method](/api/payment-methods/create) or entered by Chariot |
 
-Verifying one submission of a destination marks any other submission of the same destination `rejected`.
-
 ## Inactive reasons
 
 Once a payment method is `inactive` it stays inactive. A replacement is a new payment method with its own `id`.
