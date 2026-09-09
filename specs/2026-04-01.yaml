@@ -3845,11 +3845,9 @@ paths:
       description: |-
         List the payment methods Chariot holds for an organization.
 
-        A Payment Method is a destination Chariot can pay an organization through: a deposit account the
-        organization holds with Chariot, an account it holds at a US bank, or a postal address that receives
-        checks. The default list is active methods plus submissions awaiting verification. Pass
-        `status=inactive` to see destinations Chariot will no longer pay to and why, for example every postal
-        address that has proven undeliverable.
+        The default list is active methods plus submissions awaiting verification. Pass `status=inactive` to
+        see destinations Chariot will no longer pay to and why, for example every postal address that has
+        proven undeliverable.
       operationId: listPaymentMethods
       tags:
         - paymentMethods
@@ -3900,11 +3898,13 @@ paths:
     post:
       summary: Create a Payment Method
       description: |-
-        Submit a postal address where an organization can receive checks.
+        Create a new method for paying a nonprofit organization. Use this API when Chariot currently doesn't
+        have any verified Payment Methods on file for the Organization and you want to supply your own. The
+        payment method is created with status `pending_verification` and transitions to `active` once Chariot
+        verifies it. See the [Payment Method Lifecycle](/guides/disbursements/payment-method-lifecycle) guide
+        to learn more.
 
-        The payment method is created with status `pending_verification` and transitions to `active` once
-        Chariot verifies it. See the [Payment Method Lifecycle](/guides/disbursements/payment-method-lifecycle)
-        guide to learn more.
+        Chariot currently only supports creating Payment Methods for physical mail & checks.
       operationId: createPaymentMethod
       tags:
         - paymentMethods
@@ -3960,9 +3960,13 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   /v1/payment_methods/{id}:
     get:
-      summary: Get a Payment Method
+      summary: Get Payment Method
       description: |-
         Get a payment method by its unique identifier.
+
+        A Payment Method is a destination Chariot can pay an organization through: a deposit account the
+        organization holds with Chariot, an account it holds at a US bank, or a postal address that receives
+        checks.
       operationId: getPaymentMethod
       tags:
         - paymentMethods

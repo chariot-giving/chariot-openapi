@@ -33,6 +33,6 @@ Each `type` becomes `active` in its own way:
 
 ## Staying informed
 
-Every status change emits a `payment_method.updated` [event](/api/webhooks). Subscribe to it to learn when a submission becomes `active` or an active destination becomes `inactive`, or poll [Get a Payment Method](/api/payment-methods/get).
+Every status change emits a `payment_method.updated` [event](/api/webhooks). Subscribe to it to learn when a submission becomes `active` or an active destination becomes `inactive`, or poll [Get Payment Method](/api/payment-methods/get).
 
 By default, [List Payment Methods](/api/payment-methods/list) returns active methods and submissions awaiting verification. Pass `status=inactive` to see the destinations Chariot will no longer pay to, and why.
