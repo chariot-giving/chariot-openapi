@@ -10,6 +10,11 @@ Some DAF providers cannot accept a Grant directly through DAFpay. Choose one beh
 
 The second option does not produce a completed DAFpay Grant. Keep the platform transaction in an unconfirmed state unless later evidence shows that the gift was made.
 
+<Frame caption="Left: record the donor's intent. Right: return the donor to your form to pick another payment method.">
+    <img src='../../images/disconnected-submit.png' />
+    <img src='../../images/disconnected-return.png' />
+</Frame>
+
 ## Confirmation experience
 
 When `CHARIOT_EXIT` has the reason `UNINTEGRATED_GRANT_CONFIRMED`, show:
@@ -20,6 +25,16 @@ When `CHARIOT_EXIT` has the reason `UNINTEGRATED_GRANT_CONFIRMED`, show:
 - the tracking ID with the `Tracking ID:` prefix and a copy control.
 
 Tell the donor that they still need to submit the Grant through their provider and should include the complete tracking ID in the provider's note or purpose field.
+
+<Frame caption="Unintegrated Grant confirmation page">
+    <img src='../../images/unintegrated-grant-intent.png' />
+</Frame>
+
+DAFpay also emails the donor the same instructions.
+
+<Frame caption="Unintegrated Grant donor instructions email">
+    <img src='../../images/grant-intent-email.png' />
+</Frame>
 
 Use the unintegrated-grant resources and events in the API reference for this separate object type.
 

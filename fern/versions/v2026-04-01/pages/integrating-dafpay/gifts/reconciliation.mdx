@@ -41,6 +41,18 @@ DAFpay submits the request but does not hold the donor's DAF funds. Read the Gra
 
 `paymentChannel` is read-only and set per Grant, so do not assume one route for all of a nonprofit's gifts. Because funds may pass through DAFpay Network rather than arriving straight from the provider, do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider.
 
+On the `direct` channel, the provider's own remittance carries the DAFpay identifiers. These examples show where the tracking ID and the "Gift via DAFpay" callout appear in the memo, which is what your support team matches against.
+
+<Frame caption="A check grant on the direct channel. The DAF provider pays the nonprofit; DAFpay does not handle the funds on this route.">
+    <img src='../../../images/SchwabGrantLetter.png' width="400" height="500" />
+</Frame>
+
+<Frame caption="A Fidelity grant on the direct channel, showing the same DAFpay identifiers in the provider's remittance.">
+    <img src='../../../images/fidelity.png' />
+</Frame>
+
+A `dafpay_network` gift does not look like this: the nonprofit receives the funds from DAFpay Network rather than from the provider, so do not build matching logic that assumes the provider's own remittance format.
+
 Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name.
 
 Before launch, document which status and date control platform billing, how cancellations and adjustments are handled, and which reconciliation data is available to nonprofits and support.
