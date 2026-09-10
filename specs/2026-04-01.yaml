@@ -7794,6 +7794,8 @@ components:
         - "disbursement.updated"
         - "inbound_transfer.created"
         - "inbound_transfer.updated"
+        - "payment_method.created"
+        - "payment_method.updated"
         - "donation.created"
         - "donation.updated"
         - "deposit.created"
