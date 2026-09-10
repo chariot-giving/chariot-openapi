@@ -3902,8 +3902,8 @@ paths:
         Create a new method for paying a nonprofit organization. Use this API when Chariot currently doesn't
         have any verified Payment Methods on file for the Organization and you want to supply your own. The
         payment method is created with status `pending_verification` and transitions to `active` once Chariot
-        verifies it. See the [Payment Method Lifecycle](/guides/disbursements/payment-method-lifecycle) guide
-        to learn more.
+        verifies it. See the [Payment Methods](/guides/disbursements/payment-method-lifecycle) guide to learn
+        more.
 
         Chariot currently only supports creating Payment Methods for physical mail & checks.
       operationId: createPaymentMethod
