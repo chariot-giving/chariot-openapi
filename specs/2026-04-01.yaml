@@ -3813,12 +3813,13 @@ paths:
   /v1/nonprofit_addresses:
     post:
       summary: Create Nonprofit Addresses
+      deprecated: true
       description: |-
+        Deprecated. Use [Create a Payment Method](/api/payment-methods/create), which returns the submitted
+        address as a Payment Method you can track to verification.
+
         Submit mailing addresses for one or more nonprofits. Uploaded
         addresses are used as suggestions for where to send disbursements.
-
-        This endpoint will be superseded by [Create a Payment Method](/api/payment-methods/create),
-        which returns the submitted address as a Payment Method you can track to verification.
       operationId: createNonprofitAddressSuggestion
       tags:
         - nonprofitAddresses
@@ -4297,7 +4298,7 @@ components:
           description: |-
             Why the payment method is inactive. Present only when `status` is `inactive`.
             - `undeliverable`: a payment sent here did not reach the organization. A check was returned or never deposited, or an ACH transfer was returned.
-            - `superseded`: a newer verified destination of the same kind replaced it.
+            - `superseded`: a newer verified mailing address replaced it.
             - `rejected`: Chariot declined the submission, or verified a different submission of the same destination.
             - `expired`: the destination passed its expiry without renewal.
             - `closed`: the Chariot deposit account was closed.

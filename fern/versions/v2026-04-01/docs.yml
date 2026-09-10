@@ -233,8 +233,6 @@ navigation:
                   title: Disbursements
               - verificationRequests:
                   title: Verification Requests
-              - nonprofitAddresses:
-                  title: Nonprofit Addresses
               - paymentMethods:
                   title: Payment Methods
               - nonprofitContacts:
