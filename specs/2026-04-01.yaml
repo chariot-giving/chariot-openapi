@@ -2960,7 +2960,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "src_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
       responses:
         "200":
           description: The source.
@@ -2971,216 +2971,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Source"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/source_connections:
-    get:
-      summary: List Source Connections
-      description: |-
-        Returns the source connections belonging to your organization. Each source connection
-        is either linked to a canonical Source or a bring-your-own bank
-        address. Donations and deposits reference connections by ID.
-      operationId: listSourceConnections
-      tags:
-        - source_connections
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: page_token
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
-        - name: status
-          in: query
-          description: Filter source connections by status.
-          required: false
-          schema:
-            type: string
-            enum:
-              - connected
-              - pending
-              - disabled
-              - error
-              - available
-        - name: include
-          in: query
-          description: |-
-            Set to `available` to also return one row for every Source in the
-            directory that the organization has not connected. Available rows
-            appear with `status: available` and no `id`; they are read-only.
-          required: false
-          schema:
-            type: string
-            enum:
-              - available
-      responses:
-        "200":
-          $ref: "#/components/responses/ListSourceConnectionsResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    post:
-      summary: Create a Source Connection
-      description: |-
-        Creates a new source connection. Supply `source_id` to link a canonical
-        Source; supply `financial_address` without `source_id` to create a
-        bring-your-own connection.
-      operationId: createSourceConnection
-      tags:
-        - source_connections
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: Idempotency-Key
-          in: header
-          description: The idempotency key for the request.
-          required: false
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/CreateSourceConnectionRequest"
-      responses:
-        "201":
-          description: The connection was created.
-          headers:
-            Location:
-              $ref: "#/components/headers/Location"
-            Idempotency-Key:
-              $ref: "#/components/headers/Idempotency-Key"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SourceConnection"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/source_connections/{id}:
-    get:
-      summary: Get a Source Connection
-      description: |-
-        Retrieves a source connection by its unique identifier.
-      operationId: getSourceConnection
-      tags:
-        - source_connections
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the connection.
-          required: true
-          schema:
-            type: string
-          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "200":
-          description: The connection.
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SourceConnection"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update a Source Connection
-      description: |-
-        Updates a source connection's mutable fields. Immutable fields (`source_id`,
-        `financial_address` on a linked connection) can't be changed; create a
-        new connection instead.
-      operationId: updateSourceConnection
-      tags:
-        - source_connections
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the connection.
-          required: true
-          schema:
-            type: string
-          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
-      requestBody:
-        $ref: "#/components/requestBodies/UpdateSourceConnectionRequest"
-      responses:
-        "200":
-          description: The updated connection.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SourceConnection"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    delete:
-      summary: Delete a Source Connection
-      description: |-
-        Deletes a source connection. Existing donation and deposit references still
-        resolve to the connection, but the connection stops appearing in list
-        responses and no new activity can flow through it.
-      operationId: deleteSourceConnection
-      tags:
-        - source_connections
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the connection.
-          required: true
-          schema:
-            type: string
-          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
-      responses:
-        "204":
-          description: The connection was deleted.
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3403,13 +3193,13 @@ paths:
           required: false
           schema:
             type: string
-        - name: payment_source_id
+        - name: source_id
           in: query
-          description: The unique identifier for the payment sources to filter donations by. Comma separated list of payment source IDs.
+          description: The identifier of the source that sent the donations. Comma-separated list of source IDs.
           required: false
           schema:
             type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3451,8 +3241,8 @@ paths:
     post:
       summary: Create a Donation
       description: |-
-        Creates a new donation. Include `payment_source_id` to scope the donation to a specific
-        payment source.
+        Creates a new donation. Include `source_id` to attribute the donation to
+        a specific source.
       operationId: createDonation
       tags:
         - donations
@@ -3565,9 +3355,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Delete a Donation
-      description: |-
-        Soft-delete a donation by its unique identifier. The donation stops appearing in list responses
-        but the underlying record is retained.
+      description: Delete a donation by its unique identifier.
       operationId: deleteDonation
       tags:
         - donations
@@ -3618,13 +3406,23 @@ paths:
           required: false
           schema:
             type: string
-        - name: payment_source_id
+        - name: source_id
           in: query
-          description: The unique identifier for the payment sources to filter deposits by. Comma separated list of payment source IDs.
+          description: The identifier of the source that sent the deposits. Comma-separated list of source IDs.
           required: false
           schema:
             type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: status
+          in: query
+          description: Filter deposits by status.
+          required: false
+          schema:
+            type: string
+            enum:
+              - pending
+              - complete
+              - failed
         - name: settled_at.after
           in: query
           description: Return deposits with a settled date and time after the given date and time.
@@ -3670,7 +3468,7 @@ paths:
           example: "deposit_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
-          description: The deposit was retrieved
+          description: The deposit.
           content:
             application/json:
               schema:
@@ -3869,11 +3667,7 @@ paths:
   /v1/deposits/{id}/reconcile:
     post:
       summary: Reconcile a Deposit
-      description: |-
-        Reconcile a deposit against one or more donations. Records each donation as part of the
-        deposit's makeup. The deposit is marked reconciled when the linked donations' amounts sum to the
-        deposit total. Non-destructive: linking only adds relationships, it never overwrites the deposit
-        or the donations themselves.
+      description: Link one or more donations to a deposit.
       operationId: reconcileDeposit
       tags:
         - deposits
@@ -4729,140 +4523,43 @@ components:
     Source:
       type: object
       description: |-
-        A Source is a canonical entry in Chariot's directory of payers,
-        DAF sponsors, workplace-giving platforms, and other institutions
-        that send money to nonprofits. Every caller sees the same directory.
-        Chariot maintains it; callers can't create, modify, or delete a
-        source.
+        A Source is a payer or gift originator (e.g. Fidelity Charitable,
+        Benevity, an individual donor). Donations and deposits reference a
+        Source to answer "who sent this money?"
+
+        A Source has no lifecycle: there is nothing to connect, activate,
+        or close.
       required:
         - id
-        - internal_id
-        - display_name
+        - name
         - created_at
+        - updated_at
       properties:
         id:
           type: string
           readOnly: true
           description: The unique identifier for the source.
-          example: "src_01j8rs605a4gctmbm58d87mvsj"
-        internal_id:
-          type: string
-          readOnly: true
-          description: |-
-            A stable, human-readable slug for the source. Use this as a
-            portable reference when you need one that's meaningful outside
-            Chariot.
-          example: "fidelity_charitable"
-        display_name:
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        name:
           type: string
           description: The human-readable name of the source.
           example: "Fidelity Charitable"
-        logo_url:
+        logo:
           type: string
-          description: URL of the source's logo.
-          example: "https://cdn.chariot.co/sources/fidelity_charitable.png"
-        capabilities:
-          type: array
-          description: |-
-            The set of payment rails and integration modes this source
-            supports.
-          items:
-            type: string
-            enum:
-              - ach
-              - check
-              - wire
-              - dafpay
-        deprecated_at:
-          type: string
-          format: date-time
-          readOnly: true
+          format: uri
           nullable: true
-          description: |-
-            When set, Chariot has marked this source for retirement.
-            Existing connections continue to work but new ones can't be
-            created against it.
+          description: URL of the source's logo, if one is available.
+          example: "https://cdn.givechariot.com/payers/fidelity_charitable.png"
         created_at:
           type: string
           format: date-time
           readOnly: true
           description: When this source was added to the directory.
-    SourceConnection:
-      type: object
-      description: |-
-        A Source Connection is your organization's persistent relationship with a
-        Source, or a bring-your-own bank address you've added directly.
-        Donations and deposits reference connections by ID.
-
-        Source Connections come in two shapes:
-
-        - **Linked** — points at a canonical Source in Chariot's directory
-          via `source_id`.
-        - **Bring-your-own (BYO)** — has no `source_id`; carries its own
-          `financial_address` instead.
-      required:
-        - id
-        - status
-        - created_at
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the connection.
-          example: "sconn_01j8rs605a4gctmbm58d87mvsj"
-        source_id:
-          type: string
-          nullable: true
-          description: |-
-            The identifier of the Source this connection is linked to.
-            Null on bring-your-own connections.
-          example: "src_01j8rs605a4gctmbm58d87mvsj"
-        name:
-          type: string
-          description: A caller-provided nickname for the connection.
-          example: "Fidelity — General Fund"
-        status:
-          type: string
-          readOnly: true
-          description: The current state of the connection.
-          example: "connected"
-          enum:
-            - connected
-            - pending
-            - disabled
-            - error
-        financial_address:
-          allOf:
-            - $ref: "#/components/schemas/FinancialAddress"
-          description: |-
-            Bank address for the connection. Required on bring-your-own
-            connections. May be present on linked connections when Chariot
-            has provisioned one on the caller's behalf.
-        metadata:
-          type: object
-          description: |-
-            Arbitrary key-value pairs recorded against the connection.
-            Attach caller-specific configuration or reconciliation data
-            here.
-          additionalProperties: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: When the connection was created.
         updated_at:
           type: string
           format: date-time
           readOnly: true
-          description: When the connection was last updated.
-        deleted_at:
-          type: string
-          format: date-time
-          readOnly: true
-          nullable: true
-          description: |-
-            When set, the connection has been deleted. Existing donation and
-            deposit references still resolve; new activity is blocked.
+          description: When this source was last modified.
     Donation:
       type: object
       description: |-
@@ -4878,18 +4575,17 @@ components:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for the donation
+          description: The unique identifier for the donation.
           example: donation_01j8rs605a4gctmbm58d87mvsj
         external_id:
           type: string
           description: |-
-            The caller's own identifier for the donation, useful for reconciling against your own systems.
+            The caller's own identifier for the donation, useful for reconciling against caller systems.
           example: "INV-12345"
-        payment_source_id:
+        source_id:
           type: string
-          description: |-
-            The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
-          example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
+          description: The identifier of the [Source](/api-reference/sources) that sent this donation.
+          example: source_01m12tn300eh20gdqscje7s5jw
         amount_gross:
           type: integer
           format: int64
@@ -4927,32 +4623,31 @@ components:
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
         attribution:
-          description: |-
-            A subhash containing information about how the donation is attributed.
+          description: How the donation is attributed to a donor.
           allOf:
             - $ref: "#/components/schemas/DonationAttribution"
         initiation:
-          description: A subhash containing information about how the donation was initiated by the donor.
+          description: How and where the donor initiated the gift.
           allOf:
             - $ref: "#/components/schemas/DonationInitiation"
         settlement:
-          description: A subhash containing information about how the donation was settled by Chariot.
+          description: How the funds are moving from the donor to the recipient.
           allOf:
             - $ref: "#/components/schemas/DonationSettlement"
         donor_advised_fund_grant:
-          description: A subhash containing information about the grant from a Donor-Advised Fund sponsor.
+          description: DAF-specific grant details, when the donation came from a Donor-Advised Fund.
           allOf:
             - $ref: "#/components/schemas/DafGrant"
         metadata:
           type: object
           description: |-
-            Arbitrary key-value pairs recorded against the donation. Use this to attach your own
-            reconciliation data, campaign identifiers, or any other data your systems need.
+            Arbitrary key-value pairs recorded against the donation. Use this for
+            reconciliation data, campaign identifiers, or other integration data.
           additionalProperties: true
         corporate_match:
           description: |-
-            A subhash containing information about the corporate match for the donation.
-            If this is empty, then the donation was not matched by a corporate sponsor.
+            Corporate match details for the donation. Empty when no corporate
+            sponsor matched the gift.
           allOf:
             - $ref: "#/components/schemas/CorporateMatch"
         properties:
@@ -4986,9 +4681,9 @@ components:
           format: date-time
           nullable: true
           description: |-
-            The date and time when the donation was canceled.
-            A non-null value indicates the donation is tied to a canceled grant initiation
-            and the gift was not received. Expressed in RFC 3339 format.
+            When the donation was canceled. If set, the donor's payment did not
+            complete and the recipient did not receive the gift. Expressed in
+            RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         payment_status:
           type: string
@@ -5213,23 +4908,19 @@ components:
           description: A description of the property option.
     DonationAttribution:
       type: object
-      description: |-
-        A subhash containing information about how the donation is attributed.
+      description: How the donation is attributed to a donor.
       properties:
         primary_donor:
-          description: |-
-            A subhash containing information about the primary donor of the donation.
+          description: The primary donor.
           allOf:
             - $ref: "#/components/schemas/Donor"
         joint_donor:
-          description: |-
-            A subhash containing information about the joint donor of the donation.
+          description: A second donor jointly credited with the gift.
           allOf:
             - $ref: "#/components/schemas/Donor"
     CorporateMatch:
       type: object
-      description: |-
-        A subhash containing information about the corporate match for the donation.
+      description: Corporate match details for the donation.
       properties:
         match_amount:
           type: integer
@@ -5249,8 +4940,7 @@ components:
           example: "Payroll"
     DafGrant:
       type: object
-      description: |-
-        A subhash containing information grant details from a Donor-Advised Fund sponsor.
+      description: Grant details from a Donor-Advised Fund sponsor.
       required:
         - organization_name
       properties:
@@ -5268,35 +4958,44 @@ components:
           description: The name of the program at the Donor Advised Fund sponsor.
     DonationSettlement:
       type: object
-      description: |-
-        If the payment for the donation was received by Chariot, this object will contain additional information
-        about the settlement of the donation.
+      description: How the funds moved from the donor to the recipient.
       required:
-        - deposit_id
+        - type
         - received_at
       properties:
-        deposit_id:
+        type:
           type: string
-          description: The unique identifier for the deposit that contains the money for the donation.
-          example: deposit_01kewb5vgsryzaajza5ynr06kz
+          description: |-
+            Where the funds settled.
+
+            - `chariot` — the funds arrived through a Chariot deposit. `deposit_id` and `settled_at` apply.
+            - `external` — the funds arrived outside Chariot's rails, straight to the recipient.
+          enum:
+            - chariot
+            - external
+          example: chariot
         received_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            The date and time when the transfer of money for the donation was received by Chariot.
-            Received at indicates when the data for the transfer was received, which is different from the settled_at timestamp.
-            Expressed in RFC 3339 format.
+            When the funds were received by the recipient. Expressed in RFC 3339
+            format.
           example: "2020-01-31T23:59:59Z"
         settled_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            The date and time when the money for the donation was settled by Chariot.
-            Indicates when the funds become available to the nonprofit.
-            Expressed in RFC 3339 format.
+            When the funds became available in the recipient's Chariot account.
+            Only set when `type` is `chariot`. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        deposit_id:
+          type: string
+          description: |-
+            The identifier of the deposit that carried the funds. Only set when
+            `type` is `chariot`.
+          example: deposit_01kewb5vgsryzaajza5ynr06kz
     DonationInitiation:
       type: object
       description: |-
@@ -5304,7 +5003,6 @@ components:
         reached Chariot.
       required:
         - initiated_at
-        - frequency
       properties:
         initiated_at:
           type: string
@@ -5334,24 +5032,19 @@ components:
             type: string
           example:
             {
-              "funding_source": "DAF",
-              "funding_source_id": "daf_01j8rs605a4gctmbm58d87mvsj",
-              "funding_source_name": "DAF day",
+              "campaign_id": "spring-appeal",
+              "utm_source": "newsletter",
             }
-        frequency:
-          type: string
-          description: The frequency of the donation.
-          example: "ONE_TIME"
-          enum:
-            - ONE_TIME
-            - MONTHLY
     Deposit:
       type: object
       description: |-
-        A Deposit is a transfer of money for a charitable donation or a batch of donations.
+        A single inbound transfer of money into a Chariot Processing account.
+        Every deposit points at the [Source](/api-reference/sources) that sent it
+        and can link to one or more [Donations](/api-reference/donations) that
+        account for the funds.
       required:
         - id
-        - payment_source_id
+        - source_id
         - status
         - transfer
         - created_at
@@ -5360,20 +5053,22 @@ components:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for this object.
+          description: The unique identifier for the deposit.
           example: deposit_01j8rs605a4gctmbm58d87mvsj
-        payment_source_id:
+        source_id:
           type: string
-          description: The unique identifier for the payment source that contains the money for the deposit.
-          example: payment_source_01j8rs605a4gctmbm58d87mvsj
+          description: The identifier of the [Source](/api-reference/sources) that sent this deposit.
+          example: source_01m12tn300eh20gdqscje7s5jw
         settled_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was settled.
           example: "2020-01-31T23:59:59Z"
         returned_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was returned.
           example: "2020-01-31T23:59:59Z"
         status:
@@ -5385,7 +5080,7 @@ components:
             - complete
             - failed
         transfer:
-          description: A subhash containing information about the transfer associated with the deposit.
+          description: The transfer that carried the funds.
           allOf:
             - $ref: "#/components/schemas/Transfer"
         properties:
@@ -5397,21 +5092,18 @@ components:
         created_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was created.
           example: "2020-01-31T23:59:59Z"
         updated_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was last updated.
-          example: "2020-01-31T23:59:59Z"
-        bank_created_at:
-          type: string
-          format: date-time
-          description: The date and time when the bank created the deposit.
           example: "2020-01-31T23:59:59Z"
     Transfer:
       type: object
-      description: A subhash containing information about the transfer associated with the deposit.
+      description: The transfer that carried the funds for a deposit.
       required:
         - amount
         - currency
@@ -5434,28 +5126,34 @@ components:
           type: string
           description: A description of the transfer.
           example: "Disbursement to nonprofit"
+        bank_created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time the bank recorded the transfer.
+          example: "2020-01-31T23:59:59Z"
         inbound_account_transfer:
-          description: A subhash containing information about the inbound account transfer associated with the deposit.
+          description: An instant transfer from another Chariot account.
           allOf:
             - $ref: "#/components/schemas/InboundAccountTransfer"
         inbound_ach_transfer:
-          description: A subhash containing information about the inbound ACH transfer associated with the deposit.
+          description: An ACH credit received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
         ach_transfer:
-          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot debits an external bank account to fund the account.
+          description: An ACH debit Chariot pulled from an external bank account to fund the account.
           allOf:
             - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
-          description: A subhash containing information about the check deposit associated with the deposit.
+          description: A check that Chariot processed and deposited.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
         inbound_real_time_payments_transfer:
-          description: A subhash containing information about the inbound real-time payments transfer associated with the transfer.
+          description: A real-time payments transfer received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
         inbound_wire_transfer:
-          description: A subhash containing information about the inbound wire transfer associated with the transfer.
+          description: A wire transfer received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundWireTransfer"
     InboundAccountTransfer:
@@ -6731,6 +6429,37 @@ components:
         source:
           type: string
           description: The platform or channel the match arrived through (e.g. "Benevity").
+    DonationInitiationInput:
+      type: object
+      description: Where and how the donor initiated the gift.
+      properties:
+        initiated_at:
+          type: string
+          format: date-time
+          description: When the donor initiated the gift. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
+        platform:
+          type: string
+          description: The name of the platform where the donor initiated the gift.
+          example: "Givebutter"
+        identifier:
+          type: string
+          description: The initiating platform's own identifier for the gift, for reconciliation against that platform's records.
+          example: "L9E182VBGP"
+        url:
+          type: string
+          description: The URL of the page where the donor initiated the gift.
+          example: "https://www.example.com/donation/1234567890"
+        metadata:
+          type: object
+          description: Additional key-value pairs the platform captured when the donation was initiated.
+          additionalProperties:
+            type: string
+          example:
+            {
+              "campaign_id": "spring-appeal",
+              "utm_source": "newsletter",
+            }
     GrantAddress:
       type: object
       properties:
@@ -7737,7 +7466,7 @@ components:
             - canceled
             - failed
         transfer:
-          description: A subhash containing information about the transfer associated with the inbound transfer.
+          description: The transfer that carried the funds.
           allOf:
             - $ref: "#/components/schemas/Transfer"
         created_at:
@@ -8210,11 +7939,10 @@ components:
                 example:
                   - "note"
                   - "attribution.primary_donor.email"
-              payment_source_id:
+              source_id:
                 type: string
-                description: |-
-                  The unique identifier for the payment source to associate the donation with.
-                example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+                description: The identifier of the source that sent the donation.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date:
                 type: string
                 format: date-time
@@ -8250,13 +7978,13 @@ components:
                 example: "Please dedicate in memory of grandma"
               external_id:
                 type: string
-                description: An external identifier for the donation, useful for reconciliation against your own systems.
+                description: An external identifier for the donation, useful for reconciliation against caller systems.
                 example: "INV-12345"
               attribution:
                 type: object
                 description: |-
-                  A subhash containing information about how the donation is attributed. Mirrors
-                  the shape of the `attribution` object on the donation response.
+                  How the donation is attributed to a donor. Mirrors the shape of
+                  the `attribution` object on the donation response.
                 properties:
                   primary_donor:
                     allOf:
@@ -8267,6 +7995,9 @@ components:
               recipient:
                 allOf:
                   - $ref: "#/components/schemas/RecipientInput"
+              initiation:
+                allOf:
+                  - $ref: "#/components/schemas/DonationInitiationInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
@@ -8295,67 +8026,6 @@ components:
                 email: "warrenBuffet@example.com"
               clear_fields:
                 - "note"
-    CreateSourceConnectionRequest:
-      description: |-
-        The request to create a new source connection. Provide `source_id` to link a
-        canonical Source. Omit `source_id` and provide `financial_address` to
-        create a bring-your-own connection.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              source_id:
-                type: string
-                description: |-
-                  The identifier of the Source to link to. Omit to create a
-                  bring-your-own connection with the supplied
-                  `financial_address`.
-                example: "src_01j8rs605a4gctmbm58d87mvsj"
-              name:
-                type: string
-                description: A caller-provided nickname for the connection.
-                example: "Fidelity — General Fund"
-              financial_address:
-                allOf:
-                  - $ref: "#/components/schemas/FinancialAddress"
-                description: |-
-                  Bank address for the connection. Required when `source_id`
-                  is omitted (bring-your-own).
-              metadata:
-                type: object
-                description: |-
-                  Arbitrary key-value pairs to record against the connection.
-                additionalProperties: true
-            example:
-              source_id: "src_01j8rs605a4gctmbm58d87mvsj"
-              name: "Fidelity — General Fund"
-    UpdateSourceConnectionRequest:
-      description: |-
-        The request to update a source connection. Only the fields explicitly present
-        in the request body are changed; omitted fields are left as-is.
-        `source_id` and `financial_address` on linked connections are
-        immutable; to change them, delete this connection and create a new
-        one.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: A caller-provided nickname for the connection.
-                example: "Fidelity — Scholarship Fund"
-              metadata:
-                type: object
-                description: |-
-                  Arbitrary key-value pairs. Supplying this field replaces the
-                  stored map wholesale.
-                additionalProperties: true
-            example:
-              name: "Fidelity — Scholarship Fund"
     CreateDonationRequest:
       description: |-
         The request to record a new donation.
@@ -8367,12 +8037,12 @@ components:
             required:
               - amount_gross
             properties:
-              payment_source_id:
+              source_id:
                 type: string
                 description: |-
-                  The identifier of the payment source to associate with the donation. If provided,
-                  the referenced payment source must already exist.
-                example: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+                  The identifier of the source that sent the donation. If provided,
+                  the referenced source must already exist.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date:
                 type: string
                 format: date-time
@@ -8408,13 +8078,13 @@ components:
                 example: "Please dedicate in memory of grandma"
               external_id:
                 type: string
-                description: An external identifier for the donation, useful for reconciliation against your own systems.
+                description: An external identifier for the donation, useful for reconciliation against caller systems.
                 example: "INV-12345"
               attribution:
                 type: object
                 description: |-
-                  A subhash containing information about how the donation is attributed. Mirrors
-                  the shape of the `attribution` object on the donation response.
+                  How the donation is attributed to a donor. Mirrors the shape of
+                  the `attribution` object on the donation response.
                 properties:
                   primary_donor:
                     allOf:
@@ -8425,6 +8095,9 @@ components:
               recipient:
                 allOf:
                   - $ref: "#/components/schemas/RecipientInput"
+              initiation:
+                allOf:
+                  - $ref: "#/components/schemas/DonationInitiationInput"
               donor_advised_fund_grant:
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
@@ -8445,7 +8118,7 @@ components:
                 example:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
             example:
-              payment_source_id: "payment_source_01kew60ks7w0epkvp2bgqxrt8z"
+              source_id: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date: "2026-01-15T00:00:00Z"
               amount_gross: 10000
               currency: "USD"
@@ -9617,26 +9290,6 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Source"
-              next_page_token:
-                type: string
-                description: |-
-                  A cursor token to retrieve the next page of results. If
-                  specified, more results exist on the server; otherwise the
-                  list has been exhausted.
-    ListSourceConnectionsResponse:
-      description: The response for SourceConnections.list
-      headers:
-        X-Request-Id:
-          $ref: "#/components/headers/X-Request-Id"
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              results:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SourceConnection"
               next_page_token:
                 type: string
                 description: |-

@@ -260,23 +260,6 @@ navigation:
                     path: ./pages/api/sources/object.mdx
                   - endpoint: GET /v1/sources
                   - endpoint: GET /v1/sources/{id}
-              - section: Source Connections
-                contents:
-                  - page: Overview
-                    slug: overview
-                    path: ./pages/api/source_connections/overview.mdx
-                  - page: The Source Connection object
-                    slug: object
-                    path: ./pages/api/source_connections/object.mdx
-                  - endpoint: POST /v1/source_connections
-                  - endpoint: GET /v1/source_connections
-                  - endpoint: GET /v1/source_connections/{id}
-                  - endpoint: PATCH /v1/source_connections/{id}
-                  - endpoint: DELETE /v1/source_connections/{id}
-              - lockboxes:
-                  title: Lockboxes
-              - mailItems:
-                  title: Mail Items
               - section: Donations
                 contents:
                   - page: Overview
@@ -290,8 +273,21 @@ navigation:
                   - endpoint: GET /v1/donations/{id}
                   - endpoint: PATCH /v1/donations/{id}
                   - endpoint: DELETE /v1/donations/{id}
-              - deposits:
-                  title: Deposits
+              - section: Deposits
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/deposits/overview.mdx
+                  - page: The Deposit object
+                    slug: object
+                    path: ./pages/api/deposits/object.mdx
+                  - endpoint: GET /v1/deposits
+                  - endpoint: GET /v1/deposits/{id}
+                  - endpoint: POST /v1/deposits/{id}/reconcile
+              - lockboxes:
+                  title: Lockboxes
+              - mailItems:
+                  title: Mail Items
               - properties:
                   title: Properties
           - section: Lockbox Providers
