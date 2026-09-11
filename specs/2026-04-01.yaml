@@ -6484,20 +6484,12 @@ components:
         A postal address is a mailing address where physical mail can be received.
         Postal addresses can be used to receive paper checks.
       required:
-        - city
-        - country
         - line1
-        - postal_code
+        - city
         - state
+        - postal_code
+        - country
       properties:
-        city:
-          type: string
-          description: City, district, suburb, town, or village.
-          example: "New York"
-        country:
-          type: string
-          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-          example: "US"
         line1:
           type: string
           description: Address line 1 (e.g. street, PO Box, or company name)
@@ -6506,14 +6498,22 @@ components:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
           example: "Suite 2504"
-        postal_code:
+        city:
           type: string
-          description: ZIP or postal code
-          example: "12345"
+          description: City, district, suburb, town, or village.
+          example: "New York"
         state:
           type: string
           description: State, county, province, or region
           example: "NY"
+        postal_code:
+          type: string
+          description: ZIP or postal code
+          example: "12345"
+        country:
+          type: string
+          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          example: "US"
     Disbursement:
       type: object
       description: A disbursement moves funds to a verified organization.
