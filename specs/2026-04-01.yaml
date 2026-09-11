@@ -2906,23 +2906,16 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/payment_sources:
+  /v1/sources:
     get:
-      summary: List Payment Sources
+      summary: List Sources
       description: |-
-        List payment sources for your Chariot account.
-
-        Payment Sources represent segregated addresses for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
-      operationId: listPaymentSources
+        Returns Chariot's directory of canonical sources — payers, DAF sponsors,
+        workplace-giving platforms, and other institutions that send money to
+        nonprofits. Every caller sees the same list.
+      operationId: listSources
       tags:
-        - paymentSources
+        - sources
       security:
         - bearerAuth: []
       parameters:
@@ -2941,7 +2934,7 @@ paths:
             type: string
       responses:
         "200":
-          $ref: "#/components/responses/ListPaymentSourcesResponse"
+          $ref: "#/components/responses/ListSourcesResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2950,40 +2943,34 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/payment_sources/{id}:
+  /v1/sources/{id}:
     get:
-      summary: Get a Payment Source
+      summary: Get a Source
       description: |-
-        Get a payment source by its unique identifier.
-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-
-        Payment Sources should be setup and managed through the Chariot Dashboard.
-      operationId: getPaymentSource
+        Retrieves a Source by its unique identifier.
+      operationId: getSource
       tags:
-        - paymentSources
+        - sources
       security:
         - bearerAuth: []
       parameters:
         - name: id
           in: path
-          description: The unique identifier for the payment source
+          description: The unique identifier for the source.
           required: true
           schema:
             type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
       responses:
         "200":
-          description: Successfully retrieved the payment source.
+          description: The source.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentSource"
+                $ref: "#/components/schemas/Source"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3206,13 +3193,13 @@ paths:
           required: false
           schema:
             type: string
-        - name: payment_source_id
+        - name: source_id
           in: query
-          description: The unique identifier for the payment sources to filter donations by. Comma separated list of payment source IDs.
+          description: The identifier of the source that sent the donations. Comma-separated list of source IDs.
           required: false
           schema:
             type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
         - name: deposit_id
           in: query
           description: The unique identifier for the deposit to filter donations by.
@@ -3251,6 +3238,47 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Donation
+      description: |-
+        Creates a new donation. Include `source_id` to attribute the donation to
+        a specific source.
+      operationId: createDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDonationRequest"
+      responses:
+        "201":
+          description: The donation was created.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations/{id}:
     get:
       summary: Get a Donation
@@ -3286,6 +3314,74 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Donation
+      description: |-
+        Update fields on an existing donation. Fields set in the request body are written (including empty
+        strings and zeros). Fields listed in `clear_fields` are nulled — only nullable columns are clearable.
+        Fields that are neither set nor listed are left unchanged. A field path may not be cleared and carry
+        a value in the same request.
+      operationId: updateDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDonationRequest"
+      responses:
+        "200":
+          description: The donation was updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a Donation
+      description: Delete a donation by its unique identifier.
+      operationId: deleteDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the donation
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "204":
+          description: The donation was deleted.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
     get:
       summary: List Deposits
@@ -3310,13 +3406,23 @@ paths:
           required: false
           schema:
             type: string
-        - name: payment_source_id
+        - name: source_id
           in: query
-          description: The unique identifier for the payment sources to filter deposits by. Comma separated list of payment source IDs.
+          description: The identifier of the source that sent the deposits. Comma-separated list of source IDs.
           required: false
           schema:
             type: string
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: status
+          in: query
+          description: Filter deposits by status.
+          required: false
+          schema:
+            type: string
+            enum:
+              - pending
+              - complete
+              - failed
         - name: settled_at.after
           in: query
           description: Return deposits with a settled date and time after the given date and time.
@@ -3362,7 +3468,7 @@ paths:
           example: "deposit_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
-          description: The deposit was retrieved
+          description: The deposit.
           content:
             application/json:
               schema:
@@ -3548,6 +3654,38 @@ paths:
               $ref: "#/components/headers/Location"
             X-Request-Id:
               $ref: "#/components/headers/X-Request-Id"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}/reconcile:
+    post:
+      summary: Reconcile a Deposit
+      description: Link one or more donations to a deposit.
+      operationId: reconcileDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to reconcile
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      requestBody:
+        $ref: "#/components/requestBodies/ReconcileDepositRequest"
+      responses:
+        "204":
+          description: The deposit was reconciled.
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -4239,54 +4377,6 @@ components:
         logo_url:
           type: string
           description: The URL of the organization's logo
-    PaymentSource:
-      type: object
-      description: |-
-        A Payment Source represents a segregated address for incoming deposits.
-        In practice, this can be separate electronic bank addresses (account + routing numbers) or physical mailing addresses (lockboxes).
-        Payment Sources make it easy to independently manage and consolidate incoming payments and donations from different sources
-        which in turn makes reconciliation of money and data seamless.
-        Every Payment Source belongs to a specific Financial Account and can be thought of as a gateway/door for money to flow into the Financial Account.
-        Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: The unique identifier for the payment source
-          example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-        financial_account_id:
-          type: string
-          description: The unique identifier for the financial account that the payment source belongs to
-          example: "fa_01j8rs605a4gctmbm58d87mvsj"
-        name:
-          type: string
-          description: The name of the payment source
-          example: "Main Payment Source"
-        source_type:
-          type: string
-          description: The type of the payment source
-          example: "portal"
-          enum:
-            - manual
-            - portal
-            - lockbox
-            - grantmaker
-        financial_address:
-          $ref: "#/components/schemas/FinancialAddress"
-        lockbox:
-          $ref: "#/components/schemas/Lockbox"
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the payment source was created
-          example: "2020-01-31T23:59:59Z"
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: The date and time when the payment source was last updated
-          example: "2020-01-31T23:59:59Z"
     Lockbox:
       type: object
       description: |-
@@ -4430,38 +4520,72 @@ components:
           type: string
           description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
           example: "101050001"
+    Source:
+      type: object
+      description: |-
+        A Source is a payer or gift originator (e.g. Fidelity Charitable,
+        Benevity, an individual donor). Donations and deposits reference a
+        Source to answer "who sent this money?"
+
+        A Source has no lifecycle: there is nothing to connect, activate,
+        or close.
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the source.
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        name:
+          type: string
+          description: The human-readable name of the source.
+          example: "Fidelity Charitable"
+        logo:
+          type: string
+          format: uri
+          nullable: true
+          description: URL of the source's logo, if one is available.
+          example: "https://cdn.givechariot.com/payers/fidelity_charitable.png"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this source was added to the directory.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this source was last modified.
     Donation:
       type: object
       description: |-
         A Donation is a gift of money to a nonprofit organization.
       required:
         - id
-        - payment_source_id
         - amount_gross
         - amount_net
         - amount_fee
         - currency
-        - purpose
-        - note
         - created_at
       properties:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for the donation
+          description: The unique identifier for the donation.
           example: donation_01j8rs605a4gctmbm58d87mvsj
         external_id:
           type: string
-          readOnly: true
           description: |-
-            A short human-readable identifier for the donation, useful for reconciling against your own systems.
-            This is the same identifier shown on the donation in the Chariot dashboard.
-          example: "29247869"
-        payment_source_id:
+            The caller's own identifier for the donation, useful for reconciling against caller systems.
+          example: "INV-12345"
+        source_id:
           type: string
-          description: |-
-            The unique identifier for the payment source used to segregate deposits between various DAFs and platforms.
-          example: payment_source_01kew60ks7w0epkvp2bgqxrt8z
+          description: The identifier of the [Source](/api-reference/sources) that sent this donation.
+          example: source_01m12tn300eh20gdqscje7s5jw
         amount_gross:
           type: integer
           format: int64
@@ -4481,11 +4605,6 @@ components:
           description: |-
             The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
             For dollars, for example, this is cents.
-        individual_gift_amount:
-          type: integer
-          format: int64
-          description: |-
-            The amount contributed by the individual donor in minor units of the currency.
         currency:
           type: string
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
@@ -4504,32 +4623,31 @@ components:
             This may contain a message or other useful information that the donor wants to share with the nonprofit.
           example: "Please dedicate in memory of grandma"
         attribution:
-          description: |-
-            A subhash containing information about how the donation is attributed.
+          description: How the donation is attributed to a donor.
           allOf:
             - $ref: "#/components/schemas/DonationAttribution"
         initiation:
-          description: A subhash containing information about how the donation was initiated by DAFpay.
+          description: How and where the donor initiated the gift.
           allOf:
             - $ref: "#/components/schemas/DonationInitiation"
         settlement:
-          description: A subhash containing information about how the donation was settled by Chariot.
+          description: How the funds are moving from the donor to the recipient.
           allOf:
             - $ref: "#/components/schemas/DonationSettlement"
         donor_advised_fund_grant:
-          description: A subhash containing information about the grant from a Donor-Advised Fund sponsor.
+          description: DAF-specific grant details, when the donation came from a Donor-Advised Fund.
           allOf:
             - $ref: "#/components/schemas/DafGrant"
-        platform:
+        metadata:
+          type: object
           description: |-
-            A subhash containing information about the platform that facilitated the donation.
-            If this is empty, then the donation was not facilitated by a platform.
-          allOf:
-            - $ref: "#/components/schemas/Platform"
+            Arbitrary key-value pairs recorded against the donation. Use this for
+            reconciliation data, campaign identifiers, or other integration data.
+          additionalProperties: true
         corporate_match:
           description: |-
-            A subhash containing information about the corporate match for the donation.
-            If this is empty, then the donation was not matched by a corporate sponsor.
+            Corporate match details for the donation. Empty when no corporate
+            sponsor matched the gift.
           allOf:
             - $ref: "#/components/schemas/CorporateMatch"
         properties:
@@ -4563,9 +4681,9 @@ components:
           format: date-time
           nullable: true
           description: |-
-            The date and time when the donation was canceled.
-            A non-null value indicates the donation is tied to a canceled grant initiation
-            and the gift was not received. Expressed in RFC 3339 format.
+            When the donation was canceled. If set, the donor's payment did not
+            complete and the recipient did not receive the gift. Expressed in
+            RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         payment_status:
           type: string
@@ -4790,23 +4908,19 @@ components:
           description: A description of the property option.
     DonationAttribution:
       type: object
-      description: |-
-        A subhash containing information about how the donation is attributed.
+      description: How the donation is attributed to a donor.
       properties:
         primary_donor:
-          description: |-
-            A subhash containing information about the primary donor of the donation.
+          description: The primary donor.
           allOf:
             - $ref: "#/components/schemas/Donor"
         joint_donor:
-          description: |-
-            A subhash containing information about the joint donor of the donation.
+          description: A second donor jointly credited with the gift.
           allOf:
             - $ref: "#/components/schemas/Donor"
     CorporateMatch:
       type: object
-      description: |-
-        A subhash containing information about the corporate match for the donation.
+      description: Corporate match details for the donation.
       properties:
         match_amount:
           type: integer
@@ -4824,49 +4938,9 @@ components:
           type: string
           description: The source of the corporate match.
           example: "Payroll"
-    Platform:
-      type: object
-      description: |-
-        A subhash containing information about the platform that facilitated the donation.
-      properties:
-        name:
-          type: string
-          description: The name of the platform.
-          example: "PayPal Grant Payments"
-        platform_grant_id:
-          type: string
-          description: The identifier for the grant within the platform's system.
-          example: "93492947-7894-4663-a944-f2469d0027ca"
-        metadata:
-          type: object
-          description: Additional key value pairs that were passed to the platform during the donation initiation.
-          additionalProperties:
-            type: string
-        acceptance:
-          description: |-
-            A subhash containing information about the acceptance of the grant from the platform.
-            This is only present if the platform requires grant acceptance before disbursing funds.
-          allOf:
-            - $ref: "#/components/schemas/PlatformAcceptance"
-    PlatformAcceptance:
-      type: object
-      description: |-
-        A subhash containing information about the acceptance of the grant from the platform.
-      properties:
-        accepted:
-          type: boolean
-          description: Whether the grant was accepted from the platform.
-          example: true
-        expires_at:
-          type: string
-          format: date-time
-          description: |-
-            The date and time when the acceptance of the grant will expire.
-          example: "2020-01-31T23:59:59Z"
     DafGrant:
       type: object
-      description: |-
-        A subhash containing information grant details from a Donor-Advised Fund sponsor.
+      description: Grant details from a Donor-Advised Fund sponsor.
       required:
         - organization_name
       properties:
@@ -4882,49 +4956,53 @@ components:
         program_name:
           type: string
           description: The name of the program at the Donor Advised Fund sponsor.
-        sponsor_grant_id:
-          type: string
-          description: The identifier for the grant at the Donor Advised Fund sponsor.
-          example: "93492947-7894-4663-a944-f2469d0027ca"
     DonationSettlement:
       type: object
-      description: |-
-        If the payment for the donation was received by Chariot, this object will contain additional information
-        about the settlement of the donation.
+      description: How the funds moved from the donor to the recipient.
       required:
-        - deposit_id
+        - type
         - received_at
       properties:
-        deposit_id:
+        type:
           type: string
-          description: The unique identifier for the deposit that contains the money for the donation.
-          example: deposit_01kewb5vgsryzaajza5ynr06kz
+          description: |-
+            Where the funds settled.
+
+            - `chariot` — the funds arrived through a Chariot deposit. `deposit_id` and `settled_at` apply.
+            - `external` — the funds arrived outside Chariot's rails, straight to the recipient.
+          enum:
+            - chariot
+            - external
+          example: chariot
         received_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            The date and time when the transfer of money for the donation was received by Chariot.
-            Received at indicates when the data for the transfer was received, which is different from the settled_at timestamp.
-            Expressed in RFC 3339 format.
+            When the funds were received by the recipient. Expressed in RFC 3339
+            format.
           example: "2020-01-31T23:59:59Z"
         settled_at:
           type: string
           readOnly: true
           format: date-time
           description: |-
-            The date and time when the money for the donation was settled by Chariot.
-            Indicates when the funds become available to the nonprofit.
-            Expressed in RFC 3339 format.
+            When the funds became available in the recipient's Chariot account.
+            Only set when `type` is `chariot`. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        deposit_id:
+          type: string
+          description: |-
+            The identifier of the deposit that carried the funds. Only set when
+            `type` is `chariot`.
+          example: deposit_01kewb5vgsryzaajza5ynr06kz
     DonationInitiation:
       type: object
       description: |-
-        If the donation was initiated through a Chariot Connect instance (DAFpay), this object will contain additional information
-        about the initiation of the donation.
+        A subhash describing where and how the donation was initiated by the donor before it
+        reached Chariot.
       required:
         - initiated_at
-        - frequency
       properties:
         initiated_at:
           type: string
@@ -4932,61 +5010,41 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
-        channel:
+        platform:
           type: string
           description: |-
-            The DAFpay integration channel used to initiate the donation.
-            - `INTEGRATED` - The donation was initiated through an integrated DAFpay instance where the DAF sponsor
-              processes the grant electronically via the DAFpay network.
-            - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
-              completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
-          example: "INTEGRATED"
-          enum:
-            - INTEGRATED
-            - UNINTEGRATED
-        web_location_url:
+            The name of the platform where the donor initiated the donation.
+          example: "Givebutter"
+        identifier:
           type: string
-          description: The URL of the web location where the donation was initiated.
+          description: |-
+            The initiating platform's own identifier for the donation. Use it to reconcile the
+            donation against records in the platform's system.
+          example: "L9E182VBGP"
+        url:
+          type: string
+          description: The URL of the page where the donor initiated the donation.
           example: "https://www.example.com/donation/1234567890"
-        fundraising_platform_name:
-          type: string
-          description: |-
-            The name of the fundraising platform that initiated the donation.
-          example: "Classy"
-        dafpay_form:
-          type: string
-          description: |-
-            The DAFpay form where the donation was initiated.
-          example: "DAF day"
-        dafpay_tracking_id:
-          type: string
-          description: The tracking ID for the donation as generated by DAFpay.
-          example: L9E182VBGP
-        dafpay_metadata:
+        metadata:
           type: object
-          description: Additional key value pairs that were passed to DAFpay during the donation initiation.
+          description: Additional key-value pairs the platform captured when the donation was initiated.
           additionalProperties:
             type: string
           example:
             {
-              "funding_source": "DAF",
-              "funding_source_id": "daf_01j8rs605a4gctmbm58d87mvsj",
-              "funding_source_name": "DAF day",
+              "campaign_id": "spring-appeal",
+              "utm_source": "newsletter",
             }
-        frequency:
-          type: string
-          description: The frequency of the donation.
-          example: "ONE_TIME"
-          enum:
-            - ONE_TIME
-            - MONTHLY
     Deposit:
       type: object
       description: |-
-        A Deposit is a transfer of money for a charitable donation or a batch of donations.
+        A single inbound transfer of money into a Chariot Processing account.
+        Every deposit points at the [Source](/api-reference/sources) that sent it
+        and can link to one or more [Donations](/api-reference/donations) that
+        account for the funds.
       required:
         - id
-        - payment_source_id
+        - source_id
         - status
         - transfer
         - created_at
@@ -4995,20 +5053,22 @@ components:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for this object.
+          description: The unique identifier for the deposit.
           example: deposit_01j8rs605a4gctmbm58d87mvsj
-        payment_source_id:
+        source_id:
           type: string
-          description: The unique identifier for the payment source that contains the money for the deposit.
-          example: payment_source_01j8rs605a4gctmbm58d87mvsj
+          description: The identifier of the [Source](/api-reference/sources) that sent this deposit.
+          example: source_01m12tn300eh20gdqscje7s5jw
         settled_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was settled.
           example: "2020-01-31T23:59:59Z"
         returned_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was returned.
           example: "2020-01-31T23:59:59Z"
         status:
@@ -5020,7 +5080,7 @@ components:
             - complete
             - failed
         transfer:
-          description: A subhash containing information about the transfer associated with the deposit.
+          description: The transfer that carried the funds.
           allOf:
             - $ref: "#/components/schemas/Transfer"
         properties:
@@ -5032,21 +5092,18 @@ components:
         created_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was created.
           example: "2020-01-31T23:59:59Z"
         updated_at:
           type: string
           format: date-time
+          readOnly: true
           description: The date and time when the deposit was last updated.
-          example: "2020-01-31T23:59:59Z"
-        bank_created_at:
-          type: string
-          format: date-time
-          description: The date and time when the bank created the deposit.
           example: "2020-01-31T23:59:59Z"
     Transfer:
       type: object
-      description: A subhash containing information about the transfer associated with the deposit.
+      description: The transfer that carried the funds for a deposit.
       required:
         - amount
         - currency
@@ -5069,28 +5126,34 @@ components:
           type: string
           description: A description of the transfer.
           example: "Disbursement to nonprofit"
+        bank_created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time the bank recorded the transfer.
+          example: "2020-01-31T23:59:59Z"
         inbound_account_transfer:
-          description: A subhash containing information about the inbound account transfer associated with the deposit.
+          description: An instant transfer from another Chariot account.
           allOf:
             - $ref: "#/components/schemas/InboundAccountTransfer"
         inbound_ach_transfer:
-          description: A subhash containing information about the inbound ACH transfer associated with the deposit.
+          description: An ACH credit received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
         ach_transfer:
-          description: A subhash containing information about the ACH transfer associated with the transfer. Present when Chariot debits an external bank account to fund the account.
+          description: An ACH debit Chariot pulled from an external bank account to fund the account.
           allOf:
             - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
-          description: A subhash containing information about the check deposit associated with the deposit.
+          description: A check that Chariot processed and deposited.
           allOf:
             - $ref: "#/components/schemas/CheckDeposit"
         inbound_real_time_payments_transfer:
-          description: A subhash containing information about the inbound real-time payments transfer associated with the transfer.
+          description: A real-time payments transfer received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
         inbound_wire_transfer:
-          description: A subhash containing information about the inbound wire transfer associated with the transfer.
+          description: A wire transfer received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundWireTransfer"
     InboundAccountTransfer:
@@ -6265,6 +6328,138 @@ components:
           type: string
           description: "State, county, province, or region"
           example: "NY"
+    AddressInput:
+      type: object
+      description: |-
+        A postal address to record on a donation. Every field is optional; supply as much as you know
+        so downstream matching and receipting keep working when parts of the address are missing.
+      properties:
+        line1:
+          type: string
+          description: Street address.
+        line2:
+          type: string
+          description: Apartment, suite, or unit.
+        city:
+          type: string
+          description: City.
+        state:
+          type: string
+          description: State or province.
+        postal_code:
+          type: string
+          description: Postal or ZIP code.
+        country:
+          type: string
+          description: Country.
+    DonorInput:
+      type: object
+      description: |-
+        A donor to record on a donation. Every field is optional; provide either `full_name` or the
+        `first_name`/`last_name` pair depending on how the source system reports the donor.
+      properties:
+        full_name:
+          type: string
+          description: The donor's name as one string, for donors whose name doesn't split cleanly.
+        first_name:
+          type: string
+          description: The donor's given name.
+        last_name:
+          type: string
+          description: The donor's family name.
+        email:
+          type: string
+          description: The donor's email address.
+        phone:
+          type: string
+          description: The donor's phone number.
+        address:
+          allOf:
+            - $ref: "#/components/schemas/AddressInput"
+    RecipientInput:
+      type: object
+      description: |-
+        The recipient designation for a gift — the fund, chapter, program, or campaign the donor wants
+        the funds directed to.
+      properties:
+        primary_name:
+          type: string
+          description: The designated recipient of the gift (for example a fund, chapter, or campaign).
+          example: "Emergency Response Fund"
+        secondary_name:
+          type: string
+          description: A further designation under the primary one (for example a specific program within a fund).
+          example: "Wildfire Relief"
+        address:
+          type: string
+          description: |-
+            The recipient's address as a single unstructured line. Useful when the source system reports
+            an unparsed address (e.g. a stub or memo line).
+    DafGrantInput:
+      type: object
+      description: |-
+        DAF grant metadata to record on a donation.
+      properties:
+        organization_name:
+          type: string
+          description: The DAF sponsor that issued the grant (e.g. "Fidelity Charitable").
+        donor_fund_name:
+          type: string
+          description: The donor-advised fund the grant was paid from.
+        program_name:
+          type: string
+          description: The sponsor's granting program the gift came through.
+    CorporateMatchInput:
+      type: object
+      description: |-
+        Corporate matching gift metadata to record on a donation.
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the corporate match in minor units of the donation currency.
+          example: 5000
+        company_name:
+          type: string
+          description: The company matching the gift.
+          example: "Acme Corp"
+        program_name:
+          type: string
+          description: The company's matching-gift program.
+        source:
+          type: string
+          description: The platform or channel the match arrived through (e.g. "Benevity").
+    DonationInitiationInput:
+      type: object
+      description: Where and how the donor initiated the gift.
+      properties:
+        initiated_at:
+          type: string
+          format: date-time
+          description: When the donor initiated the gift. Expressed in RFC 3339 format.
+          example: "2020-01-31T23:59:59Z"
+        platform:
+          type: string
+          description: The name of the platform where the donor initiated the gift.
+          example: "Givebutter"
+        identifier:
+          type: string
+          description: The initiating platform's own identifier for the gift, for reconciliation against that platform's records.
+          example: "L9E182VBGP"
+        url:
+          type: string
+          description: The URL of the page where the donor initiated the gift.
+          example: "https://www.example.com/donation/1234567890"
+        metadata:
+          type: object
+          description: Additional key-value pairs the platform captured when the donation was initiated.
+          additionalProperties:
+            type: string
+          example:
+            {
+              "campaign_id": "spring-appeal",
+              "utm_source": "newsletter",
+            }
     GrantAddress:
       type: object
       properties:
@@ -6289,20 +6484,12 @@ components:
         A postal address is a mailing address where physical mail can be received.
         Postal addresses can be used to receive paper checks.
       required:
-        - city
-        - country
         - line1
-        - postal_code
+        - city
         - state
+        - postal_code
+        - country
       properties:
-        city:
-          type: string
-          description: City, district, suburb, town, or village.
-          example: "New York"
-        country:
-          type: string
-          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-          example: "US"
         line1:
           type: string
           description: Address line 1 (e.g. street, PO Box, or company name)
@@ -6311,14 +6498,22 @@ components:
           type: string
           description: Address line 2 (e.g. apartment, suite, unit, or building)
           example: "Suite 2504"
-        postal_code:
+        city:
           type: string
-          description: ZIP or postal code
-          example: "12345"
+          description: City, district, suburb, town, or village.
+          example: "New York"
         state:
           type: string
           description: State, county, province, or region
           example: "NY"
+        postal_code:
+          type: string
+          description: ZIP or postal code
+          example: "12345"
+        country:
+          type: string
+          description: Two-letter country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          example: "US"
     Disbursement:
       type: object
       description: A disbursement moves funds to a verified organization.
@@ -7271,7 +7466,7 @@ components:
             - canceled
             - failed
         transfer:
-          description: A subhash containing information about the transfer associated with the inbound transfer.
+          description: The transfer that carried the funds.
           allOf:
             - $ref: "#/components/schemas/Transfer"
         created_at:
@@ -7719,48 +7914,241 @@ components:
                   email: "ap@worldwildlife.org"
     UpdateDonationRequest:
       description: |-
-        The request to update core donation attributes like purpose, note and attribution.
+        The request to update fields on an existing donation.
+
+        - **Fields set in the body** are written, including empty strings and zeros.
+        - **Fields listed in `clear_fields`** are nulled. Only nullable columns may be cleared; a path that
+          resolves to a NOT NULL column is rejected.
+        - **Fields that are neither set nor listed** are left unchanged.
+
+        A field path may not be cleared and carry a value in the same request.
       required: true
       content:
         application/json:
           schema:
             type: object
             properties:
-              reason:
-                type: string
+              clear_fields:
+                type: array
                 description: |-
-                  A user-friendly reason or comment about the update.
-                  This is useful to understand why the donation was updated.
-                example: "Donor requested a change to the donation purpose"
+                  Field paths to null (dot notation, e.g. `note`, `attribution.primary_donor.email`).
+                  Unknown paths are rejected, as are the amounts, currency, and effective_date, which
+                  have no empty representation.
+                items:
+                  type: string
+                example:
+                  - "note"
+                  - "attribution.primary_donor.email"
+              source_id:
+                type: string
+                description: The identifier of the source that sent the donation.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The effective date of the donation. Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
+              amount_gross:
+                type: integer
+                format: int64
+                description: |-
+                  The gross amount of the donation in minor units of the currency (for USD, cents).
+                  Must be non-negative; a platform that nets its fee out of the gift records $0.00 gross
+                  against a non-zero fee.
+                example: 10000
+              amount_fee:
+                type: integer
+                format: int64
+                description: |-
+                  The fee deducted by the DAF or processing platform in minor units of the currency.
+                  `amount_net` is always derived as gross minus fee and is not settable.
+                example: 0
+              currency:
+                type: string
+                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency.
+                example: "USD"
               purpose:
                 type: string
-                description: |-
-                  A description of the donor's intent for the donation.
-                  This is useful to understand how the donor intended the donation to be used.
+                description: A description of the donor's intent for the donation.
+                example: "Capital Campaign"
               note:
                 type: string
-                description: |-
-                  An informational note from the donor to the nonprofit about the donation.
-                  This may contain a message or other useful information that the donor wants to share with the nonprofit.
+                description: An informational note from the donor to the nonprofit about the donation.
+                example: "Please dedicate in memory of grandma"
+              external_id:
+                type: string
+                description: An external identifier for the donation, useful for reconciliation against caller systems.
+                example: "INV-12345"
               attribution:
+                type: object
+                description: |-
+                  How the donation is attributed to a donor. Mirrors the shape of
+                  the `attribution` object on the donation response.
+                properties:
+                  primary_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+                  joint_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+              recipient:
                 allOf:
-                  - $ref: "#/components/schemas/DonationAttribution"
+                  - $ref: "#/components/schemas/RecipientInput"
+              initiation:
+                allOf:
+                  - $ref: "#/components/schemas/DonationInitiationInput"
               donor_advised_fund_grant:
                 allOf:
-                  - $ref: "#/components/schemas/DafGrant"
+                  - $ref: "#/components/schemas/DafGrantInput"
               corporate_match:
                 allOf:
-                  - $ref: "#/components/schemas/CorporateMatch"
+                  - $ref: "#/components/schemas/CorporateMatchInput"
+              metadata:
+                type: object
+                description: |-
+                  Arbitrary key-value pairs to record against the donation. Supplying this field
+                  replaces the stored map wholesale; naming `metadata` in `clear_fields` drops it.
+                additionalProperties: true
+              artifact_file_ids:
+                type: array
+                description: |-
+                  Files to link to the donation as additional artifacts, as File identifiers this
+                  organization owns. Additive: passing this field never removes existing artifact links.
+                  Repeating the same id is a no-op.
+                items:
+                  type: string
+                example:
+                  - "file_01j8rs605a4gctmbm58d87mvsj"
             example:
-              reason: "Donor requested a change to the donation"
               purpose: "Capital Campaign"
-              note: "Please dedicate in memory of grandma"
+              primary_donor:
+                email: "warrenBuffet@example.com"
+              clear_fields:
+                - "note"
+    CreateDonationRequest:
+      description: |-
+        The request to record a new donation.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount_gross
+            properties:
+              source_id:
+                type: string
+                description: |-
+                  The identifier of the source that sent the donation. If provided,
+                  the referenced source must already exist.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The effective date of the donation. Defaults to the current date if not provided.
+                  Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
+              amount_gross:
+                type: integer
+                format: int64
+                description: |-
+                  The gross amount of the donation as intended by the donor in minor units of the
+                  currency (for USD, cents). Must be non-negative.
+                example: 10000
+              amount_fee:
+                type: integer
+                format: int64
+                description: |-
+                  The fee deducted by the DAF or processing platform in minor units of the currency.
+                  Defaults to 0.
+                example: 0
+              currency:
+                type: string
+                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency. Defaults to "USD".
+                example: "USD"
+              purpose:
+                type: string
+                description: A description of the donor's intent for the donation.
+                example: "Where needed most"
+              note:
+                type: string
+                description: An informational note from the donor to the nonprofit about the donation.
+                example: "Please dedicate in memory of grandma"
+              external_id:
+                type: string
+                description: An external identifier for the donation, useful for reconciliation against caller systems.
+                example: "INV-12345"
+              attribution:
+                type: object
+                description: |-
+                  How the donation is attributed to a donor. Mirrors the shape of
+                  the `attribution` object on the donation response.
+                properties:
+                  primary_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+                  joint_donor:
+                    allOf:
+                      - $ref: "#/components/schemas/DonorInput"
+              recipient:
+                allOf:
+                  - $ref: "#/components/schemas/RecipientInput"
+              initiation:
+                allOf:
+                  - $ref: "#/components/schemas/DonationInitiationInput"
+              donor_advised_fund_grant:
+                allOf:
+                  - $ref: "#/components/schemas/DafGrantInput"
+              corporate_match:
+                allOf:
+                  - $ref: "#/components/schemas/CorporateMatchInput"
+              metadata:
+                type: object
+                description: |-
+                  Arbitrary key-value pairs to record against the donation.
+                additionalProperties: true
+              artifact_file_ids:
+                type: array
+                description: |-
+                  Files to attach to the created donation, as File identifiers this organization owns.
+                items:
+                  type: string
+                example:
+                  - "file_01j8rs605a4gctmbm58d87mvsj"
+            example:
+              source_id: "source_01m12tn300eh20gdqscje7s5jw"
+              effective_date: "2026-01-15T00:00:00Z"
+              amount_gross: 10000
+              currency: "USD"
+              purpose: "General Operating Support"
+              external_id: "PAYROLL-2026-01-EMP-1234"
               attribution:
                 primary_donor:
-                  email: "warrenBuffet@example.com"
-              donor_advised_fund_grant:
-                organization_name: "Fidelity Charitable"
-                fund_name: "Warren Buffet Fund"
+                  first_name: "Jane"
+                  last_name: "Rivera"
+                  email: "jrivera@example.com"
+    ReconcileDepositRequest:
+      description: |-
+        Record the donations that make up a deposit. Non-destructive: the linkage is added atomically
+        and never overwrites the deposit or the donations themselves.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - donation_ids
+            properties:
+              donation_ids:
+                type: array
+                description: The unique identifiers for the donations to reconcile with the deposit.
+                items:
+                  type: string
+                example:
+                  - "donation_01j8rs605a4gctmbm58d87mvsj"
+                  - "donation_02k9st716b5hdunco69e98nwtk"
     AssignPropertyRequest:
       description: |-
         The request to add a property value to a donation or deposit resource.
@@ -8888,8 +9276,8 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-    ListPaymentSourcesResponse:
-      description: The response for PaymentSources.list
+    ListSourcesResponse:
+      description: The response for Sources.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -8901,14 +9289,13 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PaymentSource"
+                  $ref: "#/components/schemas/Source"
               next_page_token:
                 type: string
                 description: |-
-                  A cursor token to use to retrieve the next page of results by making another API call
-                   to the same endpoint with the same parameters (only changing the pageToken). If
-                   specified, then more results exist on the server that were not returned, otherwise
-                   no more results exist on the server.
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
     ListFilesResponse:
       description: The response for Files.list
       headers:
