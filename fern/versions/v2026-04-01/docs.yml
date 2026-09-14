@@ -80,7 +80,7 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/nonprofits/faq.mdx
-      - section: DAFpay
+      - section: For Fundraising Platforms
         slug: dafpay
         contents:
           - page: Overview
