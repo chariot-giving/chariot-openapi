@@ -1,0 +1,18 @@
+#!/bin/bash
+source "$MISE_CONFIG_ROOT/mise/tasks/_"
+set -euo pipefail
+#MISE description="Formats and lints the mise task scripts."
+#MISE alias="mise:fmt"
+
+cd "$MISE_CONFIG_ROOT"
+
+# The task scripts have no extension, so find them by content instead.
+shellScripts() {
+    find mise -type f -exec file {} + | grep -i 'shell script' | cut -d: -f1
+}
+
+gum log --level info "Formatting mise task scripts..."
+shellScripts | xargs shfmt -i 4 -w
+
+gum log --level info "Linting mise task scripts..."
+shellScripts | xargs shellcheck -x
