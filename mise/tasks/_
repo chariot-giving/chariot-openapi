@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# This file contains internal utilities that are helpful across multiple scripts
+# it's not designed to be run standalone (it won't do anything).
+
+fernConfigVersion() {
+    jq -r .version "$MISE_CONFIG_ROOT/fern/fern.config.json"
+}
+
+# Only a warning, not an error: without FERN_TOKEN you may still be signed in
+# from "fern login".
+notePublishCredentials() {
+    if [[ -z "${FERN_TOKEN:-}" ]]; then
+        gum log --level info "FERN_TOKEN is unset, falling back to your \"fern login\" credentials."
+    fi
+}
