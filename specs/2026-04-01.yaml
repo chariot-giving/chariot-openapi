@@ -4414,7 +4414,7 @@ components:
       description: |-
         A Mail Item represents a unit of physical mail. It has its own lifecycle and is the
         operational unit that reviewers act on. A Mail Item may produce zero or more Donations
-        and zero or one Deposit, and carries the scanned artifacts (envelopes, checks, accompanying
+        and zero or more Deposits, and carries the scanned artifacts (envelopes, checks, accompanying
         paperwork) associated with the receipt.
 
         Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
@@ -4425,6 +4425,8 @@ components:
         - status
         - received_at
         - scans
+        - donation_ids
+        - deposit_ids
         - created_at
         - updated_at
       properties:
@@ -4451,6 +4453,20 @@ components:
             a second scan appears after an admin requests a rescan of the physical mail.
           items:
             $ref: "#/components/schemas/MailItemScan"
+        donation_ids:
+          type: array
+          description: The identifiers of the [Donations](/api-reference/donations) produced from this mail item.
+          items:
+            type: string
+          example:
+            - "donation_01j8rs605a4gctmbm58d87mvsj"
+        deposit_ids:
+          type: array
+          description: The identifiers of the [Deposits](/api-reference/deposits) produced from this mail item.
+          items:
+            type: string
+          example:
+            - "deposit_01j8rs605a4gctmbm58d87mvsj"
         created_at:
           type: string
           format: date-time
