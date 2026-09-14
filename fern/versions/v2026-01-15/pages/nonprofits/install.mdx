@@ -1,38 +1,37 @@
 ---
-title: Install DAFpay
+title: Install the Button
 hidden: false
 ---
 
-Load Chariot Connect and initialize it with the Connect ID stored for the nonprofit whose form the donor is viewing.
+Load Chariot Connect and add the `chariot-connect` element where DAFpay should appear.
 
 ```html
 <script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
-<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID"></chariot-connect>
+<chariot-connect id="chariot" cid="YOUR_CONNECT_ID"></chariot-connect>
 ```
 
 | Attribute | Required | Use |
 | --- | --- | --- |
-| `cid` | Yes | The Connect ID for the nonprofit whose form the donor is viewing. |
+| `cid` | Yes | The Connect ID for this integration. |
 | `theme` | No | A built-in or registered custom theme. |
 
-The Connect ID may appear in browser code. The API key may not.
+Use your sandbox Connect ID while testing and your production Connect ID after launch. A Connect ID may appear in browser code. An API key may not.
 
-## Prevent tenant mix-ups
-
-Resolve the Connect ID from the same nonprofit record used to render the form. Do not hardcode an ID, store it in process-wide mutable state, reuse the last value loaded, or fall back to a platform default.
-
-If the nonprofit has no enabled Connect, do not render DAFpay. Show the appropriate setup state in the nonprofit's platform settings instead.
+The element does not have donation data yet. The next page adds `onDonationRequest` so the button can read the current values from your form.
 
 ## Placement
 
-Place DAFpay above the form when using Express Checkout so donors can begin before entering contact details. Otherwise, show it alongside your other primary payment methods.
+Place DAFpay above your form as an Express Checkout option when you want donors to begin before entering their contact information. DAFpay can then retrieve available donor details from their DAF account.
 
+If Express Checkout does not fit your form, place DAFpay alongside your other primary payment methods.
 
 <Frame caption="Place DAFpay alongside your other primary payment methods.">
     <img src='../../images/button-placement.png' />
 </Frame>
 
-Test the actual production layout at mobile widths before QA.
+## Content Security Policy
+
+If your site uses a Content Security Policy, allow the Chariot script and DAFpay frame. Merge the required sources into your existing policy. Do not replace your policy with a documentation example. See [Content Security Policy](/guides/dafpay/integrating-dafpay/csp).
 
 ## Styling
 
@@ -62,7 +61,7 @@ Choose one of the built-in themes:
 ```html
 <chariot-connect
   id="chariot"
-  cid="NONPROFIT_CONNECT_ID"
+  cid="YOUR_CONNECT_ID"
   theme="LightModeTheme">
 </chariot-connect>
 ```
@@ -83,6 +82,6 @@ chariot.registerTheme("myTheme", {
 | `height` | Button height | `h-9` through `h-12` |
 | `showExtendedText` | Show the longer button label | `true` or `false` |
 
-Do not target internal component markup.
+Do not target internal markup or CSS selectors inside the component.
 
-Next: [Content Security Policy](/guides/dafpay/integrating-dafpay/csp)
+Next: [Send donor data](/guides/nonprofits/initiate/donor-data)

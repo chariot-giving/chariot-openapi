@@ -1,37 +1,59 @@
 ---
-title: Implementation Checklist
-subtitle: A comprehensive guide for integrating with Chariot API endpoints
+title: Integration Checklist
 hidden: false
 ---
 
-<Tip title="Sandbox Key Prerequisite">
-Before using this implementation guide, ensure that your organization has been provided with a API Key for our sandbox environment. If you have not yet received your sandbox keys, please reach out to support@givechariot.com for assistance.
-</Tip>
+Use this checklist as a roadmap while you build and complete it before requesting production access.
 
-<Warning title="Production Key Requirements">
-All items on this implementation checklist must be completed before your organization can receive production keys. Once everything is complete, please fill out the production keys request form to proceed.
-</Warning>
+## Decide
 
-### Set Up
-* [ ]  [Search Chariot's Database for eligible nonprofit organizations](/guides/dafpay/integrating-dafpay/set-up#search-organization)
-* [ ]  [Create Connects for your organizations](/guides/dafpay/integrating-dafpay/set-up#create-connect)
-* [ ]  [Create Launch Plan (fundraising platforms)](/guides/dafpay/integrating-dafpay/set-up#create-launch-plan)
+- Define how new and existing nonprofits enable DAFpay.
+- Follow the opt-in, default-on, or other enablement rule in your Chariot agreement.
+- Confirm whether DAFpay may appear before a nonprofit claims its Chariot account.
+- Choose donor-detail, recurring, and unintegrated-provider behavior.
+- Decide whether the platform charges a fee and whether donors may cover it.
+- Decide which form types include DAFpay and where it appears.
+- Decide whether DAFpay gifts sync through each CRM integration and how hard and soft credit work.
+- Document whether a nonprofit enables DAFpay once or per form.
 
-### Installing Connect
-* [ ]  [Install the Chariot Connect (DAFpay button) JavaScript package](/guides/dafpay/integrating-dafpay/installation#install-javascript-package)
-* [ ]  [Add the Connect ID to the Chariot-Connect component](/guides/dafpay/integrating-dafpay/installation#add-chariot-connect)
-* [ ]  [Determine button placement](/guides/dafpay/integrating-dafpay/installation#button-placement)
-* [ ]  [Style your DAFpay button](/guides/dafpay/integrating-dafpay/installation#button-themes-optional)
+## Build
 
-### Integrating Connect
-* [ ]  [Pre-load form data into the Connect experience](/guides/dafpay/integrating-dafpay/integration#collecting-donor-data)
-* [ ]  [Completing grant intents](/guides/dafpay/integrating-dafpay/integration#capturing-grant-intents)
-* [ ]  [Determine unintegrated DAF provider preference](/guides/dafpay/integrating-dafpay/integration#unintegrated-daf-providers)
-* [ ]  [Implement Recurring grants (optional)](/guides/dafpay/integrating-dafpay/integration#recurring-donations)
+- Search for each nonprofit by EIN.
+- Create one Connect per nonprofit and store it on the correct tenant record.
+- Use a nonprofit-specific contact email.
+- Load the supported Chariot Connect package.
+- Initialize it with the current nonprofit's Connect ID.
+- Keep the API key on your server.
+- Apply the required CSP directives.
+- Send current form data through `onDonationRequest`.
+- Omit unknown donor fields instead of sending empty strings.
+- Pass stable attribution and platform identifiers.
+- Handle all Chariot Connect events.
+- Write loading, success, exit, unclaimed-account, and missing-EIN copy.
+- Save the platform transaction before calling Create Grant.
+- Make Create Grant idempotent and complete it within 15 minutes.
+- Route recurring intents to Create Recurring Grant.
+- Implement the selected unintegrated-provider behavior.
+- Store workflow session, Grant, Donation, tracking, and external Grant identifiers.
+- Subscribe to Grant events and verify signatures.
 
-### Managing Transactions
-* [ ]  [Display Tracking ID and External ID in your dashboard](/guides/dafpay/integrating-dafpay/transactions#reconciliation--grant-identifiers)
-* [ ]  [Implement grant.status webhook](/guides/dafpay/integrating-dafpay/transactions#grant-statuses)
+## Validate
 
-### Request Production Keys
-* [ ]  [Complete production keys request form](/guides/dafpay/integrating-dafpay/prod-keys)
+- Test two nonprofits concurrently and confirm tenant routing.
+- Repeat Create Grant for one workflow session and confirm only one Grant exists.
+- Simulate completed and canceled Grants and confirm your handlers respond.
+- Complete the donor flow on every supported browser and device.
+- Confirm DAFpay opens within one second of the donor's click.
+- Verify the exact metadata returned from multiple form types.
+- Confirm support and nonprofit users can search the reconciliation identifiers.
+- Confirm unintegrated-provider and recurring behavior when enabled.
+
+## Launch
+
+- Complete Chariot's production review.
+- Publish clear nonprofit setup instructions.
+- Distribute the co-branded Chariot onboarding link.
+- Give support access to platform and Chariot identifiers.
+- Plan a live production gift and a 30-day post-launch review.
+
+Next: [Request Production Access](/guides/dafpay/integrating-dafpay/prod-keys)

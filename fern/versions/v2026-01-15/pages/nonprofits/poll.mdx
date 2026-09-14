@@ -1,0 +1,62 @@
+---
+title: Poll for Donations
+hidden: false
+---
+
+Use a scheduled sync to retrieve new Donations. Webhooks can reduce delay, but the scheduled sync should remain in place to recover anything your webhook endpoint misses.
+
+## A reliable sync pattern
+
+For each run:
+
+1. Read from the last successful checkpoint to the start time of the current run.
+2. Request every page in that window.
+3. Process each Donation idempotently using its Chariot ID.
+4. Advance the checkpoint only after the complete window succeeds.
+
+Keep a small overlap between windows and deduplicate by Donation ID. This protects against records created near a boundary and jobs that need to be retried.
+
+## Retrieve Deposits and their Donations
+
+Use List Deposits for the settlement window. For each Deposit, call List Donations with its `deposit_id` to retrieve the gifts in that transfer.
+
+```bash
+curl -G https://api.givechariot.com/v1/deposits \
+  -H "Authorization: Bearer <token>" \
+  -d payment_source_id=payment_source_01j8rs605a4gctmbm58d87mvsj
+```
+
+```bash
+curl -G https://api.givechariot.com/v1/donations \
+  -H "Authorization: Bearer <token>" \
+  -d deposit_id=deposit_01j8rs605a4gctmbm58d87mvsj \
+  -d payment_source_id=payment_source_01j8rs605a4gctmbm58d87mvsj
+```
+
+Each list endpoint returns at most 100 records. Pass `next_page_token` back as `page_token` without changing the other parameters. Continue until the response has no next token.
+
+## Retrieve Donations by creation time
+
+Run a second query using `created_at`. This catches Donation records with no Chariot Deposit, including gifts paid directly to your organization or through a route that is not connected to its Chariot Account.
+
+```bash
+curl -G https://api.givechariot.com/v1/donations \
+  -H "Authorization: Bearer <token>" \
+  -d 'created_at.after=2026-04-01T00:00:00Z' \
+  -d 'created_at.before=2026-04-02T00:00:00Z' \
+  -d 'limit=100'
+```
+
+The two passes may return the same Donation. Deduplicate using the Donation ID.
+
+## Webhooks
+
+Subscribe to Donation and Deposit events when you need updates sooner than the scheduled sync. Verify every signature, retrieve the current resource from the API, and process repeated events safely.
+
+Use Donation events for the CRM sync so DAFpay gifts and gifts from other sources follow the same downstream workflow.
+
+Next: [Record processing status](/guides/nonprofits/donations/record)
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

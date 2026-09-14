@@ -1,0 +1,32 @@
+---
+title: Recurring Grants
+hidden: false
+---
+
+When recurring Grants are enabled, a donor can ask their DAF provider to send a monthly Grant.
+
+A recurring success contains `recurringGrantIntent` instead of `grantIntent`:
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "recurringGrantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "frequency": "MONTHLY",
+    "metadata": {
+      "platformTransactionId": "txn_123"
+    }
+  }
+}
+```
+
+Call Create Recurring Grant, not Create Grant.
+
+The DAF provider controls the schedule. Chariot records the initial setup but may not receive a new Grant for each later payment or learn when the donor changes or cancels the recurrence.
+
+Model the initial record as the start of an arrangement, not proof of future payments. Treat each Donation received later as a separate gift and reconcile it independently.
+
+Do not promise nonprofits a complete recurring schedule unless another data source supports it.
+
+Next: [Unconnected DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated)

@@ -1,0 +1,138 @@
+---
+title: Chariot Connect Reference
+hidden: false
+---
+
+This page documents the `chariot-connect` browser component. Use the API Reference for server-side resources and endpoints.
+
+## Mount the component
+
+```html
+<script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
+<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID"></chariot-connect>
+```
+
+| Attribute | Required | Use |
+| --- | --- | --- |
+| `cid` | Yes | Connect ID for the nonprofit whose form the donor is viewing. |
+| `theme` | No | Built-in or registered custom theme. |
+
+The API key is never used in browser code.
+
+## `onDonationRequest`
+
+Return the current form values, or return `false` when the form is not ready.
+
+```javascript
+const chariot = document.getElementById("chariot");
+
+chariot.onDonationRequest(async () => ({
+  amount: 25000,
+  firstName: "Michael",
+  lastName: "Scott",
+  email: "michael@example.org",
+  designation: "Community programs",
+  metadata: { platformTransactionId: "txn_123" }
+}));
+```
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `amount` | number | Amount in cents. Pass it when the donor selected an amount. If omitted, DAFpay may recommend an amount based on the available DAF balance. |
+| `firstName` | string | Donor's first name. Maximum 255 characters. |
+| `lastName` | string | Donor's last name. Maximum 255 characters. |
+| `email` | string | Valid donor email. Maximum 255 characters. |
+| `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
+| `note` | string | Donor note to the nonprofit. Maximum 400 characters. |
+| `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
+| `designation` | string | Defaults to `Where needed most`. Values over 100 characters may be truncated. Confirm the current maximum in the API schema. |
+| `address` | object | `line1`, `line2`, `city`, `state`, and `postalCode`. |
+| `metadata` | object | Stable name-value pairs associated with the workflow session. |
+| `fundId` | string | Preselects a DAF provider and skips the provider picker. |
+| `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
+
+Every donor field must describe the donor. Omit fields you do not have. An empty string prevents DAFpay from filling the field from the donor's account.
+
+## Events
+
+| Event | When it fires | Detail |
+| --- | --- | --- |
+| `CHARIOT_INIT` | Component initialized and ready | None |
+| `CHARIOT_SUCCESS` | Donor authorized the request | `OnSuccessMetadata` |
+| `CHARIOT_EXIT` | Donor exited, an error occurred, or an unintegrated Grant was confirmed | `OnExitMetadata` |
+
+`CHARIOT_SUCCESS` does not create the Grant. Call Create Grant, or Create Recurring Grant when the payload contains `recurringGrantIntent`.
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "grantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "metadata": {}
+  }
+}
+```
+
+## Exit reasons
+
+| Reason | Meaning |
+| --- | --- |
+| `USER_EXIT` | Donor left the flow. |
+| `UNINTEGRATED_DAF` | Selected provider is not connected to DAFpay. |
+| `UNINTEGRATED_GRANT_CONFIRMED` | Donor confirmed an unintegrated Grant. This is not a completed gift. |
+| `UNINTEGRATED_DAF_NOT_SUPPORTED` | The selected provider does not support the intent flow. |
+| `CID_NOT_FOUND` | Connect ID was not found. |
+| `SERVICE_DEACTIVATED` | The nonprofit's Connect is inactive. |
+| `INELIGIBLE_ORGANIZATION` | Organization cannot receive DAF Grants. |
+| `EIN_NOT_FOUND` | Provider does not support Grants to the nonprofit. |
+| `CREDENTIALS_ERROR` | Provider credentials are invalid. |
+| `TFA_ERROR` | Two-factor authentication failed. |
+| `ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. |
+| `NO_CHARITABLE_ACCOUNTS` | Signed-in account has no charitable accounts. |
+| `INVALID_PRESELECTED_DAF` | Provided `fundId` is invalid. |
+| `INVALID_CARD` | Card number is invalid. |
+| `INACTIVE_CARD` | Card is inactive. |
+| `ZERO_AMOUNT` | Grant amount is zero. |
+| `RECURRING_NOT_SUPPORTED` | Provider does not support recurring Grants. |
+| `CONNECTION_FAILED` | Connection to the provider failed. |
+| `INSTITUTION_DOWN_ERROR` | Provider is unavailable. Donor should try later. |
+| `SESSION_NOT_FOUND` | Session was not found or expired. |
+| `CUSTOM_ERROR` | Custom integration error. |
+| `INTERNAL_ERROR` | Internal error. |
+
+Treat an unrecognized value as an error, not a completed gift.
+
+## Themes
+
+Built-in themes:
+
+- `DefaultTheme`
+- `LightModeTheme`
+- `LightBlueTheme`
+- `GradientTheme`
+
+```html
+<chariot-connect
+  id="chariot"
+  cid="NONPROFIT_CONNECT_ID"
+  theme="LightModeTheme">
+</chariot-connect>
+```
+
+Register a custom theme using only supported properties:
+
+```javascript
+chariot.registerTheme("myTheme", {
+  width: "w-12",
+  height: "h-9"
+});
+```
+
+| Property | Use | Allowed value |
+| --- | --- | --- |
+| `width` | Button width | Up to `w-16` or 64px |
+| `height` | Button height | `h-9` through `h-12` |
+| `showExtendedText` | Show the longer button label | `true` or `false` |
+
+Do not target internal component markup or depend on arbitrary Tailwind classes.
