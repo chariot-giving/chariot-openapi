@@ -56,11 +56,26 @@ Scopes define what your application can access. Specify multiple as a URL encode
 `read_only` and `read_write` are aggregates — they grant their level of access across every resource, so you do not have to enumerate a scope per resource or request new ones as the API grows. Neither grants Chariot's internal administrative operations.
 
 <Note>
-  A token only receives the permissions your client, the authorization, and the
-  consenting user's role all have in common. Request `read_only` alongside
-  `read_write` if you serve nonprofits whose users hold read-only roles — a
-  read-only user cannot approve a request for `read_write` alone.
+  A token only receives the permissions your client and the authorization have
+  in common, narrowed by the consenting user's role where the authorization
+  belongs to a user. Request `read_only` alongside `read_write` if you serve
+  nonprofits whose users hold read-only roles — a read-only user cannot approve
+  a request for `read_write` alone.
 </Note>
+
+## Authorization Subjects
+
+An authorization belongs either to the user who approved it or to the nonprofit organization they approved it for. Which one applies is fixed when your application is registered.
+
+| | **User** | **Organization** |
+| --- | --- | --- |
+| Permissions | The user's current role narrows the token on every call | Stay as approved |
+| If the approver's role changes | Access narrows with it | Unaffected |
+| If the approver leaves the nonprofit | Access stops | Unaffected |
+| Identity | `openid` returns an `id_token`. See [Identity](/guides/oauth/identity) | No `id_token` |
+| Revoked by | The user who approved it | Any Owner or Admin at the nonprofit |
+
+Applications are registered against a user by default. Ask us about an organization authorization if yours is a server-to-server integration meant to outlive the person who sets it up.
 
 ## Authorization Code Flow
 
