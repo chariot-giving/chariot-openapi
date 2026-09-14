@@ -63,9 +63,9 @@ Scopes define what your application can access. Specify multiple as a URL encode
   a request for `read_write` alone.
 </Note>
 
-## Who the Authorization Belongs To
+## Authorization Subjects
 
-An authorization belongs either to the user who approved it or to the nonprofit organization they approved it for. Which one applies is fixed when your application is registered — it is not chosen per request, and the consent screen tells the nonprofit which it is granting.
+An authorization belongs either to the user who approved it or to the nonprofit organization they approved it for. Which one applies is fixed when your application is registered.
 
 | | **User** | **Organization** |
 | --- | --- | --- |
@@ -75,9 +75,7 @@ An authorization belongs either to the user who approved it or to the nonprofit 
 | Identity | `openid` returns an `id_token`. See [Identity](/guides/oauth/identity) | No `id_token` |
 | Revoked by | The user who approved it | Any Owner or Admin at the nonprofit |
 
-Applications are registered against a user by default. Ask us about an organization authorization if yours is a server-to-server integration meant to outlive the person who sets it up — a nightly sync should not stop because that person changed roles.
-
-In both cases the user approving the request must hold every permission being requested.
+Applications are registered against a user by default. Ask us about an organization authorization if yours is a server-to-server integration meant to outlive the person who sets it up.
 
 ## Authorization Code Flow
 
