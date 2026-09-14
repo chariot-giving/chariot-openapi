@@ -170,7 +170,6 @@ GET https://dashboard.givechariot.com/oauth/authorize
 | `nonce`                 | Yes         | Cryptographically random string to prevent replay attacks. See [Identity](/guides/oauth/identity)                  |
 | `code_challenge`        | Yes         | Base64url-encoded SHA-256 hash of the code verifier                                                                |
 | `code_challenge_method` | Yes         | Must be `S256`                                                                                                     |
-| `subject_type`          | Optional    | `user` or `organization`. Asserts what your application is registered for; a mismatch is rejected                  |
 
 **Example:**
 
