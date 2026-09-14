@@ -17,7 +17,7 @@ A Grant carries status information in two separate places. Read the one that mat
 | `Completed` | The payment has been completed and the funds are in the nonprofit's bank account. | Yes | Platform fees are taken at this point. |
 | `Canceled` | The donor canceled the grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
 
-There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` usually depends on the nonprofit confirming receipt — in the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
+There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` usually depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
 
 Platforms cannot write a Grant status. Listen for changes and display them; do not offer your users a control that sets one.
 

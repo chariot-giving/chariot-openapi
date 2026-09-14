@@ -116,7 +116,7 @@ navigation:
               - page: Recurring Grants
                 slug: recurring
                 path: ./pages/integrating-dafpay/recurring.mdx
-              - page: Unconnected DAF Providers
+              - page: Unintegrated DAF Providers
                 slug: unintegrated
                 path: ./pages/integrating-dafpay/unintegrated.mdx
               - page: Integration Checklist

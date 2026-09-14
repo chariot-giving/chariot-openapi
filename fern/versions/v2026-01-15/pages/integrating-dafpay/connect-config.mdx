@@ -59,7 +59,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Details to show</span>
-      <span class="csb-help">What you want on the gift record. Leave out what your forms already collect so donors are not asked twice.</span>
+      <span class="csb-help">What you want on the gift record. Leave out what your forms already collect.</span>
       <div class="csb-checks">
         <label><input type="checkbox" data-group="show" value="name" checked /> Name</label>
         <label><input type="checkbox" data-group="show" value="email" checked /> Email</label>
@@ -83,7 +83,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Monthly recurring grants</span>
-      <span class="csb-help">Lets a donor set up a monthly grant from their DAF. Route those intents to Create Recurring Grant. The provider owns the schedule, so Chariot is not notified of cancellations and later payments arrive as separate gifts.</span>
+      <span class="csb-help">Lets a donor set up a monthly grant from their DAF. See [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring).</span>
       <select data-key="recurring">
         <option value="Allow">Allow</option>
         <option value="Do not allow">Do not allow</option>
@@ -92,7 +92,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Nonprofits that have not claimed their Chariot account</span>
-      <span class="csb-help">Search Organizations returns <code>claimed: false</code> until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. Gifts to an unclaimed nonprofit are held until it claims. Whether you may offer DAFpay before that happens is set by your Chariot agreement — say what you expect and Chariot will confirm it.</span>
+      <span class="csb-help">Search Organizations returns <code>claimed: false</code> until someone signs up for a Chariot account for that nonprofit and Chariot verifies them. Gifts to an unclaimed nonprofit are held until it claims. Whether you may offer DAFpay before that happens is set by your Chariot agreement. Say what you expect and Chariot will confirm it.</span>
       <select data-key="unclaimed">
         <option value="Allow gifts before the nonprofit claims">Allow gifts before the nonprofit claims</option>
         <option value="Require the claim first">Require the claim first</option>
@@ -100,8 +100,8 @@ Make your choices below and send them to integrations@givechariot.com. The form 
     </div>
 
     <div class="csb-setting">
-      <span class="csb-name">Donors whose DAF provider is not connected</span>
-      <span class="csb-help">DAFpay connects to most large DAF providers, but not all. When it cannot, either record what the donor intended and instruct them to finish in their own portal, or return them to your form to pay another way. Recorded intents are not completed gifts.</span>
+      <span class="csb-name">Unintegrated DAF providers</span>
+      <span class="csb-help">Either record what the donor intended or return them to your form to pay another way. See [Unintegrated DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).</span>
       <select data-key="unconnected">
         <option value="Record what they intended">Record what they intended</option>
         <option value="Return them to the form">Return them to the form</option>
@@ -110,7 +110,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Close the window as soon as they confirm</span>
-      <span class="csb-help">Applies only to donors whose DAF provider is not connected. DAFpay normally shows a final confirmation screen, and your system is not notified until they close it.</span>
+      <span class="csb-help">Applies only to unintegrated DAF providers. See [Unintegrated DAF Providers](/guides/dafpay/integrating-dafpay/unintegrated).</span>
       <select data-key="close_window">
         <option value="no">No (default)</option>
         <option value="yes">Yes</option>
@@ -211,7 +211,7 @@ connect:
   details_to_require: [name, email]
   monthly_recurring_grants: Allow
   unclaimed_nonprofits: Allow gifts before the nonprofit claims
-  unconnected_daf_providers: Record what they intended
+  unintegrated_daf_providers: Record what they intended
   close_window_on_confirm: no
 
 fees:
@@ -233,10 +233,6 @@ crm:
   </div>
 
 </div>
-
-<Tip title="Getting DAF prefill to work">
-For DAFpay to fill a donor detail automatically, your form must send **nothing** for that field. An empty value counts as answering it, and the donor gets a blank box. See [Send donation data](/guides/dafpay/integrating-dafpay/donor-data).
-</Tip>
 
 ## Change it later
 
