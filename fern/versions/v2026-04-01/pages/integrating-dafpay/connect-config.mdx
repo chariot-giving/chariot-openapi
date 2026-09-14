@@ -50,7 +50,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Donor details step</span>
-      <span class="csb-help">The step inside the DAFpay window where the donor's name, email, and address appear. DAFpay fills them from the donor's DAF account so they retype nothing, and collects anything your form does not ask for. Skip it and DAFpay knows only what your form sends.</span>
+      <span class="csb-help">DAFpay can display information collected on your form, fill in missing details from the donor's DAF account, and collect any additional information your organization requires.</span>
       <select data-key="donor_step">
         <option value="Show">Show</option>
         <option value="Skip">Skip</option>
@@ -59,7 +59,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Details to show</span>
-      <span class="csb-help">What you want on the gift record. Leave out what your forms already collect.</span>
+      <span class="csb-help">Select the details DAFpay should display or collect.</span>
       <div class="csb-checks">
         <label><input type="checkbox" data-group="show" value="name" checked /> Name</label>
         <label><input type="checkbox" data-group="show" value="email" checked /> Email</label>
@@ -83,7 +83,7 @@ Make your choices below and send them to integrations@givechariot.com. The form 
 
     <div class="csb-setting">
       <span class="csb-name">Monthly recurring grants</span>
-      <span class="csb-help">Lets a donor set up a monthly grant from their DAF. See [Recurring Grants](/guides/dafpay/integrating-dafpay/recurring).</span>
+      <span class="csb-help">Allows donors to request a [monthly grant](/guides/dafpay/integrating-dafpay/recurring) from their DAF.</span>
       <select data-key="recurring">
         <option value="Allow">Allow</option>
         <option value="Do not allow">Do not allow</option>

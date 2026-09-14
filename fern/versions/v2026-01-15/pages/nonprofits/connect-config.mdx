@@ -46,7 +46,6 @@ Sandbox Connect IDs begin with `test_`.
         <option value="New Connect for our API integration">New Connect for our API integration</option>
         <option value="Reconfigure an existing Connect">Reconfigure an existing Connect</option>
       </select>
-      <small>Your dashboard's no-code button and link have their own Connect IDs. This request is for the one your form calls.</small>
     </label>
 
     <label class="csb-field">
@@ -72,7 +71,7 @@ Sandbox Connect IDs begin with `test_`.
 
     <div class="csb-setting">
       <span class="csb-name">Donor details step</span>
-      <span class="csb-help">The step inside the DAFpay window where the donor's name, email, and address appear. DAFpay fills them from the donor's DAF account so they retype nothing, and collects anything your form does not ask for, such as a mailing address you need for receipting. Skip it and DAFpay knows only what your form sends.</span>
+      <span class="csb-help">DAFpay can display information collected on your form, fill in missing details from the donor's DAF account, and collect any additional information your organization requires.</span>
       <select data-key="donor_step">
         <option value="Show">Show it (recommended)</option>
         <option value="Skip">Skip it</option>
@@ -81,7 +80,7 @@ Sandbox Connect IDs begin with `test_`.
 
     <div class="csb-setting">
       <span class="csb-name">Details to show</span>
-      <span class="csb-help">What you want on the gift record. Leave out what your form already collects, and include what it does not.</span>
+      <span class="csb-help">Select the details DAFpay should display or collect.</span>
       <div class="csb-checks">
         <label><input type="checkbox" data-group="show" value="name" checked /> Name</label>
         <label><input type="checkbox" data-group="show" value="email" checked /> Email</label>
@@ -105,7 +104,7 @@ Sandbox Connect IDs begin with `test_`.
 
     <div class="csb-setting">
       <span class="csb-name">Monthly recurring gifts</span>
-      <span class="csb-help">Lets a donor set up a monthly gift from their DAF. See [Recurring Grants](/guides/nonprofits/initiate/create-grant#recurring-grants).</span>
+      <span class="csb-help">Allows donors to request a [monthly grant](/guides/nonprofits/initiate/create-grant#recurring-grants) from their DAF.</span>
       <select data-key="recurring">
         <option value="Allow">Allow monthly</option>
         <option value="One-time only">One-time only</option>
