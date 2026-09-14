@@ -4763,14 +4763,14 @@ components:
         options:
           type: array
           description: |-
-            The first 25 options for enum and user properties. Use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The first 25 options for enum and user properties. Use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
           items:
             $ref: "#/components/schemas/PropertyOptionValue"
         total_option_count:
           type: integer
           format: int32
           description: |-
-            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api-reference/properties/list-options) endpoint to paginate through all options.
+            The total number of options for enum and user properties. When this is greater than the length of `options`, use the [List Property Options](/api/properties/list-options) endpoint to paginate through all options.
     PropertyOptionValue:
       type: object
       description: |-
@@ -5787,6 +5787,17 @@ components:
           description: A map of arbitrary string keys and values to store information about the object.
           additionalProperties:
             type: string
+    DafpayGrantStatus:
+      type: string
+      description: |-
+        The status of a DAFpay grant.
+          * Initiated: The request was submitted and has not been confirmed as received.
+          * Completed: Chariot records the grant as completed.
+          * Canceled: The grant will not be paid.
+      enum:
+        - Initiated
+        - Completed
+        - Canceled
     Grant:
       type: object
       description: |-
@@ -5855,9 +5866,7 @@ components:
           description: The grant amount expressed in units of whole cents
           example: 15000
         status:
-          type: string
-          description: The status of the grant
-          example: Initiated
+          $ref: "#/components/schemas/DafpayGrantStatus"
         feeDetail:
           type: object
           readOnly: true
@@ -5915,6 +5924,11 @@ components:
             - dafpay_network
             - direct
           example: direct
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
         address:
           $ref: "#/components/schemas/GrantAddress"
     RecurringGrant:
@@ -6173,6 +6187,11 @@ components:
           enum:
             - offline
           example: offline
+        donationId:
+          type: string
+          readOnly: true
+          description: The ID of the donation initiated by this grant, if one exists. Created asynchronously, so it is absent from the Create Grant response and may be absent from the first Get Grant call.
+          example: don_01j8rs605a4gctmbm58d87mvsj
     FinancialAccount:
       type: object
       description: |-
@@ -7786,6 +7805,13 @@ components:
                       type: string
                       description: The unique identifier for the resource
                       example: "donation_01j8rs605a4gctmbm58d87mvsj"
+          example:
+            value:
+              type: enum
+              enum_value_id: "propopt_01j8rs605a4gctmbm58d87mvsj"
+            resources:
+              ids:
+                - "donation_01j8rs605a4gctmbm58d87mvsj"
     GrantCaptureRequest:
       description: |-
         The request to create and submit a grant. This is useful to capture a grant intent associated with DAFpay workflow session.
