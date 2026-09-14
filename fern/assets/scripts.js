@@ -70,12 +70,6 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || "");
   }
 
-  // Anything still in <angle brackets> is a placeholder the reader never
-  // replaced. Sending one produces a request we cannot act on.
-  function hasPlaceholder(text) {
-    return /<[^>\n]+>/.test(text || "");
-  }
-
   // --- nonprofit builder -----------------------------------------------
 
   function buildNonprofit(scope) {
@@ -120,13 +114,6 @@
     var show = checkedList(scope, "show");
     var require = checkedList(scope, "require");
 
-    if (!val(scope, "organization")) stop.push("Add your nonprofit's name.");
-    if (!normalizeEin(val(scope, "ein"))) {
-      stop.push("Add your nonprofit's EIN, nine digits like 53-0196605. We look your organization up by EIN, because names are not unique.");
-    }
-    if (!isEmail(val(scope, "contact_email"))) {
-      stop.push("Add a contact email at the nonprofit. Chariot needs one to create the Connect, and it cannot be a shared platform or agency address.");
-    }
     if (val(scope, "connect_type") === "Reconfigure an existing Connect" && !val(scope, "existing_connect_id")) {
       stop.push("Add the Connect ID you want changed, or switch this to a new Connect request.");
     }
@@ -323,10 +310,6 @@
 
     var body = spec.build(scope);
     var stop = spec.blockers ? spec.blockers(scope) : [];
-    if (hasPlaceholder(body)) {
-      stop = stop.concat("Replace the placeholders still shown in angle brackets before sending.");
-    }
-
     var stopEl = scope.querySelector("[data-blockers]");
     if (stopEl) {
       stopEl.innerHTML = "";
