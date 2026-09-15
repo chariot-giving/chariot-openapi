@@ -20,12 +20,12 @@ A Grant carries status information in two separate places. Read the one that mat
 | API value | Meaning | Terminal | What happens next |
 | --- | --- | --- | --- |
 | `Initiated` | The request was submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when receipt of the payment is confirmed, or to `Canceled` if the payment never arrives. |
-| `Completed` | Receipt of the payment has been confirmed, either by Chariot recording the settlement or by the nonprofit confirming it. | Usually | A Grant can return to `Initiated` if the settlement behind it is removed. |
+| `Completed` | Receipt of the payment has been confirmed, either by Chariot recording the settlement or by the nonprofit confirming it. | Operationally final, but may return to `Initiated` if the associated settlement is removed. | No further automatic transitions. |
 | `Canceled` | The donor canceled the grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
 
 There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` often depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
 
-`Completed` does not mean fees are assessed at that moment. Chariot bills every Grant that is not `Canceled`, so this transition does not change fee treatment.
+Grant billing is based on the Grant's `created_at` date and excludes Grants with a `Canceled` status. Billing is not triggered by the transition to `Completed`.
 
 Platforms cannot write a Grant status. Listen for changes and display them; do not offer your users a control that sets one.
 
