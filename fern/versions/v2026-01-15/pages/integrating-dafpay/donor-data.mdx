@@ -38,9 +38,13 @@ chariot.onDonationRequest(async () => ({
 
 DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100.
 
-## Omit fields you do not have
+## Send the donor details you collect
 
-Do not send empty strings. Chariot treats an empty string as supplied data, which prevents DAFpay from filling that field from the donor's DAF account.
+If your form collects a donor detail, pass it to DAFpay. If your form does not collect it, omit the field so DAFpay can fill or collect it from the donor's DAF account.
+
+Do not send empty strings. Chariot treats an empty string as supplied data, which prevents DAFpay from filling that field.
+
+Choose which details to collect before DAFpay based on your identity, CRM, and attribution requirements. For example, a platform may need the name entered on its form to determine which constituent receives recognition, even when that name differs from the name on the DAF account.
 
 Every donor field must describe the donor, not the nonprofit administrator or platform account owner.
 
@@ -76,6 +80,12 @@ Using an `async` callback is fine. The risk comes from waiting for slow work bef
 
 If your platform uses a custom button or Shadow DOM, do not call your server between the donor's click and triggering DAFpay. Complete the request first, then let the click open DAFpay immediately.
 
+## Let DAFpay validate the provider minimum
+
+Do not apply one minimum amount to every DAFpay gift. Minimum Grant amounts vary by DAF provider.
+
+Open DAFpay for any valid whole-dollar amount and let DAFpay enforce the selected provider's minimum. If you need to validate the amount yourself, use Get DAF to retrieve the provider's `minimumGrantAmount`.
+
 ## Stop when the form is not ready
 
 Return `false` when a required amount, designation, or other form value is missing or invalid. Show the error on your form so the donor knows what to fix.
@@ -84,7 +94,7 @@ Return `false` when a required amount, designation, or other form value is missi
 chariot.onDonationRequest(async () => {
   const amount = getAmountInCents();
 
-  if (!amount || amount <= 0) {
+  if (!amount || amount <= 0 || amount % 100 !== 0) {
     showAmountError();
     return false;
   }

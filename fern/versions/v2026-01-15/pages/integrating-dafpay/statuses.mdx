@@ -3,11 +3,17 @@ title: Grant Statuses
 hidden: false
 ---
 
-Use the exact status values returned by Get Grant and describe them without overstating the movement of funds.
+## Authorization, Grant status, and payment
 
-A Grant carries status information in two separate places. Read the one that matches what you are displaying.
+A completed DAFpay session means the donor authorized a Grant request. Creating the Grant records and submits that request. Neither event means the nonprofit has received the funds.
+
+After Create Grant succeeds, create a pending or initiated transaction in your system. Do not mark it paid, settled, or received based only on the DAFpay result or successful Grant creation.
+
+DAF providers review and send Grants on their own timelines. Depending on the provider and payment route, Chariot may receive additional status or payment information after the Grant is created.
 
 ## Grant status
+
+A Grant carries status information in two separate places. Read the one that matches what you are displaying.
 
 `status` on the Grant object is the lifecycle most platforms display. Every DAFpay Grant from an integrated provider starts at `Initiated`.
 
@@ -34,16 +40,37 @@ Platforms cannot write a Grant status. Listen for changes and display them; do n
 
 Do not merge these values into the `status` lifecycle or compare them across the two fields. A Grant submitted without a linked Donor Account will not have this history.
 
-## Subscribe to updates
+## Keep the Grant current
 
-Subscribe to `grant.updated`, verify the webhook signature, and retrieve the current Grant when an event arrives. Status transitions are emitted as `updated` events rather than distinct per-status events, so always fetch the object to read its current status. Process repeated events safely and keep a periodic recovery process when status freshness matters.
+Subscribe to `grant.updated`. A webhook tells you that the Grant changed, but it does not identify which fields changed. When an event arrives:
 
-If you support unintegrated Grants, subscribe to `unintegrated_grant.updated` as well. These are separate resources with their own events.
+1. Verify the webhook signature.
+2. Retrieve the current Grant.
+3. Find the platform transaction using the stored Grant ID.
+4. Apply the current Grant data without creating another transaction.
+5. Store the event ID so repeated deliveries can be processed safely.
+
+Use a periodic recovery process when status freshness matters. Webhooks can be delayed, delivered more than once, or missed by your application.
+
+If you support unintegrated Grants, subscribe to `unintegrated_grant.updated` as well. These are separate records with their own events.
+
+## Represent the status accurately
+
+Use the exact status returned by the API. In your product, distinguish among:
+
+- the donor authorizing a Grant request;
+- Chariot creating or submitting the Grant;
+- the DAF provider processing the request; and
+- the nonprofit receiving the payment.
+
+Do not use Paid, Settled, Completed, or Received unless the corresponding API data confirms that meaning.
+
+A nonprofit may receive a provider payment that Chariot cannot confirm automatically. Document how the nonprofit reconciles those payments and how that confirmation reaches your platform.
 
 ## Cancellations and refunds
 
-Do not offer a refund action for a completed DAF Grant. DAF funds are controlled by the provider, not the donor, so the concept of a refund after the money leaves the DAF does not apply. A donor may be able to cancel a grant from their provider's portal before disbursement, subject to that provider's policies.
+Do not offer a refund action for a completed DAF Grant. The donor's DAF provider controls the funds and determines whether a pending request can still be canceled.
 
-Direct donors to their provider and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when operational help is needed.
+If a donor wants to stop a pending Grant, direct them to their DAF provider. Contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when operational help is needed.
 
 Next: [After Launch](/guides/dafpay/post-launch)
