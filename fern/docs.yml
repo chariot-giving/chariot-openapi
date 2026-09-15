@@ -157,6 +157,18 @@ redirects:
     destination: "/v2026-04-01/guides/oauth-integration/integration-checklist"
     permanent: true
 
+  # The standalone Chariot Connect Reference was removed; its content now lives on
+  # the implementation pages it duplicated.
+  - source: "/guides/dafpay/connect-reference"
+    destination: "/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/connect-reference"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+  - source: "/v2026-01-15/guides/dafpay/connect-reference"
+    destination: "/v2026-01-15/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png

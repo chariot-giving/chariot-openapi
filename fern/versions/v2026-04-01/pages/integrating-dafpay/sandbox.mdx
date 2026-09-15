@@ -16,40 +16,42 @@ username: good-user
 password: password123
 ```
 
-## Multi-tenant tests
+## Test tenant routing
 
-Test at least two nonprofits at the same time:
+Test at least two nonprofits at the same time.
 
-- create a separate Connect for each nonprofit;
-- open both donation forms concurrently;
-- confirm each form loads the correct Connect ID;
-- confirm each Grant belongs to the intended nonprofit; and
-- confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
+- Create a separate Connect for each nonprofit.
+- Open both donation forms concurrently.
+- Confirm each form loads the correct Connect ID.
+- Confirm each Grant belongs to the intended nonprofit.
+- Confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
 
 These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 
-Also test:
+## Test the donor flow
 
-- one-time and recurring success;
-- every exit path your interface handles;
-- an unintegrated Grant, if supported;
-- Content Security Policy behavior;
-- duplicate clicks and Create Grant retries;
-- webhook signature verification and repeated delivery;
-- sandbox completion and cancellation simulations; and
-- that DAFpay is visible without opening an unlabeled More or See more menu.
+- Complete a one-time Grant.
+- Complete a recurring Grant, if enabled.
+- Test every exit reason your interface handles.
+- Test an unintegrated DAF provider, if supported.
+- Confirm DAFpay is visible without opening an unlabeled More or See more menu.
+- Confirm DAFpay opens within one second of the donor's click.
+- Test duplicate clicks and Create Grant retries.
+- Confirm repeated requests create only one Grant.
+- Verify webhook signatures and repeated delivery.
+- Simulate Grant completion and cancellation.
 
-## Browsers and devices
+## Test browsers and devices
 
-Run the complete donor flow on:
+Complete the donor flow on:
 
-- Chrome, Safari, and Firefox on desktop;
-- Safari and Chrome on iPhone;
-- Chrome on Android; and
-- every in-app or embedded browser your platform supports.
+- Chrome, Safari, and Firefox on desktop.
+- Safari and Chrome on iPhone.
+- Chrome on Android.
+- Every in-app or embedded browser your platform supports.
 
-Confirm that the button renders, DAFpay opens from the click, the donor can finish, your loading and confirmation states appear, and exactly one Grant exists.
+On each supported browser, confirm that DAFpay renders, opens from the donor's click, and can be completed. Verify your loading and confirmation states and confirm that exactly one Grant is created.
 
-Sandbox does not validate real settlement or remittance reconciliation. Confirm those after launch with Chariot and a participating nonprofit.
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
 
 Next: [Create Connects](/guides/dafpay/integrating-dafpay/connects)

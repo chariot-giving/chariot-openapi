@@ -31,7 +31,7 @@ navigation:
           - page: Overview
             slug: /
             path: ./pages/nonprofits/overview.mdx
-          - section: Add DAFpay to Your Form
+          - section: Add DAFpay
             slug: initiate
             contents:
               - page: Overview
@@ -55,7 +55,7 @@ navigation:
               - page: Test Before Launch
                 slug: before-launch
                 path: ./pages/nonprofits/initiate-before-launch.mdx
-          - section: Sync Donations to Your CRM or ERP
+          - section: Process Donations
             slug: donations
             contents:
               - page: Overview
@@ -139,9 +139,6 @@ navigation:
           - page: FAQ
             slug: faq
             path: ./pages/integrating-dafpay/faq.mdx
-          - page: Chariot Connect Reference
-            slug: connect-reference
-            path: ./pages/integrating-dafpay/connect-reference.mdx
       - section: For Grantmakers
         skip-slug: true
         contents:
