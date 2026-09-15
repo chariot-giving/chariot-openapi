@@ -87,7 +87,7 @@ Only `check` payment methods can be created through the API — they carry the `
 
 This closes the loop on the `undeliverable` capability: submit a payment method, watch it reach `verified`, and `capabilities.disbursements` returns to `active` on its own.
 
-Payment methods are the evidence behind the capability, not an input to it. You still do not choose a payment method when creating a disbursement — Chariot routes to the nonprofit's own payment methods, and the nonprofit controls them.
+You still do not choose a payment method when creating a disbursement — Chariot routes to the nonprofit's own payment methods, and the nonprofit controls them.
 
 Addresses now use the same shape as everywhere else in the API, so the bulk entry format changed: a `mailing_address` object with `zip_code`, rather than flat `line1`/`city`/`state`/`zip` fields on the entry.
 

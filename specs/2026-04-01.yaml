@@ -37,6 +37,11 @@ paths:
 
         Organizations are deduplicated by EIN. If Chariot already has an organization with the given EIN, that
         organization is returned with a `200` and nothing is created.
+
+        <Note title="Not available in Sandbox" icon="fa-light fa-atom-simple">
+        This endpoint is only available in the production environment. Use
+        [Search Organizations](/api/organizations/search) to find a sandbox organization to disburse to.
+        </Note>
       operationId: createOrganization
       tags:
         - Organizations
@@ -71,10 +76,6 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "412":
-          $ref: "#/components/responses/PreconditionFailedError"
         "500":
           $ref: "#/components/responses/InternalServerError"
     get:
@@ -3858,8 +3859,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
     get:
@@ -3870,9 +3869,8 @@ paths:
         This includes payment methods Chariot sourced itself, which carry a `source` of `chariot`, alongside
         any you submitted. A payment method that has been exhausted reports a `status` of `failed`.
 
-        You do not need to read this list to decide whether you can pay an organization. Read
-        `capabilities.disbursements` on [Get Organization](/api/organizations/get) for that. This endpoint is
-        for seeing why, and for tracking a payment method you submitted through verification.
+        To decide whether you can pay an organization, read `capabilities.disbursements` on
+        [Get Organization](/api/organizations/get) instead.
       operationId: listPaymentMethods
       tags:
         - paymentMethods
@@ -4017,8 +4015,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
     get:
@@ -4272,8 +4268,7 @@ components:
         Whether Chariot can disburse to this organization, and if not, why.
 
         This verdict is produced by the same checks [Create Disbursement](/api/disbursements/create) runs, so the
-        two can never disagree. Read it before creating a disbursement to resolve a problem before committing
-        funds — an `undeliverable` address surfaces here immediately rather than weeks later when a check comes back.
+        two can never disagree.
 
         An organization awaiting Chariot's compliance review is still `active`. Disbursements to it are accepted
         and hold in `awaiting_verification` until the review completes — see `verification`.
@@ -4355,7 +4350,9 @@ components:
           $ref: "#/components/schemas/OrganizationMailingAddress"
         contact_email:
           type: string
-          description: Contact email for the nonprofit organization as provided by the grantmaker
+          description: |-
+            Contact email for the nonprofit organization as provided by the grantmaker. Chariot emailed an
+            onboarding invitation to this address when the organization was created.
           example: "contact@localfoundation.org"
         submitted_at:
           type: string
@@ -8634,7 +8631,10 @@ components:
                 $ref: "#/components/schemas/OrganizationMailingAddress"
               contact_email:
                 type: string
-                description: Contact email for the nonprofit organization.
+                description: |-
+                  Contact email for the nonprofit organization. If provided, Chariot emails an onboarding
+                  invitation to this address so the nonprofit can optionally open a Chariot Deposit Account.
+                  Omit it if you do not want Chariot to contact the nonprofit.
                 example: "contact@localfoundation.org"
     CreateInboundTransferRequest:
       description: The request body for originating an inbound transfer from an external bank account
