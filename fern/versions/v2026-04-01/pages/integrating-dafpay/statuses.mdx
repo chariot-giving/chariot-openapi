@@ -5,7 +5,7 @@ hidden: false
 
 ## Authorization, Grant status, and payment
 
-A completed DAFpay session means the donor authorized a Grant request. Creating the Grant records and submits that request. Neither event means the nonprofit has received the funds.
+A completed DAFpay session means the donor authorized a Grant request. Creating the Grant records the request and submits it to the DAF provider. Neither event means the nonprofit has received the funds.
 
 After Create Grant succeeds, create a pending or initiated transaction in your system. Do not mark it paid, settled, or received based only on the DAFpay result or successful Grant creation.
 
@@ -19,26 +19,21 @@ A Grant carries status information in two separate places. Read the one that mat
 
 | API value | Meaning | Terminal | What happens next |
 | --- | --- | --- | --- |
-| `Initiated` | The request was successfully submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when the nonprofit receives the payment, or to `Canceled` if the payment never arrives. |
-| `Completed` | The payment has been completed and the funds are in the nonprofit's bank account. | Yes | Platform fees are taken at this point. |
+| `Initiated` | The request was submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when receipt of the payment is confirmed, or to `Canceled` if the payment never arrives. |
+| `Completed` | Receipt of the payment has been confirmed, either by Chariot recording the settlement or by the nonprofit confirming it. | Usually | A Grant can return to `Initiated` if the settlement behind it is removed. |
 | `Canceled` | The donor canceled the grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
 
-There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` usually depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
+There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` often depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
+
+`Completed` does not mean fees are assessed at that moment. Chariot bills every Grant that is not `Canceled`, so this transition does not change fee treatment.
 
 Platforms cannot write a Grant status. Listen for changes and display them; do not offer your users a control that sets one.
 
 ## Grant status history
 
-`statuses` on the Grant object is a separate array of `GrantStatus` entries describing submission progress for grants placed through the [Donor Accounts](/guides/donor-accounts/overview) flow. These values are lowercase and are not the same field as `status` above.
+`statuses` on the Grant object is an array of `GrantStatus` entries recording when the Grant reached each status it has held. The entries carry the same three values as `status`, ordered oldest first, with one entry per distinct status.
 
-| API value | Meaning | Terminal |
-| --- | --- | --- |
-| `awaiting_account_approval` | The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved. | No |
-| `awaiting_daf_submission` | The Account is approved and the grant is ready for the DAF to submit in their system. | No |
-| `initiated` | The DAF has submitted the grant. | Yes |
-| `canceled` | The DAF has canceled the grant. | Yes |
-
-Do not merge these values into the `status` lifecycle or compare them across the two fields. A Grant submitted without a linked Donor Account will not have this history.
+Every Grant has at least one entry, written when the Grant is created. Read `status` for the current state and `statuses` only when you need the time a state was reached.
 
 ## Keep the Grant current
 

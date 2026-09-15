@@ -42,15 +42,15 @@ Never create a new workflow session to retry the same donor authorization.
 
 Use the amount returned by `CHARIOT_SUCCESS`. Validate that the amount in cents is divisible by 100.
 
-DAFpay normally helps the donor correct an amount below the provider minimum or above the available account balance before success. Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
+Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provider, and DAFpay prompts the donor to adjust an amount that is below the selected provider's minimum or above their available balance.
 
-<Frame caption="DAFpay prompts the donor to adjust an amount that exceeds their balance or falls below the provider minimum.">
+<Frame>
     <img src='../../images/15e7e65-Error-handling-picture.png' />
 </Frame>
 
-When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
-Do not set a universal minimum specifically for DAFpay. Minimum grant amounts vary by DAF provider. If the amount is below the selected provider's minimum, DAFpay asks the donor to adjust it before continuing.
+Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
 
+When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
 
 ## Platform fees
 
