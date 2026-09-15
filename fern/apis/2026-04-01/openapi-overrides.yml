@@ -3,6 +3,19 @@ x-fern-pagination:
   next_cursor: $response.nextPageToken
   results: $response.results
 paths:
+  /v1/organizations:
+    post:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: list
   /v1/organizations/search:
     get:
       x-fern-sdk-group-name:
@@ -233,20 +246,6 @@ paths:
       x-fern-sdk-group-name:
         - financialAccounts
       x-fern-sdk-method-name: getBalance
-  /v1/verification_requests:
-    post:
-      x-fern-sdk-group-name:
-        - verificationRequests
-      x-fern-sdk-method-name: create
-    get:
-      x-fern-sdk-group-name:
-        - verificationRequests
-      x-fern-sdk-method-name: list
-  /v1/verification_requests/{id}:
-    get:
-      x-fern-sdk-group-name:
-        - verificationRequests
-      x-fern-sdk-method-name: get
   /v1/disbursements:
     post:
       x-fern-sdk-group-name:
@@ -420,13 +419,44 @@ paths:
       x-fern-sdk-group-name:
         - mailbox
       x-fern-sdk-method-name: fulfillRequest
-  /v1/nonprofit_addresses:
+  /v1/payment_methods:
     post:
       x-fern-sdk-group-name:
-        - nonprofitAddresses
+        - paymentMethods
       x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: list
+  /v1/payment_methods/bulk:
+    post:
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: bulkCreate
+  /v1/payment_methods/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - paymentMethods
+      x-fern-sdk-method-name: get
   /v1/nonprofit_contacts:
     post:
       x-fern-sdk-group-name:
         - nonprofitContacts
       x-fern-sdk-method-name: create
+    get:
+      x-fern-pagination:
+        cursor: $request.page_token
+        next_cursor: $response.next_page_token
+        results: $response.results
+      x-fern-sdk-group-name:
+        - nonprofitContacts
+      x-fern-sdk-method-name: list
+  /v1/nonprofit_contacts/{id}:
+    get:
+      x-fern-sdk-group-name:
+        - nonprofitContacts
+      x-fern-sdk-method-name: get

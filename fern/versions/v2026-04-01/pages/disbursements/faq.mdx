@@ -11,12 +11,12 @@ updatedAt: "Wed May 01 2024 21:30:05 GMT+0000 (Coordinated Universal Time)"
     <Accordion title="What if a nonprofit isn't listed on Chariot?">
 
         If a nonprofit organization is not found through Chariot's [Search Organizations](/api/organizations/search) endpoint,
-        you can submit a [Verification Request](/api/verification-requests/create) to have Chariot's compliance team review and verify the organization.
+        you can add it with [Create Organization](/api/organizations/create) to have Chariot's compliance team review and verify it.
 
         The request requires the organization's EIN, name, and mailing address. You can optionally provide a website URL and contact email.
 
-        You can track the status of the verification request by polling the [GET Verification Request](/api/verification-requests/get) endpoint
-        or by subscribing to `verification_request.updated` [webhook events](/api/webhooks).
+        You can track the review by polling [Get Organization](/api/organizations/get) and reading `verification.status`,
+        or by subscribing to `organization.updated` [webhook events](/api/webhooks).
 
         For more details, see [Disbursing to Unlisted Organizations](/guides/disbursements/how-it-works#disbursing-to-unlisted-organizations).
     </Accordion>
