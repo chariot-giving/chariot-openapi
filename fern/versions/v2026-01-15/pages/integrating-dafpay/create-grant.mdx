@@ -49,6 +49,8 @@ DAFpay normally helps the donor correct an amount below the provider minimum or 
 </Frame>
 
 When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
+Do not set a universal minimum specifically for DAFpay. Minimum grant amounts vary by DAF provider. If the amount is below the selected provider's minimum, DAFpay asks the donor to adjust it before continuing.
+
 
 ## Platform fees
 

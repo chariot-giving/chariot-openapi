@@ -48,6 +48,22 @@ Every donor field must describe the donor, not the nonprofit administrator or pl
 
 Pass stable identifiers the nonprofit needs for CRM coding, such as campaign, appeal, designation, source, form, comment, dedication, and tribute data. Do not rely only on a page URL.
 
+If your form allows a donor to divide one gift among multiple designations, send a short, human-readable summary in `designation` and place the complete allocation in `metadata`. The `designation` value may be truncated after 100 characters, so do not rely on it to preserve the full allocation.
+
+`metadata` values are strings, so serialize the allocation rather than nesting it.
+
+```javascript
+{
+  amount: 60000,
+  designation: "Community programs and General fund",
+  metadata: {
+    allocations: '[{"designationId":"community","amount":30000},{"designationId":"general","amount":30000}]'
+  }
+}
+```
+
+Flattened keys work equally well if you prefer them, for example `allocation_community: "30000"`.
+
 Test the exact metadata returned from at least two forms with different values.
 
 ## Prevent blocked popups

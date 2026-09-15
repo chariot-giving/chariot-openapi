@@ -53,7 +53,7 @@ On the `direct` channel, the provider's own remittance carries the DAFpay identi
 
 A `dafpay_network` gift does not look like this: the nonprofit receives the funds from DAFpay Network rather than from the provider, so do not build matching logic that assumes the provider's own remittance format.
 
-Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name.
+Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name. Store the fund ID, but do not display it on its own to nonprofit users. Retrieve and display the fund's human-readable name, such as Fidelity Charitable or DAFgiving360.
 
 Before launch, document which status and date control platform billing, how cancellations and adjustments are handled, and which reconciliation data is available to nonprofits and support.
 

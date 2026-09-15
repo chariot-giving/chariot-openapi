@@ -42,6 +42,8 @@ Create Grant is idempotent for a workflow session. If a request times out, call 
 Use the amount returned by `CHARIOT_SUCCESS`, not the amount originally sent by your form. DAF grants must be whole-dollar amounts, so the amount in cents must be divisible by 100.
 
 DAFpay normally helps the donor correct an amount below the provider minimum or above the available DAF balance before success. Your server should still handle a validation error safely if the final amount cannot be submitted.
+Do not set a universal minimum specifically for DAFpay. Minimum grant amounts vary by DAF provider. If the amount is below the selected provider's minimum, DAFpay asks the donor to adjust it before continuing.
+
 
 <Frame caption="DAFpay prompts the donor to adjust an amount that exceeds their balance or falls below the provider minimum.">
     <img src='../../images/15e7e65-Error-handling-picture.png' />
