@@ -1,0 +1,110 @@
+## Summary
+
+Verification Requests are now Organizations, the organization says whether Chariot can pay it, and address and contact submissions are resources you can track (`v2026-04-01`)
+
+### What changed?
+
+Creating a verification request always created an `Organization` behind the scenes — the request just handed you back its `organization_id`. In `v2026-04-01` the endpoint says what it does: you create the organization directly, and Chariot's compliance review is reported on the organization itself.
+
+| Before | Now |
+|--------|-----|
+| `POST /v1/verification_requests` | [`POST /v1/organizations`](/api/organizations/create) |
+| `GET /v1/verification_requests` | [`GET /v1/organizations`](/api/organizations/list) |
+| `GET /v1/verification_requests/{id}` | [`GET /v1/organizations/{id}`](/api/organizations/get) |
+| `verification_request.created` / `.updated` | `organization.created` / `organization.updated` |
+
+The request body is unchanged. The response is an `Organization` rather than a `VerificationRequest`, so use its `id` where you previously used `organization_id`.
+
+### Verification status on the organization
+
+Every `Organization` now carries a `verification` object, so a single [Get Organization](/api/organizations/get) call answers whether it has been vetted:
+
+- **`status`** — `needs_review`, `verified`, or `failed`. Organizations sourced from Chariot's directory report `verified`.
+- **`verified_at`** / **`failed_at`** — when the compliance team reached its decision.
+- **`submitted`** — the name, website, mailing address, and contact email the grantmaker supplied at creation, preserved unchanged. The compliance team may correct the organization's top-level fields during review, so compare against this record to see what changed.
+
+### Visibility and deduplication
+
+An organization is visible only to the grantmaker that created it until it is verified. It is excluded from [Search Organizations](/api/organizations/search) for everyone else, while its creator can reach it through [Get Organization](/api/organizations/get) and the new [List Organizations](/api/organizations/list). Once verified, it joins Chariot's directory and is searchable by everyone.
+
+Organizations are deduplicated by EIN. Submitting an EIN Chariot already has returns the existing organization with a `200` instead of creating a duplicate — this replaces the `ein` filter that was previously used on the verification request list endpoint to check for prior submissions.
+
+### Disbursements
+
+Behavior is unchanged. A disbursement to an organization whose `verification.status` is `needs_review` still holds in `awaiting_verification` unless you set `bypass_chariot_organization_verification` to `true`.
+
+### Disbursement capability on the organization
+
+`Organization` now carries a `capabilities` object, namespaced by product. The first one answers whether Chariot can pay the organization:
+
+```json
+{
+  "id": "org_01jpjenf5q6cawy43yxfcrxhct",
+  "capabilities": {
+    "disbursements": {
+      "status": "inactive",
+      "inactive_reason": "undeliverable"
+    }
+  }
+}
+```
+
+A `status` of `active` means a disbursement will be accepted. `inactive` means it will be rejected, and `inactive_reason` says why:
+
+| Reason | What to do |
+|--------|------------|
+| `daf_ineligible` | The organization is not eligible to receive disbursements from Donor Advised Funds. Not resolvable by the grantmaker |
+| `undeliverable` | Chariot has exhausted every payment method it holds. Submit a new one with [Create Payment Method](/api/payment-methods/create) |
+| `rerouted` | The nonprofit has asked not to receive funds at this EIN. Disburse to `reroute_to_organization_id` instead |
+
+The verdict is computed from the same checks [Create Disbursement](/api/disbursements/create) runs, so an organization that reads `active` will not be rejected for one of these reasons, and one that reads `inactive` will not be accepted.
+
+Reading it is optional — calling Create Disbursement directly and handling the rejection still works. Checking first lets you resolve the problem before committing funds, and surfaces an undeliverable address up front rather than weeks later when a check comes back.
+
+An organization awaiting compliance review is still `active`. Disbursements to it are accepted and hold in `awaiting_verification`.
+
+[Search Organizations](/api/organizations/search) is unchanged — capabilities are not included in search results.
+
+<Note>
+New `inactive_reason` values may be added over time. Treat any value you do not recognize as inactive and do not attempt the disbursement.
+</Note>
+
+### Payment Methods
+
+`POST /v1/nonprofit_addresses` is replaced by a full resource. Submitting an address used to be fire-and-forget — a bare `200`, no id, nothing to track. Now a submission is an object you can follow to verification:
+
+| | |
+|--------|-----|
+| [`POST /v1/payment_methods`](/api/payment-methods/create) | Submit one payment method |
+| [`POST /v1/payment_methods/bulk`](/api/payment-methods/bulk-create) | Submit up to 500, matched by EIN, as the old endpoint did — but the response returns the created payment methods |
+| [`GET /v1/payment_methods`](/api/payment-methods/list) | List an organization's payment methods |
+| [`GET /v1/payment_methods/{id}`](/api/payment-methods/get) | Get one |
+| `payment_method.created` / `.updated` | Webhook events |
+
+A payment method carries a `type` of `check` or `electronic`, a `status` of `needs_review`, `verified`, or `failed`, and a `source` of `chariot` or `grantmaker`. Payment methods Chariot sourced itself are listed too, with `source: chariot`.
+
+Only `check` payment methods can be created through the API — they carry the `mailing_address` Chariot sends to. Electronic payment methods are established by Chariot with the nonprofit directly and expose no account details.
+
+This closes the loop on the `undeliverable` capability: submit a payment method, watch it reach `verified`, and `capabilities.disbursements` returns to `active` on its own.
+
+Payment methods are the evidence behind the capability, not an input to it. You still do not choose a payment method when creating a disbursement — Chariot routes to the nonprofit's own payment methods, and the nonprofit controls them.
+
+Addresses now use the same shape as everywhere else in the API, so the bulk entry format changed: a `mailing_address` object with `zip_code`, rather than flat `line1`/`city`/`state`/`zip` fields on the entry.
+
+### Nonprofit Contacts
+
+`POST /v1/nonprofit_contacts` was write-only — a contact you submitted could not be read back. It now returns the created contact, and contacts are readable:
+
+| | |
+|--------|-----|
+| [`POST /v1/nonprofit_contacts`](/api/nonprofit-contacts/create) | Submit one contact |
+| [`GET /v1/nonprofit_contacts`](/api/nonprofit-contacts/list) | List an organization's contacts |
+| [`GET /v1/nonprofit_contacts/{id}`](/api/nonprofit-contacts/get) | Get one |
+
+The endpoint no longer accepts a batch of entries keyed by EIN — submit one contact at a time against an `organization_id`.
+
+Contacts do not affect whether Chariot can pay an organization — they determine who hears about a payment once it is sent.
+
+### Migrating
+
+`v2026-01-15` keeps the Verification Requests API as-is. Both changes apply only to `v2026-04-01`.

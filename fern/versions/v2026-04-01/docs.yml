@@ -240,10 +240,8 @@ navigation:
                   title: Inbound Transfers
               - disbursements:
                   title: Disbursements
-              - verificationRequests:
-                  title: Verification Requests
-              - nonprofitAddresses:
-                  title: Nonprofit Addresses
+              - paymentMethods:
+                  title: Payment Methods
               - nonprofitContacts:
                   title: Nonprofit Contacts
           - section: Gift Processing

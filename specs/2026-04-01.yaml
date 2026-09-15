@@ -14,6 +14,122 @@ servers:
   - url: https://api.givechariot.com
     description: Production
 paths:
+  /v1/organizations:
+    post:
+      summary: Create an organization
+      description: |-
+        Adds an unlisted nonprofit to Chariot's directory. If an organization cannot be found through
+        [Search Organizations](/api/organizations/search), create it here and Chariot's compliance team will
+        review and verify it.
+
+        This endpoint does not create a tax-exempt entity. It records a nonprofit that already exists so that you
+        can reference it by `id` while Chariot verifies it.
+
+        The organization is returned immediately with a `verification.status` of `needs_review` and its `id` can be
+        used to create disbursements right away. By default those disbursements hold in `awaiting_verification`
+        until the compliance team verifies the organization — see `bypass_chariot_organization_verification` on
+        [Create Disbursement](/api/disbursements/create).
+
+        Until it is verified, the organization is visible only to the grantmaker that created it. It is excluded from
+        [Search Organizations](/api/organizations/search) for everyone else, and is retrievable by its creator through
+        [Get Organization](/api/organizations/get) and [List Organizations](/api/organizations/list). Once verified,
+        it joins Chariot's directory and is searchable by everyone.
+
+        Organizations are deduplicated by EIN. If Chariot already has an organization with the given EIN, that
+        organization is returned with a `200` and nothing is created.
+      operationId: createOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateOrganizationRequest"
+      responses:
+        "200":
+          description: |-
+            An organization with this EIN already exists in Chariot's directory. The existing organization is
+            returned and nothing was created.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "201":
+          description: The organization was created and submitted to Chariot's compliance team for verification
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List organizations
+      description: |-
+        Returns a paginated list of the organizations the authenticated grantmaker added through
+        [Create Organization](/api/organizations/create), most recently created first.
+
+        This endpoint lists only the organizations you created. It does not enumerate Chariot's directory — use
+        [Search Organizations](/api/organizations/search) to look up organizations by name or EIN.
+      operationId: listOrganizations
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: verification_status
+          in: query
+          description: |-
+            Filter by verification status. If provided, only returns organizations whose
+            `verification.status` matches this value.
+          required: false
+          schema:
+            $ref: "#/components/schemas/OrganizationVerificationStatus"
+        - name: ein
+          in: query
+          description: Filter by EIN. If provided, only returns organizations matching this EIN.
+          required: false
+          schema:
+            type: string
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListOrganizationsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/search:
     get:
       summary: Search organizations
@@ -2036,115 +2152,6 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/verification_requests:
-    post:
-      summary: Create a verification request
-      description: |
-        Request verification of an unlisted organization. If the organization cannot be found through Chariot's search,
-        you can submit a verification request so that Chariot's compliance team can review and verify the organization.
-      operationId: createVerificationRequest
-      tags:
-        - verificationRequests
-      security:
-        - bearerAuth: []
-      requestBody:
-        $ref: "#/components/requestBodies/CreateVerificationRequestRequest"
-      responses:
-        "201":
-          description: The verification request was created
-          headers:
-            Location:
-              $ref: "#/components/headers/Location"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/VerificationRequest"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
-        "412":
-          $ref: "#/components/responses/PreconditionFailedError"
-    get:
-      summary: List verification requests
-      description: |
-        Returns a paginated list of all verification requests for the authenticated grantmaker.
-      operationId: listVerificationRequests
-      tags:
-        - verificationRequests
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: ein
-          in: query
-          description: Filter by EIN. If provided, only returns verification requests matching this EIN.
-          required: false
-          schema:
-            type: string
-        - name: page_limit
-          in: query
-          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: page_token
-          in: query
-          description: |-
-            A token to use to retrieve the next page of results.
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/ListVerificationRequestsResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /v1/verification_requests/{id}:
-    get:
-      summary: Get a verification request
-      description: |
-        Get a specific verification request by its unique identifier.
-      operationId: getVerificationRequest
-      tags:
-        - verificationRequests
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier of the verification request
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The verification request
-          headers:
-            X-Request-Id:
-              $ref: "#/components/headers/X-Request-Id"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/VerificationRequest"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   /v1/disbursements:
     post:
       summary: Create a disbursement
@@ -3810,22 +3817,127 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/nonprofit_addresses:
+  /v1/payment_methods:
     post:
-      summary: Create Nonprofit Addresses
+      summary: Create a payment method
       description: |-
-        Submit mailing addresses for one or more nonprofits. Uploaded
-        addresses are used as suggestions for where to send disbursements.
-      operationId: createNonprofitAddressSuggestion
+        Submit a mailing address Chariot can send a check to for a nonprofit.
+
+        Use this when an organization's `capabilities.disbursements` reports `undeliverable` — Chariot has
+        exhausted every payment method it holds. The payment method is returned immediately with a `type` of
+        `check` and a `status` of `needs_review`. Once Chariot verifies it, the organization's capability
+        returns to `active` on its own.
+
+        Only `check` payment methods can be created through the API. Electronic payment methods are
+        established by Chariot with the nonprofit directly and cannot be submitted by a grantmaker.
+
+        To submit payment methods for many nonprofits at once, use
+        [Bulk Create Payment Methods](/api/payment-methods/bulk-create).
+      operationId: createPaymentMethod
       tags:
-        - nonprofitAddresses
+        - paymentMethods
       security:
         - bearerAuth: []
       requestBody:
-        $ref: "#/components/requestBodies/CreateNonprofitAddressSuggestionRequest"
+        $ref: "#/components/requestBodies/CreatePaymentMethodRequest"
+      responses:
+        "201":
+          description: The payment method was created and submitted for verification
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List payment methods
+      description: |-
+        Returns a paginated list of the payment methods Chariot holds for a nonprofit, most recently created first.
+
+        This includes payment methods Chariot sourced itself, which carry a `source` of `chariot`, alongside
+        any you submitted. A payment method that has been exhausted reports a `status` of `failed`.
+
+        You do not need to read this list to decide whether you can pay an organization. Read
+        `capabilities.disbursements` on [Get Organization](/api/organizations/get) for that. This endpoint is
+        for seeing why, and for tracking a payment method you submitted through verification.
+      operationId: listPaymentMethods
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: The organization whose payment methods to return.
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status. If provided, only returns payment methods with this status.
+          required: false
+          schema:
+            $ref: "#/components/schemas/PaymentMethodStatus"
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: All addresses were accepted.
+          $ref: "#/components/responses/ListPaymentMethodsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/payment_methods/bulk:
+    post:
+      summary: Bulk create payment methods
+      description: |-
+        Submit mailing addresses for many nonprofits at once, each matched to a nonprofit by EIN. Up to 500
+        per request.
+
+        Each accepted entry becomes a [Payment Method](/api/payment-methods) with a `type` of `check` and a
+        `status` of `needs_review`, the same as [Create Payment Method](/api/payment-methods/create). The
+        response returns the created payment methods so you can track each one to verification.
+
+        As with Create Payment Method, only `check` payment methods can be created.
+      operationId: bulkCreatePaymentMethods
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/BulkCreatePaymentMethodsRequest"
+      responses:
+        "201":
+          $ref: "#/components/responses/BulkCreatePaymentMethodsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -3836,24 +3948,149 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/payment_methods/{id}:
+    get:
+      summary: Get a payment method
+      description: |-
+        Get a specific payment method by its unique identifier.
+      operationId: getPaymentMethod
+      tags:
+        - paymentMethods
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the payment method
+          required: true
+          schema:
+            type: string
+          example: "pm_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The payment method
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/nonprofit_contacts:
     post:
-      summary: Create Nonprofit Contacts
+      summary: Create a nonprofit contact
       description: |-
-        Submit contact information for one or more nonprofits. Uploaded
-        contacts are used as suggestions for who to notify about disbursements.
-      operationId: createNonprofitContactSuggestion
+        Submit a contact at a nonprofit for Chariot to notify about disbursements.
+
+        Contacts do not affect whether Chariot can pay an organization — they determine who hears about a
+        payment once it is sent.
+      operationId: createNonprofitContact
       tags:
         - nonprofitContacts
       security:
         - bearerAuth: []
       requestBody:
-        $ref: "#/components/requestBodies/CreateNonprofitContactSuggestionRequest"
+        $ref: "#/components/requestBodies/CreateNonprofitContactRequest"
       responses:
-        "200":
-          description: All suggestions were accepted.
+        "201":
+          description: The contact was created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NonprofitContact"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: List nonprofit contacts
+      description: |-
+        Returns a paginated list of the contacts you have submitted for a nonprofit, most recently created
+        first.
+      operationId: listNonprofitContacts
+      tags:
+        - nonprofitContacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organization_id
+          in: query
+          description: The organization whose contacts to return.
+          required: true
+          schema:
+            type: string
+        - name: page_limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: |-
+            A token to use to retrieve the next page of results.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ListNonprofitContactsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/nonprofit_contacts/{id}:
+    get:
+      summary: Get a nonprofit contact
+      description: |-
+        Get a specific nonprofit contact by its unique identifier.
+      operationId: getNonprofitContact
+      tags:
+        - nonprofitContacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the nonprofit contact
+          required: true
+          schema:
+            type: string
+          example: "npc_01jpjen1s23s29kkmnjsb6fzga"
+      responses:
+        "200":
+          description: The nonprofit contact
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NonprofitContact"
         "401":
           $ref: "#/components/responses/AuthenticationError"
         "403":
@@ -3973,6 +4210,188 @@ components:
             this nonprofit and is verified by the Chariot team.
         incorporation:
           $ref: "#/components/schemas/Incorporation"
+        verification:
+          $ref: "#/components/schemas/OrganizationVerification"
+        capabilities:
+          $ref: "#/components/schemas/OrganizationCapabilities"
+    OrganizationCapabilities:
+      type: object
+      readOnly: true
+      description: |-
+        What Chariot can do with this organization, by product.
+
+        Each capability is a verdict computed by Chariot, not a fact about the nonprofit. A capability reports
+        whether the action is available and, if not, why — it does not report the state of the resources behind
+        that verdict.
+
+        Capabilities are namespaced by product. If you are not using a given product, ignore its capability.
+      properties:
+        disbursements:
+          $ref: "#/components/schemas/DisbursementsCapability"
+    DisbursementsCapabilityStatus:
+      type: string
+      description: |-
+        Whether Chariot can disburse to the organization right now.
+        Possible values include:
+          - `active`: Chariot will accept a disbursement to this organization
+          - `inactive`: Chariot will reject a disbursement to this organization. See `inactive_reason`
+      example: "active"
+      enum:
+        - active
+        - inactive
+    DisbursementsCapabilityInactiveReason:
+      type: string
+      description: |-
+        Why Chariot will not disburse to the organization. Present only when `status` is `inactive`.
+        Possible values include:
+          - `daf_ineligible`: The organization is not eligible to receive disbursements from Donor Advised
+            Funds. This is a compliance determination and cannot be resolved by the grantmaker. See
+            `compliance.daf_eligible`, and contact [Compliance](mailto:compliance@givechariot.com) if you
+            believe it is incorrect
+          - `undeliverable`: Chariot has no way to deliver funds to the organization. Every mailing address
+            Chariot holds has been exhausted. Submit a new one with
+            [Create Payment Method](/api/payment-methods/create) and track it to
+            `verified` — this capability returns to `active` on its own once Chariot accepts it
+          - `rerouted`: The organization has asked Chariot not to receive funds at this EIN. Disburse to
+            `reroute_to_organization_id` instead. This is the nonprofit's own routing choice and cannot be
+            overridden
+
+        <Note>
+        New reasons may be added over time. Treat any value you do not recognize as inactive and do not attempt
+        the disbursement — a value you cannot interpret still means Chariot will reject it.
+        </Note>
+      example: "undeliverable"
+      enum:
+        - daf_ineligible
+        - undeliverable
+        - rerouted
+    DisbursementsCapability:
+      type: object
+      readOnly: true
+      description: |-
+        Whether Chariot can disburse to this organization, and if not, why.
+
+        This verdict is produced by the same checks [Create Disbursement](/api/disbursements/create) runs, so the
+        two can never disagree. Read it before creating a disbursement to resolve a problem before committing
+        funds — an `undeliverable` address surfaces here immediately rather than weeks later when a check comes back.
+
+        An organization awaiting Chariot's compliance review is still `active`. Disbursements to it are accepted
+        and hold in `awaiting_verification` until the review completes — see `verification`.
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/DisbursementsCapabilityStatus"
+        inactive_reason:
+          $ref: "#/components/schemas/DisbursementsCapabilityInactiveReason"
+        reroute_to_organization_id:
+          type: string
+          description: |-
+            The organization to disburse to instead. Present only when `inactive_reason` is `rerouted`.
+          example: "org_01j8rs605a4gctmbm58d87mvsk"
+          readOnly: true
+    OrganizationVerificationStatus:
+      type: string
+      description: |-
+        The status of Chariot's compliance review for an organization.
+        Possible values include:
+          - `needs_review`: The organization has been submitted and is awaiting review by Chariot's compliance team
+          - `verified`: The organization has been verified as tax-exempt and eligible for disbursements
+          - `failed`: Chariot's compliance team determined the organization is not eligible
+      example: "needs_review"
+      enum:
+        - needs_review
+        - verified
+        - failed
+    OrganizationMailingAddress:
+      type: object
+      description: A mailing address for the organization.
+      required:
+        - line1
+        - city
+        - state
+        - zip_code
+      properties:
+        line1:
+          type: string
+          description: Street address line 1
+          example: "123 Main St"
+        line2:
+          type: string
+          description: Street address line 2 (suite, unit, etc.)
+          example: "Suite 100"
+        city:
+          type: string
+          description: City
+          example: "San Francisco"
+        state:
+          type: string
+          description: Two-letter US state code (e.g. "CA", "NY")
+          example: "CA"
+        zip_code:
+          type: string
+          description: ZIP or postal code
+          example: "94105"
+    OrganizationVerificationSubmission:
+      type: object
+      readOnly: true
+      description: |-
+        The values supplied by the grantmaker when the organization was created through
+        [Create Organization](/api/organizations/create).
+
+        These are the grantmaker's claims about the organization, not Chariot's canonical record of it. The compliance
+        team may correct the organization's top-level fields during review, but this submission is preserved unchanged
+        so you can see what was originally submitted.
+      properties:
+        organization_name:
+          type: string
+          description: The name of the organization as provided by the grantmaker
+          example: "Local Community Foundation"
+        website:
+          type: string
+          description: The organization's website URL as provided by the grantmaker
+          example: "https://localfoundation.org"
+        recommended_mailing_address:
+          $ref: "#/components/schemas/OrganizationMailingAddress"
+        contact_email:
+          type: string
+          description: Contact email for the nonprofit organization as provided by the grantmaker
+          example: "contact@localfoundation.org"
+        submitted_at:
+          type: string
+          format: date-time
+          description: When the organization was submitted for verification
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+    OrganizationVerification:
+      type: object
+      readOnly: true
+      description: |-
+        The status of Chariot's compliance review for this organization.
+
+        Organizations sourced from Chariot's directory are already vetted and report a `status` of `verified` with no
+        `submitted` record. Organizations added through [Create Organization](/api/organizations/create) start at
+        `needs_review` and carry the values the grantmaker submitted.
+
+        This is distinct from `compliance`, which reports the organization's standing against external registries such
+        as IRS Publication 78 and OFAC.
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/OrganizationVerificationStatus"
+        verified_at:
+          type: string
+          format: date-time
+          description: When the organization was verified as tax-exempt and eligible for disbursements
+          readOnly: true
+        failed_at:
+          type: string
+          format: date-time
+          description: When Chariot's compliance team determined the organization is not eligible
+          readOnly: true
+        submitted:
+          $ref: "#/components/schemas/OrganizationVerificationSubmission"
     Incorporation:
       type: object
       description: |-
@@ -4039,58 +4458,146 @@ components:
           $ref: "#/components/schemas/ComplianceRequirement"
         california_franchise_tax_board:
           $ref: "#/components/schemas/ComplianceRequirement"
-    NonprofitAddressSuggestionEntry:
+    PaymentMethodStatus:
+      type: string
+      description: |-
+        The status of Chariot's review of a payment method.
+        Possible values include:
+          - `needs_review`: The payment method has been submitted and is awaiting review by Chariot
+          - `verified`: Chariot has verified the payment method and will send disbursements to it
+          - `failed`: The payment method has been exhausted. Chariot attempted delivery and could not reach the
+            nonprofit there, or could not verify it
+      example: "needs_review"
+      enum:
+        - needs_review
+        - verified
+        - failed
+    PaymentMethodSource:
+      type: string
+      description: |-
+        Where the payment method came from.
+        Possible values include:
+          - `chariot`: Sourced by Chariot
+          - `grantmaker`: Submitted by a grantmaker through
+            [Create Payment Method](/api/payment-methods/create)
+      example: "grantmaker"
+      enum:
+        - chariot
+        - grantmaker
+    PaymentMethodType:
+      type: string
+      description: |-
+        The kind of payment method.
+        Possible values include:
+          - `check`: A physical address Chariot mails a check to. See `mailing_address`
+          - `electronic`: An electronic account Chariot settles to. Chariot does not expose the account
+            details, and grantmakers cannot create one — see
+            [Create Payment Method](/api/payment-methods/create)
+      example: "check"
+      enum:
+        - check
+        - electronic
+    PaymentMethod:
       type: object
-      description: A mailing address uploaded for a nonprofit, identified by its EIN.
+      description: |-
+        A place Chariot can send a disbursement to for a nonprofit.
+
+        Payment methods are the evidence behind an organization's `capabilities.disbursements` verdict, not an
+        input to it. You never choose a payment method when creating a disbursement — Chariot routes to the
+        nonprofit's own payment methods, and the nonprofit controls them. An organization reports
+        `undeliverable` when every payment method Chariot holds has a `status` of `failed`.
+
+        Not to be confused with a [Payment Source](/api/payment-sources), which is a segregated address for
+        money coming *into* your own Chariot account. A Payment Method is where money goes *out* to a nonprofit.
+      required:
+        - id
+        - organization_id
+        - type
+        - status
+        - source
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payment method
+          example: "pm_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The organization this payment method belongs to
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
+        type:
+          $ref: "#/components/schemas/PaymentMethodType"
+        status:
+          $ref: "#/components/schemas/PaymentMethodStatus"
+        source:
+          $ref: "#/components/schemas/PaymentMethodSource"
+        mailing_address:
+          description: |-
+            The address Chariot mails a check to. Present only when `type` is `check`.
+          allOf:
+            - $ref: "#/components/schemas/OrganizationMailingAddress"
+        verified_at:
+          type: string
+          format: date-time
+          description: When Chariot verified the payment method
+          readOnly: true
+        failed_at:
+          type: string
+          format: date-time
+          description: When the payment method was exhausted
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: When the payment method was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: When the payment method was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+    PaymentMethodEntry:
+      type: object
+      description: |-
+        A mailing address submitted for a nonprofit, identified by its EIN. Creates a payment method with a
+        `type` of `check`.
       required:
         - ein
-        - line1
-        - city
-        - state
-        - zip
+        - mailing_address
       properties:
         ein:
           type: string
           description: |-
-            The EIN of the nonprofit this address belongs to. Accepted as
+            The EIN of the nonprofit this payment method belongs to. Accepted as
             either nine digits (`123456789`) or `XX-XXXXXXX`.
           example: "13-1635294"
-        line1:
-          type: string
-          maxLength: 255
-          description: Street address.
-          example: "431 18th Street NW"
-        line2:
-          type: string
-          maxLength: 255
-          description: Optional suite, apartment, or unit.
-          example: "Suite 200"
-        city:
-          type: string
-          maxLength: 255
-          description: City.
-          example: "Washington"
-        state:
-          type: string
-          description: Two-letter US state code (uppercase).
-          example: "DC"
-        zip:
-          type: string
-          description: US ZIP code. Five digits, optionally followed by a four-digit extension.
-          example: "20006"
-    NonprofitContactSuggestionEntry:
+        mailing_address:
+          $ref: "#/components/schemas/OrganizationMailingAddress"
+    NonprofitContact:
       type: object
-      description: A contact uploaded for a nonprofit, identified by its EIN.
+      description: |-
+        A contact at a nonprofit for Chariot to notify about disbursements.
+
+        Contacts do not affect whether Chariot can pay an organization — they determine who hears about a
+        payment once it is sent. You can read back any contact you submitted.
       required:
-        - ein
+        - id
+        - organization_id
         - email
       properties:
-        ein:
+        id:
           type: string
-          description: |-
-            The EIN of the nonprofit this contact belongs to. Accepted as
-            either nine digits (`123456789`) or `XX-XXXXXXX`.
-          example: "13-1635294"
+          description: Unique identifier for the contact
+          example: "npc_01jpjen1s23s29kkmnjsb6fzga"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The organization this contact belongs to
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
         email:
           type: string
           maxLength: 255
@@ -4111,6 +4618,18 @@ components:
           maxLength: 255
           description: Optional last name of the contact.
           example: "Johnson"
+        created_at:
+          type: string
+          format: date-time
+          description: When the contact was created
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: When the contact was last updated
+          example: "2020-01-31T23:00:00Z"
+          readOnly: true
     Person:
       type: object
       description: |-
@@ -6441,108 +6960,6 @@ components:
         - stopped
         - completed
         - failed
-    VerificationRequestStatus:
-      type: string
-      description: |-
-        The status of the verification request.
-        Possible values include:
-          - `needs_review`: The request has been submitted and is awaiting review by Chariot's compliance team
-          - `verified`: The organization has been verified as tax-exempt and eligible for disbursements
-          - `failed`: Chariot's compliance team determined the organization is not eligible
-      example: "needs_review"
-      enum:
-        - needs_review
-        - verified
-        - failed
-    VerificationRequestAddress:
-      type: object
-      description: A mailing address for the organization being verified.
-      required:
-        - line1
-        - city
-        - state
-        - zip_code
-      properties:
-        line1:
-          type: string
-          description: Street address line 1
-          example: "123 Main St"
-        line2:
-          type: string
-          description: Street address line 2 (suite, unit, etc.)
-          example: "Suite 100"
-        city:
-          type: string
-          description: City
-          example: "San Francisco"
-        state:
-          type: string
-          description: Two-letter US state code (e.g. "CA", "NY")
-          example: "CA"
-        zip_code:
-          type: string
-          description: ZIP or postal code
-          example: "94105"
-    VerificationRequest:
-      type: object
-      description: |-
-        A verification request allows grantmakers to request that Chariot's compliance team verify an unlisted organization,
-        enabling disbursements to nonprofits not yet in Chariot's database.
-      required:
-        - id
-        - ein
-        - organization_name
-        - organization_id
-        - status
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the verification request
-          example: "vr_01jpjen1s23s29kkmnjsb6fzga"
-          readOnly: true
-        ein:
-          type: string
-          description: The EIN of the organization being verified
-          example: "123456789"
-        organization_name:
-          type: string
-          description: The name of the organization as provided by the grantmaker
-          example: "Local Community Foundation"
-        organization_id:
-          type: string
-          description: |-
-            The ID of the Organization record for the nonprofit being verified.
-          example: "org_01jpjenf5q6cawy43yxfcrxhct"
-        status:
-          $ref: "#/components/schemas/VerificationRequestStatus"
-        website:
-          type: string
-          description: The organization's website URL
-          example: "https://localfoundation.org"
-        recommended_mailing_address:
-          $ref: "#/components/schemas/VerificationRequestAddress"
-        verified_at:
-          type: string
-          format: date-time
-          description: When the organization was verified as tax-exempt and eligible for disbursements
-          readOnly: true
-        failed_at:
-          type: string
-          format: date-time
-          description: When the verification request was rejected
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          description: When the verification request was created
-          example: "2020-01-31T23:00:00Z"
-          readOnly: true
-        updated_at:
-          type: string
-          format: date-time
-          description: When the verification request was last updated
-          example: "2020-01-31T23:00:00Z"
-          readOnly: true
     DisbursementCancelation:
       type: object
       description: |-
@@ -7158,7 +7575,7 @@ components:
             If set to `true`, the disbursement will proceed through its normal lifecycle without waiting for
             Chariot to verify the organization. Only set this if you have independently verified the organization
             and do not want to wait for or rely on Chariot's verification.
-            This field is only relevant when disbursing to an organization that was created via a [verification request](/api/verification-requests/create).
+            This field is only relevant when disbursing to an organization that has not yet been verified — one added via [Create Organization](/api/organizations/create) whose `verification.status` is `needs_review`.
           default: false
         transactions:
           type: array
@@ -7458,8 +7875,10 @@ components:
         - "donation.updated"
         - "deposit.created"
         - "deposit.updated"
-        - "verification_request.created"
-        - "verification_request.updated"
+        - "organization.created"
+        - "organization.updated"
+        - "payment_method.created"
+        - "payment_method.updated"
     Event:
       type: object
       description: |
@@ -7661,8 +8080,29 @@ components:
                 type: string
                 description: A description of the file.
                 example: "Donation receipt for donation to the nonprofit"
-    CreateNonprofitAddressSuggestionRequest:
-      description: Address entries to upload, each matched to a nonprofit by EIN.
+    CreatePaymentMethodRequest:
+      description: |-
+        The request to submit a mailing address Chariot can send a check to for a nonprofit. Creates a payment
+        method with a `type` of `check`.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - organization_id
+              - mailing_address
+            properties:
+              organization_id:
+                type: string
+                description: The organization this payment method belongs to.
+                example: "org_01jpjenf5q6cawy43yxfcrxhct"
+              mailing_address:
+                $ref: "#/components/schemas/OrganizationMailingAddress"
+    BulkCreatePaymentMethodsRequest:
+      description: |-
+        Mailing addresses to submit, each matched to a nonprofit by EIN. Each entry creates a payment method
+        with a `type` of `check`.
       required: true
       content:
         application/json:
@@ -7673,50 +8113,61 @@ components:
             properties:
               entries:
                 type: array
-                description: Address entries to upload. Up to 500 per request.
+                description: Payment methods to submit. Up to 500 per request.
                 minItems: 1
                 maxItems: 500
                 items:
-                  $ref: "#/components/schemas/NonprofitAddressSuggestionEntry"
+                  $ref: "#/components/schemas/PaymentMethodEntry"
             example:
               entries:
                 - ein: "13-1635294"
-                  line1: "431 18th Street NW"
-                  city: "Washington"
-                  state: "DC"
-                  zip: "20006"
+                  mailing_address:
+                    line1: "431 18th Street NW"
+                    city: "Washington"
+                    state: "DC"
+                    zip_code: "20006"
                 - ein: "530196605"
-                  line1: "1250 24th Street NW"
-                  line2: "Suite 300"
-                  city: "Washington"
-                  state: "DC"
-                  zip: "20037-1175"
-    CreateNonprofitContactSuggestionRequest:
-      description: Contact entries to upload, each matched to a nonprofit by EIN.
+                  mailing_address:
+                    line1: "1250 24th Street NW"
+                    line2: "Suite 300"
+                    city: "Washington"
+                    state: "DC"
+                    zip_code: "20037-1175"
+    CreateNonprofitContactRequest:
+      description: The request to submit a contact at a nonprofit.
       required: true
       content:
         application/json:
           schema:
             type: object
             required:
-              - entries
+              - organization_id
+              - email
             properties:
-              entries:
-                type: array
-                description: Contact entries to upload. Up to 500 per request.
-                minItems: 1
-                maxItems: 500
-                items:
-                  $ref: "#/components/schemas/NonprofitContactSuggestionEntry"
-            example:
-              entries:
-                - ein: "13-1635294"
-                  email: "claims@redcross.org"
-                  phone: "2025551212"
-                  first_name: "Sarah"
-                  last_name: "Johnson"
-                - ein: "530196605"
-                  email: "ap@worldwildlife.org"
+              organization_id:
+                type: string
+                description: The organization this contact belongs to.
+                example: "org_01jpjenf5q6cawy43yxfcrxhct"
+              email:
+                type: string
+                maxLength: 255
+                description: Email of the contact person at the nonprofit.
+                example: "claims@redcross.org"
+              phone:
+                type: string
+                maxLength: 255
+                description: Optional phone number for the contact.
+                example: "2025551212"
+              first_name:
+                type: string
+                maxLength: 255
+                description: Optional first name of the contact.
+                example: "Sarah"
+              last_name:
+                type: string
+                maxLength: 255
+                description: Optional last name of the contact.
+                example: "Johnson"
     UpdateDonationRequest:
       description: |-
         The request to update core donation attributes like purpose, note and attribution.
@@ -8154,9 +8605,9 @@ components:
                           email: "bob.chen@example.com"
                       corporate_match:
                         company_name: "TechCorp Inc."
-    CreateVerificationRequestRequest:
+    CreateOrganizationRequest:
       description: |-
-        The request to create a verification request for an unlisted organization.
+        The request to add an unlisted nonprofit to Chariot's directory.
       required: true
       content:
         application/json:
@@ -8169,7 +8620,7 @@ components:
             properties:
               ein:
                 type: string
-                description: The EIN of the organization to verify
+                description: The EIN of the organization
                 example: "123456789"
               organization_name:
                 type: string
@@ -8180,7 +8631,7 @@ components:
                 description: The organization's website URL
                 example: "https://localfoundation.org"
               recommended_mailing_address:
-                $ref: "#/components/schemas/VerificationRequestAddress"
+                $ref: "#/components/schemas/OrganizationMailingAddress"
               contact_email:
                 type: string
                 description: Contact email for the nonprofit organization.
@@ -8984,8 +9435,8 @@ components:
                    to the same endpoint with the same parameters (only changing the pageToken). If
                    specified, then more results exist on the server that were not returned, otherwise
                    no more results exist on the server.
-    ListVerificationRequestsResponse:
-      description: The response for VerificationRequests.list
+    ListPaymentMethodsResponse:
+      description: The response for PaymentMethods.list
       headers:
         X-Request-Id:
           $ref: "#/components/headers/X-Request-Id"
@@ -8997,7 +9448,64 @@ components:
               results:
                 type: array
                 items:
-                  $ref: "#/components/schemas/VerificationRequest"
+                  $ref: "#/components/schemas/PaymentMethod"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the page_token). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    BulkCreatePaymentMethodsResponse:
+      description: The payment methods were created and submitted for verification
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                description: The created payment methods, in the order the entries were submitted.
+                items:
+                  $ref: "#/components/schemas/PaymentMethod"
+    ListNonprofitContactsResponse:
+      description: The response for NonprofitContacts.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NonprofitContact"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to use to retrieve the next page of results by making another API call
+                   to the same endpoint with the same parameters (only changing the page_token). If
+                   specified, then more results exist on the server that were not returned, otherwise
+                   no more results exist on the server.
+    ListOrganizationsResponse:
+      description: The response for Organizations.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Organization"
               next_page_token:
                 type: string
                 description: |-

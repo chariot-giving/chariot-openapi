@@ -54,7 +54,31 @@ Next, search for the nonprofit organization using their name or EIN:
 
 <EndpointRequestSnippet endpoint="GET /v1/organizations/search" />
 
-If the organization cannot be found through Chariot's search, you can submit a [Verification Request](/api/verification-requests/create) to have Chariot's compliance team review and verify the organization. See [Disbursing to Unlisted Organizations](#disbursing-to-unlisted-organizations) below.
+If the organization cannot be found through Chariot's search, you can add it with [Create Organization](/api/organizations/create) to have Chariot's compliance team review and verify it. See [Disbursing to Unlisted Organizations](#disbursing-to-unlisted-organizations) below.
+
+### Check the Organization
+
+Before creating the disbursement, fetch the organization and read `capabilities.disbursements` to find out whether Chariot can pay it:
+
+<EndpointRequestSnippet endpoint="GET /v1/organizations/{id}" />
+
+A `status` of `active` means the disbursement will be accepted. A `status` of `inactive` means it will be rejected, and `inactive_reason` says why:
+
+| Reason | What to do |
+|--------|------------|
+| `daf_ineligible` | The organization is not eligible to receive disbursements from Donor Advised Funds |
+| `undeliverable` | Chariot has exhausted every payment method it holds. Submit a new one with [Create Payment Method](/api/payment-methods/create) and track it to `verified` |
+| `rerouted` | The nonprofit has asked not to receive funds at this EIN. Disburse to `reroute_to_organization_id` instead |
+
+The verdict is produced by the same checks [Create Disbursement](/api/disbursements/create) runs, so the two can never disagree. This step is optional — you can call Create Disbursement directly and handle the rejection — but checking first lets you resolve the problem before committing funds, and surfaces an undeliverable address immediately rather than weeks later when a check comes back.
+
+<Note>
+New `inactive_reason` values may be added over time. Treat any value you do not recognize as inactive and do not attempt the disbursement.
+</Note>
+
+<Note>
+An organization awaiting Chariot's compliance review is still `active`. The disbursement is accepted and holds in `awaiting_verification` until the review completes.
+</Note>
 
 ### Create a Disbursement
 
@@ -80,38 +104,80 @@ To learn more about how to handle errors, please refer to the [FAQ](/guides/disb
 ## Disbursing to Unlisted Organizations
 
 If the organization you want to disburse to is not found through Chariot's [Search Organizations](/api/organizations/search) endpoint,
-you can use the **Verification Request** API to request that Chariot's compliance team verify the organization.
+you can add it yourself with [Create Organization](/api/organizations/create) and Chariot's compliance team will review and verify it.
 
 <Steps>
 
-### Create a Verification Request
+### Create the Organization
 
-Submit a verification request with the organization's EIN, name, and mailing address. You can track the status of the request using the [GET Verification Request](/api/verification-requests/get) endpoint.
+Submit the organization's EIN, name, and mailing address. The organization comes back immediately with an `id` you can use, and a `verification.status` of `needs_review`.
 
-<EndpointRequestSnippet endpoint="POST /v1/verification_requests" />
+<EndpointRequestSnippet endpoint="POST /v1/organizations" />
+
+Until it is verified, the organization is visible only to you. It will not appear in [Search Organizations](/api/organizations/search) for other grantmakers, but you can retrieve it by `id` with [Get Organization](/api/organizations/get) and enumerate everything you have submitted with [List Organizations](/api/organizations/list). Once verified, it joins Chariot's directory and becomes searchable by everyone.
+
+<Note>
+Organizations are deduplicated by EIN. If Chariot already has an organization with the EIN you submit, you get that organization back with a `200` and nothing new is created.
+</Note>
 
 ### Create a Disbursement
 
-Use the `organization_id` from the verification request response to create a disbursement. By default, the disbursement will wait for Chariot's compliance team to verify the organization before proceeding. You can optionally set `bypass_chariot_organization_verification` to override this behavior:
+Use the `id` from the response to create a disbursement. By default, the disbursement will wait for Chariot's compliance team to verify the organization before proceeding. You can optionally set `bypass_chariot_organization_verification` to override this behavior:
 
 - **`false`** (default): The disbursement will remain in the `awaiting_verification` status until Chariot's compliance team has verified the nonprofit.
 - **`true`**: The disbursement will proceed through its normal lifecycle without waiting for Chariot to verify the organization. Only set this if you have independently verified the organization and do not want to wait for or rely on Chariot's verification.
 
 ### Monitor Verification Status
 
-You can track the progress of the verification by polling the [GET Verification Request](/api/verification-requests/get) endpoint or by subscribing to `verification_request.updated` [webhook events](/api/webhooks). The status will transition through:
+You can track the progress of the review by polling [Get Organization](/api/organizations/get) and reading `verification.status`, or by subscribing to `organization.updated` [webhook events](/api/webhooks). The status will transition through:
 
 | Status | Description |
 |--------|-------------|
-| `needs_review` | The request has been submitted and is awaiting review by Chariot's compliance team |
+| `needs_review` | The organization has been submitted and is awaiting review by Chariot's compliance team |
 | `verified` | The organization has been verified as tax-exempt and eligible for disbursements |
 | `failed` | The compliance team determined the organization is not eligible |
 
-Disbursements without bypass_chariot_organization_verification enabled will remain in awaiting_verification until the verification request status is verified.
+The values you submitted are preserved under `verification.submitted`. The compliance team may correct the organization's top-level fields during review, so compare the two if you need to see what changed.
 
-Once the verification request is verified, eligible disbursements will progress as usual. However, some disbursements may not move out of awaiting_verification immediately, as additional review steps may be required on a per-disbursement basis.
+Disbursements without `bypass_chariot_organization_verification` enabled will remain in `awaiting_verification` until the organization's `verification.status` is `verified`.
+
+Once the organization is verified, eligible disbursements will progress as usual. However, some disbursements may not move out of `awaiting_verification` immediately, as additional review steps may be required on a per-disbursement basis.
 
 </Steps>
+
+## Fixing an Undeliverable Organization
+
+When an organization's `capabilities.disbursements` reports `undeliverable`, Chariot has exhausted every payment method it holds for that nonprofit. Submit a new one and the capability returns to `active` once Chariot verifies it.
+
+<Steps>
+
+### Submit a Payment Method
+
+<EndpointRequestSnippet endpoint="POST /v1/payment_methods" />
+
+The payment method comes back with an `id`, a `type` of `check`, and a `status` of `needs_review`. To submit mailing addresses for many nonprofits at once, use [Bulk Create Payment Methods](/api/payment-methods/bulk-create) — up to 500 per request.
+
+Only `check` payment methods can be created through the API. Electronic payment methods are established by Chariot with the nonprofit directly.
+
+### Track It to Verified
+
+Poll [Get Payment Method](/api/payment-methods/get) or subscribe to `payment_method.updated` [webhook events](/api/webhooks).
+
+| Status | Description |
+|--------|-------------|
+| `needs_review` | Submitted and awaiting review by Chariot |
+| `verified` | Chariot will send disbursements here |
+| `failed` | Exhausted. Chariot could not reach the nonprofit here, or could not verify it |
+
+### Create the Disbursement
+
+Once the payment method is `verified`, the organization's `capabilities.disbursements.status` returns to `active` and disbursements proceed normally.
+
+</Steps>
+
+<Note>
+You never choose a payment method when creating a disbursement. Chariot routes to the nonprofit's own payment methods, and the nonprofit controls them. Use [List Payment Methods](/api/payment-methods/list) to see what Chariot holds, including the ones Chariot sourced itself, which carry a `source` of `chariot`.
+</Note>
 
 ## Chariot Disbursements for Nonprofits
 
