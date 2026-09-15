@@ -208,6 +208,8 @@ navigation:
                   title: Files
               - fileLinks:
                   title: File Links
+              - properties:
+                  title: Properties
           - section: DAFpay
             skip-slug: true
             icon: box-heart
@@ -250,18 +252,60 @@ navigation:
             skip-slug: true
             icon: gear
             contents:
-              - paymentSources:
-                  title: Payment Sources
-              - lockboxes:
-                  title: Lockboxes
-              - mailItems:
-                  title: Mail Items
-              - donations:
-                  title: Donations
-              - deposits:
-                  title: Deposits
-              - properties:
-                  title: Properties
+              - section: Sources
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/sources/overview.mdx
+                  - page: The Source object
+                    slug: object
+                    path: ./pages/api/sources/object.mdx
+                  - endpoint: GET /v1/sources
+                  - endpoint: GET /v1/sources/{id}
+              - section: Donations
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/donations/overview.mdx
+                  - page: The Donation object
+                    slug: object
+                    path: ./pages/api/donations/object.mdx
+                  - endpoint: POST /v1/donations
+                  - endpoint: GET /v1/donations
+                  - endpoint: GET /v1/donations/{id}
+                  - endpoint: PATCH /v1/donations/{id}
+                  - endpoint: DELETE /v1/donations/{id}
+              - section: Deposits
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/deposits/overview.mdx
+                  - page: The Deposit object
+                    slug: object
+                    path: ./pages/api/deposits/object.mdx
+                  - endpoint: GET /v1/deposits
+                  - endpoint: GET /v1/deposits/{id}
+                  - endpoint: POST /v1/deposits/{id}/reconcile
+              - section: Lockboxes
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/lockboxes/overview.mdx
+                  - page: The Lockbox object
+                    slug: object
+                    path: ./pages/api/lockboxes/object.mdx
+                  - endpoint: GET /v1/lockboxes
+                  - endpoint: GET /v1/lockboxes/{id}
+              - section: Mail Items
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/mail_items/overview.mdx
+                  - page: The Mail Item object
+                    slug: object
+                    path: ./pages/api/mail_items/object.mdx
+                  - endpoint: GET /v1/mail_items
+                  - endpoint: GET /v1/mail_items/{id}
           - section: Lockbox Providers
             skip-slug: true
             icon: mailbox
