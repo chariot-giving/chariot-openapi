@@ -15,13 +15,32 @@ One Deposit may contain many Donations. Store both IDs so your finance team can 
 
 A Donation may include donor details, gross and net amounts, fees, designation, source information, DAFpay metadata, and properties configured in the dashboard. Use the API reference as the source of truth for current fields.
 
-`settlement` appears only when Chariot has received the funds for that gift. A Donation without a settlement either has no Deposit yet or was paid through a route that does not deposit funds into a Chariot Account.
+`settlement` is present when the Donation is associated with a Deposit. A Donation can have at most one settlement and belong to at most one Deposit.
+
+If `settlement` is absent, the Donation has not been associated with funds in a Chariot Account.
 
 You can also find a gift using the `dafpay_tracking_id` filter on List Donations.
 
+## How Donations are created
+
+A Donation can enter Chariot in two ways:
+
+- A donor completes DAFpay and your integration creates the Grant. The resulting Donation has a Grant ID.
+- Chariot receives gift data from a payment source connected to your account. The resulting Donation may have a Deposit, but it does not have a Grant because the gift was not initiated through DAFpay.
+
+Use Donation events and the Donations API for your CRM sync so both types of gifts follow the same workflow. Do not require a Grant ID before processing a Donation.
+
+## Data and funds can arrive in different orders
+
+Chariot may receive the gift data before the funds, the funds before the gift data, or both together. Because of this, a Donation may initially have no `settlement`, or it may already include `settlement` when it is created.
+
+Your integration should handle both cases. Inspect the current Donation whenever it is created or updated instead of assuming that settlement will always produce a later update event.
+
 ## Decide when to create the CRM gift
 
-The safest default is to create the CRM gift when your organization considers the payment received. Most integrations use `settlement.received_at`, which is when Chariot received the data for the transfer. Use `settlement.settled_at` instead if your rule is that the funds must be available to your organization, since the two timestamps can differ.
+The safest default is to create the CRM gift when your organization considers the payment received.
+
+Use `settlement.settled_at` as the date the gift settled in Chariot. `settlement.received_at` currently returns the same timestamp and should not be used to identify an earlier stage in the payment lifecycle.
 
 If your team needs an earlier record, create it as pending and update it later. That approach must account for grants that are delayed, canceled, or never funded.
 

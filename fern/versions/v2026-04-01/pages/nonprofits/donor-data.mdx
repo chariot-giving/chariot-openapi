@@ -29,12 +29,14 @@ chariot.onDonationRequest(async () => ({
 | `email` | string | Valid donor email. Maximum 255 characters. |
 | `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
 | `note` | string | Donor note to your organization. Maximum 400 characters. |
-| `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
+| `anonymous` | boolean | Whether the donor asked not to be publicly recognized. Defaults to `false`. This is a recognition preference and does not remove donor information from the Donation. |
 | `designation` | string | Defaults to `Where needed most`. Values over 100 characters may be truncated. |
 | `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
 | `metadata` | object | Name-value pairs associated with the workflow session. |
 | `fundId` | string | Preselects a DAF provider and skips the provider picker. |
 | `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
+
+A donor who selects anonymous in DAFpay is not anonymous to your organization. Chariot still provides the donor information collected during the DAFpay session. Gifts initiated directly through a DAF provider may have limited or no donor information if the provider does not share it.
 
 ## Omit donor details you do not have
 

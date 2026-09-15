@@ -55,6 +55,12 @@ Subscribe to Donation and Deposit events when you need updates sooner than the s
 
 Use Donation events for the CRM sync so DAFpay gifts and gifts from other sources follow the same downstream workflow.
 
+Webhook events identify the resource that changed, but they do not identify which fields changed. When you receive an event, retrieve the current Donation from the API and inspect its current state.
+
+To determine whether a Donation is associated with funds in Chariot, check for `settlement` and `settlement.deposit_id`. Do not rely on `payment_status` alone, since payment status is maintained separately and may also be updated through other workflows.
+
+Check for `settlement` when processing both Donation creation and Donation update events.
+
 Next: [Record processing status](/guides/nonprofits/donations/record)
 
 <Info>
