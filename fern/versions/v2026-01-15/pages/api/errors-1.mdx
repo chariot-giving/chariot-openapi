@@ -10,8 +10,8 @@ The Chariot API uses standard HTTP status response codes
 | Code | Description                                                                                                                                                                               |
 | :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 400  | Bad Request: The request could not be understood by the server due to malformed syntax.                                                                                                   |
-| 401  | Unauthorized: The request requires user authentication. The **Authorization** header may be missing or invalid.                                                                           |
-| 403  | Forbidden: The server understood the request but is refusing to fulfill it. The API user does not have correct permissions or the **x-chariot-api-key** header may be missing or invalid. |
+| 401  | Unauthorized: The request is missing a valid `Authorization: Bearer <API_KEY>` credential, or the key belongs to the other environment. |
+| 403  | Forbidden: The API key is valid, but it does not have permission to perform this operation or to access this resource. |
 | 404  | Not Found: The resource requested does not exist or was not found.                                                                                                                        |
 | 405  | Method Not Allowed: The method/verb specified in the request is not allowed for the resource.                                                                                             |
 | 409  | Conflict: The request conflicts with the current state of the target resource.                                                                                                            |

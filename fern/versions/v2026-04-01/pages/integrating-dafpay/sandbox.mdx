@@ -1,0 +1,57 @@
+---
+title: Sandbox Setup and Testing
+hidden: false
+---
+
+Use sandbox while you build, then return to this page before requesting production access to complete the full test matrix. Sandbox has separate API keys, Connects, and data. No real funds move.
+
+Configure the sandbox base URL, API key, and Connect IDs together. Keep API keys on your server. Sandbox Connect IDs begin with `test_`.
+
+## DAF login
+
+Use these credentials with any supported provider in sandbox:
+
+```text
+username: good-user
+password: password123
+```
+
+## Test tenant routing
+
+Test at least two nonprofits at the same time.
+
+- Create a separate Connect for each nonprofit.
+- Open both donation forms concurrently.
+- Confirm each form loads the correct Connect ID.
+- Confirm each Grant belongs to the intended nonprofit.
+- Confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
+
+These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
+
+## Test the donor flow
+
+- Complete a one-time Grant.
+- Complete a recurring Grant, if enabled.
+- Test every exit reason your interface handles.
+- Test an unintegrated DAF provider, if supported.
+- Confirm DAFpay is visible without opening an unlabeled More or See more menu.
+- Confirm DAFpay opens within one second of the donor's click.
+- Test duplicate clicks and Create Grant retries.
+- Confirm repeated requests create only one Grant.
+- Verify webhook signatures and repeated delivery.
+- Simulate Grant completion and cancellation.
+
+## Test browsers and devices
+
+Complete the donor flow on:
+
+- Chrome, Safari, and Firefox on desktop.
+- Safari and Chrome on iPhone.
+- Chrome on Android.
+- Every in-app or embedded browser your platform supports.
+
+On each supported browser, confirm that DAFpay renders, opens from the donor's click, and can be completed. Verify your loading and confirmation states and confirm that exactly one Grant is created.
+
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
+
+Next: [Create Connects](/guides/dafpay/integrating-dafpay/connects)
