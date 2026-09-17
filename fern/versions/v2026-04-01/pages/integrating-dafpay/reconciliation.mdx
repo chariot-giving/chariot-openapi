@@ -12,7 +12,7 @@ Store every Chariot identifier as soon as it becomes available. Your support tea
 | Platform transaction ID | Your platform | Locate the checkout in your system. |
 | Workflow session ID | DAFpay | Connect the donor authorization to Create Grant and support logs. |
 | Grant ID | Chariot | Durable API identifier returned by Create Grant. |
-| Donation ID | Chariot | Connect the Grant to Chariot's Donation record when available. |
+| `donationId` | Chariot | Connect the Grant to Chariot's Donation record. Read it from Get Grant. |
 | `trackingId` | DAFpay | Match a provider payment to the DAFpay Grant. It may appear in the provider note or purpose as `Tracking ID:`. |
 | `externalGrantId` | DAF provider | Match the provider's own Grant or payment record when the DAFpay tracking ID is absent. |
 
@@ -24,7 +24,7 @@ Make `trackingId` and `externalGrantId` searchable in your transaction and suppo
 2. Render DAFpay using that nonprofit's Connect ID.
 3. Store `workflowSessionId` on the transaction when `CHARIOT_SUCCESS` fires.
 4. Call Create Grant and store the returned Grant ID.
-5. Retrieve and store the Donation ID when it becomes available.
+5. Call Get Grant and store `donationId`. Chariot sets it shortly after Create Grant succeeds, so read the Grant again if it is absent.
 6. When the provider payment arrives, use `trackingId` to locate the Grant or Donation in Chariot.
 7. Use the stored Chariot ID to find the platform transaction.
 

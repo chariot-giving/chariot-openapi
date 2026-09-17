@@ -19,16 +19,22 @@ A Donation may include donor details, gross and net amounts, fees, designation, 
 
 If `settlement` is absent, the Donation has not been associated with funds in a Chariot Account.
 
-You can also find a gift using the `dafpay_tracking_id` filter on List Donations.
-
 ## How Donations are created
 
 A Donation can enter Chariot in two ways:
 
-- A donor completes DAFpay and your integration creates the Grant. The resulting Donation has a Grant ID.
-- Chariot receives gift data from a payment source connected to your account. The resulting Donation may have a Deposit, but it does not have a Grant because the gift was not initiated through DAFpay.
+- A donor completes DAFpay and your integration creates the Grant. Chariot then creates the Donation from that Grant.
+- Chariot receives gift data from a payment source connected to your account. The resulting Donation may have a Deposit, but no Grant, because the gift was not initiated through DAFpay.
 
-Use Donation events and the Donations API for your CRM sync so both types of gifts follow the same workflow. Do not require a Grant ID before processing a Donation.
+Use Donation events and the Donations API for your CRM sync so both types of gifts follow the same workflow.
+
+## Match a Grant to its Donation
+
+Because Chariot creates the Donation from the Grant, the link between them is stored on the Grant. Call Get Grant and read `donationId`. Chariot sets it shortly after Create Grant succeeds, so treat an absent value as not yet available and read the Grant again rather than as a Donation that does not exist.
+
+A Donation does not carry a Grant ID. Its reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations. Some DAF providers do not support tracking IDs, so that value is absent on those gifts.
+
+Store `donationId` when you create the Grant. It is the only link between the two records that is present for every DAF provider.
 
 ## Data and funds can arrive in different orders
 
