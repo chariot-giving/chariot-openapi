@@ -364,6 +364,14 @@ paths:
             type: string
           required: false
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
+        - name: donation_id
+          in: query
+          description: |-
+            Filter grants by the `id` of a specific [Donation](/api/donations). Use this to retrieve the grant behind a donation you already have.
+          schema:
+            type: string
+          required: false
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
