@@ -33,13 +33,7 @@ Use List Donations with `created_at` to retrieve every Donation created during t
 
 For each Donation, check whether `settlement` is present. A newly created Donation may already include a settlement, or it may receive one later.
 
-```bash
-curl -G https://api.givechariot.com/v1/donations \
-  -H "Authorization: Bearer <token>" \
-  -d 'created_at.after=2026-04-01T00:00:00Z' \
-  -d 'created_at.before=2026-04-02T00:00:00Z' \
-  -d 'limit=100'
-```
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
 
 List Donations does not support filtering by `updated_at`. Use the Deposits query below to find settlements added to Donations after they were created.
 
@@ -49,18 +43,9 @@ Use List Deposits with `settled_at` to retrieve Deposits that settled during the
 
 This query catches Donations that were created without a settlement and associated with a Deposit later.
 
-```bash
-curl -G https://api.givechariot.com/v1/deposits \
-  -H "Authorization: Bearer <token>" \
-  -d 'settled_at.after=2026-04-01T00:00:00Z' \
-  -d 'settled_at.before=2026-04-02T00:00:00Z'
-```
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
 
-```bash
-curl -G https://api.givechariot.com/v1/donations \
-  -H "Authorization: Bearer <token>" \
-  -d deposit_id=deposit_01j8rs605a4gctmbm58d87mvsj
-```
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
 
 The same Donation may appear in both queries. Upsert using the Donation ID and process its settlement idempotently.
 

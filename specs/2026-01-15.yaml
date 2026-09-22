@@ -1995,6 +1995,7 @@ paths:
           schema:
             type: string
             format: date-time
+          example: "2026-04-01T00:00:00Z"
         - name: created_at.before
           in: query
           description: Return donations created before the given date and time.
@@ -2002,6 +2003,7 @@ paths:
           schema:
             type: string
             format: date-time
+          example: "2026-04-02T00:00:00Z"
       responses:
         "200":
           $ref: "#/components/responses/ListDonationsResponse"
@@ -2086,6 +2088,7 @@ paths:
           schema:
             type: string
             format: date-time
+          example: "2026-04-01T00:00:00Z"
         - name: settled_at.before
           in: query
           description: Return deposits with a settled date and time before the given date and time.
@@ -2093,6 +2096,7 @@ paths:
           schema:
             type: string
             format: date-time
+          example: "2026-04-02T00:00:00Z"
       responses:
         "200":
           $ref: "#/components/responses/ListDepositsResponse"

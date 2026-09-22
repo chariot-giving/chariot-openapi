@@ -5,15 +5,7 @@ hidden: false
 
 After `CHARIOT_SUCCESS`, call Create Grant from your server. The browser flow authorizes the request but does not create the Grant.
 
-```bash
-curl -X POST https://api.givechariot.com/v1/grants \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "workflowSessionId": "string",
-    "amount": 15000
-  }'
-```
+<EndpointRequestSnippet endpoint="POST /v1/grants" />
 
 ## Server-side sequence
 
