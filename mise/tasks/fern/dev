@@ -1,0 +1,12 @@
+#!/bin/bash
+source "$MISE_CONFIG_ROOT/mise/tasks/_"
+set -euo pipefail
+#MISE description="Serve the docs site locally with hot reload, on :3000."
+#MISE alias="dev"
+
+cd "$MISE_CONFIG_ROOT"
+
+gum log --level info "Starting the local docs server, edits to fern/ reload automatically..."
+gum log --level warn "Search, SEO and authentication are disabled locally, use \"mise run fern:preview\" to check those."
+
+fern docs dev "$@"

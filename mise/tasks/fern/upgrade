@@ -1,0 +1,23 @@
+#!/bin/bash
+source "$MISE_CONFIG_ROOT/mise/tasks/_"
+set -euo pipefail
+#MISE description="Upgrade the pinned Fern CLI in fern.config.json, and mise to match."
+
+cd "$MISE_CONFIG_ROOT"
+
+before=$(fernConfigVersion)
+gum log --level info "Upgrading Fern from $before..."
+
+# Rewrites the version in fern/fern.config.json, and bumps generators.yml too.
+fern upgrade "$@"
+
+after=$(fernConfigVersion)
+if [[ "$after" == "$before" ]]; then
+    gum log --level info "Already on the newest Fern version ($after)."
+    exit 0
+fi
+
+gum log --level info "fern.config.json is now $after, pinning mise to match..."
+mise use --path mise/config.toml --pin "npm:fern-api@$after"
+
+gum log --level info "Upgraded to $after. Run \"mise run fern:check\" before committing."
