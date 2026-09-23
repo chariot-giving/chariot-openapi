@@ -4396,12 +4396,14 @@ components:
         The processing status of a Mail Item.
 
         - `processing`: The mail item is being scanned and parsed.
-        - `needs_review`: Extraction completed but produced ambiguous results that require human review.
+        - `needs_review`: The mail item requires your review.
+        - `under_review`: Chariot is reviewing the mail item. No action is required.
         - `processed`: The mail item has been successfully parsed and classified, and is ready for any downstream automations or workflows to run on it.
         - `rejected`: The mail item will not produce a Donation (e.g., return-to-sender, illegible, unrelated correspondence).
       enum:
         - processing
         - needs_review
+        - under_review
         - processed
         - rejected
       example: "processed"
