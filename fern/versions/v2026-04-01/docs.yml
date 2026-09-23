@@ -74,6 +74,15 @@ navigation:
               - page: Go Live
                 slug: go-live
                 path: ./pages/dafpay/accept/go-live.mdx
+              - page: Unintegrated Providers
+                slug: unintegrated
+                path: ./pages/dafpay/accept/unintegrated.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/dafpay/troubleshooting.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/dafpay/faq.mdx
           - section: Send Grant Requests
             slug: send
             contents:

@@ -15,17 +15,21 @@ _DAFpay submits a request to the donor's DAF provider. It does not move the fund
 
 ## Grants and Donations
 
-_The relationship to set up early. A Grant records the request. Chariot creates a Donation from that Grant, and the Donation is the object that carries settlement once funds arrive. Anything built on Donations also covers gifts that did not come through DAFpay._
+Because Chariot creates the Donation from the Grant, the link between them is stored on the Grant. Call Get Grant and read `donationId`. Chariot sets it shortly after Create Grant succeeds, so treat an absent value as not yet available and read the Grant again rather than as a Donation that does not exist.
+
+A Donation does not carry a Grant ID. Its reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations. Some DAF providers do not support tracking IDs, so that value is absent on those gifts.
+
+Store `donationId` when you create the Grant. It is the only link between the two records that is present for every DAF provider.
 
 ## The objects you will work with
 
-| Object | What it represents |
+| Record | What it represents |
 | --- | --- |
-| Connect | _placeholder_ |
-| Workflow session | _placeholder_ |
-| Grant | _placeholder_ |
-| Unintegrated Grant | _placeholder_ |
-| Donation | _placeholder_ |
+| Grant | A request sent to a donor's DAF provider through DAFpay. Only gifts initiated through DAFpay have a Grant. |
+| Donation | Chariot's record of a gift, including its donor, amount, coding, source, and payment status. A Donation can exist with or without a Grant or Deposit. |
+| Deposit | A transfer into a Chariot Account. One Deposit can contain funds for multiple Donations. |
+
+_Still to add: Connect, workflow session, and Unintegrated Grant rows._
 
 ## What varies by DAF provider
 
