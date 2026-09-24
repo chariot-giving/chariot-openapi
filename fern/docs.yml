@@ -4,10 +4,15 @@ instances:
 title: Chariot
 
 versions:
+  - display-name: v2026-10-01
+    path: versions/v2026-10-01/docs.yml
+    slug: v2026-10-01
+    availability: beta
+    hidden: true
   - display-name: v2026-04-01
     path: versions/v2026-04-01/docs.yml
     slug: v2026-04-01
-    availability: beta
+    availability: stable
   - display-name: v2026-01-15
     path: versions/v2026-01-15/docs.yml
     slug: v2026-01-15
