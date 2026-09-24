@@ -199,15 +199,11 @@ navigation:
               - programs
               - financialAccounts:
                   title: Financial Accounts
-              - outboundTransfers:
-                  title: Outbound Transfers
               - events
               - eventSubscriptions:
                   title: Event Subscriptions
               - files:
                   title: Files
-              - fileLinks:
-                  title: File Links
           - section: DAFpay
             skip-slug: true
             icon: box-heart
