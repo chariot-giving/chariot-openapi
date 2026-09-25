@@ -1,0 +1,68 @@
+---
+title: Poll for Donations
+hidden: false
+---
+
+Use two scheduled queries to keep your system in sync:
+
+1. Retrieve newly created Donations.
+2. Retrieve Deposits that settled after those Donations were created.
+
+These queries solve different problems. List Donations can filter by `created_at`, but not by `updated_at`. A Donation created without a settlement will therefore not appear in the Donations query again when its settlement is added later. The Deposits query captures that later settlement.
+
+Webhooks can reduce delay, but keep both scheduled queries in place to recover anything your webhook endpoint misses.
+
+## A reliable sync pattern
+
+Maintain a separate checkpoint for each query.
+
+For every run:
+
+1. Read from that query's last successful checkpoint to the start time of the current run.
+2. Request every page in the window.
+3. Process each Donation idempotently using its Chariot Donation ID.
+4. Advance that query's checkpoint only after the complete window succeeds.
+
+Keep a small overlap between windows and deduplicate by Donation ID. This protects against records created near a boundary and jobs that need to be retried.
+
+Each list endpoint returns at most 100 records. Pass `next_page_token` back as `page_token` without changing the other parameters. Continue until the response has no next token.
+
+## Retrieve newly created Donations
+
+Use List Donations with `created_at` to retrieve every Donation created during the window. This includes DAFpay gifts, gifts from connected payment sources, and Donations that do not have a Chariot Deposit.
+
+For each Donation, check whether `settlement` is present. A newly created Donation may already include a settlement, or it may receive one later.
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+List Donations does not support filtering by `updated_at`. Use the Deposits query below to find settlements added to Donations after they were created.
+
+## Retrieve settled Deposits and their Donations
+
+Use List Deposits with `settled_at` to retrieve Deposits that settled during the window. For each Deposit, call List Donations with its `deposit_id` to retrieve the Donations it funded.
+
+This query catches Donations that were created without a settlement and associated with a Deposit later.
+
+<EndpointRequestSnippet endpoint="GET /v1/deposits" />
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+The same Donation may appear in both queries. Upsert using the Donation ID and process its settlement idempotently.
+
+## Webhooks
+
+Subscribe to Donation and Deposit events when you need updates sooner than the scheduled sync. Verify every signature, retrieve the current resource from the API, and process repeated events safely.
+
+Use Donation events for the CRM sync so DAFpay gifts and gifts from other sources follow the same downstream workflow.
+
+Webhook events identify the resource that changed, but they do not identify which fields changed. When you receive an event, retrieve the current Donation from the API and inspect its current state.
+
+To determine whether a Donation is associated with funds in Chariot, check for `settlement` and `settlement.deposit_id`. Do not rely on `payment_status` alone, since payment status is maintained separately and may also be updated through other workflows.
+
+Check for `settlement` when processing both Donation creation and Donation update events.
+
+Next: [Record processing status](/guides/nonprofits/donations/record)
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

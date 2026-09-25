@@ -24,6 +24,157 @@ versions:
     availability: deprecated
     hidden: true
 
+redirects:
+  # Guides restructure: DAFpay split by audience and Gift Processing folded into
+  # the For Nonprofits section. This landed in v2026-04-01 and v2026-01-15, so
+  # both the unversioned paths and each version prefix move. v2025-02-24 and
+  # v2023-01-01 keep their own pages.
+  - source: "/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/guides/dafpay/integrating-dafpay/connects"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/integration"
+    destination: "/guides/dafpay/integrating-dafpay/events"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/guides/dafpay/gifts/reconciliation"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/faq"
+    destination: "/guides/dafpay/faq"
+    permanent: true
+  - source: "/guides/processing"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/how-it-works"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/getting-started"
+    destination: "/guides/nonprofits/donations"
+    permanent: true
+  - source: "/guides/processing/faq"
+    destination: "/guides/nonprofits/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/connects"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/integration"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/events"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/v2026-04-01/guides/dafpay/gifts/reconciliation"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/faq"
+    destination: "/v2026-04-01/guides/dafpay/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/how-it-works"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/getting-started"
+    destination: "/v2026-04-01/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/processing/faq"
+    destination: "/v2026-04-01/guides/nonprofits/faq"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/overview"
+    destination: "/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/faq"
+    destination: "/guides/donor-accounts/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/overview"
+    destination: "/v2026-04-01/guides/donor-accounts/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/account-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/account-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/grant-request-lifecycle"
+    destination: "/v2026-04-01/guides/donor-accounts/grant-request-lifecycle"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/faq"
+    destination: "/v2026-04-01/guides/donor-accounts/faq"
+    permanent: true
+  # the rewrite reached v2026-01-15
+  - source: "/v2026-01-15/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/v2026-01-15/guides/dafpay/integrating-dafpay/connects"
+    permanent: true
+  - source: "/v2026-01-15/guides/dafpay/integrating-dafpay/integration"
+    destination: "/v2026-01-15/guides/dafpay/integrating-dafpay/events"
+    permanent: true
+  - source: "/v2026-01-15/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/v2026-01-15/guides/dafpay/gifts/reconciliation"
+    permanent: true
+  - source: "/v2026-01-15/guides/processing"
+    destination: "/v2026-01-15/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-01-15/guides/processing/how-it-works"
+    destination: "/v2026-01-15/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-01-15/guides/processing/getting-started"
+    destination: "/v2026-01-15/guides/nonprofits/donations"
+    permanent: true
+  - source: "/v2026-01-15/guides/processing/faq"
+    destination: "/v2026-01-15/guides/nonprofits/faq"
+    permanent: true
+
+  # the DAF OAuth guide moved from under DAFpay to For Grantmakers, and off the
+  # oauth slug, which the API OAuth section owns
+  - source: "/guides/dafpay/oauth"
+    destination: "/guides/oauth-integration/overview"
+    permanent: true
+  - source: "/guides/dafpay/oauth/overview"
+    destination: "/guides/oauth-integration/overview"
+    permanent: true
+  - source: "/guides/dafpay/oauth/oauth-requirements"
+    destination: "/guides/oauth-integration/oauth-requirements"
+    permanent: true
+  - source: "/guides/dafpay/oauth/api-endpoints"
+    destination: "/guides/oauth-integration/api-endpoints"
+    permanent: true
+  - source: "/guides/dafpay/oauth/security"
+    destination: "/guides/oauth-integration/security"
+    permanent: true
+  - source: "/guides/dafpay/oauth/integration-checklist"
+    destination: "/guides/oauth-integration/integration-checklist"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth"
+    destination: "/v2026-04-01/guides/oauth-integration/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/overview"
+    destination: "/v2026-04-01/guides/oauth-integration/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/oauth-requirements"
+    destination: "/v2026-04-01/guides/oauth-integration/oauth-requirements"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/api-endpoints"
+    destination: "/v2026-04-01/guides/oauth-integration/api-endpoints"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/security"
+    destination: "/v2026-04-01/guides/oauth-integration/security"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/integration-checklist"
+    destination: "/v2026-04-01/guides/oauth-integration/integration-checklist"
+    permanent: true
+
+  # The standalone Chariot Connect Reference was removed; its content now lives on
+  # the implementation pages it duplicated.
+  - source: "/guides/dafpay/connect-reference"
+    destination: "/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/connect-reference"
+    destination: "/v2026-04-01/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+  - source: "/v2026-01-15/guides/dafpay/connect-reference"
+    destination: "/v2026-01-15/guides/dafpay/integrating-dafpay/installation"
+    permanent: true
+
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png
@@ -32,6 +183,7 @@ logo:
 
 favicon: assets/favicon.png
 css: assets/styles.css
+js: assets/scripts.js
 
 settings:
   hide-404-page: true

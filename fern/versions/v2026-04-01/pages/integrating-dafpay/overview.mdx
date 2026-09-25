@@ -1,27 +1,52 @@
 ---
-title: "Overview"
-subtitle: "DAFpay is a payment option that enables donors to initiate donations using their Donor-Advised Fund (DAF) accounts."
+title: Add DAFpay to Your Fundraising Platform
 hidden: false
 ---
+
 <img src='../../images/a080c51-api_doc_image.png' />
 
-## How it works
+Follow this guide if your platform wants to offer DAFpay across donation forms for multiple nonprofits. If you are a nonprofit integrating DAFpay into a form you own, use [Chariot for Nonprofits](/guides/nonprofits) instead.
 
+You integrate DAFpay once, but every nonprofit receives its own Connect. Your platform must load the Connect ID that belongs to the nonprofit whose form the donor is viewing.
 
-DAFpay manages the entire grant submission process, including credential verification, multi-factor authentication, error management, and fee collection, for each Donor Advised Fund supported.
+<Warning>
+  Never use one platform-wide Connect ID. The Connect identifies both the nonprofit receiving the grant and the source of the gift.
+</Warning>
 
-The initial step involves **searching** Chariot's database for an organization and **creating** a Connect.
-Once created, you will receive a Connect ID (CID) that can be used to **initialize** Chariot Connect, the web component that renders the DAFpay button.
-Lastly, **query** Chariot's APIs to gather all the data generated through Connect. 
+## How the integration works
+
+1. Search for the nonprofit by EIN.
+2. Create or retrieve its Connect and store the Connect ID on that nonprofit's record.
+3. Render Chariot Connect using the current nonprofit's Connect ID.
+4. Pass the current form values into DAFpay.
+5. Receive `CHARIOT_SUCCESS` and create the Grant from your server within 15 minutes.
+6. Store the workflow session, Grant, Donation, and reconciliation identifiers.
+7. Subscribe to Grant updates and support the nonprofit after launch.
 
 <Frame>
     <img src='../../images/DAFpay_API_Docs_Image.png' />
 </Frame>
 
-## Try it out
+`CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant or mean the nonprofit received the funds.
 
-Try out the [DAFpay Demo](https://secure.dafpay.com/demo) for yourself and see what it might look like on your website after you've completed the integration.
+## Data to store
+
+| Value | Why you need it |
+| --- | --- |
+| Platform nonprofit ID | Identifies the tenant in your system. |
+| Chariot organization ID | Identifies the nonprofit in Chariot. |
+| Connect ID | Initializes DAFpay for that nonprofit. |
+| Platform transaction ID | Identifies the checkout in your system. |
+| Workflow session ID | Connects the browser authorization to Create Grant. |
+| Grant ID | Identifies the DAFpay Grant in Chariot. |
+| Donation ID | Connects the Grant to Chariot's Donation record when available. |
+
+Start with [Sandbox testing](/guides/dafpay/sandbox). Use the [Integration checklist](/guides/dafpay/integrating-dafpay/checklist) as your roadmap while you build.
+
+## Try DAFpay
+
+Use the [DAFpay demo](https://secure.dafpay.com/demo) to see the donor experience before you begin.
 
 ## Are you a DAF provider?
 
-If you are a Donor Advised Fund provider integrating with DAFpay (rather than a nonprofit accepting DAFpay donations), see the [Donor Accounts overview](/guides/dafpay/donor-accounts/overview) for the API surface and operational flows tailored to DAFs — including manual approval, token verification, and pre-established access flows.
+If you operate a donor-advised fund and want to connect donor accounts to DAFpay, use the [Donor Accounts guide](/guides/donor-accounts/overview).

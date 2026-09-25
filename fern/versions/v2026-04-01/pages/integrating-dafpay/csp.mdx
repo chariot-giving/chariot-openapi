@@ -1,0 +1,37 @@
+---
+title: Content Security Policy
+hidden: false
+---
+
+Chariot Connect loads its script from Chariot's CDN. Depending on the browser and viewport, DAFpay opens in a cross-origin frame or popup at `https://secure.dafpay.com`.
+
+If your donation pages send a Content Security Policy, merge these sources into the applicable directives:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.givechariot.com;
+  frame-src https://secure.dafpay.com;
+  font-src 'self' https://cdn.givechariot.com;
+  style-src 'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src 'self' https://cdn.givechariot.com data:;
+```
+
+This is an example, not a complete policy. Merge each source into your existing response header. Do not replace your full policy with this block.
+
+The parent page does not need to add Chariot to `connect-src`. DAFpay API traffic originates inside the cross-origin frame.
+
+If your security policy cannot allow inline styles, confirm the supported nonce or hash approach with Chariot before launch.
+
+## Troubleshoot CSP
+
+If the button does not render or clicking it does nothing:
+
+1. Check the browser console for a blocked script, frame, font, style, or image.
+2. Check the Network panel for requests blocked to `cdn.givechariot.com` or `secure.dafpay.com`.
+3. Test with the same response headers used in production.
+4. Check both enforced and report-only policies.
+
+When CSP is delivered through a `<meta http-equiv="Content-Security-Policy">` tag, `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are ignored. Use a response header when possible.
+
+Next: [Send Donation Data](/guides/dafpay/integrating-dafpay/donor-data)
