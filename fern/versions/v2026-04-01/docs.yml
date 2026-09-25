@@ -34,64 +34,94 @@ navigation:
         contents:
           - page: Overview
             slug: overview
-            path: ./pages/integrating-dafpay/overview.mdx
-          - section: Integrating DAFpay
-            slug: integrating-dafpay
+            path: ./pages/dafpay/overview.mdx
+          - page: Find Your Use Case
+            slug: use-cases
+            path: ./pages/dafpay/use-cases.mdx
+          - section: Accept Grant Requests
+            slug: accept
             contents:
-              - page: Checklist
-                slug: checklist
-                path: ./pages/integrating-dafpay/checklist.mdx
-              - page: Set Up
-                slug: set-up
-                path: ./pages/integrating-dafpay/set-up.mdx
-              - page: Installing Connect
-                slug: installation
-                path: ./pages/integrating-dafpay/installation.mdx
-              - page: Integrating Connect
-                slug: integration
-                path: ./pages/integrating-dafpay/integration.mdx
-              - page: Transaction Management
-                slug: transactions
-                path: ./pages/integrating-dafpay/transactions.mdx
-              - page: Production API Keys
-                slug: prod-keys
-                path: ./pages/integrating-dafpay/prod-keys.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/integrating-dafpay/faq.mdx
-          - section: Donor Accounts (for DAFs)
-            slug: donor-accounts
+              - page: Add DAFpay Without Code
+                slug: no-code
+                path: ./pages/dafpay/accept/no-code.mdx
+              - page: Embed DAFpay on Your Form
+                slug: low-code
+                path: ./pages/dafpay/accept/low-code.mdx
+              - page: Build a Custom Integration
+                slug: api
+                path: ./pages/dafpay/accept/api.mdx
+              - page: Create Connects
+                slug: connects
+                path: ./pages/dafpay/accept/connects.mdx
+              - page: Install DAFpay
+                slug: install
+                path: ./pages/dafpay/accept/install.mdx
+              - page: Send Donation Data
+                slug: donation-data
+                path: ./pages/dafpay/accept/donation-data.mdx
+              - page: Handle the Result
+                slug: result
+                path: ./pages/dafpay/accept/result.mdx
+              - page: Create the Grant
+                slug: create-grant
+                path: ./pages/dafpay/accept/create-grant.mdx
+              - page: After the Gift
+                slug: after-the-gift
+                path: ./pages/dafpay/accept/after-the-gift.mdx
+              - page: Test in Sandbox
+                slug: sandbox
+                path: ./pages/dafpay/accept/sandbox.mdx
+              - page: Go Live
+                slug: go-live
+                path: ./pages/dafpay/accept/go-live.mdx
+              - page: Unintegrated Providers
+                slug: unintegrated
+                path: ./pages/dafpay/accept/unintegrated.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/dafpay/troubleshooting.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/dafpay/faq.mdx
+          - section: Send Grant Requests
+            slug: send
             contents:
-              - page: Overview
-                slug: overview
-                path: ./pages/donor-accounts/overview.mdx
-              - page: Donor Account Lifecycle
-                slug: account-lifecycle
-                path: ./pages/donor-accounts/account-lifecycle.mdx
-              - page: Grant Request Lifecycle
-                slug: grant-request-lifecycle
-                path: ./pages/donor-accounts/grant-request-lifecycle.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/donor-accounts/faq.mdx
-          - section: OAuth Integration (for DAFs)
-            slug: oauth
-            contents:
-              - page: Overview
-                slug: overview
-                path: ./pages/oauth/overview.mdx
-              - page: OAuth & Token Requirements
-                slug: oauth-requirements
-                path: ./pages/oauth/oauth-requirements.mdx
-              - page: API Endpoints
-                slug: api-endpoints
-                path: ./pages/oauth/api-endpoints.mdx
-              - page: Security Best Practices
-                slug: security
-                path: ./pages/oauth/security.mdx
-              - page: Integration Checklist
-                slug: integration-checklist
-                path: ./pages/oauth/integration-checklist.mdx
+              - page: Manage Requests in the Dashboard
+                slug: no-code
+                path: ./pages/dafpay/send/no-code.mdx
+              - section: Donor Accounts
+                slug: donor-accounts
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/donor-accounts/overview.mdx
+                  - page: Donor Account Lifecycle
+                    slug: account-lifecycle
+                    path: ./pages/donor-accounts/account-lifecycle.mdx
+                  - page: Grant Request Lifecycle
+                    slug: grant-request-lifecycle
+                    path: ./pages/donor-accounts/grant-request-lifecycle.mdx
+                  - page: FAQ
+                    slug: faq
+                    path: ./pages/donor-accounts/faq.mdx
+              - section: OAuth Integration
+                slug: oauth
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/oauth/overview.mdx
+                  - page: OAuth & Token Requirements
+                    slug: oauth-requirements
+                    path: ./pages/oauth/oauth-requirements.mdx
+                  - page: API Endpoints
+                    slug: api-endpoints
+                    path: ./pages/oauth/api-endpoints.mdx
+                  - page: Security Best Practices
+                    slug: security
+                    path: ./pages/oauth/security.mdx
+                  - page: Integration Checklist
+                    slug: integration-checklist
+                    path: ./pages/oauth/integration-checklist.mdx
       - section: Disbursements
         slug: disbursements
         contents:

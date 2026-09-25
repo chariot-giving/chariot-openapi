@@ -1,0 +1,42 @@
+---
+title: DAFpay Overview
+hidden: false
+---
+
+_What DAFpay is, in one or two sentences._
+
+## How a DAFpay gift works
+
+_The end to end flow, once, for everyone: donor opens DAFpay, authorizes a Grant request, you create the Grant, the provider sends the money._
+
+## What DAFpay does and does not do
+
+_DAFpay submits a request to the donor's DAF provider. It does not move the funds and it does not guarantee the gift arrives._
+
+## Grants and Donations
+
+Because Chariot creates the Donation from the Grant, the link between them is stored on the Grant. Call Get Grant and read `donationId`. Chariot sets it shortly after Create Grant succeeds, so treat an absent value as not yet available and read the Grant again rather than as a Donation that does not exist.
+
+A Donation does not carry a Grant ID. Its reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations. Some DAF providers do not support tracking IDs, so that value is absent on those gifts.
+
+Store `donationId` when you create the Grant. It is the only link between the two records that is present for every DAF provider.
+
+## The objects you will work with
+
+| Record | What it represents |
+| --- | --- |
+| Grant | A request sent to a donor's DAF provider through DAFpay. Only gifts initiated through DAFpay have a Grant. |
+| Donation | Chariot's record of a gift, including its donor, amount, coding, source, and payment status. A Donation can exist with or without a Grant or Deposit. |
+| Deposit | A transfer into a Chariot Account. One Deposit can contain funds for multiple Donations. |
+
+_Still to add: Connect, workflow session, and Unintegrated Grant rows._
+
+## What varies by DAF provider
+
+_Integrated vs unintegrated providers, minimums, tracking IDs, how the money arrives._
+
+## Before you start
+
+_Account claimed, compliance, sandbox vs production._
+
+Next: [Find your use case](/guides/dafpay/use-cases)

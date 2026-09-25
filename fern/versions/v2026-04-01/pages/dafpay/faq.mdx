@@ -1,0 +1,74 @@
+---
+title: FAQ
+hidden: false
+---
+
+## Connects and architecture
+
+### How many Connects does our platform need?
+
+One per nonprofit. Store each Connect ID on the corresponding tenant record.
+
+### When should we create a Connect?
+
+When the nonprofit enables DAFpay. Do not create it during donor checkout. Backfill existing nonprofits using a restartable batch job.
+
+### Can the Connect ID appear in browser code?
+
+Yes. The Connect ID initializes the component. The API key must remain on your server.
+
+### Can we enable DAFpay before the nonprofit claims its Chariot account?
+
+This depends on your Chariot agreement and the current payment-routing model. Confirm the rule, onboarding experience, payment channel, and fee behavior with Chariot before launch.
+
+## Checkout and Grant creation
+
+### What does `CHARIOT_SUCCESS` mean?
+
+The donor authorized the DAF request. Your server must still create the Grant. It does not mean the nonprofit received the money.
+
+### Which amount should Create Grant use?
+
+Use the amount returned by `CHARIOT_SUCCESS`. The donor may have changed it inside DAFpay.
+
+### Why is DAFpay blocked on some mobile browsers?
+
+Browsers may block a popup that opens too long after the donor's click. Prefetch data and keep all work between the click and DAFpay opening under one second.
+
+## Fees
+
+### How do platform fees work?
+
+Use `applicationFeeAmount` only as defined in your Chariot agreement and within the limit enforced by Create Grant.
+
+### Can the donor cover the fee?
+
+Follow the calculation and behavior agreed with Chariot. A donor-covered fee increases the Grant amount and must still meet the whole-dollar requirement.
+
+### Can we ask for a tip?
+
+No. Do not add a tip to a for-profit platform in a DAF transaction.
+
+## Recurring and unintegrated providers
+
+### Does Chariot manage recurring Grant schedules?
+
+No. The DAF provider manages the schedule. Chariot records the initial setup but may not learn about changes or cancellations. Reconcile later Donations individually.
+
+### What is an unintegrated DAF provider?
+
+It is a provider through which DAFpay cannot directly submit the request. If the intent flow is enabled, the donor must finish the Grant in the provider's portal. Do not mark that intent paid.
+
+## Operations
+
+### Which identifiers should we store?
+
+Store the platform transaction ID, workflow session ID, Connect ID, Grant ID, and Donation ID. Also store and expose `trackingId` and `externalGrantId` when present.
+
+### Should we use webhooks?
+
+Yes, when you need timely state changes. Verify signatures, process events idempotently, and keep a scheduled recovery process for important state.
+
+### Can a completed DAF Grant be refunded?
+
+DAF funds are controlled by the provider, not the donor. Whether a request can be canceled depends on the provider and how far it has progressed. Do not present a standard refund action.
