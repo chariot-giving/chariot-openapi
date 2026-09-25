@@ -1,0 +1,19 @@
+---
+title: "Donations"
+subtitle: "The individual gifts your organization receives."
+---
+
+A **Donation** is a single gift you've received. Every gift shows up here — whether it came through DAFpay, a connected giving platform, the mail, or was recorded by hand.
+
+Each Donation carries:
+
+- **Amounts.** Gross, net, fee, and the individual gift portion when a donation is part of a larger disbursement.
+- **Attribution.** The primary donor and, if applicable, a joint donor.
+- **Initiation.** Where the donor started the gift — the platform name, the platform's identifier, the URL they gave from, and any metadata the platform passed along.
+- **Settlement.** How the funds are moving to your account.
+- **Payment status.** Where the donation is in its journey to your account.
+- **Reconciliation handles.** An `external_id` you can set to link the donation back to your own systems, and a `metadata` map for anything else.
+
+Each donation points at the [Source](../sources/overview) that sent it, and rolls up into a `deposit` once the funds arrive.
+
+See [The Donation object](object) for the full schema.
