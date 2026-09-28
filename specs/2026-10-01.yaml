@@ -4862,6 +4862,13 @@ components:
 
         Canonical sources are maintained by Chariot. Organizations can add
         custom sources for providers Chariot doesn't yet recognize.
+      example:
+        id: "source_01m12tn300eh20gdqscje7s5jw"
+        name: "Fidelity Charitable"
+        scope: "canonical"
+        logo: "https://cdn.givechariot.com/payers/fidelity_charitable.png"
+        created_at: "2026-09-28T12:34:56Z"
+        updated_at: "2026-09-28T12:34:56Z"
       required:
         - id
         - name
