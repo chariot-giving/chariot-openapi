@@ -2998,7 +2998,7 @@ paths:
                     id: "source_01n45pq812ec97jkxbfyr3s7wm"
                     name: "Local Community Foundation"
                     scope: "custom"
-                    logo: null
+                    logo: "https://localcommunityfoundation.org/logo.png"
                     created_at: "2026-09-28T12:34:56Z"
                     updated_at: "2026-09-28T12:34:56Z"
         "400":
@@ -8346,9 +8346,10 @@ components:
                 format: uri
                 nullable: true
                 description: URL of the source's logo, if one is available.
-                example: "https://example.org/logo.png"
+                example: "https://localcommunityfoundation.org/logo.png"
             example:
               name: "Local Community Foundation"
+              logo: "https://localcommunityfoundation.org/logo.png"
     UpdateSourceRequest:
       description: |-
         The request to update a custom source. Only the fields explicitly
