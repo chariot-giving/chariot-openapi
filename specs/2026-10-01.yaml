@@ -3077,8 +3077,9 @@ paths:
     delete:
       summary: Delete a Source
       description: |-
-        Deletes a custom source. Fails with `409 Conflict` if any donations
-        or deposits reference the source. Canonical sources are read-only; a
+        Deletes a custom source. Fails with `409 Conflict` if any donations,
+        deposits, or deposit addresses reference the source; reassign or
+        clear those references first. Canonical sources are read-only; a
         DELETE on one returns `403 Forbidden`.
       operationId: deleteSource
       tags:
