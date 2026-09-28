@@ -4698,6 +4698,16 @@ components:
         that receives physical mail and scans checks on Chariot's behalf.
         Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
         Lockboxes are provisioned and managed by Chariot in partnership with the provider.
+      example:
+        id: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        address:
+          line1: "PO Box 12345"
+          city: "Newark"
+          state: "NJ"
+          postal_code: "07101"
+          country: "US"
+        created_at: "2026-01-15T12:00:00Z"
+        updated_at: "2026-01-15T12:00:00Z"
       required:
         - id
         - created_at
@@ -4734,6 +4744,20 @@ components:
         Mail Items are created by Chariot when a lockbox provider uploads a batch of scanned mail.
         They are not created via the public API — to bring donation data and money in directly,
         use the Donations and Deposits APIs.
+      example:
+        id: "mail_01j8rs605a4gctmbm58d87mvsj"
+        lockbox_id: "lockbox_01j8rs605a4gctmbm58d87mvsj"
+        status: "processed"
+        received_at: "2026-09-24T10:00:00Z"
+        scans:
+          - file_id: "file_01m3a7bq9ceh20gdqscje7s5jw"
+            created_at: "2026-09-24T12:00:00Z"
+        donation_ids:
+          - "donation_01m3a7bq9ceh20gdqscje7s5jw"
+        deposit_ids:
+          - "deposit_01m3a7bq9ceh20gdqscje7s5jw"
+        created_at: "2026-09-24T12:00:00Z"
+        updated_at: "2026-09-24T16:00:00Z"
       required:
         - id
         - status
@@ -4923,6 +4947,15 @@ components:
         routing numbers; you can assign the address to a specific
         [Source](/api-reference/sources) so incoming funds are attributed
         automatically, or leave it unassigned as a catch-all.
+      example:
+        id: "deposit_address_01m12tn300eh20gdqscje7s5jw"
+        type: "ach"
+        source_id: "source_01m12tn300eh20gdqscje7s5jw"
+        ach:
+          account_number: "987654321"
+          routing_number: "101050001"
+        created_at: "2026-09-28T12:34:56Z"
+        updated_at: "2026-09-28T12:34:56Z"
       required:
         - id
         - type
@@ -4986,6 +5019,60 @@ components:
       type: object
       description: |-
         A Donation is a gift of money to a nonprofit organization.
+      example:
+        id: "donation_01j8rs605a4gctmbm58d87mvsj"
+        external_id: "INV-12345"
+        source_id: "source_01m12tn300eh20gdqscje7s5jw"
+        amount_gross: 25000
+        amount_net: 25000
+        amount_fee: 0
+        currency: "USD"
+        purpose: "Where needed most"
+        note: "Please dedicate in memory of grandma"
+        attribution:
+          primary_donor:
+            full_name: "Jane Rivera"
+            first_name: "Jane"
+            last_name: "Rivera"
+            email: "jrivera@example.com"
+            phone: "415-555-1212"
+            address:
+              line1: "123 Main St."
+              city: "New York"
+              state: "NY"
+              postal_code: "10001"
+              country: "US"
+        initiation:
+          initiated_at: "2026-09-20T15:04:05Z"
+          platform: "Givebutter"
+          identifier: "L9E182VBGP"
+          url: "https://givebutter.com/example-nonprofit"
+          metadata:
+            campaign_id: "spring-appeal"
+        settlement:
+          type: "chariot"
+          received_at: "2026-09-25T14:00:00Z"
+          settled_at: "2026-09-25T18:00:00Z"
+          deposit_id: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        donor_advised_fund_grant:
+          organization_name: "Fidelity Charitable"
+          donor_fund_name: "The Rivera Family Fund"
+        metadata:
+          crm_id: "0035e00000ABCDE"
+        properties:
+          - property_id: "prop_01j8rs605a4gctmbm58d87mvsj"
+            value:
+              type: "text"
+              text_value: "Fall Gala"
+        artifacts:
+          - id: "artifact_01j8rs605a4gctmbm58d87mvsj"
+            name: "grant_letter.pdf"
+            file_id: "file_01j8rs605a4gctmbm58d87mvsj"
+            created_at: "2026-09-25T14:00:00Z"
+        created_at: "2026-09-25T14:00:00Z"
+        updated_at: "2026-09-25T18:00:00Z"
+        canceled_at: null
+        payment_status: "RECEIVED_IN_CHARIOT"
       required:
         - id
         - amount_gross
@@ -5464,6 +5551,29 @@ components:
         Every deposit points at the [Source](/api-reference/sources) that sent it
         and can link to one or more [Donations](/api-reference/donations) that
         account for the funds.
+      example:
+        id: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        source_id: "source_01m12tn300eh20gdqscje7s5jw"
+        status: "complete"
+        settled_at: "2026-09-25T18:00:00Z"
+        transfer:
+          amount: 25000
+          currency: "USD"
+          financial_account_id: "fa_01j8rs605a4gctmbm58d87mvsj"
+          description: "FIDELITY CHARITABLE GRANT"
+          bank_created_at: "2026-09-25T14:00:00Z"
+          inbound_ach_transfer:
+            standard_entry_class_code: "CCD"
+            company_entry_description: "GRANTPMT"
+            originator_routing_number: "021000021"
+            originator_company_name: "Fidelity Charitable"
+            trace_number: "021000021234567"
+            effective_date: "2026-09-25T00:00:00Z"
+            status: "accepted"
+            company_discretionary_data: "GRANT-2026-001"
+        properties: []
+        created_at: "2026-09-25T14:00:00Z"
+        updated_at: "2026-09-25T18:00:00Z"
       required:
         - id
         - source_id
