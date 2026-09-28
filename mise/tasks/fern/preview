@@ -1,0 +1,13 @@
+#!/bin/bash
+source "$MISE_CONFIG_ROOT/mise/tasks/_"
+set -euo pipefail
+#MISE description="Publish a throwaway hosted preview of the docs and print its URL."
+#MISE alias="preview"
+
+cd "$MISE_CONFIG_ROOT"
+
+notePublishCredentials
+
+# Same command the Preview Docs workflow runs on every pull request.
+gum log --level info "Publishing a docs preview, this takes a minute..."
+fern generate --docs --preview

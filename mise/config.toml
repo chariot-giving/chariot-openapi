@@ -1,0 +1,17 @@
+[settings]
+experimental = true # Required for the tools below that come from npm and aqua
+
+## NOTE: These tools are generated and managed automatically, do not manually edit this section.
+## If you need to update or add a tool, run "mise use" instead, see: https://mise.jdx.dev/cli/use.html
+[tools]
+node = "24.21.0"
+jq = "1.8.2"
+# "fern docs dev" needs pnpm. It comes from npm because installing it the usual
+# way fails: pnpm renamed its download files in version 12, and mise still looks
+# for the old names.
+"npm:pnpm" = "12.4.1"
+# Must match the version in fern/fern.config.json. "mise run fern:upgrade" does both.
+"npm:fern-api" = "5.62.0"
+"aqua:charmbracelet/gum" = "0.17.0"
+"aqua:koalaman/shellcheck" = "0.10.0"
+"aqua:mvdan/sh" = "3.12.0"
