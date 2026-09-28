@@ -260,8 +260,11 @@ navigation:
                   - page: The Source object
                     slug: object
                     path: ./pages/api/sources/object.mdx
+                  - endpoint: POST /v1/sources
                   - endpoint: GET /v1/sources
                   - endpoint: GET /v1/sources/{id}
+                  - endpoint: PATCH /v1/sources/{id}
+                  - endpoint: DELETE /v1/sources/{id}
               - section: Donations
                 contents:
                   - page: Overview

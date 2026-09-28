@@ -2918,9 +2918,8 @@ paths:
     get:
       summary: List Sources
       description: |-
-        Returns Chariot's directory of canonical sources — payers, DAF sponsors,
-        workplace-giving platforms, and other institutions that send money to
-        nonprofits. Every caller sees the same list.
+        Returns the sources visible to your organization: the canonical sources
+        Chariot maintains, plus any custom sources your organization has added.
       operationId: listSources
       tags:
         - sources
@@ -2940,9 +2939,58 @@ paths:
           required: false
           schema:
             type: string
+        - name: scope
+          in: query
+          description: Filter by source scope. Omit to return both canonical and custom sources.
+          required: false
+          schema:
+            type: string
+            enum:
+              - canonical
+              - custom
       responses:
         "200":
           $ref: "#/components/responses/ListSourcesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Source
+      description: |-
+        Creates a custom source scoped to your organization. Use this when you
+        receive gifts from a provider Chariot doesn't yet have in its canonical
+        directory.
+      operationId: createSource
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSourceRequest"
+      responses:
+        "201":
+          description: The source was created.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2987,6 +3035,77 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Source
+      description: |-
+        Updates a custom source. Canonical sources are read-only; a PATCH on
+        one returns `403 Forbidden`.
+      operationId: updateSource
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the source.
+          required: true
+          schema:
+            type: string
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateSourceRequest"
+      responses:
+        "200":
+          description: The updated source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a Source
+      description: |-
+        Deletes a custom source. Fails with `409 Conflict` if any donations
+        or deposits reference the source. Canonical sources are read-only; a
+        DELETE on one returns `403 Forbidden`.
+      operationId: deleteSource
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the source.
+          required: true
+          schema:
+            type: string
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+      responses:
+        "204":
+          description: Returns 204 No Content on success.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/lockboxes:
@@ -4549,15 +4668,18 @@ components:
     Source:
       type: object
       description: |-
-        A Source is a payer or gift originator (e.g. Fidelity Charitable,
-        Benevity, an individual donor). Donations and deposits reference a
-        Source to answer "who sent this money?"
+        A Source is the provider or platform responsible for facilitating a
+        payment to you and providing access to its data (e.g. Fidelity
+        Charitable, Benevity). Donations and deposits reference a Source so
+        you know where the money and data came from.
 
-        A Source has no lifecycle: there is nothing to connect, activate,
-        or close.
+        Canonical sources are maintained by Chariot. Your organization can
+        add its own custom sources for providers Chariot doesn't yet
+        recognize.
       required:
         - id
         - name
+        - scope
         - created_at
         - updated_at
       properties:
@@ -4570,6 +4692,18 @@ components:
           type: string
           description: The human-readable name of the source.
           example: "Fidelity Charitable"
+        scope:
+          type: string
+          readOnly: true
+          description: |-
+            Who owns this source.
+
+            - `canonical` — maintained by Chariot and shared across every organization. Read-only.
+            - `custom` — created by your organization for its own use. You can update or delete it.
+          enum:
+            - canonical
+            - custom
+          example: canonical
         logo:
           type: string
           format: uri
@@ -7863,6 +7997,52 @@ components:
       schema:
         type: string
   requestBodies:
+    CreateSourceRequest:
+      description: |-
+        The request to create a custom source scoped to your organization.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: The human-readable name of the source.
+                example: "Local Community Foundation"
+              logo:
+                type: string
+                format: uri
+                nullable: true
+                description: URL of the source's logo, if one is available.
+                example: "https://example.org/logo.png"
+            example:
+              name: "Local Community Foundation"
+    UpdateSourceRequest:
+      description: |-
+        The request to update a custom source. Only the fields explicitly
+        present in the request body are changed; omitted fields are left
+        as-is.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The human-readable name of the source.
+                example: "Local Community Foundation"
+              logo:
+                type: string
+                format: uri
+                nullable: true
+                description: URL of the source's logo, if one is available.
+                example: "https://example.org/logo.png"
+            example:
+              name: "Community Foundation of the Bay Area"
     UploadFileRequest:
       description: The file to upload, its purpose, and an optional description.
       required: true
