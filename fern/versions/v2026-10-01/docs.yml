@@ -265,6 +265,18 @@ navigation:
                   - endpoint: GET /v1/sources/{id}
                   - endpoint: PATCH /v1/sources/{id}
                   - endpoint: DELETE /v1/sources/{id}
+              - section: Deposit Addresses
+                contents:
+                  - page: Overview
+                    slug: overview
+                    path: ./pages/api/deposit_addresses/overview.mdx
+                  - page: The Deposit Address object
+                    slug: object
+                    path: ./pages/api/deposit_addresses/object.mdx
+                  - endpoint: POST /v1/deposit_addresses
+                  - endpoint: GET /v1/deposit_addresses
+                  - endpoint: GET /v1/deposit_addresses/{id}
+                  - endpoint: PATCH /v1/deposit_addresses/{id}
               - section: Donations
                 contents:
                   - page: Overview

@@ -3296,6 +3296,182 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/deposit_addresses:
+    get:
+      summary: List Deposit Addresses
+      description: |-
+        Returns the deposit addresses your organization has provisioned.
+      operationId: listDepositAddresses
+      tags:
+        - deposit_addresses
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+        - name: source_id
+          in: query
+          description: Filter deposit addresses by the source they are assigned to.
+          required: false
+          schema:
+            type: string
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: type
+          in: query
+          description: Filter deposit addresses by rail type.
+          required: false
+          schema:
+            type: string
+            enum:
+              - ach
+      responses:
+        "200":
+          $ref: "#/components/responses/ListDepositAddressesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a Deposit Address
+      description: |-
+        Provisions a new deposit address on your account. Chariot mints the
+        underlying account and routing numbers and returns them on the
+        response.
+
+        An address is unique per `(source_id, type)`. Provisioning a second
+        address for the same source and rail returns `409 Conflict`.
+      operationId: createDepositAddress
+      tags:
+        - deposit_addresses
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDepositAddressRequest"
+      responses:
+        "201":
+          description: The deposit address was created.
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+            Idempotency-Key:
+              $ref: "#/components/headers/Idempotency-Key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositAddress"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposit_addresses/{id}:
+    get:
+      summary: Get a Deposit Address
+      description: |-
+        Retrieves a deposit address by its unique identifier.
+      operationId: getDepositAddress
+      tags:
+        - deposit_addresses
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit address.
+          required: true
+          schema:
+            type: string
+          example: "deposit_address_01m12tn300eh20gdqscje7s5jw"
+      responses:
+        "200":
+          description: The deposit address.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositAddress"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update a Deposit Address
+      description: |-
+        Updates fields on a deposit address. Fields set in the body are
+        written; fields listed in `clear_fields` are nulled; fields that
+        appear in neither are left unchanged.
+
+        Reassigning to a source that already has a deposit address of the
+        same rail type returns `409 Conflict`.
+      operationId: updateDepositAddress
+      tags:
+        - deposit_addresses
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit address.
+          required: true
+          schema:
+            type: string
+          example: "deposit_address_01m12tn300eh20gdqscje7s5jw"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateDepositAddressRequest"
+      responses:
+        "200":
+          description: The updated deposit address.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DepositAddress"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/donations:
     get:
       summary: List Donations
@@ -4720,6 +4896,79 @@ components:
           format: date-time
           readOnly: true
           description: When this source was last modified.
+    DepositAddress:
+      type: object
+      description: |-
+        A Deposit Address is a set of bank details that receives money into
+        your Chariot Processing account. Chariot mints the account and
+        routing numbers; you can assign the address to a specific
+        [Source](/api-reference/sources) so incoming funds are attributed
+        automatically, or leave it unassigned as a catch-all.
+      required:
+        - id
+        - type
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: The unique identifier for the deposit address.
+          example: "deposit_address_01m12tn300eh20gdqscje7s5jw"
+        type:
+          type: string
+          readOnly: true
+          description: |-
+            The rail this address receives money over. Determines which
+            per-rail subobject is populated on the response.
+          enum:
+            - ach
+          example: ach
+        source_id:
+          type: string
+          nullable: true
+          description: |-
+            The identifier of the [Source](/api-reference/sources) this
+            address is assigned to. Null when the address is unassigned.
+          example: "source_01m12tn300eh20gdqscje7s5jw"
+        ach:
+          description: |-
+            ACH account details. Populated when `type` is `ach`.
+          allOf:
+            - $ref: "#/components/schemas/DepositAddressAch"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this deposit address was provisioned.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this deposit address was last modified.
+    DepositAddressAch:
+      type: object
+      description: ACH account details for a deposit address.
+      required:
+        - account_number
+        - routing_number
+        - bank_name
+      properties:
+        account_number:
+          type: string
+          readOnly: true
+          description: The account number Chariot minted for this address.
+          example: "987654321"
+        routing_number:
+          type: string
+          readOnly: true
+          description: The ABA routing number for Chariot's partner bank.
+          example: "101050001"
+        bank_name:
+          type: string
+          readOnly: true
+          description: The partner bank hosting the account.
+          example: "Column N.A."
     Donation:
       type: object
       description: |-
@@ -7997,6 +8246,64 @@ components:
       schema:
         type: string
   requestBodies:
+    CreateDepositAddressRequest:
+      description: |-
+        The request to provision a new deposit address.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+            properties:
+              type:
+                type: string
+                description: The rail this address should receive money over.
+                enum:
+                  - ach
+              source_id:
+                type: string
+                description: |-
+                  The identifier of the [Source](/api-reference/sources) to
+                  assign this address to. Omit to create an unassigned
+                  address.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
+            example:
+              type: ach
+              source_id: "source_01m12tn300eh20gdqscje7s5jw"
+    UpdateDepositAddressRequest:
+      description: |-
+        The request to update fields on a deposit address.
+
+        - **Fields set in the body** are written.
+        - **Fields listed in `clear_fields`** are nulled. Only nullable fields may be cleared.
+        - **Fields that are neither set nor listed** are left unchanged.
+
+        A field path may not be cleared and carry a value in the same request.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              clear_fields:
+                type: array
+                description: |-
+                  Field paths to null (dot notation, e.g. `source_id`).
+                  Unknown paths are rejected.
+                items:
+                  type: string
+                example:
+                  - "source_id"
+              source_id:
+                type: string
+                description: |-
+                  The identifier of the [Source](/api-reference/sources) to
+                  assign this address to.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
+            example:
+              source_id: "source_01m12tn300eh20gdqscje7s5jw"
     CreateSourceRequest:
       description: |-
         The request to create a custom source scoped to your organization.
@@ -9498,6 +9805,26 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Source"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
+    ListDepositAddressesResponse:
+      description: The response for DepositAddresses.list
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DepositAddress"
               next_page_token:
                 type: string
                 description: |-
