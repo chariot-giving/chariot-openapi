@@ -4953,7 +4953,6 @@ components:
       required:
         - account_number
         - routing_number
-        - bank_name
       properties:
         account_number:
           type: string
@@ -4963,13 +4962,8 @@ components:
         routing_number:
           type: string
           readOnly: true
-          description: The ABA routing number for Chariot's partner bank.
+          description: The ABA routing number.
           example: "101050001"
-        bank_name:
-          type: string
-          readOnly: true
-          description: The partner bank hosting the account.
-          example: "Column N.A."
     Donation:
       type: object
       description: |-
