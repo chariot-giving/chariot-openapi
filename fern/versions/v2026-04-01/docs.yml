@@ -104,6 +104,9 @@ navigation:
           - page: Disbursement Lifecycle
             slug: disbursement-lifecycle
             path: ./pages/disbursements/disbursement-lifecycle.mdx
+          - page: Payment Methods
+            slug: payment-method-lifecycle
+            path: ./pages/disbursements/payment-method-lifecycle.mdx
           - page: Compliance
             slug: compliance
             path: ./pages/disbursements/compliance.mdx
@@ -242,8 +245,8 @@ navigation:
                   title: Disbursements
               - verificationRequests:
                   title: Verification Requests
-              - nonprofitAddresses:
-                  title: Nonprofit Addresses
+              - paymentMethods:
+                  title: Payment Methods
               - nonprofitContacts:
                   title: Nonprofit Contacts
           - section: Gift Processing
