@@ -2991,6 +2991,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Source"
+              examples:
+                CustomSource:
+                  summary: A newly-created custom source
+                  value:
+                    id: "source_01n45pq812ec97jkxbfyr3s7wm"
+                    name: "Local Community Foundation"
+                    scope: "custom"
+                    logo: null
+                    created_at: "2026-09-28T12:34:56Z"
+                    updated_at: "2026-09-28T12:34:56Z"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -4846,13 +4856,12 @@ components:
       type: object
       description: |-
         A Source is the provider or platform responsible for facilitating a
-        payment to you and providing access to its data (e.g. Fidelity
-        Charitable, Benevity). Donations and deposits reference a Source so
-        you know where the money and data came from.
+        payment and providing access to its data (e.g. Fidelity Charitable,
+        Benevity). Donations and deposits reference a Source to identify
+        where the money and data came from.
 
-        Canonical sources are maintained by Chariot. Your organization can
-        add its own custom sources for providers Chariot doesn't yet
-        recognize.
+        Canonical sources are maintained by Chariot. Organizations can add
+        custom sources for providers Chariot doesn't yet recognize.
       required:
         - id
         - name
@@ -4876,7 +4885,7 @@ components:
             Who owns this source.
 
             - `canonical` — maintained by Chariot and shared across every organization. Read-only.
-            - `custom` — created by your organization for its own use. You can update or delete it.
+            - `custom` — created by an organization for its own use, and mutable by that organization.
           enum:
             - canonical
             - custom
@@ -4892,11 +4901,13 @@ components:
           format: date-time
           readOnly: true
           description: When this source was added to the directory.
+          example: "2026-09-28T12:34:56Z"
         updated_at:
           type: string
           format: date-time
           readOnly: true
           description: When this source was last modified.
+          example: "2026-09-28T12:34:56Z"
     DepositAddress:
       type: object
       description: |-
