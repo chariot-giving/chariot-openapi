@@ -3088,9 +3088,8 @@ paths:
       summary: Delete a Source
       description: |-
         Deletes a custom source. Fails with `409 Conflict` if any donations,
-        deposits, or deposit addresses reference the source; reassign or
-        clear those references first. Canonical sources are read-only; a
-        DELETE on one returns `403 Forbidden`.
+        deposits, or deposit addresses reference the source. Canonical
+        sources are read-only; a DELETE on one returns `403 Forbidden`.
       operationId: deleteSource
       tags:
         - sources
@@ -3438,49 +3437,6 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    patch:
-      summary: Update a Deposit Address
-      description: |-
-        Updates fields on a deposit address. Fields set in the body are
-        written; fields listed in `clear_fields` are nulled; fields that
-        appear in neither are left unchanged.
-
-        Reassigning to a source that already has a deposit address of the
-        same rail type returns `409 Conflict`.
-      operationId: updateDepositAddress
-      tags:
-        - deposit_addresses
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: The unique identifier for the deposit address.
-          required: true
-          schema:
-            type: string
-          example: "deposit_address_01m12tn300eh20gdqscje7s5jw"
-      requestBody:
-        $ref: "#/components/requestBodies/UpdateDepositAddressRequest"
-      responses:
-        "200":
-          description: The updated deposit address.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DepositAddress"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/AuthenticationError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "409":
-          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/donations:
@@ -4943,10 +4899,9 @@ components:
       type: object
       description: |-
         A Deposit Address is a set of bank details that receives money into
-        your Chariot Processing account. Chariot mints the account and
-        routing numbers; you can assign the address to a specific
-        [Source](/api-reference/sources) so incoming funds are attributed
-        automatically, or leave it unassigned as a catch-all.
+        your Chariot Processing account. Each address belongs to a
+        [Source](/api-reference/sources), so incoming funds are attributed to
+        that source automatically.
       example:
         id: "deposit_address_01m12tn300eh20gdqscje7s5jw"
         type: "ach"
@@ -4959,6 +4914,7 @@ components:
       required:
         - id
         - type
+        - source_id
         - created_at
         - updated_at
       properties:
@@ -4978,10 +4934,8 @@ components:
           example: ach
         source_id:
           type: string
-          nullable: true
-          description: |-
-            The identifier of the [Source](/api-reference/sources) this
-            address is assigned to. Null when the address is unassigned.
+          readOnly: true
+          description: The identifier of the [Source](/api-reference/sources) this address belongs to.
           example: "source_01m12tn300eh20gdqscje7s5jw"
         ach:
           description: |-
@@ -8379,6 +8333,7 @@ components:
             type: object
             required:
               - type
+              - source_id
             properties:
               type:
                 type: string
@@ -8387,45 +8342,10 @@ components:
                   - ach
               source_id:
                 type: string
-                description: |-
-                  The identifier of the [Source](/api-reference/sources) to
-                  assign this address to. Omit to create an unassigned
-                  address.
+                description: The identifier of the [Source](/api-reference/sources) this address belongs to.
                 example: "source_01m12tn300eh20gdqscje7s5jw"
             example:
               type: ach
-              source_id: "source_01m12tn300eh20gdqscje7s5jw"
-    UpdateDepositAddressRequest:
-      description: |-
-        The request to update fields on a deposit address.
-
-        - **Fields set in the body** are written.
-        - **Fields listed in `clear_fields`** are nulled. Only nullable fields may be cleared.
-        - **Fields that are neither set nor listed** are left unchanged.
-
-        A field path may not be cleared and carry a value in the same request.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              clear_fields:
-                type: array
-                description: |-
-                  Field paths to null (dot notation, e.g. `source_id`).
-                  Unknown paths are rejected.
-                items:
-                  type: string
-                example:
-                  - "source_id"
-              source_id:
-                type: string
-                description: |-
-                  The identifier of the [Source](/api-reference/sources) to
-                  assign this address to.
-                example: "source_01m12tn300eh20gdqscje7s5jw"
-            example:
               source_id: "source_01m12tn300eh20gdqscje7s5jw"
     CreateSourceRequest:
       description: |-

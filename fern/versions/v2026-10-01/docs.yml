@@ -276,7 +276,6 @@ navigation:
                   - endpoint: POST /v1/deposit_addresses
                   - endpoint: GET /v1/deposit_addresses
                   - endpoint: GET /v1/deposit_addresses/{id}
-                  - endpoint: PATCH /v1/deposit_addresses/{id}
               - section: Donations
                 contents:
                   - page: Overview
