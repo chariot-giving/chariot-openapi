@@ -5508,6 +5508,7 @@ components:
       example:
         id: "deposit_01j8rs605a4gctmbm58d87mvsj"
         source_id: "source_01m12tn300eh20gdqscje7s5jw"
+        deposit_address_id: "deposit_address_01m12tn300eh20gdqscje7s5jw"
         status: "complete"
         settled_at: "2026-09-25T18:00:00Z"
         transfer:
@@ -5545,6 +5546,15 @@ components:
           type: string
           description: The identifier of the [Source](/api-reference/sources) that sent this deposit.
           example: source_01m12tn300eh20gdqscje7s5jw
+        deposit_address_id:
+          type: string
+          readOnly: true
+          nullable: true
+          description: |-
+            The identifier of the [Deposit Address](/api-reference/deposit-addresses)
+            that received the funds. Null when the funds didn't arrive through a
+            deposit address, such as a mailed check.
+          example: deposit_address_01m12tn300eh20gdqscje7s5jw
         settled_at:
           type: string
           format: date-time
