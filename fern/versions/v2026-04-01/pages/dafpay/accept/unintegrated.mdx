@@ -15,6 +15,12 @@ The second option does not produce a completed DAFpay Grant. Keep the platform t
     <img src='../../../images/disconnected-return.png' />
 </Frame>
 
+## How the confirmation arrives
+
+Confirming an unintegrated Grant is delivered as a `CHARIOT_EXIT` event with the reason `UNINTEGRATED_GRANT_CONFIRMED`, not as `CHARIOT_SUCCESS`. Handle it in your exit listener even though the donor completed the step.
+
+Chariot creates the Unintegrated Grant record itself when that event fires. There is no endpoint for you to call, and none is needed. You read Unintegrated Grants and subscribe to their events; you never create one.
+
 ## Confirmation experience
 
 When `CHARIOT_EXIT` has the reason `UNINTEGRATED_GRANT_CONFIRMED`, show:
