@@ -11,9 +11,11 @@ Call Create Grant from your server after `CHARIOT_SUCCESS`. A successful browser
 
 1. Receive the workflow session ID and amount returned by DAFpay.
 2. Resolve the nonprofit and platform transaction from your stored session record.
-3. Save the platform transaction.
+3. Save the platform transaction, and submit your own donation form first.
 4. Call Create Grant with the server-side API key.
 5. Store the Grant ID and response.
+
+Submit your own form before calling Create Grant. If your form fails after the Grant exists, the donor sees an error for a gift that was actually submitted to their DAF provider, and there is no way for them to tell.
 
 Complete this sequence within 15 minutes of authorization.
 
@@ -50,8 +52,6 @@ Use `applicationFeeAmount` only for the platform fee defined in your Chariot agr
 
 A donor-covered fee increases the Grant amount. It is not a separate tip. Do not offer a tip to a for-profit platform in a DAF transaction.
 
-Next: [Recurring Grants](/guides/dafpay/accept/create-grant)
-
 ## Recurring gifts
 
 When recurring Grants are enabled, a donor can ask their DAF provider to send a monthly Grant.
@@ -80,4 +80,4 @@ Model the initial record as the start of an arrangement, not proof of future pay
 
 Do not promise nonprofits a complete recurring schedule unless another data source supports it.
 
-Next: [Unintegrated DAF Providers](/guides/dafpay/accept/unintegrated)
+Next: [Unintegrated Providers](/guides/dafpay/accept/unintegrated)

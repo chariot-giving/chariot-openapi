@@ -5,23 +5,18 @@ hidden: false
 
 <img src='../../../images/a080c51-api_doc_image.png' />
 
-Follow this guide if your platform wants to offer DAFpay across donation forms for multiple nonprofits. If you are a nonprofit integrating DAFpay into a form you own, use [Chariot for Nonprofits](/guides/dafpay/overview) instead.
-
-You integrate DAFpay once, but every nonprofit receives its own Connect. Your platform must load the Connect ID that belongs to the nonprofit whose form the donor is viewing.
-
-<Warning>
-  Never use one platform-wide Connect ID. The Connect identifies both the nonprofit receiving the grant and the source of the gift.
-</Warning>
+Follow this guide to build directly against the DAFpay APIs, whether you are adding DAFpay to one organization's donation form or offering it across forms for many organizations.
 
 ## How the integration works
 
-1. Search for the nonprofit by EIN.
-2. Create or retrieve its Connect and store the Connect ID on that nonprofit's record.
-3. Render Chariot Connect using the current nonprofit's Connect ID.
-4. Pass the current form values into DAFpay.
-5. Receive `CHARIOT_SUCCESS` and create the Grant from your server within 15 minutes.
-6. Store the workflow session, Grant, Donation, and reconciliation identifiers.
-7. Subscribe to Grant updates and support the nonprofit after launch.
+1. Get the Connect for the organization receiving the gift. Chariot provides it for a single organization; you create one per organization if you serve many.
+2. Render Chariot Connect using that organization's Connect ID.
+3. Pass the current form values into DAFpay.
+4. Receive `CHARIOT_SUCCESS` and create the Grant from your server within 15 minutes.
+5. Store the workflow session, Grant, Donation, and reconciliation identifiers.
+6. Subscribe to Grant updates.
+
+The steps are the same either way. Where they differ is Connect handling, and that difference is set out below.
 
 <Frame>
     <img src='../../../images/DAFpay_API_Docs_Image.png' />
@@ -41,7 +36,16 @@ You integrate DAFpay once, but every nonprofit receives its own Connect. Your pl
 | Grant ID | Identifies the DAFpay Grant in Chariot. |
 | Donation ID | Connects the Grant to Chariot's Donation record when available. |
 
-Start with [Sandbox testing](/guides/dafpay/accept/sandbox). Use the [Integration checklist](/guides/dafpay/accept/go-live) as your roadmap while you build.
+Work in sandbox while you build. Sandbox has its own API keys, Connects, and data, and no real funds move. Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`. Create your sandbox API key in the Chariot dashboard and configure the base URL, key, and Connect ID together.
+
+Use these credentials with any supported provider in sandbox:
+
+```text
+username: good-user
+password: password123
+```
+
+Keep the [integration checklist](/guides/dafpay/accept/checklist) open as your roadmap while you build.
 
 ## Try DAFpay
 
@@ -90,4 +94,4 @@ username: good-user
 password: password123
 ```
 
-Next: [Request your Connect](/guides/dafpay/accept/connects)
+Next: [Integration Checklist](/guides/dafpay/accept/checklist)
