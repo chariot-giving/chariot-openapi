@@ -24,14 +24,6 @@ versions:
     availability: deprecated
     hidden: true
 
-redirects:
-  # Unprefixed tab roots on the default version 404 in Fern, so send them to
-  # the tab landing page explicitly.
-  - source: /api
-    destination: /api/overview
-  - source: /fdx
-    destination: /fdx/introduction
-
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png
