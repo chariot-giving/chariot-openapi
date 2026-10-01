@@ -33,9 +33,12 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 
 Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it.
 
-The grant's `paymentChannel` does not decide the status. A `direct` gift reads as `INCOMING_TO_CHARIOT` whenever Chariot expects to receive the funds for that provider and organization, for example through a lockbox. Read the status and settlement data rather than inferring receipt from the channel.
+Use the payment status to tell where a gift is, not the grant's `paymentChannel`. The channel describes how the provider sends the money, and a gift sent directly can still arrive in your Chariot account, for example when a check goes to your Chariot lockbox.
 
-The two paths differ in who does the work. When funds arrive in your Chariot account, Chariot matches them to the initiated gift and moves it to `RECEIVED_IN_CHARIOT` on its own — you never touch a tracking ID. When funds arrive anywhere else, Chariot cannot see them, so someone on your team marks the gift received once it lands.
+What matters for your workflow is which of the two statuses a gift starts at:
+
+- **Incoming to Chariot.** When the funds arrive, Chariot matches them to the initiated gift and marks it `RECEIVED_IN_CHARIOT` automatically. Nobody has to do anything.
+- **Incoming outside Chariot.** Chariot never sees these funds, so when they arrive, someone on your team marks the gift received in the dashboard.
 
 ## Settlement timestamps
 
