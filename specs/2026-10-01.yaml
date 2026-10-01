@@ -5489,7 +5489,7 @@ components:
       type: object
       description: |-
         A single inbound transfer of money into a Chariot Processing account.
-        Every deposit points at the [Source](/api-reference/sources) that sent it
+        A deposit can point at the [Source](/api-reference/sources) that sent it,
         and can link to one or more [Donations](/api-reference/donations) that
         account for the funds.
       example:
