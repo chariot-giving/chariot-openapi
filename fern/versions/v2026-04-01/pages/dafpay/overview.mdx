@@ -12,7 +12,7 @@ DAFpay does not sit in the flow of funds. Once a gift is initiated, the donor's 
 1. A donor clicks DAFpay on your form and signs in to their DAF provider.
 2. The donor confirms the amount and authorizes a Grant request. This fires `CHARIOT_SUCCESS` in the browser.
 3. Your server calls Create Grant within 15 minutes. Nothing is submitted to the provider until you do.
-4. The provider reviews the request and sends the funds.
+4. The DAF provider reviews the request and sends the funds.
 
 Authorizing, creating, and funding are three separate events. A completed DAFpay session means the donor authorized a request, not that the nonprofit has the money.
 
@@ -29,7 +29,7 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 
 ## Grants and Donations
 
-The relationship between grants and donations is worth understanding before you start building.
+Understand the relationship between grants and donations before you start building.
 
 Donations and Deposits belong to the nonprofit's Chariot account. A fundraising platform cannot read them, and builds on Grants instead. The rest of this section is for nonprofits integrating their own form.
 

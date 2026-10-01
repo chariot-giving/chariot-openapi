@@ -22,7 +22,7 @@ Platforms work from grants. Donations and deposits belong to the nonprofit's own
 | Grant status | `status` | The current state Chariot returns. |
 | Your transaction ID | Your own record | Get back to the original form submission. |
 
-We recommend making the Tracking ID and External Grant ID searchable and easy to copy, and storing them as strings so their formatting is preserved. If an identifier is not yet available, leave it blank and add it when a later read returns it.
+Make the Tracking ID and External Grant ID searchable and easy to copy, and store them as strings so their formatting is preserved. If an identifier is not yet available, leave it blank and add it when a later read returns it.
 
 A Tracking ID on the Grant does not guarantee it will appear with the funds. Some providers do not pass it through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
 
@@ -36,7 +36,7 @@ Grant status is derived by Chariot, so it is read only over the API and your pla
 
 ## Keep the record types apart
 
-An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Keeping both separate from one-time grants in your dashboard means a nonprofit is not shown gifts it has not actually been promised.
+An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Keep both separate from one-time grants in your dashboard, so a nonprofit is never shown gifts it has not been promised.
 
 ## Reconciliation
 
@@ -67,11 +67,11 @@ If no DAFpay tracking ID appears, try `externalGrantId`. If neither is available
 
 ## Cancellations and refunds
 
-Your integration should not offer a card-style refund action for a completed DAF grant. The donor's DAF provider controls the funds and decides whether a pending request can still be canceled, so direct a donor who wants to stop one to their provider. Let us know at [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help.
+Do not offer a refund action for a completed DAF grant. The donor's DAF provider controls the funds and decides whether a pending request can still be canceled, so direct a donor who wants to stop one to their provider. Contact us at [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help.
 
 ## Set expectations about the funds
 
-Funds do not always come straight from the donor's provider. Some grants are routed through DAFpay Network, which reviews and processes the grant before sending the funds to the nonprofit, so we would avoid language that tells nonprofits every DAFpay gift arrives directly from their donor's DAF provider. The grant's `paymentChannel` tells you which route a given gift takes.
+Funds do not always come straight from the donor's provider. Some grants are routed through DAFpay Network, which reviews and processes the grant before sending the funds to the nonprofit, so do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider. The grant's `paymentChannel` tells you which route a given gift takes.
 
 Before launch, document which status and date control platform billing, how cancellations and adjustments are handled, and which reconciliation data is available to nonprofits and support.
 

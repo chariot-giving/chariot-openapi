@@ -22,7 +22,7 @@ Configure the base URL, API key, and Connect ID together so you are never pointi
 
 ## Where each credential belongs
 
-The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key should only ever be used from your server, so every call that uses it, including Create Grant, is made from your backend rather than the browser.
+The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key must only ever be used from your server. Every call that uses it, including Create Grant, is made from your backend, never from the browser.
 
 See [Authentication](/api/authentication) for more information.
 
