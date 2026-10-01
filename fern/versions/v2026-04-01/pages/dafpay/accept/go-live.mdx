@@ -3,89 +3,61 @@ title: Go Live
 hidden: false
 ---
 
-When the [integration checklist](/guides/dafpay/accept/checklist) passes, request production access.
+When the [integration checklist](/guides/dafpay/accept/checklist) passes, request production access. If you are a fundraising platform, also work through [the platform section](#if-you-serve-many-nonprofits).
 
 ## Request production access
 
-Complete the sandbox integration and Chariot review before switching to production.
-
 Email your Chariot contact or [integrations@givechariot.com](mailto:integrations@givechariot.com) with:
 
-## Technical implementation
-
-- platform name and production domains;
-- technical and operational contacts;
-- sandbox form URL and test instructions;
-- webhook endpoint and subscribed event types;
-- supported one-time, recurring, fee, and unintegrated-provider behavior; and
-- screenshots or a recording of loading, success, exit, and confirmation states.
-
-## Nonprofit rollout
-
-- nonprofit onboarding and enablement flow;
-- launch-backfill plan;
-- public help article for nonprofits;
-- co-branded Chariot onboarding link; and
-- target launch date.
-
-## Production validation
-
-- a participating nonprofit and live form Chariot can use for the production test;
-- expected CRM sync and hard or soft credit behavior; and
-- the contacts responsible for launch support.
-
-When your agreement includes revenue share, also provide the required billing contacts, ACH information, and tax documentation.
+- your technical and operational contacts;
+- your sandbox form URL and how to test it;
+- your production domains;
+- your webhook endpoint and the events you subscribe to;
+- which of recurring, unintegrated providers and platform fees you support; and
+- screenshots or a recording of your loading, success, exit and confirmation states.
 
 ## After approval
 
 1. Store the production API key in your secret manager.
 2. Switch to `https://api.givechariot.com`.
 3. Use production Connect IDs only.
-4. Create production event subscriptions.
-5. Complete one small live gift with Chariot and the participating nonprofit.
+4. Create production event subscriptions. Sandbox subscriptions do not carry over.
 
-Confirm that exactly one Grant is created, the platform stores its Chariot identifiers, the nonprofit can find the transaction, CRM behavior matches the agreed rules, and donor-facing communications are correct.
-
-## After launch
-
-Production credentials do not confirm that DAFpay is live or working end to end. Validate the first live form and Grant with Chariot and a participating nonprofit.
+Production credentials do not mean DAFpay is working end to end. Validate a live gift before you open it to donors.
 
 ## Validate the first live gift
 
-Production has no mock providers. A live test gift has to come from a real donor-advised fund, so arrange who is giving before you schedule the test. Chariot can make the gift if nobody on your side holds a DAF.
+Production has no mock providers, so a live test gift has to come from a real donor-advised fund. Arrange who is giving before you schedule the test — Chariot can make the gift if nobody on your side holds a DAF.
 
-- [ ] Confirm the form used the intended nonprofit's production Connect ID.
-- [ ] Confirm exactly one Grant was created.
-- [ ] Confirm the platform transaction stores the workflow session, Grant ID, and Donation ID when available.
-- [ ] Confirm that loading, confirmation, and email copy appear as expected.
-- [ ] Confirm the nonprofit can find and reconcile the gift.
-- [ ] Confirm CRM sync and hard or soft credit match the agreed rules.
+- [ ] The form used the intended production Connect ID.
+- [ ] Exactly one Grant was created.
+- [ ] Your record stores the workflow session and Grant ID.
+- [ ] Loading, confirmation and email copy read correctly.
+- [ ] The gift can be found and reconciled.
+- [ ] CRM sync and hard or soft credit match the agreed rules.
 
-## Review adoption after 30 days
+## If you serve many nonprofits
 
-Measure:
+Send these alongside your production request:
 
-- eligible nonprofits;
-- nonprofits that enabled DAFpay;
-- donors who opened DAFpay;
-- donors who authorized a Grant request;
-- production Grants created;
-- Grants marked `Completed`; and
-- where donors leave the flow.
+- your nonprofit onboarding and enablement flow;
+- your launch-backfill plan;
+- the help article and co-branded Chariot onboarding link your nonprofits will see;
+- the nonprofit and live form Chariot can use for the production test; and
+- your target launch date.
 
-Define each metric before comparing results with Chariot. For example, a completed DAFpay session means the donor authorized a request, while a `Completed` Grant means receipt was confirmed. Platforms and Chariot may also count sessions or enabled nonprofits differently.
+When your agreement includes revenue share, also send billing contacts, ACH information and tax documentation.
 
-Review nonprofits that enabled DAFpay but have no activity. Common causes include placement late in the form, missing form types, incomplete nonprofit setup, incorrect Connect routing, or a rollout that was never completed.
+### Review adoption after 30 days
 
-## Keep the integration current
+Measure eligible nonprofits, how many enabled DAFpay, donors who opened DAFpay, donors who authorized a request, Grants created, Grants marked `Completed`, and where donors leave the flow.
 
-Document an internal owner for:
+Agree what each metric means with Chariot before comparing numbers. A completed DAFpay session means the donor authorized a request; a `Completed` Grant means receipt was confirmed. The two counts will never match.
 
-- [ ] API versions, authentication, and Connect configuration.
-- [ ] Supported form types and browser testing.
-- [ ] Nonprofit help content and onboarding links.
-- [ ] Account, EIN, fiscal-sponsor, and tenant-routing escalations.
-- [ ] Compliance and verification changes.
-- [ ] Regular production testing.
+Look at nonprofits that enabled DAFpay but have no activity. The usual causes are placement late in the form, missing form types, incomplete nonprofit setup, incorrect Connect routing, or a rollout nobody finished.
 
-Treat a change from opt-in to default-on as a new rollout. Repeat tenant-routing, donor-experience, CRM, and communication checks before enabling existing nonprofits in bulk.
+### Keep it current
+
+Name an internal owner for API versions and Connect configuration, for supported form types and browser testing, for nonprofit help content, for account and tenant-routing escalations, and for regular production testing.
+
+Treat a change from opt-in to default-on as a new rollout, and repeat the tenant-routing and donor-experience checks before enabling nonprofits in bulk.
