@@ -83,7 +83,9 @@ Store every Chariot identifier as soon as it becomes available. Your support tea
 | `trackingId` | DAFpay | Match a provider payment to the DAFpay Grant. It may appear in the provider note or purpose as `Tracking ID:`. |
 | `externalGrantId` | DAF provider | Match the provider's own Grant or payment record when the DAFpay tracking ID is absent. |
 
-Make `trackingId` and `externalGrantId` searchable in your transaction and support tools.
+Make `trackingId` and `externalGrantId` searchable in your transaction and support tools, and store them as strings so their formatting survives.
+
+Use `trackingId` rather than the deprecated `userFriendlyId`. Some of these fields are populated after the Grant is created, so update your stored record when a later read returns one that was previously absent.
 
 ## A gift from checkout to payment
 
@@ -110,6 +112,30 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 | `CANCELED` | The gift will not be paid. |
 
 Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it. Gifts on the `direct` channel sit at `INCOMING_OUTSIDE_CHARIOT` until someone confirms receipt, because Chariot never sees the provider's payment.
+
+## Settlement timestamps
+
+A Donation can read as received before the money is usable. Check the timestamps when your workflow depends on funds being available.
+
+| Field | What it marks |
+| --- | --- |
+| `created_at` | When Chariot created the Donation record. |
+| `initiation.initiated_at` | When the gift was initiated through DAFpay. |
+| `settlement.received_at` | When Chariot received the transfer data. |
+| `settlement.settled_at` | When the funds settled and became available. |
+| `settlement.deposit_id` | The Deposit the funds arrived in. |
+
+Use `settlement.settled_at` for the date funds became available. It can be later than the date the Donation appeared in Chariot, because a connected source's payment data can arrive ahead of the money.
+
+## Retrieving donations and deposits
+
+List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, and `dafpay_tracking_id`.
+
+<Warning>
+  List Donations filters on `created_at`, not `updated_at`. A query for newly created gifts will never surface a change to a gift created earlier, so pair it with update events rather than using it as your only sync.
+</Warning>
+
+List Deposits uses the same paging pattern but different date filters, `settled_at.after` and `settled_at.before`. Use the Deposit ID to tie settlement information to the Donations whose funds it carried; one Deposit can cover many gifts.
 
 ## Record what your own systems did
 

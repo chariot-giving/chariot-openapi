@@ -40,14 +40,40 @@ Anything you passed in `onDonationRequest`, including metadata, is not in the pa
 
 Grant IDs arrive as raw UUIDs. Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
 
-## Handling events reliably
+## Verify the signature
 
-Verify the signature on every request before you act on it.
+Every delivery carries a `Chariot-Webhook-Signature` header holding a timestamp and one or more signatures:
 
-Store the event ID and make processing idempotent. Events can be delivered more than once, and a retry must not create a second transaction.
+```text
+Chariot-Webhook-Signature: t=2026-01-19T18:48:56Z,v1=e0632fb61f7d1068ecbde75410d5c3cc152926f97eaacf53c6228624647329da
+```
 
-Keep a scheduled query running alongside your webhooks. Deliveries can be delayed or missed, and polling List Donations by `created_at` is the recovery path.
+To verify it:
 
-Failed deliveries retry with a jittered backoff over several hours. If none succeed, the subscription is disabled, so monitor your endpoint's health.
+1. Split the header on commas and read `t` and each `v1` value. Ignore any other signature scheme.
+2. Build the signed payload as the exact timestamp string, a period, then the raw request body: `timestamp.rawBody`.
+3. Compute an HMAC with SHA-256, using the subscription's `signing_secret` as the key.
+4. Compare your hex digest against each supplied `v1` with a constant-time comparison.
+5. Check that the timestamp falls within your tolerance, and reject anything invalid or stale.
+
+Keep the raw request body for this check. Parsing JSON and reserializing it changes the bytes and the signature will not match.
+
+## Handle events reliably
+
+Store the event ID and make processing idempotent. Events can be delivered more than once even when your endpoint returns success, and a repeat must not create a second transaction.
+
+Return a `2xx` promptly and do the work afterward. Only mark an event processed once that work has succeeded.
+
+Events can also arrive out of order. Because you retrieve the current object rather than trusting the payload, a late event will not write an older state over a newer one.
+
+## Retries and recovery
+
+In production, Chariot retries a failed delivery up to 10 times with increasing delays, and disables the endpoint if every attempt fails over five days. Monitor your endpoint's health and your subscription's status.
+
+Sandbox does not retry failed deliveries at all, so test your own queue's retry and duplicate handling explicitly rather than relying on Chariot to redeliver.
+
+Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Events are retained for 30 days, so run recovery inside that window and track which IDs you have processed.
+
+Run recovered events through the same processing path as live deliveries. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing donations by `created_at` will not surface updates to gifts created earlier.
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)

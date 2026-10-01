@@ -14,7 +14,14 @@ username: good-user
 password: password123
 ```
 
-No real money moves, and sandbox-only calls let you simulate a Grant completing or being canceled so you can test your received-funds handling end to end.
+No real money moves. For one-time Grants, sandbox-only endpoints let you drive the Grant to a terminal state so you can test your received-funds handling end to end:
+
+```text
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/complete
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/cancel
+```
+
+Send your sandbox key in the `Authorization` header. Use the resulting events to confirm your integration retrieves the changed record and updates its own transaction. Sandbox cannot prove that a production remittance will carry the identifiers your team expects, so confirm real settlement and matching after launch with a participating nonprofit.
 
 ## Test tenant routing
 

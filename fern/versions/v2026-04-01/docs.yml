@@ -41,12 +41,6 @@ navigation:
           - section: Accept Grant Requests
             slug: accept
             contents:
-              - page: Add DAFpay Without Code
-                slug: no-code
-                path: ./pages/dafpay/accept/no-code.mdx
-              - page: Embed DAFpay on Your Form
-                slug: low-code
-                path: ./pages/dafpay/accept/low-code.mdx
               - page: Build a Custom Integration
                 slug: api
                 path: ./pages/dafpay/accept/api.mdx
@@ -95,9 +89,6 @@ navigation:
           - section: Send Grant Requests
             slug: send
             contents:
-              - page: Manage Requests in the Dashboard
-                slug: no-code
-                path: ./pages/dafpay/send/no-code.mdx
               - section: Donor Accounts
                 slug: donor-accounts
                 contents:
