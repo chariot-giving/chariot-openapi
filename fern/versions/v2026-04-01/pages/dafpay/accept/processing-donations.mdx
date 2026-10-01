@@ -17,7 +17,7 @@ Store `donationId` on your record as soon as the Grant returns it. It is the lin
 
 Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant. That gift arrives complete: there is no authorization to capture, no 15-minute window, and no Create Grant call to make.
 
-We recommend building your processing on Donations rather than Grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A Donation with no `initiation` data is one of those gifts and should follow the same workflow.
+Build your gift processing around Donations so the same workflow handles DAFpay gifts and gifts from your other connected payment sources. Process Donations without `initiation` data through the same workflow.
 
 ## Payment status on the Donation
 
@@ -64,7 +64,7 @@ List Donations returns gifts across every connected payment source on the accoun
 
 List Deposits uses the same paging pattern but different date filters, `settled_at.after` and `settled_at.before`. Use the Deposit ID to tie settlement information to the Donations whose funds it carried; one Deposit can cover many gifts.
 
-## Record what your own systems did
+## Record processing in your systems
 
 To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a Donation, and you can retrieve them alongside the rest of the Donation data.
 

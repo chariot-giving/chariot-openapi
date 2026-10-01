@@ -102,13 +102,11 @@ const backoff = (attempt) =>
   new Promise((r) => setTimeout(r, 2 ** attempt * 500 + Math.random() * 250));
 ```
 
-Retry with the same `workflowSessionId` every time. A new session is a new authorization, and creating one is how you end up submitting the gift twice.
+Retry with the same `workflowSessionId`. Starting a new session creates a new authorization and can result in a duplicate gift.
 
-A timed-out request is the case the idempotency contract exists for, so retry it rather than treating it as a failure. Branch on the status your caller gets back: `410` means the authorization expired and the donor has to start again, `400` means a value could not be submitted, and `401` or `403` mean the key or environment is wrong.
+If a request times out, retry it with the same workflow session ID. The response table above covers what each status means for the donor.
 
-Create Grant also accepts `donor`, `note` and `designation`. Pass them when you want the server to be the source of truth for values a browser could have tampered with.
-
-Retry with the same `workflowSessionId` every time. A new session is a new authorization, and creating one is how you end up submitting the gift twice.
+Create Grant also accepts `donor`, `note` and `designation`. Pass these fields from trusted server-side records when you need to override values supplied by the browser.
 
 ## Amount validation
 

@@ -3,7 +3,7 @@ title: Go Live
 hidden: false
 ---
 
-When the [integration checklist](/guides/dafpay/accept/checklist) passes, request production access. If you are a fundraising platform, also work through [the platform section](#if-you-serve-many-nonprofits).
+Once you have completed the [integration checklist](/guides/dafpay/accept/checklist), request production access. If you are a fundraising platform, also work through [the platform section](#if-you-serve-many-nonprofits).
 
 ## Request production access
 
@@ -54,10 +54,16 @@ Measure eligible nonprofits, how many enabled DAFpay, donors who opened DAFpay, 
 
 Agree what each metric means with Chariot before comparing numbers. A completed DAFpay session means the donor authorized a request; a `Completed` Grant means receipt was confirmed. The two counts will never match.
 
-Look at nonprofits that enabled DAFpay but have no activity. The usual causes are placement late in the form, missing form types, incomplete nonprofit setup, incorrect Connect routing, or a rollout nobody finished.
+Look at nonprofits that enabled DAFpay but have no activity. The usual causes are placement late in the form, missing form types, incomplete nonprofit setup, incorrect Connect routing, or an incomplete rollout.
 
 ### Keep it current
 
-Name an internal owner for API versions and Connect configuration, for supported form types and browser testing, for nonprofit help content, for account and tenant-routing escalations, and for regular production testing.
+Name an internal owner for each of these:
+
+- API versions and Connect configuration
+- Supported form types and browser testing
+- Nonprofit help content
+- Account and tenant-routing escalations
+- Regular production testing
 
 Treat a change from opt-in to default-on as a new rollout, and repeat the tenant-routing and donor-experience checks before enabling nonprofits in bulk.

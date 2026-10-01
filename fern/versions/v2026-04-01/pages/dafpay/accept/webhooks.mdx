@@ -31,7 +31,7 @@ openssl rand -hex 32
 | `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-The split is absolute, in both directions. Grant and Unintegrated Grant events are delivered against a fundraising application, so they never reach a nonprofit's own key. Donation and Deposit events are delivered against an organization, so they never reach a platform's key.
+Event delivery depends on your API key's scope. Grant and Unintegrated Grant events are delivered against a fundraising application, so they never reach a nonprofit's own key. Donation and Deposit events are delivered against an organization, so they never reach a platform's key.
 
 Nothing rejects a category you cannot receive. The subscription is created, stored and returned, and then never fires. Subscribe only to the rows above that match your key.
 

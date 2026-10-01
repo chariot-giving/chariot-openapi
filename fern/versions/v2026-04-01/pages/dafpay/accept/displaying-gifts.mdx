@@ -30,7 +30,7 @@ Chariot stores a Tracking ID on every DAFpay grant, but storing one does not mea
 
 ## What a Grant gives you
 
-Everything your dashboard shows comes off the Grant. These are the fields most platforms use; see the Grant object in the API reference for the rest.
+Use these Grant fields in your dashboard. See the Grant object in the API reference for the full list.
 
 | Field | Notes |
 | --- | --- |
@@ -55,13 +55,11 @@ Fields that are empty right after creation can fill in later, so re-read the Gra
 
 Subscribe to `grant.created` and `grant.updated`. When an event arrives, retrieve the current Grant and update the existing transaction using the stored Grant ID. If you support unintegrated providers, subscribe to `unintegrated_grant.created` and `unintegrated_grant.updated` and read those through their own endpoints.
 
-Display the status Chariot returns. A created grant means the request was submitted to the provider, and the nonprofit confirms receipt in Chariot when the funds arrive, which your platform picks up through grant updates.
-
-Grant status is Chariot's record of what happened to the gift, so display it rather than offering your users a control that sets one. The nonprofit confirms receipt in Chariot and your platform picks that up through Grant updates.
+Display the status Chariot returns. Grant creation means the request was submitted to the provider. When the nonprofit confirms receipt in Chariot, update your transaction from the Grant update. Do not offer a control that changes the Grant's status.
 
 ## Keep the record types apart
 
-An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Keep both separate from one-time Grants in your dashboard, so a nonprofit is never shown gifts it has not been promised.
+An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Label unintegrated intents and recurring setups separately from one-time Grants in your dashboard.
 
 ## Reconciliation
 

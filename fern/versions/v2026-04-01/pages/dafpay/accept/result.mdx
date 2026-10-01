@@ -48,7 +48,7 @@ Associate `detail.workflowSessionId` with the current platform transaction, nonp
 
 Use the amount returned in the success payload, not the amount your form collected. A donor who selected $75 on your form can change it to $150 inside DAFpay, and the returned amount is the one they authorized. Show that amount on your confirmation page and record it on your transaction.
 
-Save your transaction before calling Chariot. Show a loading state while your server calls Create Grant. Do not show final success until the Grant exists. A queued retry is not a submitted gift, so keep the donor on a pending state until creation resolves.
+Save your transaction before calling Chariot. Show a loading state while your server calls Create Grant. Do not show final success until the Grant exists. If the request is queued for retry, show a pending message until Grant creation is confirmed.
 
 <Frame caption="Loading screen example">
     <img src='../../../images/dafpay_form_click.png' />

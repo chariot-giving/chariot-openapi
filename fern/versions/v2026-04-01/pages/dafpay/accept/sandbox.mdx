@@ -50,7 +50,7 @@ These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 
 ## Test browsers and devices
 
-Depending on the browser and viewport, DAFpay opens in a cross-origin frame or a popup window, so browser behavior is worth testing deliberately rather than assuming. Complete the donor flow on:
+DAFpay opens in a frame or popup depending on the browser and screen size. Test the full donor flow on:
 
 - Chrome, Safari, and Firefox on desktop.
 - Safari and Chrome on iPhone.
@@ -61,12 +61,12 @@ On each supported browser, confirm that DAFpay renders, opens from the donor's c
 
 ## Test with popups blocked
 
-Where DAFpay opens in a popup, browsers block one that does not open in direct response to a click, and some donors block popups outright. Turn popup blocking on and walk the flow, so you know what your donors see and your page shows them something useful rather than appearing to do nothing.
+When DAFpay uses a popup, it must open directly from the donor's click. Some donors also block popups in their browser settings. Test with popup blocking enabled and confirm that your page explains what to do if DAFpay cannot open.
 
 If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
 
 Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
 
-Everything you can test with a mock provider, test here. Production has no mocks, so a gift there has to come from a real donor-advised fund.
+Run all tests supported by mock providers in sandbox. Production tests require a real donor-advised fund.
 
 Next: [Go Live](/guides/dafpay/accept/go-live)

@@ -45,7 +45,7 @@ DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100. 
 
 If your form collects a donor detail, pass it to DAFpay. If your form does not collect it, omit the field so DAFpay can fill or collect it from the donor's DAF account.
 
-Omit a field rather than sending an empty string. An empty string reads as unset, so it does not pin the value, and it makes your own payload harder to reason about when a field is genuinely blank.
+Omit fields you have not collected. Empty strings are treated as missing values.
 
 Choose which details to collect before DAFpay based on your identity, CRM, and attribution requirements. For example, a platform may need the name entered on its form to determine which constituent receives recognition, even when that name differs from the name on the DAF account.
 
@@ -61,7 +61,11 @@ DAFpay fills a donor field from the first source that has a value:
 
 This is why you can put DAFpay in an express checkout. You do not have to collect an address before the donor clicks, because DAFpay can retrieve it from the provider.
 
-Two limits on the provider step. It runs only when first name, last name, email or address is missing, so a missing phone number on its own will not trigger it. An address counts as present when any of line 1, city, state or postal code has a value, so a partial address suppresses the lookup and the donor fills in the rest. And it runs only when your Connect is configured to return donor information, which Chariot sets. With that setting off, DAFpay never asks the provider and the donor fills in anything your form did not supply.
+Provider lookup has a few limits:
+
+- It runs only when first name, last name, email or address is missing. A missing phone number alone does not trigger it.
+- An address counts as present if any of line 1, city, state or postal code has a value. A partial address prevents lookup, and the donor fills in the remaining fields.
+- Your Connect must be configured to return donor information. Chariot sets this option. When it is off, DAFpay asks the donor for details your form did not provide.
 
 One exception for platforms: when a gift routes through DAFpay Network, first name, last name and email are collected and required and the lookup is on, whatever your Connect says. Ask Chariot whether your application routes that way.
 
@@ -102,11 +106,11 @@ Flattened keys work equally well if you prefer them, for example `allocation_com
 
 Test the exact metadata returned from at least two forms with different values.
 
-## Metadata on the way in and the way out
+## Sending and retrieving metadata
 
 `metadata` accepts JSON on input, so a nested value is allowed. Reading the Grant back through the public API returns non-string values stringified, so what you get is not always shaped like what you sent.
 
-Passing strings is the simplest way to avoid that asymmetry. Serialize anything structured yourself and parse it on the way back.
+Pass strings if you want metadata to keep the same format when you retrieve the Grant. Serialize structured values before sending them and parse them when you read them back.
 
 Metadata can only be set in the browser. There is no `metadata` field on Create Grant, so it cannot be added, corrected, or validated server-side after the donor authorizes.
 
@@ -114,7 +118,7 @@ Metadata can only be set in the browser. There is no `metadata` field on Create 
 
 Chariot records the URL of the page the gift was made from as `initiation.web_location_url` on the Donation. Any tracking parameters already in that URL, such as a source or campaign code, come through with it.
 
-That is capture, not routing. If a code needs to drive how the gift is coded or reconciled, pass it yourself: `designation` for the fund or purpose the DAF should see, and `metadata` for internal codes that stay inside Chariot.
+Pass any codes your system needs to code or reconcile the gift explicitly. Use `designation` for the fund or purpose the DAF provider should see, and `metadata` for internal codes that stay inside Chariot.
 
 ## Prevent blocked popups
 

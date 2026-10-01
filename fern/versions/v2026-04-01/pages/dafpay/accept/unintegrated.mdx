@@ -23,7 +23,7 @@ Chariot creates the Unintegrated Grant record itself when that event fires. Ther
 
 ## What the event carries
 
-The exit event's `detail` carries the Unintegrated Grant that Chariot just created, so everything your confirmation page needs is already in hand:
+The exit event's `detail` includes the Unintegrated Grant Chariot created:
 
 ```json
 {
@@ -73,7 +73,7 @@ DAFpay also emails the donor the same instructions. Check whether Chariot's own 
     <img src='../../../images/grant-intent-email.png' />
 </Frame>
 
-An Unintegrated Grant's `status` is `Unknown`, `Initiated`, `Completed` or `Canceled`. `Unknown` is the normal resting state, not an error: the donor left DAFpay to finish the gift, so Chariot cannot confirm what happened unless the funds later arrive.
+An Unintegrated Grant's `status` is `Unknown`, `Initiated`, `Completed` or `Canceled`. `Unknown` is expected for this flow: the donor left DAFpay to finish the gift, so Chariot cannot confirm what happened unless the funds later arrive.
 
 Use the unintegrated-grant resources and events in the API reference for this separate object type.
 
