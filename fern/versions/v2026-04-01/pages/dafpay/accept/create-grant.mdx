@@ -122,7 +122,7 @@ Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provide
 
 Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
 
-When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
+When a `fundId` is available, use [Get DAF](/api/donor-advised-funds/get) to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
 
 ## Platform fees
 

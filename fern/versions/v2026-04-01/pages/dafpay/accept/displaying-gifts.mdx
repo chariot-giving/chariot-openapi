@@ -19,7 +19,7 @@ Platforms work from Grants. Donations and Deposits belong to the nonprofit's own
 | Tracking ID | `trackingId` | Match the gift to an incoming payment or remittance. |
 | External Grant ID | `externalGrantId` | Match the provider's own grant or payment record. |
 | Amount | `amount` | The submitted amount, converted from cents. |
-| DAF provider | `fundId` | Retrieve the name with Get DAF and display `orgName`, never the raw ID. |
+| DAF provider | `fundId` | Retrieve the name with [Get DAF](/api/donor-advised-funds/get) and display `orgName`, never the raw ID. |
 | Donor information | The donor fields you have | Identify the gift. |
 | Grant status | `status` | The current state Chariot returns. |
 | Your transaction ID | Your own record | Get back to the original form submission. |
@@ -39,7 +39,7 @@ Everything your dashboard shows comes off the Grant. These are the fields most p
 | `status` | `Initiated`, `Completed` or `Canceled`. |
 | `statuses` | When the Grant reached each status it has held, oldest first. |
 | `amount` | In cents. |
-| `fundId` | The provider. Resolve the name with Get DAF and show `orgName`. |
+| `fundId` | The provider. Resolve the name with [Get DAF](/api/donor-advised-funds/get) and show `orgName`. |
 | `trackingId` | The DAFpay identifier that may appear with the payment. |
 | `externalGrantId` | The provider's own identifier, when they return one. |
 | `paymentChannel` | `direct` or `dafpay_network`. How the funds travel, not whether they arrived. |

@@ -61,7 +61,9 @@ DAFpay fills a donor field from the first source that has a value:
 
 This is why you can put DAFpay in an express checkout. You do not have to collect an address before the donor clicks, because DAFpay can retrieve it from the provider.
 
-Two limits on the provider step. It runs only when first name, last name, email or address is missing, so a missing phone number on its own will not trigger it. An address counts as present when any of line 1, city, state or postal code has a value, so a partial address suppresses the lookup and the donor fills in the rest. And it runs only when the Connect is configured to return donor information, which Chariot sets during Connect configuration. With that setting off, DAFpay never asks the provider and the donor fills in anything your form did not supply.
+Two limits on the provider step. It runs only when first name, last name, email or address is missing, so a missing phone number on its own will not trigger it. An address counts as present when any of line 1, city, state or postal code has a value, so a partial address suppresses the lookup and the donor fills in the rest. And it runs only when your Connect is configured to return donor information, which Chariot sets. With that setting off, DAFpay never asks the provider and the donor fills in anything your form did not supply.
+
+One exception for platforms: when a gift routes through DAFpay Network, first name, last name and email are collected and required and the lookup is on, whatever your Connect says. Ask Chariot whether your application routes that way.
 
 ## Choose where to send the designation
 
@@ -128,7 +130,7 @@ If your platform uses a custom button or Shadow DOM, do not call your server bet
 
 Do not apply one minimum amount to every DAFpay gift. Minimum Grant amounts vary by DAF provider.
 
-Open DAFpay for any valid whole-dollar amount and let DAFpay enforce the selected provider's minimum. If you need to validate the amount yourself, use Get DAF to retrieve the provider's `minimumGrantAmount`.
+Open DAFpay for any valid whole-dollar amount and let DAFpay enforce the selected provider's minimum. If you need to validate the amount yourself, use [Get DAF](/api/donor-advised-funds/get) to retrieve the provider's `minimumGrantAmount`.
 
 ## Stop DAFpay from opening when the form is not ready
 

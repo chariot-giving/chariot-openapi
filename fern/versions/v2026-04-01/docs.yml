@@ -53,9 +53,6 @@ navigation:
               - page: Create Connects
                 slug: connects
                 path: ./pages/dafpay/accept/connects.mdx
-              - page: Connect Configuration
-                slug: connect-configuration
-                path: ./pages/dafpay/accept/connect-configuration.mdx
               - page: Install DAFpay
                 slug: install
                 path: ./pages/dafpay/accept/install.mdx
