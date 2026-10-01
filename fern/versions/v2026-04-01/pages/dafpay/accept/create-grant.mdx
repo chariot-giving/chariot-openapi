@@ -41,32 +41,68 @@ Queueing a retry is not the same as submitting the gift. The authorization expir
 ## A server-side example
 
 ```javascript
-async function createGrant({ workflowSessionId, amount }) {
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const res = await fetch(`${CHARIOT_BASE_URL}/v1/grants`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ workflowSessionId, amount })
-    });
-
-    // 201 created it, 200 means it already existed. Both are success.
-    if (res.status === 201 || res.status === 200) return res.json();
-
-    // Submission is still running. Wait and ask again with the same session.
-    if (res.status === 409) {
-      await new Promise((r) => setTimeout(r, 2 ** attempt * 500));
-      continue;
-    }
-
-    // 410 means the 15 minutes elapsed. The donor has to authorize again.
-    throw new Error(`Create Grant failed: ${res.status}`);
+class CreateGrantError extends Error {
+  constructor(status, body) {
+    super(`Create Grant failed: ${status}`);
+    this.status = status;
+    this.body = body;
   }
-  throw new Error("Create Grant still pending after retries");
 }
+
+async function createGrant({ workflowSessionId, amount, applicationFeeAmount }) {
+  const deadline = Date.now() + 60_000;
+
+  for (let attempt = 0; Date.now() < deadline; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10_000);
+
+    try {
+      const res = await fetch(`${CHARIOT_BASE_URL}/v1/grants`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${CHARIOT_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ workflowSessionId, amount, applicationFeeAmount }),
+        signal: controller.signal
+      });
+
+      // 201 created it, 200 means it already existed. Both are success.
+      if (res.status === 201 || res.status === 200) return res.json();
+
+      // Submission is still running, or the request is worth sending again.
+      if (res.status === 409 || res.status >= 500) {
+        await backoff(attempt);
+        continue;
+      }
+
+      // 410 expired, 400 invalid, 401/403 wrong credentials. The caller decides.
+      throw new CreateGrantError(res.status, await res.json().catch(() => null));
+    } catch (err) {
+      // A timed-out request may still have created the Grant. Ask again with the
+      // same session: that is what the idempotency contract is for.
+      if (err.name === "AbortError") {
+        await backoff(attempt);
+        continue;
+      }
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  throw new CreateGrantError(408, null);
+}
+
+const backoff = (attempt) =>
+  new Promise((r) => setTimeout(r, 2 ** attempt * 500 + Math.random() * 250));
 ```
+
+Retry with the same `workflowSessionId` every time. A new session is a new authorization, and creating one is how you end up submitting the gift twice.
+
+A timed-out request is the case the idempotency contract exists for, so retry it rather than treating it as a failure. Branch on the status your caller gets back: `410` means the authorization expired and the donor has to start again, `400` means a value could not be submitted, and `401` or `403` mean the key or environment is wrong.
+
+Create Grant also accepts `donor`, `note` and `designation`. Pass them when you want the server to be the source of truth for values a browser could have tampered with.
 
 Retry with the same `workflowSessionId` every time. A new session is a new authorization, and creating one is how you end up submitting the gift twice.
 

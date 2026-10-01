@@ -5838,7 +5838,7 @@ components:
           readOnly: true
           description: ID of the donor advised fund
           example: daf-id
-        donor_account_id:
+        donorAccountId:
           type: string
           readOnly: true
           description: |-
@@ -5846,7 +5846,7 @@ components:
             Present on grants submitted by donors who authenticated through the DAFpay Donor Account flow.
             Grants submitted without a linked Donor Account will not have this field set.
           example: "donor_account_01jpjenf5q6cawy43yxfcrxhct"
-        donation_id:
+        donationId:
           type: string
           readOnly: true
           description: |-

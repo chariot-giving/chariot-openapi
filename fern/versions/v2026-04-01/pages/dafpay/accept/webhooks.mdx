@@ -7,6 +7,15 @@ Rather than polling for changes, you can subscribe to events and have Chariot se
 
 Each subscription carries exactly one category, so create one per event you want to receive.
 
+<Warning>
+  Generate your own `signing_secret` and pass it when you create the subscription. It is write-only: no endpoint returns it, and nothing in the subscription you get back contains it. If you leave it out, Chariot generates a random one you can never read, every delivery fails verification, and the only fix is to delete the subscription and create it again.
+</Warning>
+
+```sh
+# 32 random bytes, stored in your secret manager before you create anything
+openssl rand -hex 32
+```
+
 <EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
 
 ## Events
@@ -60,7 +69,7 @@ To verify it:
 
 1. Split the header on commas and read `t` and each `v1` value. Ignore any other signature scheme.
 2. Build the signed payload as the exact timestamp string, a period, then the raw request body: `timestamp.rawBody`.
-3. Compute an HMAC with SHA-256, using the subscription's `signing_secret` as the key.
+3. Compute an HMAC with SHA-256, using the `signing_secret` you supplied when you created the subscription.
 4. Compare your hex digest against each supplied `v1` with a constant-time comparison.
 5. Check that the timestamp falls within your tolerance, and reject anything invalid or stale.
 
@@ -68,23 +77,34 @@ To verify it:
 import crypto from "node:crypto";
 
 function verify(header, rawBody, signingSecret) {
-  const parts = Object.fromEntries(
-    header.split(",").map((p) => p.split("=").map((v) => v.trim()))
+  let timestamp;
+  const signatures = [];
+  for (const part of header.split(",")) {
+    const i = part.indexOf("=");
+    const key = part.slice(0, i).trim();
+    const value = part.slice(i + 1).trim();
+    if (key === "t") timestamp = value;
+    if (key === "v1") signatures.push(value);
+  }
+  if (!timestamp || signatures.length === 0) return false;
+
+  const expected = Buffer.from(
+    crypto
+      .createHmac("sha256", signingSecret)
+      .update(`${timestamp}.${rawBody}`)
+      .digest("hex")
   );
-  if (!parts.t || !parts.v1) return false;
 
-  const expected = crypto
-    .createHmac("sha256", signingSecret)
-    .update(`${parts.t}.${rawBody}`)
-    .digest("hex");
+  const matched = signatures.some((sig) => {
+    const given = Buffer.from(sig);
+    return (
+      given.length === expected.length && crypto.timingSafeEqual(given, expected)
+    );
+  });
+  if (!matched) return false;
 
-  const a = Buffer.from(expected);
-  const b = Buffer.from(parts.v1);
-  if (a.length !== b.length) return false;
-  if (!crypto.timingSafeEqual(a, b)) return false;
-
-  // Reject anything older than your tolerance.
-  return Date.now() - Date.parse(parts.t) < 5 * 60 * 1000;
+  // Bound the timestamp in both directions, so a future value cannot pass.
+  return Math.abs(Date.now() - Date.parse(timestamp)) < 5 * 60 * 1000;
 }
 ```
 
