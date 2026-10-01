@@ -20,12 +20,12 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 
 | Term | What it is |
 | --- | --- |
-| Connect | An instance of DAFpay, configured for one organization. The Connect ID tells Chariot which organization receives the gift and what the modal collects. |
-| Workflow session | A single use of DAFpay. A new session starts each time a donor opens the modal, and its ID ties the browser authorization to the Grant you create. |
-| Grant | A request sent to a DAF provider that is directly connected to DAFpay. |
-| Unintegrated Grant | A request recorded for a provider that is not connected to DAFpay, where the donor finishes the gift in the provider's own portal. A separate object with its own endpoints and events. |
-| Donation | Chariot's record of a gift, including donor, amount, coding, source, and payment status. Every Grant produces one, and gifts that never touched DAFpay have one too. Nonprofits only. |
-| Deposit | A transfer of funds into a Chariot account. One Deposit can cover many Donations. |
+| Connect | An instance of DAFpay. Its ID tells Chariot which organization receives the gift, and carries that organization's modal configuration. |
+| Workflow session | A single use of DAFpay. A new workflow session starts each time a donor clicks the DAFpay button, and you use its ID to create the Grant. |
+| Grant | Gifts initiated through a DAF provider that is directly connected to DAFpay. |
+| Unintegrated Grant | Gifts initiated through a DAF provider that is not directly connected to DAFpay. The donor completes the gift on the provider's website. These are a separate object with their own endpoints and events. |
+| Donation | Donations represent all gifts in Chariot. This includes gifts initiated through DAFpay and gifts received in your Chariot account from a disbursement partner or another connected payment source. |
+| Deposit | A transfer of funds into your Chariot account. One deposit can cover many donations. |
 
 Donations and Deposits are organization-scoped. A fundraising-platform key is bound to a fundraising application rather than an organization, so those calls return `401` and a platform builds on Grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a Grant becomes a Donation and how to track it from there.
 
