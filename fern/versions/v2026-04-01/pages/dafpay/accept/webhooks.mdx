@@ -5,6 +5,8 @@ hidden: false
 
 Rather than polling for changes, you can subscribe to events and have Chariot send them to your endpoint. Create a subscription with the Create Event Subscription endpoint.
 
+Each subscription carries exactly one category, so create one per event you want to receive.
+
 <EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
 
 ## Events
@@ -20,9 +22,11 @@ Rather than polling for changes, you can subscribe to events and have Chariot se
 | `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-Donation and Deposit events belong to the nonprofit's Chariot account. A fundraising platform cannot subscribe to them and uses the Grant events instead.
+Donation and Deposit events are organization-scoped. A fundraising-platform key is bound to a fundraising application rather than an organization, so these events are never delivered to it and a platform uses the Grant events instead.
 
-If you are a nonprofit, we recommend building your CRM sync on the donation events so the same logic handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` if you want a trigger that fires only for DAFpay.
+Creating the subscription still succeeds. Nothing rejects the category, so a platform that subscribes to `donation.created` gets a stored subscription that never fires.
+
+If you are a nonprofit, we recommend building your CRM sync on the Donation events so the same logic handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` if you want a trigger that fires only for DAFpay.
 
 ## What an event contains
 
@@ -30,7 +34,7 @@ An event tells you that a resource changed. It does not tell you which fields ch
 
 ```json
 {
-  "id": "event_123abc",
+  "id": "9f8c1f1e-0b3a-4a6f-9f2c-6b3a1d5e7c40",
   "created_at": "2026-01-31T23:59:59Z",
   "category": "grant.created",
   "associated_object_type": "grant",
@@ -40,7 +44,9 @@ An event tells you that a resource changed. It does not tell you which fields ch
 
 Anything you passed in `onDonationRequest`, including metadata, is not in the payload. Retrieve the current object from the API and act on its current state.
 
-Grant IDs arrive as raw UUIDs. Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
+In a delivered webhook, Grant IDs arrive as raw UUIDs while Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
+
+List Events returns the raw UUID for every object type, including Donations and Deposits. The same event therefore reaches you in two different ID formats depending on whether it was delivered or recovered, so normalize before you look anything up.
 
 ## Verify the signature
 
@@ -64,18 +70,18 @@ Keep the raw request body for this check. Parsing JSON and reserializing it chan
 
 Store the event ID and make processing idempotent. Events can be delivered more than once even when your endpoint returns success, and a repeat must not create a second transaction.
 
-Return a `2xx` promptly and do the work afterward. Only mark an event processed once that work has succeeded.
+Return `200` promptly and do the work afterward. Only `200` counts as success: a `202` or `204` is treated as a failed delivery and retried. Only mark an event processed once that work has succeeded.
 
 Events can also arrive out of order. Because you retrieve the current object rather than trusting the payload, a late event will not write an older state over a newer one.
 
 ## Retries and recovery
 
-In production, Chariot retries a failed delivery up to 10 times with increasing delays, and disables the endpoint if every attempt fails over five days. Monitor your endpoint's health and your subscription's status.
+In production, a delivery is attempted up to 10 times with a growing backoff, which spans roughly four hours end to end. If the last attempt fails, the subscription moves to `requires_attention`. Monitor your endpoint's health and your subscription's status.
 
 Sandbox does not retry failed deliveries at all, so test your own queue's retry and duplicate handling explicitly rather than relying on Chariot to redeliver.
 
-Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Events are retained for 30 days, so run recovery inside that window and track which IDs you have processed.
+Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Track which event IDs you have processed.
 
-Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing donations by `created_at` will not surface updates to gifts created earlier.
+Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing Donations by `created_at` will not surface updates to gifts created earlier.
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)

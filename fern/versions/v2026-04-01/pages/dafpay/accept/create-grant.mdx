@@ -21,13 +21,13 @@ Complete this sequence within 15 minutes of authorization.
 
 ## Retry safely
 
-Create Grant is idempotent for a workflow session. If the first request times out, call Create Grant again with the same `workflowSessionId`.
+Create Grant and Create Recurring Grant are both idempotent for a workflow session. If the first request times out, call the same endpoint again with the same `workflowSessionId`.
 
 | Response | What to do |
 | --- | --- |
 | `201 Created` | The Grant was created. Store it and stop retrying. |
 | `200 OK` | A Grant already exists for this workflow session. Store it and stop retrying. |
-| `409 Conflict` | Creation is still running. Wait, then retry with the same workflow session. |
+| `409 Conflict` | Submission for this session is already being processed. Wait, then retry with the same workflow session. |
 | `410 Gone` | The authorization expired. Ask the donor to complete DAFpay again. |
 | `400 Bad Request` | A value cannot be submitted. Read the error and handle the invalid amount, provider requirement, or fee. |
 | `401` or `403` | Authentication or access failed. Check the API key, the environment, and account access. |
@@ -38,7 +38,9 @@ A timeout leaves the outcome uncertain. Keep the transaction pending while you r
 
 ## Amount validation
 
-Use the amount returned by `CHARIOT_SUCCESS`. Validate that the amount in cents is divisible by 100.
+Use the amount returned by `CHARIOT_SUCCESS`. Amounts are in cents and must be whole dollars, so the value must be divisible by 100.
+
+Create Grant enforces this, not the modal. An amount that is not a whole dollar is accepted when the session starts and fails later, at creation, so validate it before you open DAFpay.
 
 Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provider, and DAFpay prompts the donor to adjust an amount that is below the selected provider's minimum or above their available balance.
 
@@ -52,7 +54,9 @@ When a `fundId` is available, use Get DAF to retrieve the provider's `minimumGra
 
 ## Platform fees
 
-Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents. The API enforces a combined cap across Chariot and platform fees.
+Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents.
+
+Create Grant validates `applicationFeeAmount` on its own against the Grant amount. The default ceiling is 210 basis points, and your Chariot agreement can raise it for your application. Chariot's own fee is charged separately and is not part of this check.
 
 A donor-covered fee increases the Grant amount. It is not a separate tip. Do not offer a tip to a for-profit platform in a DAF transaction.
 
@@ -76,11 +80,8 @@ A recurring success contains `recurringGrantIntent` instead of `grantIntent`:
 }
 ```
 
-Call Create Recurring Grant, not Create Grant. `workflowSessionId`, `frequency`, and `amount` are required, and `MONTHLY` is currently the only supported frequency. The endpoint also accepts the same optional donor, note, designation, and application fee fields. A recurring application fee applies to the first Grant only.
+Call Create Recurring Grant, not Create Grant. It follows the same retry contract as Create Grant above. `workflowSessionId`, `frequency`, and `amount` are required, and `MONTHLY` is currently the only supported frequency. The endpoint also accepts the same optional donor, note, designation, and application fee fields. A recurring application fee applies to the first Grant only.
 
-<Warning>
-  Recurring creation does not retry the way one-time creation does. A workflow session can be captured only once, so a duplicate request returns `409 Conflict` meaning the Grant already exists, not that creation is still running. Do not retry on a `409` here. If an earlier request's outcome is uncertain, list recurring Grants and find the record with your stored `workflowSessionId` before deciding what to do.
-</Warning>
 
 The DAF provider controls the schedule. Chariot records the initial setup but may not receive a new Grant for each later payment or learn when the donor changes or cancels the recurrence.
 
@@ -106,7 +107,7 @@ A Grant carries status information in two separate places. Read the one that mat
 | --- | --- | --- | --- |
 | `Initiated` | The request was submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when receipt of the payment is confirmed, or to `Canceled` if the payment never arrives. |
 | `Completed` | Receipt of the payment has been confirmed, either by Chariot recording the settlement or by the nonprofit confirming it. | Operationally final, but may return to `Initiated` if the associated settlement is removed. | No further automatic transitions. |
-| `Canceled` | The donor canceled the grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
+| `Canceled` | The donor canceled the Grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
 
 There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` often depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
 

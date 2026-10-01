@@ -14,6 +14,8 @@ Load Chariot Connect and initialize it with the Connect ID stored for the nonpro
 | --- | --- | --- |
 | `cid` | Yes | The Connect ID for the nonprofit whose form the donor is viewing. |
 | `theme` | No | A built-in or registered custom theme. |
+| `links` | No | Boolean. Shows the supporting links under the button. |
+| `disabled` | No | Boolean. Blocks the click entirely. Use it when your form is not ready to open DAFpay. |
 
 The Connect ID may appear in browser code. The API key may not.
 
@@ -85,14 +87,36 @@ chariot.registerTheme("myTheme", {
 
 | Property | Use | Allowed value |
 | --- | --- | --- |
-| `width` | Button width | Up to `w-16` or 64px |
+| `width` | Button width | Up to `w-12` or 48px |
 | `height` | Button height | `h-9` through `h-12` |
 | `showExtendedText` | Show the longer button label | `true` or `false` |
+
+These are the three properties most integrations set. A theme accepts eleven more — `primary`, `secondary`, `xPadding`, `yPadding`, `logoColor`, `corners`, `borderWidth`, `borderColor`, `hoverState`, `hoverColor`, and `logoHidden`. `registerTheme` also takes a third argument naming the theme to inherit from, which defaults to `DefaultTheme`.
 
 Do not target internal component markup.
 
 ## Content Security Policy
 
-If your donation pages send a Content Security Policy, DAFpay needs specific sources allowed or the button will not render and the modal will not open. See [Troubleshooting](/guides/dafpay/troubleshooting).
+Chariot Connect loads its script from Chariot's CDN. Depending on the browser and viewport, DAFpay opens in a cross-origin frame or popup at `https://secure.dafpay.com`.
+
+If your donation pages send a Content Security Policy, merge these sources into the applicable directives:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.givechariot.com;
+  frame-src https://secure.dafpay.com;
+  font-src 'self' https://cdn.givechariot.com;
+  style-src 'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src 'self' https://cdn.givechariot.com data:;
+```
+
+This is an example, not a complete policy. Merge each source into your existing response header. Do not replace your full policy with this block.
+
+The parent page does not need to add Chariot to `connect-src`. DAFpay API traffic originates inside the cross-origin frame.
+
+If your security policy cannot allow inline styles, confirm the supported nonce or hash approach with Chariot before launch.
+
+If the button does not render or the modal does not open, see [Troubleshoot CSP](/guides/dafpay/troubleshooting#troubleshoot-csp).
 
 Next: [Capture Donation Data](/guides/dafpay/accept/donation-data)

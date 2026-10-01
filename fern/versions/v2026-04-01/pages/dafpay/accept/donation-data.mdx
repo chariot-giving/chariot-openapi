@@ -3,9 +3,11 @@ title: Capture Donation Data
 hidden: false
 ---
 
-Use `onDonationRequest` to send the current form values into DAFpay.
+Use `onDonationRequest` to send the current form values into DAFpay. Register it on the element you installed, once the component has loaded:
 
 ```javascript
+const chariot = document.getElementById("chariot");
+
 chariot.onDonationRequest(async () => ({
   amount: 25000,
   firstName: "Michael",
@@ -30,19 +32,20 @@ chariot.onDonationRequest(async () => ({
 | `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
 | `note` | string | Donor note to the nonprofit. Maximum 400 characters. |
 | `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
-| `designation` | string | Defaults to `Where needed most`. Values over 100 characters may be truncated. |
+| `designation` | string | Defaults to `Where needed most`. Truncated at 255 characters here. Create Grant's own `designation` field caps at 100. |
 | `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
 | `metadata` | object | Name-value pairs associated with the workflow session. |
+| `lockAmount` | boolean | Prevents the donor from changing the amount inside DAFpay. Defaults to `false`. |
 | `fundId` | string | Preselects a DAF provider and skips the provider picker. |
 | `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
 
-DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100.
+DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100. The modal accepts a value that is not a whole dollar and Create Grant rejects it later, so validate before you open DAFpay.
 
 ## Send the donor details you collect
 
 If your form collects a donor detail, pass it to DAFpay. If your form does not collect it, omit the field so DAFpay can fill or collect it from the donor's DAF account.
 
-Do not send empty strings. Chariot treats an empty string as supplied data, which prevents DAFpay from filling that field.
+Omit a field rather than sending an empty string. An empty string reads as unset, so it does not pin the value, and it makes your own payload harder to reason about when a field is genuinely blank.
 
 Choose which details to collect before DAFpay based on your identity, CRM, and attribution requirements. For example, a platform may need the name entered on its form to determine which constituent receives recognition, even when that name differs from the name on the DAF account.
 
@@ -58,7 +61,7 @@ DAFpay fills a donor field from the first source that has a value:
 
 This is why you can put DAFpay in an express checkout. You do not have to collect an address before the donor clicks, because DAFpay can retrieve it from the provider.
 
-Two limits on the provider step. It runs only when first name, last name, email or address is missing, so a missing phone number on its own will not trigger it. And it runs only when the Connect is configured to return donor information, which Chariot sets during Connect configuration. With that setting off, DAFpay never asks the provider and the donor fills in anything your form did not supply.
+Two limits on the provider step. It runs only when first name, last name, email or address is missing, so a missing phone number on its own will not trigger it. An address counts as present when any of line 1, city, state or postal code has a value, so a partial address suppresses the lookup and the donor fills in the rest. And it runs only when the Connect is configured to return donor information, which Chariot sets during Connect configuration. With that setting off, DAFpay never asks the provider and the donor fills in anything your form did not supply.
 
 ## Choose where to send the designation
 
@@ -69,7 +72,7 @@ Two limits on the provider step. It runs only when first name, last name, email 
 | Sent to the DAF provider | Yes | No |
 | Appears on the Chariot Donation | Yes, as the purpose | Yes, under the DAFpay details |
 | Kept when funds arrive | Yes, it takes precedence over the provider's purpose | Not applicable |
-| Length limit | Truncated at 100 characters | No practical limit |
+| Length limit | Truncated at 255 characters here, and at 100 on the way to the provider | No practical limit |
 
 Sending it in `designation` is the only way the provider sees it, and it also fixes the purpose on the Donation, so the record will not later be overwritten by whatever the provider sends. The tradeoff is that some providers review a restricted designation before releasing the Grant, which can take longer.
 
@@ -79,7 +82,7 @@ Sending it only in `metadata` keeps the request unrestricted for the provider. T
 
 Pass stable identifiers the nonprofit needs for CRM coding, such as campaign, appeal, designation, source, form, comment, dedication, and tribute data. Do not rely only on a page URL.
 
-If your form allows a donor to divide one gift among multiple designations, send a short, human-readable summary in `designation` and place the complete allocation in `metadata`. The `designation` value may be truncated after 100 characters, so do not rely on it to preserve the full allocation.
+If your form allows a donor to divide one gift among multiple designations, send a short, human-readable summary in `designation` and place the complete allocation in `metadata`. The `designation` value is truncated, so do not rely on it to preserve the full allocation.
 
 `metadata` values are strings, so serialize the allocation rather than nesting it.
 
@@ -97,9 +100,17 @@ Flattened keys work equally well if you prefer them, for example `allocation_com
 
 Test the exact metadata returned from at least two forms with different values.
 
+## Metadata on the way in and the way out
+
+`metadata` accepts JSON on input, so a nested value is allowed. Reading the Grant back through the public API returns non-string values stringified, so what you get is not always shaped like what you sent.
+
+Passing strings is the simplest way to avoid that asymmetry. Serialize anything structured yourself and parse it on the way back.
+
+Metadata can only be set in the browser. There is no `metadata` field on Create Grant, so it cannot be added, corrected, or validated server-side after the donor authorizes.
+
 ## The page URL is captured for you
 
-Chariot records the URL of the page the gift was made from as `web_location_url` on the Donation. Any tracking parameters already in that URL, such as a source or campaign code, come through with it.
+Chariot records the URL of the page the gift was made from as `initiation.web_location_url` on the Donation. Any tracking parameters already in that URL, such as a source or campaign code, come through with it.
 
 That is capture, not routing. If a code needs to drive how the gift is coded or reconciled, pass it yourself: `designation` for the fund or purpose the DAF should see, and `metadata` for internal codes that stay inside Chariot.
 
@@ -119,27 +130,22 @@ Do not apply one minimum amount to every DAFpay gift. Minimum Grant amounts vary
 
 Open DAFpay for any valid whole-dollar amount and let DAFpay enforce the selected provider's minimum. If you need to validate the amount yourself, use Get DAF to retrieve the provider's `minimumGrantAmount`.
 
-## Stop when the form is not ready
+## Stop DAFpay from opening when the form is not ready
 
-Return `false` when a required amount, designation, or other form value is missing or invalid. Show the error on your form so the donor knows what to fix.
+Set the `disabled` attribute on the element. It blocks the click, so the modal never opens.
 
 ```javascript
-chariot.onDonationRequest(async () => {
+const chariot = document.getElementById("chariot");
+
+function syncDafpayAvailability() {
   const amount = getAmountInCents();
-
-  if (!amount || amount <= 0 || amount % 100 !== 0) {
-    showAmountError();
-    return false;
-  }
-
-  return {
-    amount,
-    designation: getSelectedDesignation(),
-    metadata: { platformTransactionId: getTransactionId() }
-  };
-});
+  const ready = Number.isInteger(amount) && amount > 0 && amount % 100 === 0;
+  chariot.toggleAttribute("disabled", !ready);
+}
 ```
 
-Do not block the donor because contact fields are blank when the Connect is configured to collect or fill them.
+Keep your own form validation and error messages alongside it, so the donor can see what to fix.
+
+Returning `false` from `onDonationRequest` does not stop the modal. The component opens the window before it awaits your callback, so a `false` return arrives after the donor is already looking at DAFpay.
 
 Next: [Handle the Result](/guides/dafpay/accept/result)

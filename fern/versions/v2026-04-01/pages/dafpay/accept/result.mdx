@@ -70,19 +70,20 @@ Use the exact value in `detail.reason`:
 | `CID_NOT_FOUND` | The Connect ID was not found. |
 | `SERVICE_DEACTIVATED` | The nonprofit's Connect is inactive. |
 | `INELIGIBLE_ORGANIZATION` | The organization cannot receive DAF Grants. |
-| `EIN_NOT_FOUND` | The provider does not support Grants to the nonprofit. |
+| `NONPROFIT_NOT_FOUND` | The provider does not support Grants to the nonprofit. |
 | `CREDENTIALS_ERROR` | The provider credentials are invalid. |
-| `TFA_ERROR` | Two-factor authentication failed. |
-| `ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. |
+| `TFA_VERIFICATION_ERROR` | Two-factor authentication failed. |
+| `ACCOUNT_ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. |
 | `NO_CHARITABLE_ACCOUNTS` | The signed-in account has no charitable accounts. |
 | `INVALID_PRESELECTED_DAF` | The supplied `fundId` is invalid. |
 | `INVALID_CARD` | The card number is invalid. |
 | `INACTIVE_CARD` | The card is inactive. |
-| `ZERO_AMOUNT` | The Grant amount is zero. |
+| `ZERO_GRANT_AMOUNT` | The Grant amount is zero. |
 | `RECURRING_NOT_SUPPORTED` | The provider does not support recurring Grants. |
 | `CONNECTION_FAILED` | The connection to the provider failed. |
 | `INSTITUTION_DOWN_ERROR` | The provider is unavailable. The donor should try again later. |
 | `SESSION_NOT_FOUND` | The session was not found or has expired. |
+| `BROWSER_NOT_SUPPORTED` | The donor's browser cannot run DAFpay. Offer another payment method. |
 | `CUSTOM_ERROR` | A custom integration error occurred. |
 | `INTERNAL_ERROR` | An internal error occurred. |
 

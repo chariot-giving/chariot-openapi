@@ -7,11 +7,13 @@ This page is for nonprofits integrating their own donation form. If you are a fu
 
 ## Find the Donation
 
-A donation record is created after the grant, and the donation is the record you will use to track the gift through processing. Once the donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the grant immediately. If it is empty, retrieve the grant again with Get Grant rather than treating the donation as missing.
+A donation record is created after the Grant, and the Donation is the record you will use to track the gift through processing. Once the Donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the Grant immediately. If it is empty, retrieve the Grant again with Get Grant rather than treating the Donation as missing.
 
-A donation carries no grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations, and some providers do not support tracking IDs, so that value is absent on those gifts. Store `donationId` when you create the grant. It is the only link present for every provider.
+A donation carries no grant ID of its own. To go the other way, call List Grants with `donation_id` set to the Donation you are holding, or filter List Donations on `initiation.dafpay_tracking_id`.
 
-We recommend building your processing on donations rather than grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A donation with no `initiation` data is one of those gifts and should follow the same workflow.
+Store `donationId` on your record as soon as the Grant returns it. It is the link that is present for every provider, and reading it once is cheaper than looking the Grant up again later.
+
+We recommend building your processing on Donations rather than Grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A donation with no `initiation` data is one of those gifts and should follow the same workflow.
 
 ## Payment status on the Donation
 
@@ -25,7 +27,11 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 | `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
 | `CANCELED` | The gift will not be paid. |
 
-Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it. Gifts on the `direct` channel sit at `INCOMING_OUTSIDE_CHARIOT` until someone confirms receipt, because Chariot never sees the provider's payment.
+Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it.
+
+The grant's `paymentChannel` does not decide the status. A `direct` gift reads as `INCOMING_TO_CHARIOT` whenever Chariot expects to receive the funds for that provider and organization, for example through a lockbox. Read the status and settlement data rather than inferring receipt from the channel.
+
+Once a settlement lands in your Chariot account the status moves to `RECEIVED_IN_CHARIOT` on its own. The manual step applies only to funds that arrive outside Chariot, where someone confirms receipt because Chariot never sees the payment.
 
 ## Settlement timestamps
 
@@ -41,7 +47,7 @@ A Donation can read as received before the money is usable. Check the timestamps
 
 Use `settlement.settled_at` for the date funds became available. It can be later than the date the Donation appeared in Chariot, because a connected source's payment data can arrive ahead of the money.
 
-## Retrieving donations and deposits
+## Retrieving Donations and Deposits
 
 List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, and `dafpay_tracking_id`.
 
@@ -53,7 +59,7 @@ List Deposits uses the same paging pattern but different date filters, `settled_
 
 ## Record what your own systems did
 
-To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a donation, and you can retrieve them alongside the rest of the donation data.
+To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a Donation, and you can retrieve them alongside the rest of the Donation data.
 
 ## Where DAFpay funds arrive
 
@@ -62,7 +68,7 @@ DAFpay submits the request but does not hold the donor's DAF funds. Read the Gra
 | `paymentChannel` | How the funds move |
 | --- | --- |
 | `direct` | The DAF provider sends the funds directly to the intended recipient nonprofit, by electronic transfer or mailed check. |
-| `dafpay_network` | The DAF provider sends the funds to the DAFpay Network 501(c)(3) nonprofit organization (EIN 93-1372175), which reviews and processes the grant and then sends the funds to the intended recipient. |
+| `dafpay_network` | The DAF provider sends the funds to the DAFpay Network 501(c)(3) nonprofit organization (EIN 93-1372175), which reviews and processes the Grant and then sends the funds to the intended recipient. |
 
 An Unintegrated Grant always carries a third value, `offline`, because Chariot cannot confirm how the donor submits the gift.
 
@@ -95,7 +101,7 @@ If no identifier appears with the payment, compare the donor's fund name, amount
 
 ## Cancellations and refunds
 
-A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Direct them to their provider rather than offering a refund action of your own, and contact us at [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help. Canceled grants incur no processing fees.
+A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Direct them to their provider rather than offering a refund action of your own, and contact us at [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help. Canceled Grants incur no processing fees.
 
 A gift that has not arrived yet is not the same as a canceled one, so wait for the API data to show the cancellation before updating your own record.
 

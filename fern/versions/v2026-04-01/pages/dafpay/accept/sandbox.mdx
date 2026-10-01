@@ -50,7 +50,7 @@ These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 
 ## Test browsers and devices
 
-DAFpay opens in a popup window, so browser behavior is worth testing deliberately rather than assuming. Complete the donor flow on:
+Depending on the browser and viewport, DAFpay opens in a cross-origin frame or a popup window, so browser behavior is worth testing deliberately rather than assuming. Complete the donor flow on:
 
 - Chrome, Safari, and Firefox on desktop.
 - Safari and Chrome on iPhone.
@@ -61,7 +61,7 @@ On each supported browser, confirm that DAFpay renders, opens from the donor's c
 
 ## Test with popups blocked
 
-Browsers block a popup that does not open in direct response to a click, and some donors block popups outright. Turn popup blocking on and walk the flow, so you know what your donors see and your page shows them something useful rather than appearing to do nothing.
+Where DAFpay opens in a popup, browsers block one that does not open in direct response to a click, and some donors block popups outright. Turn popup blocking on and walk the flow, so you know what your donors see and your page shows them something useful rather than appearing to do nothing.
 
 If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
 

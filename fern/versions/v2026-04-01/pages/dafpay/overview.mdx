@@ -25,9 +25,9 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 | Grant | A request sent to a DAF provider that is directly connected to DAFpay. |
 | Unintegrated Grant | A request recorded for a provider that is not connected to DAFpay, where the donor finishes the gift in the provider's own portal. A separate object with its own endpoints and events. |
 | Donation | Chariot's record of a gift, including donor, amount, coding, source, and payment status. Every Grant produces one, and gifts that never touched DAFpay have one too. Nonprofits only. |
-| Deposit | A transfer of funds into a Chariot account. One Deposit can cover many Donations. Nonprofits only. |
+| Deposit | A transfer of funds into a Chariot account. One Deposit can cover many Donations. |
 
-Donations and deposits belong to the nonprofit's Chariot account. A fundraising platform cannot read them and builds on grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a grant becomes a donation and how to track it from there.
+Donations and Deposits are organization-scoped. A fundraising-platform key is bound to a fundraising application rather than an organization, so those calls return `401` and a platform builds on Grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a Grant becomes a Donation and how to track it from there.
 
 ## What varies by DAF provider
 
@@ -35,7 +35,7 @@ Donations and deposits belong to the nonprofit's Chariot account. A fundraising 
 | --- | --- |
 | Connection | Integrated providers accept the request through DAFpay. Unintegrated ones require the donor to finish in their own portal. |
 | Minimum amount | Minimum grant amounts are set by the provider, so a single minimum will not work for every DAFpay gift. |
-| Tracking ID | Most providers carry the DAFpay tracking ID through to the payment. Some do not, which affects how you match incoming funds. |
+| Tracking ID | Every DAFpay gift gets one. Most providers carry it through to the payment, and some do not, which affects how you match incoming funds. |
 | How funds arrive | Directly to the nonprofit by ACH or check, or electronically into a Chariot account through a disbursement partner. |
 | Recurring | Not every provider supports monthly gifts. |
 

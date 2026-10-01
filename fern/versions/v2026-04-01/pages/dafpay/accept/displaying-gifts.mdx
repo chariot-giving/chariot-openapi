@@ -7,7 +7,7 @@ This page is for fundraising platforms offering DAFpay across many nonprofits' f
 
 Store the Grant ID on your transaction and show the nonprofit enough to match the gift when the funds reach them weeks later. Your dashboard is where they will look first.
 
-Platforms work from grants. Donations and deposits belong to the nonprofit's own Chariot account and cannot be read with your platform's API key, so the grant is your record of the gift, and `trackingId` and `externalGrantId` are what the nonprofit uses to match it to the money later.
+Platforms work from Grants. Donations and Deposits belong to the nonprofit's own Chariot account and cannot be read with your platform's API key, so the Grant is your record of the gift, and `trackingId` and `externalGrantId` are what the nonprofit uses to match it to the money later.
 
 ## What to show
 
@@ -24,7 +24,7 @@ Platforms work from grants. Donations and deposits belong to the nonprofit's own
 
 Make the Tracking ID and External Grant ID searchable and easy to copy, and store them as strings so their formatting is preserved. If an identifier is not yet available, leave it blank and add it when a later read returns it.
 
-A Tracking ID on the Grant does not guarantee it will appear with the funds. Some providers do not pass it through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
+Every DAFpay grant carries a Tracking ID, but that does not guarantee it appears with the funds. Some providers do not pass it through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
 
 ## Keep the records current
 
@@ -36,7 +36,7 @@ Grant status is derived by Chariot, so it is read only over the API and your pla
 
 ## Keep the record types apart
 
-An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Keep both separate from one-time grants in your dashboard, so a nonprofit is never shown gifts it has not been promised.
+An unintegrated grant is an intent to give that the donor still has to complete on their provider's website. A recurring grant records the initial arrangement rather than each later payment. Keep both separate from one-time Grants in your dashboard, so a nonprofit is never shown gifts it has not been promised.
 
 ## Reconciliation
 
@@ -71,7 +71,7 @@ Do not offer a refund action for a completed DAF grant. The donor's DAF provider
 
 ## Set expectations about the funds
 
-Funds do not always come straight from the donor's provider. Some grants are routed through DAFpay Network, which reviews and processes the grant before sending the funds to the nonprofit, so do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider. The grant's `paymentChannel` tells you which route a given gift takes.
+Funds do not always come straight from the donor's provider. Some Grants are routed through DAFpay Network, which reviews and processes the Grant before sending the funds to the nonprofit, so do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider. The grant's `paymentChannel` tells you which route a given gift takes, and it does not tell you whether the money has arrived.
 
 Before launch, document which status and date control platform billing, how cancellations and adjustments are handled, and which reconciliation data is available to nonprofits and support.
 
