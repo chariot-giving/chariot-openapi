@@ -9,7 +9,7 @@ This page is for nonprofits integrating their own donation form. If you are a fu
 
 A donation record is created after the grant, and the donation is the record you will use to track the gift through processing. Once the donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the grant immediately. If it is empty, retrieve the grant again with Get Grant rather than treating the donation as missing.
 
-A Donation carries no Grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which some providers do not support, so store `donationId` at creation. It is the only link present for every provider.
+A donation carries no grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations, and some providers do not support tracking IDs, so that value is absent on those gifts. Store `donationId` when you create the grant. It is the only link present for every provider.
 
 We recommend building your processing on donations rather than grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A donation with no `initiation` data is one of those gifts and should follow the same workflow.
 
