@@ -3,6 +3,8 @@ title: Receiving and Processing Donations
 hidden: false
 ---
 
+What you do once the Grant exists depends on who you are building for. A fundraising platform tracks and displays Grants so each nonprofit can match the gift when the funds arrive. A nonprofit tracks Donations through receipt and processing in its Chariot account. Everything up to that split applies to both.
+
 ## Authorization, Grant status, and payment
 
 A completed DAFpay session means the donor authorized a Grant request. Creating the Grant records the request and submits it to the DAF provider. Neither event means the nonprofit has received the funds.
@@ -98,6 +100,43 @@ Use `trackingId` rather than the deprecated `userFriendlyId`. Some of these fiel
 7. Use the stored Chariot ID to find the platform transaction.
 
 If no DAFpay tracking ID appears, try `externalGrantId`. If neither is available, fall back to the donor's fund name, amount, date, designation, and other Grant details.
+
+## Displaying Grants on your platform
+
+<Note>
+  This section is for fundraising platforms serving many nonprofits. If you are a nonprofit integrating your own form, skip to [Payment status on the Donation](#payment-status-on-the-donation).
+</Note>
+
+Store the Grant ID on your transaction and show the nonprofit enough to match the gift when the funds reach them weeks later. Your dashboard is where they will look first.
+
+### What to show
+
+| Dashboard field | Grant field | Why the nonprofit needs it |
+| --- | --- | --- |
+| Grant ID | `id` | Retrieve the Grant and tie later updates to the same transaction. |
+| Tracking ID | `trackingId` | Match the gift to an incoming payment or remittance. |
+| External Grant ID | `externalGrantId` | Match the provider's own grant or payment record. |
+| Amount | `amount` | The submitted amount, converted from cents. |
+| DAF provider | `fundId` | Retrieve the name with Get DAF and display `orgName`, never the raw ID. |
+| Donor information | The donor fields you have | Identify the gift. |
+| Grant status | `status` | The current state Chariot returns. |
+| Your transaction ID | Your own record | Get back to the original form submission. |
+
+Make the Tracking ID and External Grant ID searchable and easy to copy, and store them as strings so their formatting survives. Leave an identifier blank when it is not yet available and fill it in when a later read returns it.
+
+A Tracking ID on the Grant does not guarantee it will appear with the funds. Some providers do not pass it through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
+
+### Keep the records current
+
+Subscribe to `grant.created` and `grant.updated`. When an event arrives, retrieve the current Grant and update the existing transaction using the stored Grant ID. If you support unintegrated providers, subscribe to `unintegrated_grant.created` and `unintegrated_grant.updated` and read those through their own endpoints.
+
+Display the status Chariot returns and nothing else. A created Grant means the request was submitted, not that the nonprofit has the money. The nonprofit confirms receipt in Chariot, and your platform picks that up through Grant updates.
+
+Do not give your users a control that writes a Grant status. Platforms cannot set one.
+
+### Keep the record types apart
+
+An Unintegrated Grant is an intention to give that the donor still has to complete on their provider's site. A recurring Grant records the initial arrangement, not each later payment. Neither is a submitted one-time gift, and collapsing them into one list is how a dashboard ends up overstating what a nonprofit is owed.
 
 ## Payment status on the Donation
 

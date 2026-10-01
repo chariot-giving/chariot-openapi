@@ -68,9 +68,6 @@ navigation:
               - page: Unintegrated Providers
                 slug: unintegrated
                 path: ./pages/dafpay/accept/unintegrated.mdx
-              - page: Display Grants on Your Platform
-                slug: platforms
-                path: ./pages/dafpay/accept/platforms.mdx
               - page: Receiving and Processing Donations
                 slug: after-the-gift
                 path: ./pages/dafpay/accept/after-the-gift.mdx
