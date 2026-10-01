@@ -1,0 +1,26 @@
+---
+title: "Donor Accounts"
+subtitle: "Donor Accounts let DAF Providers connect their donors to the DAFpay payment option."
+hidden: false
+---
+
+<Note title="Audience">
+This guide is for **Donor Advised Fund (DAF) providers** integrating with DAFpay. If you are a nonprofit or fundraising platform looking to accept DAFpay donations, see [Integrating DAFpay](/guides/dafpay/integrating-dafpay/checklist) instead.
+</Note>
+
+## Overview
+
+As a DAF provider, you control which donors can use DAFpay and which grant requests get approved. The Donor Accounts API gives you a clean, well-defined interface to verify donors, manage access, and decision grant requests.
+
+## Primary Resources
+
+**Donor Accounts** — A Donor Account represents a DAFpay donor identity linked to your organization. It holds an optional `external_id` — your internal identifier for the user's account. A Donor Account must be approved before its Grant Requests can be processed. A Donor Account can be associated with multiple Giving Pools; a Giving Pool represents a specific set of funds within a donor's DAF account.
+
+**Grant Requests** — Submitted when a donor uses DAFpay on a nonprofit's donation form. Grant Requests are tied to a specific Donor Account and can only be approved or rejected once the Donor Account is `approved`.
+
+## Verification Flows
+
+Accounts reach `approved` status by verifying an Authorization Token — a one-time code. There are two flows that differ in who initiates the process:
+
+- **[Donor-Initiated Verification](/guides/dafpay/donor-accounts/account-lifecycle#donor-initiated-verification)** — The donor submits a grant first; DAFpay emails them a code which they pass to the DAF.
+- **[DAF-Initiated Setup](/guides/dafpay/donor-accounts/account-lifecycle#daf-initiated-setup)** — The DAF creates a Donor Account and token in advance and gives the code to the donor via their portal.

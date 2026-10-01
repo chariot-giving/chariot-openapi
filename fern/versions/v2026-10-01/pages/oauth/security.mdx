@@ -1,0 +1,61 @@
+---
+title: "Security Best Practices"
+subtitle: "Keeping the connection scoped, encrypted, and revocable — on both sides."
+hidden: false
+---
+
+The integration is designed so that Chariot holds **scoped, revocable tokens — never donor credentials**. This page collects the security practices we recommend (and a few we require) on top of the [OAuth & Token Requirements](/guides/dafpay/oauth/oauth-requirements). If you run a standards-compliant identity provider, most of these are configuration rather than code.
+
+## Scope of access
+
+Many DAF providers operate within a larger financial institution, where the same donor login also reaches brokerage, banking, or investment accounts. **The access you grant Chariot must never extend to those systems.**
+
+- Tokens issued to Chariot should authorize only the capabilities in [API Endpoints](/guides/dafpay/oauth/api-endpoints): the donor's profile, their funds and grantable balances, grant creation, and grant status.
+- If your authorization server fronts multiple lines of business, issue DAF tokens with a dedicated scope or audience, and reject those tokens everywhere else.
+- Never return investment positions, bank balances, or transaction history from the endpoints Chariot calls — DAFpay neither needs nor wants that data.
+
+## Transport security
+
+- **TLS 1.2 or higher on every endpoint** — authorization, token, discovery/JWKS, and resource APIs. This is required.
+- Production endpoints must present valid CA-signed certificates. Self-signed certificates are acceptable in sandbox if you let us know in advance.
+
+## Credential management
+
+- Exchange `client_secret`s through the secure channel Chariot provides during onboarding — never over email.
+- Generate secrets with a cryptographically secure random generator (CSPRNG).
+- **Never store client secrets in plaintext.** Use a secrets manager, or at minimum encrypt them at rest in your database.
+- When rotating Chariot's client secret, coordinate with us and keep both secrets valid during the cutover so live donor connections aren't interrupted.
+
+## Token security
+
+- Issue **short-lived access tokens** (15 minutes recommended) and long-lived refresh tokens per [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).
+- Validate the Bearer token on every resource API request — signature (or introspection), expiry, and scope/audience.
+- Build a way to revoke tokens when a donor disconnects or you detect suspicious activity. A standard revocation endpoint (RFC 7009) is recommended; Chariot calls it when a donor unlinks your DAF.
+
+## PKCE
+
+Chariot includes PKCE parameters (`code_challenge` with S256) on every authorization request and the matching `code_verifier` at token exchange. Supporting PKCE is **recommended, not required**: Chariot is a confidential client authenticating with a client secret, so PKCE here is defense-in-depth against authorization-code interception rather than a necessity. Servers that don't support PKCE can ignore the parameters.
+
+## Signing key rotation (JWKS)
+
+If you issue JWT tokens, publish your signing keys at the JWKS URI referenced by your discovery document, and:
+
+- Rotate signing keys at least once a year.
+- Publish a new key **before** removing the old one, and keep both available for at least 24 hours so Chariot's key cache can roll over.
+- Give every key a unique `kid`.
+- Don't IP-restrict your discovery or JWKS endpoints — they contain only public material, and Chariot (like your other clients) must reach them freely.
+
+## IP allowlisting
+
+All Chariot traffic — token exchanges, refreshes, and resource API calls — originates from a static IP range we share during onboarding. You may allowlist this range on your token and resource endpoints as defense-in-depth. Two caveats:
+
+- Allowlisting complements token validation; it never replaces it.
+- Keep discovery and JWKS endpoints publicly reachable (see above).
+
+## How Chariot protects your tokens
+
+Chariot stores refresh tokens encrypted at rest (envelope encryption, per-token data keys), never logs token values, and scopes each token to a single Donor Account. Tokens are used exclusively for the donor-authorized operations described in [API Endpoints](/guides/dafpay/oauth/api-endpoints), and stored tokens are deleted when a connection ends.
+
+## Incident coordination
+
+During onboarding we exchange technical and security contacts on both sides. If you detect suspicious activity involving Chariot's client, or need to revoke tokens in bulk (e.g., a security incident or an account migration), contact us first whenever possible — we'll prompt affected donors to reconnect rather than leaving them with silently broken connections.

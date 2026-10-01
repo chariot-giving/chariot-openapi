@@ -1,0 +1,94 @@
+---
+title: "OAuth Integration"
+subtitle: "Let donors link their DAF account to DAFpay and give seamlessly at checkout."
+hidden: false
+---
+
+<Note title="Audience">
+This guide is for **Donor Advised Fund (DAF) providers** who operate their own OAuth 2.0 / OIDC authorization server and a small set of APIs. If you'd prefer an integration with no engineering beyond a few API calls, see [Donor Accounts](/guides/dafpay/donor-accounts/overview) instead.
+</Note>
+
+## Overview
+
+The OAuth Integration is a way to connect your DAF to DAFpay. Instead of verifying donors with one-time codes, donors authenticate **directly on your login page** and are redirected back to DAFpay to complete their donation. DAFpay then communicates with your APIs to display fund balances, create grants, and track grant status — all under the donor's authorization.
+
+This is the same model used across open finance — it's how banks connect customer accounts to payment apps through aggregators like Plaid — scoped down to the handful of endpoints a DAF actually needs. If you already run Okta, Auth0, Cognito, or a custom OIDC-compliant identity provider, most of the authentication work is configuration rather than code.
+
+## Why this model
+
+**For your donors:**
+
+- They sign in with the credentials they already have — on your branded login page. You control the authentication experience, including MFA.
+- They see their real fund names and grantable balances inside the donation flow.
+- **They rarely re-link.** Every donor creates a persistent DAFpay Donor Account at their first checkout. While their connection to your DAF is active, returning donors authenticate with DAFpay only — they're asked to re-link only when the connection expires or is revoked. (See [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime).)
+
+**For you:**
+
+- Grants are created through your own API, so they flow through your existing review and disbursement pipeline. No separate decisioning queue.
+- You never share donor credentials with Chariot — only scoped, revocable tokens.
+- Real-time, accurate balances mean fewer failed grants.
+
+## How it compares to Donor Accounts
+
+| | **Donor Accounts** | **OAuth Integration** |
+|---|---|---|
+| Engineering lift | One API call | OAuth server + 4–5 API endpoints |
+| Donor verification | One-time code exchange | Donor signs in on your login page |
+| Fund balances shown | No | Yes, real-time |
+| Grant creation | You decision Grant Requests via Chariot's API | Chariot creates grants via your API |
+| Best for | DAFs without API infrastructure | DAFs with OAuth + APIs |
+
+Both integrations result in the same thing for donors: after the initial setup, giving via DAFpay is instant.
+
+## The flow
+
+```
+Donor                      DAFpay (Chariot)                 DAF (you)
+  │                          │                                │
+  │  1. Select your DAF      │                                │
+  │ ────────────────────────▶│                                │
+  │                          │  2. Redirect to your           │
+  │                          │     Authorize URL (popup)      │
+  │ ◄────────────────────────│                                │
+  │                          │                                │
+  │  3. Sign in & consent on your login page                  │
+  │ ─────────────────────────────────────────────────────────▶│
+  │                          │                                │
+  │                          │  4. Redirect to Chariot        │
+  │                          │     callback with auth code    │
+  │                          │ ◄──────────────────────────────│
+  │                          │                                │
+  │                          │  5. Exchange code for tokens   │
+  │                          │     (access + refresh + id)    │
+  │                          │ ◄─────────────────────────────▶│
+  │                          │                                │
+  │                          │  6. GET /funds, /customers     │
+  │                          │ ◄─────────────────────────────▶│
+  │  7. Review fund & balance│                                │
+  │ ◄────────────────────────│                                │
+  │  8. Submit grant         │                                │
+  │ ────────────────────────▶│  9. POST /grants               │
+  │                          │ ──────────────────────────────▶│
+  │                          │  10. Grant status updates      │
+  │                          │ ◄──────────────────────────────│
+```
+
+**On future donations**, the donor signs in to DAFpay only. Chariot silently refreshes its access token using the refresh token from step 5 and proceeds straight to steps 6–9. Your login page reappears only when the connection ends — when the donor's refresh token expires (reauthorization) or the connection is revoked (see [Connection Lifetime](/guides/dafpay/oauth/oauth-requirements#connection-lifetime)).
+
+## What you'll build
+
+1. **An OAuth 2.0 / OIDC authorization server** with a Chariot client registration — see [OAuth & Token Requirements](/guides/dafpay/oauth/oauth-requirements)
+2. **Resource APIs** that Chariot calls with the donor's access token — see [API Endpoints](/guides/dafpay/oauth/api-endpoints)
+3. **A sandbox environment** with test donor accounts for integration testing — see [Integration Checklist](/guides/dafpay/oauth/integration-checklist)
+
+Throughout the build, follow the [Security Best Practices](/guides/dafpay/oauth/security) — transport security, credential handling, token policy, and the scope boundaries that keep Chariot's access limited to DAF granting and nothing else.
+
+## Estimated timeline
+
+| Your current setup | Estimated effort |
+|---|---|
+| Existing Okta / Auth0 / Cognito + internal grant APIs | ~2–4 weeks of configuration + API adaptation |
+| Existing identity provider, no external-facing APIs | ~1–2 months |
+| Building auth and APIs from scratch | ~1–2 months |
+
+Chariot requires roughly **1–2 weeks** to build, test, and certify the integration on our side once your sandbox is available.

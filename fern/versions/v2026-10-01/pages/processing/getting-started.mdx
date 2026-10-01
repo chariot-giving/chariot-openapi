@@ -1,0 +1,171 @@
+---
+title: "Getting Started"
+subtitle: "Set up Chariot to unify your offline gift processing"
+hidden: false
+createdAt: "Wed Jan 14 2026 20:36:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
+---
+
+This guide will walk you through setting up Chariot to start receiving and processing offline donations from multiple sources.
+
+## Prerequisites
+
+Before you begin, you'll need:
+
+- A verified 501(c)(3) nonprofit organization
+- EIN (Employer Identification Number)
+- Authorized officer or director to complete onboarding
+
+## Step 1: Create Your Chariot Account
+
+<Steps>
+
+### Sign Up
+
+Visit [givechariot.com](https://givechariot.com) and click "Get Started" to create your nonprofit account.
+
+You'll need to be a control person for the organization to claim the account.
+
+### Complete Verification
+
+Chariot will verify your nonprofit status and may collect additional information.
+
+This verification process typically takes 3-10 business days.
+
+<Note>
+Chariot verifies nonprofit eligibility and control person identification to ensure compliance with banking regulations and prevent fraud.
+</Note>
+
+### Access Your Dashboard
+
+Once approved, you'll receive access to your Chariot Dashboard where you can:
+- View all incoming donations
+- Manage Payment Sources
+- Generate and manage API keys
+- Export data to your systems
+
+</Steps>
+
+## Step 2: Set Up Payment Sources
+
+Payment Sources provide segregated addresses (electronic or physical) for receiving donations from different sources.
+
+<AccordionGroup>
+    <Accordion title="Electronic Payment Sources">
+        Electronic Payment Sources provide unique bank account and routing numbers for receiving ACH transfers.
+
+        **Use cases:**
+        - Dedicated payment source for Fidelity Charitable grants
+        - Dedicated payment source for PayPal Giving Fund distributions
+        - Dedicated payment source for workplace giving platforms, e.g. Benevity
+
+        **How to set up:**
+
+        1. Log into your Chariot Dashboard
+        2. Navigate to "Payment Sources"
+        3. Click on a Payment Source and follow the instructions to connect it.
+    </Accordion>
+
+    <Accordion title="Lockbox Payment Sources">
+        Lockbox Payment Sources provide physical mailing addresses for processing checks and physical mail.
+
+        **Use cases:**
+        - Dedicated PO Box for direct mail campaigns
+        - Dedicated address for major DAF sponsors that mail checks
+        - Consolidated check processing from multiple sources
+
+        **How to set up:**
+
+        1. Contact Chariot support to enable lockbox services
+        2. Chariot will provision a dedicated mailing address
+        3. Configure processing rules (appeal codes, etc.)
+        4. Update your portal and/or donor communications with the new address
+
+        Checks mailed to your lockbox are automatically deposited and the donation data is captured in Chariot.
+
+        <Note>
+        Lockbox services may incur additional fees. Contact [support@givechariot.com](mailto:support@givechariot.com) for pricing.
+        </Note>
+    </Accordion>
+</AccordionGroup>
+
+
+## Step 3: Retrieve Donations
+
+Once donations start flowing in, you can retrieve them via API.
+
+<Steps>
+
+### List Recent Donations
+
+Retrieve donations filtered by Payment Source, date range, or Deposit:
+
+<EndpointRequestSnippet endpoint="GET /v1/donations" />
+
+### Get Detailed Donation Information
+
+Retrieve a specific donation with all attribution and metadata:
+
+<EndpointRequestSnippet endpoint="GET /v1/donations/{id}" example="GetDonation" />
+
+### Sync data with your systems (CRM, accounting, etc.)
+
+Use the donations data to:
+- Create constituent records in your CRM
+- Update donor acknowledgment systems
+- Reconcile with your accounting system
+
+You can also use Properties to extend donation data with your own custom fields:
+
+<EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
+
+This allows you to:
+- Map to your CRM's custom fields
+- Track internal campaign codes
+- Add processing notes
+- Maintain audit trails
+
+</Steps>
+
+## Step 4: Configure Webhooks (Optional)
+
+For real-time notification of new donations:
+
+<Steps>
+
+### Create an Event Subscription
+
+Subscribe to donation events to receive webhooks:
+
+<EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
+
+### Subscribe to Key Events
+
+Important events for gift processing:
+- `donation.created` - New donation received
+- `donation.updated` - Donation details updated
+- `deposit.completed` - Deposit settled to your account
+- `deposit.returned` - Deposit was returned/rejected
+
+### Process Webhooks
+
+When you receive a webhook, you can:
+- Automatically create CRM records
+- Trigger thank you emails
+- Update your accounting system
+- Flag for manual review if needed
+
+</Steps>
+
+
+## Need Help?
+
+If you have questions or need assistance setting up Chariot:
+
+- **Email**: [support@givechariot.com](mailto:support@givechariot.com)
+- **Help Center**: [help.givechariot.com](https://help.givechariot.com/)
+- **Dashboard**: [dashboard.givechariot.com](https://dashboard.givechariot.com)
+
+<Info>
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>

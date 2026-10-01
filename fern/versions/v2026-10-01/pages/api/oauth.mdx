@@ -1,0 +1,18 @@
+---
+title: "OAuth"
+subtitle: "Call the API on behalf of a nonprofit that has authorized your application."
+hidden: false
+---
+
+An API key authenticates your own account. OAuth lets a nonprofit grant your application access to theirs, so you can call the API on their behalf without ever handling their credentials.
+
+You send the access token the same way you send an API key:
+
+```curl
+curl https://api.givechariot.com/v1/donations \
+  -H "Authorization: Bearer ACCESS_TOKEN"
+```
+
+OAuth access is not self-service. Contact [support@givechariot.com](mailto:support@givechariot.com) to register your application and receive client credentials.
+
+The [OAuth guide](/guides/oauth) covers the authorization code flow, scopes, token lifetimes, and the production and sandbox endpoints. For OpenID Connect and single sign-on, see [Identity](/guides/oauth/identity).
