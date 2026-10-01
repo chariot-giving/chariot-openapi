@@ -3,6 +3,10 @@ title: Create Connects
 hidden: false
 ---
 
+<Note>
+  This page is for fundraising platforms that serve many nonprofits and create a Connect for each one. If you are a nonprofit integrating your own donation form, Chariot provisions your sandbox and production Connects and sends you the IDs. Skip to [Install DAFpay](/guides/dafpay/accept/install).
+</Note>
+
 Each nonprofit on your platform has its own Connect. The Connect ID tells Chariot which nonprofit should receive the Grant.
 
 ## Search for the nonprofit
@@ -18,8 +22,6 @@ Your onboarding flow should also account for fiscal sponsors, organizations that
 ## Create the Connect
 
 Call Create Connect with the Chariot organization ID and a contact email that belongs to the nonprofit. Do not use your platform's support address.
-
-If you are integrating for a single organization, skip this page. Chariot creates the Connect and sends you the Connect ID, and there is no contact email for you to supply.
 
 <EndpointRequestSnippet endpoint="POST /v1/connects" />
 
