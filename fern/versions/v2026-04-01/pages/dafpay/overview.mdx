@@ -24,12 +24,14 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 | Workflow session | A single use of DAFpay. A new session starts each time a donor opens the modal, and its ID ties the browser authorization to the Grant you create. |
 | Grant | A request sent to a DAF provider that is directly connected to DAFpay. |
 | Unintegrated Grant | A request recorded for a provider that is not connected to DAFpay, where the donor finishes the gift in the provider's own portal. A separate object with its own endpoints and events. |
-| Donation | Chariot's record of a gift, including donor, amount, coding, source, and payment status. Every Grant produces one, and gifts that never touched DAFpay have one too. |
-| Deposit | A transfer of funds into a Chariot account. One Deposit can cover many Donations. |
+| Donation | Chariot's record of a gift, including donor, amount, coding, source, and payment status. Every Grant produces one, and gifts that never touched DAFpay have one too. Nonprofits only. |
+| Deposit | A transfer of funds into a Chariot account. One Deposit can cover many Donations. Nonprofits only. |
 
 ## Grants and Donations
 
 This relationship is the one worth understanding before you write any code.
+
+Donations and Deposits belong to the nonprofit's Chariot account. A fundraising platform cannot read them, and builds on Grants instead. The rest of this section is for nonprofits integrating their own form.
 
 Chariot creates the Donation from the Grant, so the link between them is stored on the Grant. Call Get Grant and read `donationId`. Chariot writes it a moment after Create Grant succeeds, so treat an absent value as not yet written and read the Grant again rather than as a Donation that does not exist.
 

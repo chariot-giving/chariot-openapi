@@ -13,7 +13,7 @@ Follow this guide to build directly against the DAFpay APIs, whether you are add
 2. Render Chariot Connect using that organization's Connect ID.
 3. Pass the current form values into DAFpay.
 4. Receive `CHARIOT_SUCCESS` and create the Grant from your server within 15 minutes.
-5. Store the workflow session, Grant, Donation, and reconciliation identifiers.
+5. Store the workflow session, Grant, and reconciliation identifiers.
 6. Subscribe to Grant updates.
 
 The steps are the same either way. Where they differ is Connect handling: a platform creates one Connect per nonprofit, while a nonprofit integrating its own form is given its Connects by Chariot.
@@ -30,7 +30,7 @@ The steps are the same either way. Where they differ is Connect handling: a plat
 | Platform transaction ID | Identifies the checkout in your system. |
 | Workflow session ID | Connects the browser authorization to Create Grant. |
 | Grant ID | Identifies the DAFpay Grant in Chariot. |
-| Donation ID | Connects the Grant to Chariot's Donation record when available. |
+| Donation ID | Connects the Grant to Chariot's Donation record. Nonprofits only; platforms cannot read Donations. |
 
 Build against sandbox first. See [Authentication](/guides/dafpay/accept/authentication) for keys and base URLs.
 

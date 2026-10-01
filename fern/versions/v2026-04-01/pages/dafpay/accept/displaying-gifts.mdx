@@ -7,6 +7,8 @@ This page is for fundraising platforms offering DAFpay across many nonprofits' f
 
 Store the Grant ID on your transaction and show the nonprofit enough to match the gift when the funds reach them weeks later. Your dashboard is where they will look first.
 
+Platforms work from Grants. Donations and Deposits belong to the nonprofit's own Chariot account and are not readable through your platform's API key, so the Grant is your record of the gift and `trackingId` and `externalGrantId` are how it gets matched to money later.
+
 ## What to show
 
 | Dashboard field | Grant field | Why the nonprofit needs it |
@@ -47,7 +49,6 @@ Store every Chariot identifier as soon as it becomes available. Your support tea
 | Platform transaction ID | Your platform | Locate the checkout in your system. |
 | Workflow session ID | DAFpay | Connect the donor authorization to Create Grant and support logs. |
 | Grant ID | Chariot | Durable API identifier returned by Create Grant. |
-| `donationId` | Chariot | Connect the Grant to Chariot's Donation record. Read it from Get Grant. |
 | `trackingId` | DAFpay | Match a provider payment to the DAFpay Grant. It may appear in the provider note or purpose as `Tracking ID:`. |
 | `externalGrantId` | DAF provider | Match the provider's own Grant or payment record when the DAFpay tracking ID is absent. |
 
@@ -61,9 +62,8 @@ Use `trackingId` rather than the deprecated `userFriendlyId`. Some of these fiel
 2. Render DAFpay using that nonprofit's Connect ID.
 3. Store `workflowSessionId` on the transaction when `CHARIOT_SUCCESS` fires.
 4. Call Create Grant and store the returned Grant ID.
-5. Call Get Grant and store `donationId`. Chariot sets it shortly after Create Grant succeeds, so read the Grant again if it is absent.
-6. When the provider payment arrives, use `trackingId` to locate the Grant or Donation in Chariot.
-7. Use the stored Chariot ID to find the platform transaction.
+5. When the provider payment arrives, the nonprofit uses `trackingId` to locate the Grant in Chariot.
+6. They use the stored Grant ID to find the transaction on your platform.
 
 If no DAFpay tracking ID appears, try `externalGrantId`. If neither is available, fall back to the donor's fund name, amount, date, designation, and other Grant details.
 

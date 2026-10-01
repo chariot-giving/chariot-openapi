@@ -13,7 +13,7 @@ The steps that break the integration, lose money, or lose data if you get them w
 - [ ] Save your transaction before calling Create Grant, so a form error never leaves a donor seeing a failure for a gift that was really sent.
 - [ ] Call Create Grant within 15 minutes, and make it idempotent on the workflow session.
 - [ ] Route recurring intents to Create Recurring Grant, and never retry it on a `409`. That means the Grant already exists.
-- [ ] Store the workflow session, Grant, Donation, tracking, and external Grant identifiers. You cannot reconstruct them later.
+- [ ] Store the workflow session, Grant, tracking, and external Grant identifiers, plus the Donation ID if you are a nonprofit. You cannot reconstruct them later.
 - [ ] Verify webhook signatures against the raw request body.
 
 ## Validate

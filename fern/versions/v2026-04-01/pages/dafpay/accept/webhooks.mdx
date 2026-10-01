@@ -9,18 +9,20 @@ Rather than polling for changes, subscribe to events and have Chariot send them 
 
 ## Events
 
-| Event | When it fires |
-| --- | --- |
-| `grant.created` | A DAFpay Grant was created. Fires only for DAFpay. |
-| `grant.updated` | A Grant changed, including a status change. |
-| `unintegrated_grant.created` | An Unintegrated Grant was recorded. |
-| `unintegrated_grant.updated` | An Unintegrated Grant changed. |
-| `donation.created` | A Donation was created, from DAFpay or from any other payment source. |
-| `donation.updated` | A Donation changed, including gaining a settlement. |
-| `deposit.created` | Funds arrived in your Chariot account. |
-| `deposit.updated` | A Deposit changed, including its settlement status. |
+| Event | Who can subscribe | When it fires |
+| --- | --- | --- |
+| `grant.created` | Both | A DAFpay Grant was created. Fires only for DAFpay. |
+| `grant.updated` | Both | A Grant changed, including a status change. |
+| `unintegrated_grant.created` | Both | An Unintegrated Grant was recorded. |
+| `unintegrated_grant.updated` | Both | An Unintegrated Grant changed. |
+| `donation.created` | Nonprofits | A Donation was created, from DAFpay or from any other payment source. |
+| `donation.updated` | Nonprofits | A Donation changed, including gaining a settlement. |
+| `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
+| `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-Build your CRM sync on the Donation events, so one code path handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` when you specifically want a DAFpay-only trigger.
+Donation and Deposit events belong to the nonprofit's Chariot account. A fundraising platform cannot subscribe to them and uses the Grant events instead.
+
+If you are a nonprofit, build your CRM sync on the Donation events, so one code path handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` when you specifically want a DAFpay-only trigger.
 
 ## What an event contains
 
