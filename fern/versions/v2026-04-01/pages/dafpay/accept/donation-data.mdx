@@ -72,7 +72,7 @@ Two limits on the provider step. It runs only when first name, last name, email 
 | Sent to the DAF provider | Yes | No |
 | Appears on the Chariot Donation | Yes, as the purpose | Yes, under the DAFpay details |
 | Kept when funds arrive | Yes, it takes precedence over the provider's purpose | Not applicable |
-| Length limit | Truncated at 255 characters on the session, and at 100 on the way to the provider | No practical limit |
+| Length limit | Truncated at 255 characters on the session, and at 100 on the way to the provider | Not truncated, though keep values small |
 
 Sending it in `designation` is the only way the provider sees it, and it also fixes the purpose on the Donation, so the record will not later be overwritten by whatever the provider sends. The tradeoff is that some providers review a restricted designation before releasing the Grant, which can take longer.
 

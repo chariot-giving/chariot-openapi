@@ -36,7 +36,9 @@ Never create a new workflow session to retry the same donor authorization.
 
 A timeout leaves the outcome uncertain. Keep the transaction pending while you resolve it rather than inviting the donor to start a second gift.
 
-Queueing a retry is not the same as submitting the gift. The authorization expires 15 minutes after the donor gives it, so a job that retries beyond that window will find a `410` and nothing to recover. Show the donor a pending state rather than a confirmation, resolve the outcome inside the window, and if it expires, tell them the request did not reach their provider and they need to authorize again.
+Queueing a retry is not the same as submitting the gift. The authorization expires 15 minutes after the donor gives it, and the session is checked before anything else, so a job that retries past that window gets a `410` whether or not a Grant was created.
+
+A `410` therefore means you can no longer resolve the outcome through this endpoint. It does not prove the gift never reached the provider. Before you tell a donor the request failed, look for a Grant on the stored workflow session. Resolve inside the window wherever you can, and keep the donor on a pending state until you have.
 
 ## A server-side example
 
