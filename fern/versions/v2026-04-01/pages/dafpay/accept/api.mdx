@@ -9,20 +9,18 @@ Follow this guide to build directly against the DAFpay APIs, whether you are add
 
 ## How the integration works
 
-1. Get the Connect for the organization receiving the gift. Chariot provides it for a single organization; you create one per organization if you serve many.
+1. Get the Connect for the organization receiving the gift. Chariot provides it if you are integrating one organization's form. If you serve many, you create one per nonprofit.
 2. Render Chariot Connect using that organization's Connect ID.
 3. Pass the current form values into DAFpay.
 4. Receive `CHARIOT_SUCCESS` and create the Grant from your server within 15 minutes.
 5. Store the workflow session, Grant, and reconciliation identifiers.
 6. Subscribe to Grant updates.
 
-The steps are the same either way. Where they differ is Connect handling: a platform creates one Connect per nonprofit, while a nonprofit integrating its own form is given its Connects by Chariot.
-
 `CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant or mean the nonprofit received the funds.
 
 ## Use the SDK
 
-Server-side calls are plain HTTP, but the Node SDK handles pagination, serialization, timeouts, retries, and typed errors for you.
+Server-side calls are plain HTTP. The Node SDK wraps them with typed requests and responses, and handles paging and retries for you.
 
 ```sh
 npm install --save @chariot-giving/typescript-sdk

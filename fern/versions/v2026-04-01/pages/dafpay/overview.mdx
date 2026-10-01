@@ -27,7 +27,7 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 | Donation | Donations represent all gifts in Chariot. This includes gifts initiated through DAFpay and gifts received in your Chariot account from a disbursement partner or another connected payment source. |
 | Deposit | A transfer of funds into your Chariot account. One deposit can cover many donations. |
 
-Donations and Deposits are organization-scoped. A fundraising-platform key is bound to a fundraising application rather than an organization, so those calls return `401` and a platform builds on Grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a Grant becomes a Donation and how to track it from there.
+Donations and deposits are organization-scoped, so they are only available to an individual nonprofit. Platforms that work across many nonprofits use grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a grant becomes a donation and how to track it from there.
 
 ## What varies by DAF provider
 
@@ -35,14 +35,11 @@ Donations and Deposits are organization-scoped. A fundraising-platform key is bo
 | --- | --- |
 | Connection | Integrated providers accept the request through DAFpay. Unintegrated ones require the donor to finish in their own portal. |
 | Minimum amount | Minimum grant amounts are set by the provider, so a single minimum will not work for every DAFpay gift. |
-| Tracking ID | Every DAFpay gift gets one. Most providers carry it through to the payment, and some do not, which affects how you match incoming funds. |
-| How funds arrive | Directly to the nonprofit by ACH or check, or electronically into a Chariot account through a disbursement partner. |
+| Tracking ID | Some DAF providers do not send DAFpay Tracking IDs. Without one, you match an incoming gift on the donor's fund name, gift amount, and other grant details. |
 | Recurring | Not every provider supports monthly gifts. |
 
 ## Before you start
 
-Each organization receiving gifts needs a claimed Chariot account that has completed compliance verification.
-
-If you are integrating your own donation form, Chariot provisions your sandbox and production Connects. If you are a fundraising platform, you create a Connect for each nonprofit yourself.
+Each organization receiving gifts needs a claimed Chariot account that has completed compliance verification. See the [onboarding guide](https://help.givechariot.com/onboarding/onboarding-guide) for how that works.
 
 Next: [Find your use case](/guides/dafpay/use-cases)
