@@ -126,8 +126,8 @@ Subscribe to `grant.updated`. A webhook tells you that the Grant changed, but it
 
 1. Verify the webhook signature.
 2. Retrieve the current Grant.
-3. Find the platform transaction using the stored Grant ID.
-4. Apply the current Grant data without creating another transaction.
+3. Find your own record using the stored Grant ID.
+4. Apply the current Grant data without creating a second record.
 5. Store the event ID so repeated deliveries can be processed safely.
 
 Use a periodic recovery process when status freshness matters. Webhooks can be delayed, delivered more than once, or missed by your application.
@@ -145,7 +145,7 @@ Use the exact status returned by the API. In your product, distinguish among:
 
 Do not use Paid, Settled, Completed, or Received unless the corresponding API data confirms that meaning.
 
-A nonprofit may receive a provider payment that Chariot cannot confirm automatically. Document how the nonprofit reconciles those payments and how that confirmation reaches your platform.
+A nonprofit may receive a provider payment that Chariot cannot confirm automatically. Document how that payment gets reconciled and how the confirmation reaches your system.
 
 Next: [Unintegrated Providers](/guides/dafpay/accept/unintegrated)
 
