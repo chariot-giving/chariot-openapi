@@ -30,7 +30,7 @@ Every DAFpay grant carries a Tracking ID, but that does not guarantee it appears
 
 ## What a Grant gives you
 
-Everything your dashboard shows comes off the Grant, so this is the full surface you have to work with.
+Everything your dashboard shows comes off the Grant. These are the fields most platforms use; see the Grant object in the API reference for the rest.
 
 | Field | Notes |
 | --- | --- |
@@ -43,6 +43,8 @@ Everything your dashboard shows comes off the Grant, so this is the full surface
 | `trackingId` | The DAFpay identifier that may appear with the payment. |
 | `externalGrantId` | The provider's own identifier, when they return one. |
 | `paymentChannel` | `direct` or `dafpay_network`. How the funds travel, not whether they arrived. |
+| `feeDetail` | The fee breakdown, including your application fee. This is how you reconcile what you earned. |
+| `donationId` | The Donation created from this Grant. Nonprofits read it; platforms cannot. |
 | `createdAt` | Creation time, which is also what Grant billing keys on. |
 | Donor fields | Whatever the donor supplied or the provider returned. |
 | `metadata` | What you passed in `onDonationRequest`. |

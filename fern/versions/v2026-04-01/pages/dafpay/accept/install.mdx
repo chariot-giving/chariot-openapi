@@ -44,7 +44,7 @@ Test its placement at mobile widths and across every form and campaign type that
 
 ## Styling
 
-Choose one of the built-in themes:
+The built-in themes most integrations use:
 
 - `DefaultTheme`
 - `LightModeTheme`
@@ -75,6 +75,8 @@ Choose one of the built-in themes:
 </chariot-connect>
 ```
 
+`DefaultTheme` is full width. Set an explicit `width` only when your form needs the button narrower than its container.
+
 You can also register a custom theme:
 
 ```javascript
@@ -87,8 +89,8 @@ chariot.registerTheme("myTheme", {
 
 | Property | Use | Allowed value |
 | --- | --- | --- |
-| `width` | Button width | Up to `w-12` or 48px |
-| `height` | Button height | `h-9` through `h-12` |
+| `width` | Button width | Numeric steps to `w-12`, fractions like `w-1/2`, or keywords like `w-full` |
+| `height` | Button height | Numeric steps to `h-12`, or keywords like `h-full` |
 | `showExtendedText` | Show the longer button label | `true` or `false` |
 
 These are the three properties most integrations set. A theme accepts eleven more — `primary`, `secondary`, `xPadding`, `yPadding`, `logoColor`, `corners`, `borderWidth`, `borderColor`, `hoverState`, `hoverColor`, and `logoHidden`. `registerTheme` also takes a third argument naming the theme to inherit from, which defaults to `DefaultTheme`.

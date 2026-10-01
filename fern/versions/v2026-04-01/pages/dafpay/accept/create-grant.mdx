@@ -220,7 +220,9 @@ Every Grant has at least one entry, written when the Grant is created. Read `sta
 
 ## Keep the Grant current
 
-Subscribe to `grant.updated`. A webhook tells you that the Grant changed, but it does not identify which fields changed. When an event arrives:
+Grant events are delivered to fundraising platforms only. If you are a nonprofit integrating your own form, you will not receive them — track the gift through Donation events instead, as [Processing Donations](/guides/dafpay/accept/processing-donations) describes.
+
+A platform subscribes to `grant.updated`. A webhook tells you that the Grant changed, but it does not identify which fields changed. When an event arrives:
 
 1. Verify the webhook signature.
 2. Retrieve the current Grant.

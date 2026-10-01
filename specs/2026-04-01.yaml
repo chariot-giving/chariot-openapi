@@ -6084,10 +6084,6 @@ components:
               * Completed: Receipt of the payment was confirmed, by Chariot recording the settlement or by the nonprofit confirming it.
               * Canceled: The donor canceled the grant, or the DAF provider did not approve it.
           example: Initiated
-        comment:
-          type: string
-          description: The user comment for the update
-          example: The grant has been received by the nonprofit
     UnintegratedGrant:
       type: object
       description: |-
@@ -7915,7 +7911,7 @@ components:
                   Chariot collects the fee you determine from the nonprofit and passes it to your platform.
                   Please note that platform fees are only taken when the grant is successfully received by the nonprofit.
                   The applicationFeeAmount is validated on its own against the grant amount, with a default ceiling of 210 basis points that your Chariot agreement can raise. Chariot's own fee is charged separately and is not part of this check.
-                  If the 5% limit is exceeded, a 400 error will be returned.
+                  If the fee limit is exceeded, a 400 error will be returned.
               donor:
                 type: object
                 properties:

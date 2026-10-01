@@ -32,7 +32,7 @@ chariot.onDonationRequest(async () => ({
 | `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
 | `note` | string | Donor note to the nonprofit. Maximum 400 characters. |
 | `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
-| `designation` | string | Defaults to `Where needed most`. Truncated at 255 characters here. Create Grant's own `designation` field caps at 100. |
+| `designation` | string | Defaults to `Where needed most`. Truncated at 255 characters when the workflow session is created. Create Grant's own `designation` field caps at 100. |
 | `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
 | `metadata` | object | Name-value pairs associated with the workflow session. |
 | `lockAmount` | boolean | Prevents the donor from changing the amount inside DAFpay. Defaults to `false`. |
@@ -72,7 +72,7 @@ Two limits on the provider step. It runs only when first name, last name, email 
 | Sent to the DAF provider | Yes | No |
 | Appears on the Chariot Donation | Yes, as the purpose | Yes, under the DAFpay details |
 | Kept when funds arrive | Yes, it takes precedence over the provider's purpose | Not applicable |
-| Length limit | Truncated at 255 characters here, and at 100 on the way to the provider | No practical limit |
+| Length limit | Truncated at 255 characters on the session, and at 100 on the way to the provider | No practical limit |
 
 Sending it in `designation` is the only way the provider sees it, and it also fixes the purpose on the Donation, so the record will not later be overwritten by whatever the provider sends. The tradeoff is that some providers review a restricted designation before releasing the Grant, which can take longer.
 

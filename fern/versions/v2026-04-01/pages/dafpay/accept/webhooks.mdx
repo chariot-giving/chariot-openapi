@@ -22,20 +22,20 @@ openssl rand -hex 32
 
 | Event | Who can subscribe | When it fires |
 | --- | --- | --- |
-| `grant.created` | Both | A DAFpay Grant was created. Fires only for DAFpay. |
-| `grant.updated` | Both | A Grant changed, including a status change. |
-| `unintegrated_grant.created` | Both | An Unintegrated Grant was recorded. |
-| `unintegrated_grant.updated` | Both | An Unintegrated Grant changed. |
+| `grant.created` | Platforms | A DAFpay Grant was created. Fires only for DAFpay. |
+| `grant.updated` | Platforms | A Grant changed, including a status change. |
+| `unintegrated_grant.created` | Platforms | An Unintegrated Grant was recorded. |
+| `unintegrated_grant.updated` | Platforms | An Unintegrated Grant changed. |
 | `donation.created` | Nonprofits | A Donation was created, from DAFpay or from any other payment source. |
 | `donation.updated` | Nonprofits | A Donation changed, including gaining a settlement. |
 | `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-Donation and Deposit events are organization-scoped. A fundraising-platform key is bound to a fundraising application rather than an organization, so these events are never delivered to it and a platform uses the Grant events instead.
+The split is absolute, in both directions. Grant and Unintegrated Grant events are delivered against a fundraising application, so they never reach a nonprofit's own key. Donation and Deposit events are delivered against an organization, so they never reach a platform's key.
 
-Creating the subscription still succeeds. Nothing rejects the category, so a platform that subscribes to `donation.created` gets a stored subscription that never fires.
+Nothing rejects a category you cannot receive. The subscription is created, stored and returned, and then never fires. Subscribe only to the rows above that match your key.
 
-If you are a nonprofit, we recommend building your CRM sync on the Donation events so the same logic handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` if you want a trigger that fires only for DAFpay.
+If you are a nonprofit, build your CRM sync on the Donation events. They cover DAFpay gifts and gifts from your other payment sources through one code path, and they are the only events you will receive.
 
 ## What an event contains
 
