@@ -21,7 +21,22 @@ Ask your Chariot contact to confirm or change any of these on your sandbox and p
 | Unintegrated grants | Whether a donor whose provider is not connected to DAFpay can record an intent, or is returned to your form to pick another payment method. |
 | Unintegrated confirmation screen | Whether Chariot shows the donor their tracking ID and provider link, or leaves that to your own confirmation page. |
 
-The last one is worth checking explicitly. If Chariot's screen is off and your page does not show the tracking ID, the donor leaves with no way to complete the gift. If both are on, they see two confirmations.
+## When the settings do not hold
+
+If you are a fundraising platform and a gift routes through DAFpay Network, the effective configuration is overridden so every donor sees the same DAFpay experience, whatever your Connect says:
+
+- first name, last name and email are collected **and required**, even if you removed them; and
+- donor-information return is **on**, even if you turned it off.
+
+Plan for it rather than around it. A form that does not collect an email will still see email required in the modal, and an express-checkout flow you disabled will still pull donor details from the provider.
+
+This does not apply to a nonprofit integrating its own form. The override only runs for gifts made through a fundraising application, so if Chariot provisions your Connect, the settings above hold as configured.
+
+Ask Chariot whether your application routes through DAFpay Network, and under what conditions.
+
+## Checking the rest
+
+The unintegrated confirmation screen is worth checking explicitly. If Chariot's screen is off and your page does not show the tracking ID, the donor leaves with no way to complete the gift. If both are on, they see two confirmations.
 
 ## Retiring a Connect
 
