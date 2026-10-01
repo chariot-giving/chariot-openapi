@@ -3,7 +3,9 @@ title: Processing Donations
 hidden: false
 ---
 
-This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts).
+<Note>
+  **For nonprofits.** This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts) instead.
+</Note>
 
 ## Find the Donation
 
@@ -31,7 +33,7 @@ Chariot derives this status from the Donation's settlement and payment source. I
 
 The grant's `paymentChannel` does not decide the status. A `direct` gift reads as `INCOMING_TO_CHARIOT` whenever Chariot expects to receive the funds for that provider and organization, for example through a lockbox. Read the status and settlement data rather than inferring receipt from the channel.
 
-Once a settlement lands in your Chariot account the status moves to `RECEIVED_IN_CHARIOT` on its own. The manual step applies only to funds that arrive outside Chariot, where someone confirms receipt because Chariot never sees the payment.
+The two paths differ in who does the work. When funds arrive in your Chariot account, Chariot matches them to the initiated gift and moves it to `RECEIVED_IN_CHARIOT` on its own — you never touch a tracking ID. When funds arrive anywhere else, Chariot cannot see them, so someone on your team marks the gift received once it lands.
 
 ## Settlement timestamps
 
