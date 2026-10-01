@@ -9,7 +9,7 @@ Server-side calls authenticate with an API key passed as a bearer token.
 Authorization: Bearer <API_KEY>
 ```
 
-Sandbox and production are separate environments with separate keys, separate Connects, and separate data. Create each key yourself in the Chariot dashboard.
+Sandbox and production use separate API keys, separate Connects, and separate data, and you create each key yourself in the Chariot dashboard.
 
 | Environment | Base URL |
 | --- | --- |
@@ -18,13 +18,13 @@ Sandbox and production are separate environments with separate keys, separate Co
 
 Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
 
-Configure the base URL, the API key, and the Connect ID together, as one set per environment. Mixing them is the most common setup error, and a sandbox key against the production host fails in ways that look like a permissions problem.
+Configure the base URL, API key, and Connect ID together so you are never pointing a sandbox key at production or the reverse.
 
 ## Where each credential belongs
 
-The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. That is expected and safe.
+The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key should only ever be used from your server, so every call that uses it, including Create Grant, is made from your backend rather than the browser.
 
-The API key must never reach the browser. Every call that uses it, including Create Grant, runs from your server.
+See [Authentication](/api/authentication) for more information.
 
 ## Sandbox
 

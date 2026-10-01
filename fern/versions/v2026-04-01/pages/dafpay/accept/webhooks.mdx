@@ -3,7 +3,7 @@ title: Webhooks
 hidden: false
 ---
 
-Rather than polling for changes, subscribe to events and have Chariot send them to your endpoint. Create a subscription with Create Event Subscription.
+Rather than polling for changes, you can subscribe to events and have Chariot send them to your endpoint. Create a subscription with the Create Event Subscription endpoint.
 
 <EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
 
@@ -22,7 +22,7 @@ Rather than polling for changes, subscribe to events and have Chariot send them 
 
 Donation and Deposit events belong to the nonprofit's Chariot account. A fundraising platform cannot subscribe to them and uses the Grant events instead.
 
-If you are a nonprofit, build your CRM sync on the Donation events, so one code path handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` when you specifically want a DAFpay-only trigger.
+If you are a nonprofit, we recommend building your CRM sync on the donation events so the same logic handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` if you want a trigger that fires only for DAFpay.
 
 ## What an event contains
 
@@ -76,6 +76,6 @@ Sandbox does not retry failed deliveries at all, so test your own queue's retry 
 
 Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Events are retained for 30 days, so run recovery inside that window and track which IDs you have processed.
 
-Run recovered events through the same processing path as live deliveries. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing donations by `created_at` will not surface updates to gifts created earlier.
+Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing donations by `created_at` will not surface updates to gifts created earlier.
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)

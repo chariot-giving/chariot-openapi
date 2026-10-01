@@ -29,7 +29,7 @@ Authorizing, creating, and funding are three separate events. A completed DAFpay
 
 ## Grants and Donations
 
-This relationship is the one worth understanding before you write any code.
+The relationship between grants and donations is worth understanding before you start building.
 
 Donations and Deposits belong to the nonprofit's Chariot account. A fundraising platform cannot read them, and builds on Grants instead. The rest of this section is for nonprofits integrating their own form.
 
@@ -37,14 +37,14 @@ Chariot creates the Donation from the Grant, so the link between them is stored 
 
 A Donation does not carry a Grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations, and some providers do not support tracking IDs, so that value is absent on those gifts. Store `donationId` when you create the Grant. It is the only link present for every provider.
 
-Build your downstream processing on Donations rather than Grants. Anything built on Donations also covers gifts that arrived from a connected payment source instead of DAFpay, which is most organizations' larger volume.
+We recommend building your downstream processing on donations rather than grants, so the same logic handles DAFpay gifts and gifts that arrived from another connected payment source, which for most organizations is the larger volume.
 
 ## What varies by DAF provider
 
 | | What differs |
 | --- | --- |
 | Connection | Integrated providers accept the request through DAFpay. Unintegrated ones require the donor to finish in their own portal. |
-| Minimum amount | Minimum grant amounts are set by the provider. Do not apply one minimum to every DAFpay gift. |
+| Minimum amount | Minimum grant amounts are set by the provider, so a single minimum will not work for every DAFpay gift. |
 | Tracking ID | Most providers carry the DAFpay tracking ID through to the payment. Some do not, which affects how you match incoming funds. |
 | How funds arrive | Directly to the nonprofit by ACH or check, or electronically into a Chariot account through a disbursement partner. |
 | Recurring | Not every provider supports monthly gifts. |

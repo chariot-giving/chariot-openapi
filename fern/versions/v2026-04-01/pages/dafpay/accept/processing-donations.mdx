@@ -7,11 +7,11 @@ This page is for nonprofits integrating their own donation form. If you are a fu
 
 ## Find the Donation
 
-Chariot creates the Donation from the Grant, so the link between them lives on the Grant. Call Get Grant and read `donationId`. Chariot writes it a moment after Create Grant succeeds, so an absent value means not yet written, not missing. Read the Grant again.
+A donation record is created after the grant, and the donation is the record you will use to track the gift through processing. Once the donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the grant immediately. If it is empty, retrieve the grant again with Get Grant rather than treating the donation as missing.
 
 A Donation carries no Grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which some providers do not support, so store `donationId` at creation. It is the only link present for every provider.
 
-Build your processing on Donations rather than Grants. Anything built on Donations also covers gifts that arrived from a connected payment source instead of DAFpay, which for most nonprofits is the larger volume. A Donation with no `initiation` data is one of those gifts and should follow the same workflow.
+We recommend building your processing on donations rather than grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A donation with no `initiation` data is one of those gifts and should follow the same workflow.
 
 ## Payment status on the Donation
 
@@ -53,9 +53,7 @@ List Deposits uses the same paging pattern but different date filters, `settled_
 
 ## Record what your own systems did
 
-To track work that happens in your systems rather than Chariot's, such as whether a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign).
-
-That gives you a field you control, alongside the payment status Chariot owns, without either one overwriting the other.
+To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a donation, and you can retrieve them alongside the rest of the donation data.
 
 ## Where DAFpay funds arrive
 
@@ -97,9 +95,9 @@ If no identifier appears with the payment, compare the donor's fund name, amount
 
 ## Cancellations and refunds
 
-A donor may be able to cancel a pending Grant through their DAF provider before disbursement, subject to that provider's rules. Direct them to their provider rather than offering a refund action of your own, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help. Canceled Grants incur no processing fees.
+A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Direct them to their provider rather than offering a refund action of your own, and let us know at [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help. Canceled grants incur no processing fees.
 
-Do not treat a gift as canceled just because the funds have not arrived yet.
+A gift that has not arrived yet is not the same as a canceled one, so wait for the API data to show the cancellation before updating your own record.
 
 ---
 
