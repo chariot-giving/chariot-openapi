@@ -1,16 +1,45 @@
 ---
-title: "Requesting Prod Keys"
+title: Request Production Access
 hidden: false
 ---
 
-Once you have completed all the steps on the [Integrating DAFpay Checklist](/guides/dafpay/integrating-dafpay/checklist), please send an email to `integrations@givechariot.com` with the following information to request production API keys.
+Complete the sandbox integration and Chariot review before switching to production.
 
+Email your Chariot contact or [integrations@givechariot.com](mailto:integrations@givechariot.com) with:
 
-|                                          |                                                                 |
-| :-------------------------------------   | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Unintegrated DAF Configuration           | Let us know which [configuration option](/guides/dafpay/integrating-dafpay/integration#unintegrated-daf-providers) to use for unintegrated DAF providers |
-| Test Form URL                            | Provide link to donation form with DAFpay Sandbox instance for Chariot QA.     |
-| End to End Recording                     | Provide a recording of the full end to end flow from nonprofit onboarding (if applicable) through submitting a donation and seeing it in the back end. |
-| Target Go-Live                           | What date are you planning on launching DAFpay in production?   |
-| Launch Plan (fundraising platforms only)     | Outline plan to create the DAFpay connect (instance od DAFpay) for each nonprofit    |
-| Initial Non-Profit (fundraising platforms only)| In order to test on production, we will need to give a real donation to a real nonprofit. Which nonprofit can we use to make the test donation ? |
+## Technical implementation
+
+- platform name and production domains;
+- technical and operational contacts;
+- sandbox form URL and test instructions;
+- webhook endpoint and subscribed event types;
+- supported one-time, recurring, fee, and unintegrated-provider behavior; and
+- screenshots or a recording of loading, success, exit, and confirmation states.
+
+## Nonprofit rollout
+
+- nonprofit onboarding and enablement flow;
+- launch-backfill plan;
+- public help article for nonprofits;
+- co-branded Chariot onboarding link; and
+- target launch date.
+
+## Production validation
+
+- a participating nonprofit and live form Chariot can use for the production test;
+- expected CRM sync and hard or soft credit behavior; and
+- the contacts responsible for launch support.
+
+When your agreement includes revenue share, also provide the required billing contacts, ACH information, and tax documentation.
+
+## After approval
+
+1. Store the production API key in your secret manager.
+2. Switch to `https://api.givechariot.com`.
+3. Use production Connect IDs only.
+4. Create production event subscriptions.
+5. Complete one small live gift with Chariot and the participating nonprofit.
+
+Confirm that exactly one Grant is created, the platform stores its Chariot identifiers, the nonprofit can find the transaction, CRM behavior matches the agreed rules, and donor-facing communications are correct.
+
+Next: [Reconciliation](/guides/dafpay/gifts/reconciliation)

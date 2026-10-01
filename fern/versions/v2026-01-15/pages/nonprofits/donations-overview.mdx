@@ -1,0 +1,59 @@
+---
+title: Process Donations
+hidden: false
+---
+
+Use Gift Processing to retrieve Chariot Donations, reconcile them with Deposits, and record their processing status in your CRM or accounting system.
+
+## Before you start
+
+Server-side calls require an API key and the base URL for the environment you are using. Sandbox and production use separate API keys. Configure the base URL and key together, and see [Authentication](/api/authentication) for how to send the key.
+
+## Data model
+
+One Deposit may contain many Donations. Store both IDs so your finance team can reconcile each transfer to the gifts it contains.
+
+A Donation may include donor details, gross and net amounts, fees, designation, source information, DAFpay metadata, and properties configured in the dashboard. Use the API reference as the source of truth for current fields.
+
+`settlement` is present when the Donation is associated with a Deposit. A Donation can have at most one settlement and belong to at most one Deposit.
+
+If `settlement` is absent, the Donation has not been associated with funds in a Chariot Account.
+
+## How Donations are created
+
+A Donation can enter Chariot in two ways:
+
+- A donor completes DAFpay and your integration creates the Grant. Chariot then creates the Donation from that Grant.
+- Chariot receives gift data from a payment source connected to your account. The resulting Donation may have a Deposit, but no Grant, because the gift was not initiated through DAFpay.
+
+Use Donation events and the Donations API for your CRM sync so both types of gifts follow the same workflow.
+
+## Match a Grant to its Donation
+
+Because Chariot creates the Donation from the Grant, the link between them is stored on the Grant. Call Get Grant and read `donationId`. Chariot sets it shortly after Create Grant succeeds, so treat an absent value as not yet available and read the Grant again rather than as a Donation that does not exist.
+
+A Donation does not carry a Grant ID. Its reference back to DAFpay is `initiation.dafpay_tracking_id`, which you can also use as a filter on List Donations. Some DAF providers do not support tracking IDs, so that value is absent on those gifts.
+
+Store `donationId` when you create the Grant. It is the only link between the two records that is present for every DAF provider.
+
+## Data and funds can arrive in different orders
+
+Chariot may receive the gift data before the funds, the funds before the gift data, or both together. Because of this, a Donation may initially have no `settlement`, or it may already include `settlement` when it is created.
+
+Your integration should handle both cases. Inspect the current Donation whenever it is created or updated instead of assuming that settlement will always produce a later update event.
+
+## Decide when to create the CRM gift
+
+The safest default is to create the CRM gift when your organization considers the payment received.
+
+Use `settlement.settled_at` as the date the gift settled in Chariot. `settlement.received_at` currently returns the same timestamp and should not be used to identify an earlier stage in the payment lifecycle.
+
+If your team needs an earlier record, create it as pending and update it later. That approach must account for grants that are delayed, canceled, or never funded.
+
+Agree on this rule with fundraising operations and finance before you build the sync.
+
+Next: [Poll for donations](/guides/nonprofits/donations/poll)
+
+<Info>
+  Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+</Info>
