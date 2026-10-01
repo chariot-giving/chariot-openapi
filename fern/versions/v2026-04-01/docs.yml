@@ -47,9 +47,6 @@ navigation:
               - page: Integration Checklist
                 slug: checklist
                 path: ./pages/dafpay/accept/checklist.mdx
-              - page: Authentication
-                slug: authentication
-                path: ./pages/dafpay/accept/authentication.mdx
               - page: Create Connects
                 slug: connects
                 path: ./pages/dafpay/accept/connects.mdx
@@ -59,6 +56,9 @@ navigation:
               - page: Send Donation Data
                 slug: donation-data
                 path: ./pages/dafpay/accept/donation-data.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/dafpay/accept/authentication.mdx
               - page: Handle the Result
                 slug: result
                 path: ./pages/dafpay/accept/result.mdx
@@ -68,6 +68,9 @@ navigation:
               - page: Unintegrated Providers
                 slug: unintegrated
                 path: ./pages/dafpay/accept/unintegrated.mdx
+              - page: Display Grants on Your Platform
+                slug: platforms
+                path: ./pages/dafpay/accept/platforms.mdx
               - page: Receiving and Processing Donations
                 slug: after-the-gift
                 path: ./pages/dafpay/accept/after-the-gift.mdx

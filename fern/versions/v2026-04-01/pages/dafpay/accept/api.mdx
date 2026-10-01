@@ -7,6 +7,13 @@ hidden: false
 
 Follow this guide to build directly against the DAFpay APIs, whether you are adding DAFpay to one organization's donation form or offering it across forms for many organizations.
 
+What you build after the Grant exists depends on who you are building for.
+
+| If you are | What you track and display |
+| --- | --- |
+| A fundraising platform | Grants in your own system and dashboard, with searchable Tracking IDs and External Grant IDs so each nonprofit can match the gift when the funds arrive. |
+| A nonprofit | Grants initiated through DAFpay, and Donations to track receipt and processing in your Chariot account. |
+
 ## How the integration works
 
 1. Get the Connect for the organization receiving the gift. Chariot provides it for a single organization; you create one per organization if you serve many.
@@ -50,17 +57,19 @@ If you operate a donor-advised fund and want to connect donor accounts to DAFpay
 
 ## Where to go next
 
-1. [Authentication](/guides/dafpay/accept/authentication) — keys, base URLs, and sandbox.
-2. [Create Connects](/guides/dafpay/accept/connects) for your form.
-3. [Install the DAFpay button](/guides/dafpay/accept/install).
-4. [Send your form data](/guides/dafpay/accept/donation-data) into DAFpay.
+1. [Create Connects](/guides/dafpay/accept/connects) for the organizations you serve.
+2. [Install the DAFpay button](/guides/dafpay/accept/install) on your form.
+3. [Send your form data](/guides/dafpay/accept/donation-data) into DAFpay.
+4. [Authenticate](/guides/dafpay/accept/authentication) your server-side calls.
 5. [Handle the result](/guides/dafpay/accept/result) returned to your page.
 6. [Create the Grant](/guides/dafpay/accept/create-grant) from your server.
-7. [Subscribe to webhooks](/guides/dafpay/accept/webhooks) so your records stay current.
-8. [Test the full integration](/guides/dafpay/accept/sandbox) before requesting production access.
+7. [Handle unintegrated providers](/guides/dafpay/accept/unintegrated), if you support them.
+8. [Display Grants](/guides/dafpay/accept/platforms) if you are a platform, or [process Donations](/guides/dafpay/accept/after-the-gift) if you are a nonprofit.
+9. [Subscribe to webhooks](/guides/dafpay/accept/webhooks) so your records stay current.
+10. [Test the integration](/guides/dafpay/accept/sandbox), then [go live](/guides/dafpay/accept/go-live).
 
 <Warning>
   `CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant and does not mean your organization received the funds. Your server must call Create Grant within 15 minutes.
 </Warning>
 
-Next: [Authentication](/guides/dafpay/accept/authentication)
+Next: [Integration Checklist](/guides/dafpay/accept/checklist)
