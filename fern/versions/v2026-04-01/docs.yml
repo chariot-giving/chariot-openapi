@@ -47,6 +47,9 @@ navigation:
               - page: Integration Checklist
                 slug: checklist
                 path: ./pages/dafpay/accept/checklist.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/dafpay/accept/authentication.mdx
               - page: Create Connects
                 slug: connects
                 path: ./pages/dafpay/accept/connects.mdx
@@ -56,9 +59,6 @@ navigation:
               - page: Send Donation Data
                 slug: donation-data
                 path: ./pages/dafpay/accept/donation-data.mdx
-              - page: Authentication
-                slug: authentication
-                path: ./pages/dafpay/accept/authentication.mdx
               - page: Handle the Result
                 slug: result
                 path: ./pages/dafpay/accept/result.mdx

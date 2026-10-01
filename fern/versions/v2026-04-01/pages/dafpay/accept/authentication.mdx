@@ -18,7 +18,7 @@ Sandbox and production are separate environments with separate keys, separate Co
 
 Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
 
-Configure the base URL, the API key, and the Connect ID together, as one set per environment. Mixing them is the most common setup error, and a sandbox key against the production host fails in ways that look like a permissions problem.
+You need this before the first page that calls the API. Configure the base URL, the API key, and the Connect ID together, as one set per environment. Mixing them is the most common setup error, and a sandbox key against the production host fails in ways that look like a permissions problem.
 
 ## Where each credential belongs
 
@@ -30,4 +30,4 @@ The API key must never reach the browser. Every call that uses it, including Cre
 
 No real funds move in sandbox. Every DAF provider in the list is a mock, and sandbox exposes simulations for completing and canceling a Grant, so you can exercise your received-funds handling without waiting on a provider. The test login and the rest of the test plan are on [Testing and QA](/guides/dafpay/accept/sandbox).
 
-Next: [Handle the Result](/guides/dafpay/accept/result)
+Next: [Create Connects](/guides/dafpay/accept/connects)
