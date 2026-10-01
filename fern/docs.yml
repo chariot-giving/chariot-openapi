@@ -42,7 +42,7 @@ redirects:
     destination: "/guides/dafpay/accept/donation-data"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/transactions"
-    destination: "/guides/dafpay/accept/after-the-gift"
+    destination: "/guides/dafpay/accept/processing-donations"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/prod-keys"
     destination: "/guides/dafpay/accept/go-live"
@@ -67,7 +67,7 @@ redirects:
     destination: "/v2026-04-01/guides/dafpay/accept/donation-data"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/transactions"
-    destination: "/v2026-04-01/guides/dafpay/accept/after-the-gift"
+    destination: "/v2026-04-01/guides/dafpay/accept/processing-donations"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/prod-keys"
     destination: "/v2026-04-01/guides/dafpay/accept/go-live"

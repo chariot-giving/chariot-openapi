@@ -68,9 +68,12 @@ navigation:
               - page: Unintegrated Providers
                 slug: unintegrated
                 path: ./pages/dafpay/accept/unintegrated.mdx
-              - page: Receiving and Processing Donations
-                slug: after-the-gift
-                path: ./pages/dafpay/accept/after-the-gift.mdx
+              - page: Displaying DAFpay Gifts
+                slug: displaying-gifts
+                path: ./pages/dafpay/accept/displaying-gifts.mdx
+              - page: Processing Donations
+                slug: processing-donations
+                path: ./pages/dafpay/accept/processing-donations.mdx
               - page: Webhooks
                 slug: webhooks
                 path: ./pages/dafpay/accept/webhooks.mdx

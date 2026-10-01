@@ -1,0 +1,108 @@
+---
+title: Processing Donations
+hidden: false
+---
+
+This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts).
+
+## Find the Donation
+
+Chariot creates the Donation from the Grant, so the link between them lives on the Grant. Call Get Grant and read `donationId`. Chariot writes it a moment after Create Grant succeeds, so an absent value means not yet written, not missing. Read the Grant again.
+
+A Donation carries no Grant ID. Its only reference back to DAFpay is `initiation.dafpay_tracking_id`, which some providers do not support, so store `donationId` at creation. It is the only link present for every provider.
+
+Build your processing on Donations rather than Grants. Anything built on Donations also covers gifts that arrived from a connected payment source instead of DAFpay, which for most nonprofits is the larger volume. A Donation with no `initiation` data is one of those gifts and should follow the same workflow.
+
+## Payment status on the Donation
+
+The Grant tells you what the donor authorized. The Donation's `payment_status` tells you where the money is.
+
+| Value | What it means |
+| --- | --- |
+| `INCOMING_TO_CHARIOT` | The funds are on their way into your Chariot account. |
+| `INCOMING_OUTSIDE_CHARIOT` | The funds are on their way to you directly from the provider, so Chariot cannot see them land. |
+| `RECEIVED_IN_CHARIOT` | The funds arrived in your Chariot account. |
+| `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
+| `CANCELED` | The gift will not be paid. |
+
+Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it. Gifts on the `direct` channel sit at `INCOMING_OUTSIDE_CHARIOT` until someone confirms receipt, because Chariot never sees the provider's payment.
+
+## Settlement timestamps
+
+A Donation can read as received before the money is usable. Check the timestamps when your workflow depends on funds being available.
+
+| Field | What it marks |
+| --- | --- |
+| `created_at` | When Chariot created the Donation record. |
+| `initiation.initiated_at` | When the gift was initiated through DAFpay. |
+| `settlement.received_at` | When Chariot received the transfer data. |
+| `settlement.settled_at` | When the funds settled and became available. |
+| `settlement.deposit_id` | The Deposit the funds arrived in. |
+
+Use `settlement.settled_at` for the date funds became available. It can be later than the date the Donation appeared in Chariot, because a connected source's payment data can arrive ahead of the money.
+
+## Retrieving donations and deposits
+
+List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, and `dafpay_tracking_id`.
+
+<Warning>
+  List Donations filters on `created_at`, not `updated_at`. A query for newly created gifts will never surface a change to a gift created earlier, so pair it with update events rather than using it as your only sync.
+</Warning>
+
+List Deposits uses the same paging pattern but different date filters, `settled_at.after` and `settled_at.before`. Use the Deposit ID to tie settlement information to the Donations whose funds it carried; one Deposit can cover many gifts.
+
+## Record what your own systems did
+
+To track work that happens in your systems rather than Chariot's, such as whether a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign).
+
+That gives you a field you control, alongside the payment status Chariot owns, without either one overwriting the other.
+
+## Where DAFpay funds arrive
+
+DAFpay submits the request but does not hold the donor's DAF funds. Read the Grant's `paymentChannel` to know how a given gift will be paid.
+
+| `paymentChannel` | How the funds move |
+| --- | --- |
+| `direct` | The DAF provider sends the funds directly to the intended recipient nonprofit, by electronic transfer or mailed check. |
+| `dafpay_network` | The DAF provider sends the funds to the DAFpay Network 501(c)(3) nonprofit organization (EIN 93-1372175), which reviews and processes the grant and then sends the funds to the intended recipient. |
+
+An Unintegrated Grant always carries a third value, `offline`, because Chariot cannot confirm how the donor submits the gift.
+
+`paymentChannel` is read-only and set per Grant, so do not assume one route for all of a nonprofit's gifts. Because funds may pass through DAFpay Network rather than arriving straight from the provider, do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider.
+
+On the `direct` channel, the provider's own remittance carries the DAFpay identifiers. These examples show where the tracking ID and the "Gift via DAFpay" callout appear in the memo, which is what your support team matches against.
+
+<Frame caption="A check grant on the direct channel. The DAF provider pays the nonprofit; DAFpay does not handle the funds on this route.">
+    <img src='../../../images/SchwabGrantLetter.png' width="400" height="500" />
+</Frame>
+
+<Frame caption="A Fidelity grant on the direct channel, showing the same DAFpay identifiers in the provider's remittance.">
+    <img src='../../../images/fidelity.png' />
+</Frame>
+
+A `dafpay_network` gift does not look like this: the nonprofit receives the funds from DAFpay Network rather than from the provider, so do not build matching logic that assumes the provider's own remittance format.
+
+Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name. Store the fund ID, but do not display it on its own to nonprofit users. Retrieve and display the fund's human-readable name, such as Fidelity Charitable or DAFgiving360.
+
+## Matching a payment that arrives outside Chariot
+
+| Identifier | Where to find it | Use |
+| --- | --- | --- |
+| Donation ID | Donation `id`, or the Grant's `donationId` | Update the same gift in your CRM. |
+| DAFpay Tracking ID | Grant `trackingId`, or Donation `initiation.dafpay_tracking_id` | Match the provider's remittance to the initiated gift. |
+| Provider Grant ID | Grant `externalGrantId` | Match the provider's own grant record when the tracking ID is absent. |
+| Your transaction ID | `initiation.dafpay_metadata` | Find the original form submission. |
+
+If neither identifier appears with the payment, compare the donor's fund name, amount, date, and designation, and review an uncertain match before marking the Donation received. Make the tracking ID and provider Grant ID searchable in your own tools.
+
+## Cancellations and refunds
+
+A donor may be able to cancel a pending Grant through their DAF provider before disbursement, subject to that provider's rules. Direct them to their provider rather than offering a refund action of your own, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if you need operational help. Canceled Grants incur no processing fees.
+
+Do not treat a gift as canceled just because the funds have not arrived yet.
+
+---
+
+Chariot is a financial technology company, not a bank. Chariot Accounts come with a Demand Deposit Account through our banking services partner, Column N.A., Member FDIC. Deposits in Chariot Accounts are eligible for FDIC insurance up to $250,000 per depositor, for each insurable capacity in which the account is held.
+
+Next: [Webhooks](/guides/dafpay/accept/webhooks)
