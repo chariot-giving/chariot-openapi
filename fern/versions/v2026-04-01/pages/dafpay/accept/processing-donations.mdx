@@ -15,7 +15,9 @@ A donation carries no grant ID of its own. To go the other way, call List Grants
 
 Store `donationId` on your record as soon as the Grant returns it. It is the link that is present for every provider, and reading it once is cheaper than looking the Grant up again later.
 
-We recommend building your processing on Donations rather than Grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A donation with no `initiation` data is one of those gifts and should follow the same workflow.
+Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant. That gift arrives complete: there is no authorization to capture, no 15-minute window, and no Create Grant call to make.
+
+We recommend building your processing on Donations rather than Grants, so the same logic handles DAFpay gifts and gifts from your other connected payment sources, which for most nonprofits is the larger volume. A Donation with no `initiation` data is one of those gifts and should follow the same workflow.
 
 ## Payment status on the Donation
 
