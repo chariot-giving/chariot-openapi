@@ -70,30 +70,19 @@ To write your own status back to Chariot, for example to record that a gift has 
 
 ## Where DAFpay funds arrive
 
-DAFpay submits the request but does not hold the donor's DAF funds. Read the Grant's `paymentChannel` to know how a given gift will be paid.
+DAFpay submits the request but does not hold the donor's DAF funds. Gifts reach you the way that provider normally pays: electronically into your Chariot account for providers Chariot is connected to, and directly to your organization by ACH or check for the rest.
 
-| `paymentChannel` | How the funds move |
-| --- | --- |
-| `direct` | The DAF provider sends the funds directly to the intended recipient nonprofit, by electronic transfer or mailed check. |
-| `dafpay_network` | The DAF provider sends the funds to the DAFpay Network 501(c)(3) nonprofit organization (EIN 93-1372175), which reviews and processes the Grant and then sends the funds to the intended recipient. |
+On a gift the provider pays you directly, their own remittance carries the DAFpay identifiers. These examples show where the tracking ID and the "Gift via DAFpay" callout appear in the memo, which is what your gift processing team matches against.
 
-An Unintegrated Grant always carries a third value, `offline`, because Chariot cannot confirm how the donor submits the gift.
-
-`paymentChannel` is read-only and set per Grant, so do not assume one route for all of a nonprofit's gifts. Because funds may pass through DAFpay Network rather than arriving straight from the provider, do not tell nonprofits that every DAFpay gift arrives directly from their donor's DAF provider.
-
-On the `direct` channel, the provider's own remittance carries the DAFpay identifiers. These examples show where the tracking ID and the "Gift via DAFpay" callout appear in the memo, which is what your support team matches against.
-
-<Frame caption="A check grant on the direct channel. The DAF provider pays the nonprofit; DAFpay does not handle the funds on this route.">
+<Frame caption="A check grant paid directly to the nonprofit. The DAF provider pays you; DAFpay does not handle the funds on this route.">
     <img src='../../../images/SchwabGrantLetter.png' width="400" height="500" />
 </Frame>
 
-<Frame caption="A Fidelity grant on the direct channel, showing the same DAFpay identifiers in the provider's remittance.">
+<Frame caption="A Fidelity grant paid directly, showing the same DAFpay identifiers in the provider's remittance.">
     <img src='../../../images/fidelity.png' />
 </Frame>
 
-A `dafpay_network` gift does not look like this: the nonprofit receives the funds from DAFpay Network rather than from the provider, so do not build matching logic that assumes the provider's own remittance format.
-
-Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name. Store the fund ID, but do not display it on its own to nonprofit users. Retrieve and display the fund's human-readable name, such as Fidelity Charitable or DAFgiving360.
+Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you need to show the provider name. Store the fund ID, but do not display it on its own. Retrieve and display the fund's human-readable name, such as Fidelity Charitable or DAFgiving360.
 
 ## Matching a payment that arrives outside Chariot
 
