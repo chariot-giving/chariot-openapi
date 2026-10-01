@@ -50,6 +50,30 @@ redirects:
   - source: "/guides/dafpay/integrating-dafpay/faq"
     destination: "/guides/dafpay/faq"
     permanent: true
+  - source: "/guides/dafpay/donor-accounts/:slug"
+    destination: "/guides/dafpay/send/donor-accounts/:slug"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts"
+    destination: "/guides/dafpay/send/donor-accounts/overview"
+    permanent: true
+  - source: "/guides/dafpay/oauth/:slug"
+    destination: "/guides/dafpay/send/oauth/:slug"
+    permanent: true
+  - source: "/guides/dafpay/oauth"
+    destination: "/guides/dafpay/send/oauth/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/:slug"
+    destination: "/v2026-04-01/guides/dafpay/send/donor-accounts/:slug"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts"
+    destination: "/v2026-04-01/guides/dafpay/send/donor-accounts/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/:slug"
+    destination: "/v2026-04-01/guides/dafpay/send/oauth/:slug"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth"
+    destination: "/v2026-04-01/guides/dafpay/send/oauth/overview"
+    permanent: true
   - source: "/guides/dafpay/integrating-dafpay"
     destination: "/guides/dafpay/accept/api"
     permanent: true

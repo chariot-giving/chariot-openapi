@@ -38,7 +38,9 @@ A timeout leaves the outcome uncertain. Keep the transaction pending while you r
 
 Queueing a retry is not the same as submitting the gift. The authorization expires 15 minutes after the donor gives it, and the session is checked before anything else, so a job that retries past that window gets a `410` whether or not a Grant was created.
 
-A `410` therefore means you can no longer resolve the outcome through this endpoint. It does not prove the gift never reached the provider. Before you tell a donor the request failed, look for a Grant on the stored workflow session. Resolve inside the window wherever you can, and keep the donor on a pending state until you have.
+A `410` therefore means you can no longer resolve the outcome through this endpoint. It does not prove the gift never reached the provider.
+
+There is no way to look a Grant up by workflow session, so if you subscribe to `grant.created` that event is how you find out a Grant exists despite your call failing. Resolve inside the window wherever you can, keep the donor on a pending state until you have, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when you cannot tell what happened.
 
 ## A server-side example
 
