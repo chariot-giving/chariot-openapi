@@ -1,5 +1,5 @@
 ---
-title: After the Gift
+title: Receiving and Processing Donations
 hidden: false
 ---
 
@@ -97,7 +97,27 @@ Make `trackingId` and `externalGrantId` searchable in your transaction and suppo
 
 If no DAFpay tracking ID appears, try `externalGrantId`. If neither is available, fall back to the donor's fund name, amount, date, designation, and other Grant details.
 
-## How funds arrive
+## Payment status on the Donation
+
+The Grant tells you what the donor authorized. The Donation's `payment_status` tells you where the money is.
+
+| Value | What it means |
+| --- | --- |
+| `incoming_to_chariot` | The funds are on their way into your Chariot account. |
+| `incoming_outside_chariot` | The funds are on their way to you directly from the provider, so Chariot cannot see them land. |
+| `received_in_chariot` | The funds arrived in your Chariot account. |
+| `received_outside_chariot` | Receipt was confirmed outside Chariot, by you or by a connected source. |
+| `canceled` | The gift will not be paid. |
+
+Chariot derives this status from the Donation's settlement and payment source. It is read-only over the API, so there is no endpoint that sets it. Gifts on the `direct` channel sit at `incoming_outside_chariot` until someone confirms receipt, because Chariot never sees the provider's payment.
+
+## Record what your own systems did
+
+To track work that happens in your systems rather than Chariot's, such as whether a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign).
+
+That gives you a field you control, alongside the payment status Chariot owns, without either one overwriting the other.
+
+## Where DAFpay funds arrive
 
 DAFpay submits the request but does not hold the donor's DAF funds. Read the Grant's `paymentChannel` to know how a given gift will be paid.
 
@@ -124,4 +144,4 @@ Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) when you n
 
 Before launch, document which status and date control platform billing, how cancellations and adjustments are handled, and which reconciliation data is available to nonprofits and support.
 
-Next: [Test in Sandbox](/guides/dafpay/accept/sandbox)
+Next: [Webhooks](/guides/dafpay/accept/webhooks)

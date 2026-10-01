@@ -1,0 +1,53 @@
+---
+title: Webhooks
+hidden: false
+---
+
+Rather than polling for changes, subscribe to events and have Chariot send them to your endpoint. Create a subscription with Create Event Subscription.
+
+<EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
+
+## Events
+
+| Event | When it fires |
+| --- | --- |
+| `grant.created` | A DAFpay Grant was created. Fires only for DAFpay. |
+| `grant.updated` | A Grant changed, including a status change. |
+| `unintegrated_grant.created` | An Unintegrated Grant was recorded. |
+| `unintegrated_grant.updated` | An Unintegrated Grant changed. |
+| `donation.created` | A Donation was created, from DAFpay or from any other payment source. |
+| `donation.updated` | A Donation changed, including gaining a settlement. |
+| `deposit.created` | Funds arrived in your Chariot account. |
+| `deposit.updated` | A Deposit changed, including its settlement status. |
+
+Build your CRM sync on the Donation events, so one code path handles DAFpay gifts and gifts from your other payment sources. Use `grant.created` when you specifically want a DAFpay-only trigger.
+
+## What an event contains
+
+An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself.
+
+```json
+{
+  "id": "event_123abc",
+  "created_at": "2026-01-31T23:59:59Z",
+  "category": "grant.created",
+  "associated_object_type": "grant",
+  "associated_object_id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+}
+```
+
+Anything you passed in `onDonationRequest`, including metadata, is not in the payload. Retrieve the current object from the API and act on its current state.
+
+Grant IDs arrive as raw UUIDs. Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
+
+## Handling events reliably
+
+Verify the signature on every request before you act on it.
+
+Store the event ID and make processing idempotent. Events can be delivered more than once, and a retry must not create a second transaction.
+
+Keep a scheduled query running alongside your webhooks. Deliveries can be delayed or missed, and polling List Donations by `created_at` is the recovery path.
+
+Failed deliveries retry with a jittered backoff over several hours. If none succeed, the subscription is disabled, so monitor your endpoint's health.
+
+Next: [Testing and QA](/guides/dafpay/accept/sandbox)

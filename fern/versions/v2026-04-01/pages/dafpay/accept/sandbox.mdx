@@ -1,9 +1,20 @@
 ---
-title: Test in Sandbox
+title: Testing and QA
 hidden: false
 ---
 
-Complete this test matrix in sandbox before requesting production access. Sandbox setup and the test DAF login are on [Build a Custom Integration](/guides/dafpay/accept/api).
+Complete this test matrix in sandbox before requesting production access.
+
+## Sandbox credentials
+
+Point your development and staging environments at `https://sandboxapi.givechariot.com` with your `sk_test_` key and your `test_` Connect ID. Every DAF provider in the sandbox list is a mock, and the same login works for all of them:
+
+```text
+username: good-user
+password: password123
+```
+
+No real money moves, and sandbox-only calls let you simulate a Grant completing or being canceled so you can test your received-funds handling end to end.
 
 ## Test tenant routing
 
@@ -32,7 +43,7 @@ These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 
 ## Test browsers and devices
 
-Complete the donor flow on:
+DAFpay opens in a popup window, so browser behavior is worth testing deliberately rather than assuming. Complete the donor flow on:
 
 - Chrome, Safari, and Firefox on desktop.
 - Safari and Chrome on iPhone.
@@ -40,6 +51,12 @@ Complete the donor flow on:
 - Every in-app or embedded browser your platform supports.
 
 On each supported browser, confirm that DAFpay renders, opens from the donor's click, and can be completed. Verify your loading and confirmation states and confirm that exactly one Grant is created.
+
+## Test with popups blocked
+
+Browsers block a popup that does not open in direct response to a click, and some donors block popups outright. Turn popup blocking on and walk the flow, so you know what your donors see and your page shows them something useful rather than appearing to do nothing.
+
+If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
 
 Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
 

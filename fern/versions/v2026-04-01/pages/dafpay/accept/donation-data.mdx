@@ -97,6 +97,12 @@ Flattened keys work equally well if you prefer them, for example `allocation_com
 
 Test the exact metadata returned from at least two forms with different values.
 
+## The page URL is captured for you
+
+Chariot records the URL of the page the gift was made from as `web_location_url` on the Donation. Any tracking parameters already in that URL, such as a source or campaign code, come through with it.
+
+That is capture, not routing. If a code needs to drive how the gift is coded or reconciled, pass it yourself: `designation` for the fund or purpose the DAF should see, and `metadata` for internal codes that stay inside Chariot.
+
 ## Prevent blocked popups
 
 DAFpay must open in direct response to the donor's click. Keep the time between the click and the DAFpay window opening under one second.

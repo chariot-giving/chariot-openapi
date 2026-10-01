@@ -53,6 +53,9 @@ navigation:
               - page: Integration Checklist
                 slug: checklist
                 path: ./pages/dafpay/accept/checklist.mdx
+              - page: Authentication
+                slug: authentication
+                path: ./pages/dafpay/accept/authentication.mdx
               - page: Create Connects
                 slug: connects
                 path: ./pages/dafpay/accept/connects.mdx
@@ -71,10 +74,13 @@ navigation:
               - page: Unintegrated Providers
                 slug: unintegrated
                 path: ./pages/dafpay/accept/unintegrated.mdx
-              - page: After the Gift
+              - page: Receiving and Processing Donations
                 slug: after-the-gift
                 path: ./pages/dafpay/accept/after-the-gift.mdx
-              - page: Test in Sandbox
+              - page: Webhooks
+                slug: webhooks
+                path: ./pages/dafpay/accept/webhooks.mdx
+              - page: Testing and QA
                 slug: sandbox
                 path: ./pages/dafpay/accept/sandbox.mdx
               - page: Go Live

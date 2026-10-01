@@ -36,14 +36,7 @@ The steps are the same either way. Where they differ is Connect handling, and th
 | Grant ID | Identifies the DAFpay Grant in Chariot. |
 | Donation ID | Connects the Grant to Chariot's Donation record when available. |
 
-Work in sandbox while you build. Sandbox has its own API keys, Connects, and data, and no real funds move. Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`. Create your sandbox API key in the Chariot dashboard and configure the base URL, key, and Connect ID together.
-
-Use these credentials with any supported provider in sandbox:
-
-```text
-username: good-user
-password: password123
-```
+Build against sandbox first. See [Authentication](/guides/dafpay/accept/authentication) for keys and base URLs.
 
 Keep the [integration checklist](/guides/dafpay/accept/checklist) open as your roadmap while you build.
 
@@ -55,43 +48,19 @@ Use the [DAFpay demo](https://secure.dafpay.com/demo) to see the donor experienc
 
 If you operate a donor-advised fund and want to connect donor accounts to DAFpay, use the [Donor Accounts guide](/guides/dafpay/send/donor-accounts/overview).
 
-## Single organization
+## Where to go next
 
-Follow this guide if you want to integrate directly with the DAFpay APIs and embed DAFpay in a custom donation flow. If your form is hosted by a fundraising platform, [enable DAFpay through that platform](https://www.givechariot.com/dafpay-setup#integration-search) instead.
-
-By the end of this section, your form will open DAFpay, receive the donor's authorization, and create the Grant from your server.
-
-## Before you start
-
-Server-side calls require an API key and the base URL for the environment you are using.
-
-| Environment | Base URL |
-| --- | --- |
-| Sandbox | `https://sandboxapi.givechariot.com` |
-| Production | `https://api.givechariot.com` |
-
-Sandbox and production use separate API keys and Connect IDs. Configure the base URL, API key, and Connect ID together. See [Authentication](/api/authentication) for how to send the API key.
-
-## How the integration works
-
-1. [Request a Connect](/guides/dafpay/accept/connects) for your form.
-2. [Install the DAFpay button](/guides/dafpay/accept/install).
-3. [Send your form data](/guides/dafpay/accept/donation-data) into DAFpay.
-4. [Handle the result](/guides/dafpay/accept/result) returned to your page.
-5. [Create the Grant](/guides/dafpay/accept/create-grant) from your server.
-6. [Test the full integration](/guides/dafpay/accept/sandbox) before requesting production access.
+1. [Authentication](/guides/dafpay/accept/authentication) — keys, base URLs, and sandbox.
+2. [Create Connects](/guides/dafpay/accept/connects) for your form.
+3. [Install the DAFpay button](/guides/dafpay/accept/install).
+4. [Send your form data](/guides/dafpay/accept/donation-data) into DAFpay.
+5. [Handle the result](/guides/dafpay/accept/result) returned to your page.
+6. [Create the Grant](/guides/dafpay/accept/create-grant) from your server.
+7. [Subscribe to webhooks](/guides/dafpay/accept/webhooks) so your records stay current.
+8. [Test the full integration](/guides/dafpay/accept/sandbox) before requesting production access.
 
 <Warning>
   `CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant and does not mean your organization received the funds. Your server must call Create Grant within 15 minutes.
 </Warning>
 
-## Sandbox login
-
-Use these credentials with any supported DAF provider in sandbox:
-
-```text
-username: good-user
-password: password123
-```
-
-Next: [Integration Checklist](/guides/dafpay/accept/checklist)
+Next: [Authentication](/guides/dafpay/accept/authentication)
