@@ -56,7 +56,7 @@ navigation:
               - page: Install DAFpay
                 slug: install
                 path: ./pages/dafpay/accept/install.mdx
-              - page: Send Donation Data
+              - page: Capture Donation Data
                 slug: donation-data
                 path: ./pages/dafpay/accept/donation-data.mdx
               - page: Handle the Result
