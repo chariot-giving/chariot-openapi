@@ -1,0 +1,43 @@
+---
+title: Connect Configuration
+hidden: false
+---
+
+Some of how DAFpay behaves is decided on the Connect, not in your code. Settle these before you build, because they change what your form has to collect and which flows you have to handle.
+
+## What Chariot sets for you
+
+Ask your Chariot contact to confirm or change any of these on your sandbox and production Connects. They are not settable through the API.
+
+| Setting | What it changes |
+| --- | --- |
+| Fields the modal collects | Which donor details DAFpay asks for, and which of them are required. |
+| Return donor information | Whether DAFpay may pull the donor's details from their DAF provider. With it off, the provider is never asked and the donor fills in anything your form did not pass. This is what makes express checkout work. |
+| Recurrence toggle | Whether the donor can switch between one time and monthly inside the modal. With it off, the frequency is whatever you passed. |
+| Unintegrated grants | Whether a donor whose provider is not connected to DAFpay can record an intent, or is returned to your form to pick another payment method. |
+| Unintegrated confirmation screen | Whether Chariot shows the donor their tracking ID and provider link, or leaves that to your own confirmation page. |
+
+The last one is worth checking explicitly. If Chariot's screen is off and your page does not show the tracking ID, the donor leaves with no way to complete the gift. If both are on, they see two confirmations.
+
+## What you can change yourself
+
+| Call | What it does |
+| --- | --- |
+| Update Connect | Archives a Connect. This is how you retire one for a nonprofit that is no longer on your platform. |
+| Activate Connect | Activates the Connect for a fundraising application. |
+| List Connects | Lists the Connects for one organization. It takes an organization ID, so it reports on a nonprofit you already know about rather than listing everything you have created. |
+
+Keep your own record of which nonprofits you have created Connects for. Listing is scoped to a single organization, so it will confirm a Connect exists but will not reconcile a backfill for you.
+
+## Before you start building
+
+Confirm, in writing:
+
+- Which donor fields the modal collects, and which are required.
+- Whether the donor-information lookup is on.
+- Whether recurring is on, and whether the donor may toggle it.
+- Whether unintegrated grants are on, and who shows the confirmation.
+
+Sandbox and production are configured separately, so confirm both. A sandbox Connect that behaves differently from production will pass QA and fail at launch.
+
+Next: [Install DAFpay](/guides/dafpay/accept/install)

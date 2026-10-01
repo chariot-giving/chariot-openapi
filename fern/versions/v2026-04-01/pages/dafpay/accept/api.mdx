@@ -20,6 +20,16 @@ The steps are the same either way. Where they differ is Connect handling: a plat
 
 `CHARIOT_SUCCESS` means the donor authorized the request. It does not create the Grant or mean the nonprofit received the funds.
 
+## Use the SDK
+
+Server-side calls are plain HTTP, but the Node SDK handles pagination, serialization, timeouts, retries, and typed errors for you.
+
+```sh
+npm install --save @chariot-giving/typescript-sdk
+```
+
+See [SDKs](/api/sdks) for the full list.
+
 ## Data to store
 
 | Value | Why you need it |

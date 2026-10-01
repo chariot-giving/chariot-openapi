@@ -64,7 +64,31 @@ To verify it:
 4. Compare your hex digest against each supplied `v1` with a constant-time comparison.
 5. Check that the timestamp falls within your tolerance, and reject anything invalid or stale.
 
-Keep the raw request body for this check. Parsing JSON and reserializing it changes the bytes and the signature will not match.
+```javascript
+import crypto from "node:crypto";
+
+function verify(header, rawBody, signingSecret) {
+  const parts = Object.fromEntries(
+    header.split(",").map((p) => p.split("=").map((v) => v.trim()))
+  );
+  if (!parts.t || !parts.v1) return false;
+
+  const expected = crypto
+    .createHmac("sha256", signingSecret)
+    .update(`${parts.t}.${rawBody}`)
+    .digest("hex");
+
+  const a = Buffer.from(expected);
+  const b = Buffer.from(parts.v1);
+  if (a.length !== b.length) return false;
+  if (!crypto.timingSafeEqual(a, b)) return false;
+
+  // Reject anything older than your tolerance.
+  return Date.now() - Date.parse(parts.t) < 5 * 60 * 1000;
+}
+```
+
+Keep the raw request body for this check. Parsing JSON and reserializing it changes the bytes and the signature will not match. In Express that means `express.raw()` on this route, not `express.json()`.
 
 ## Handle events reliably
 
@@ -82,6 +106,13 @@ Sandbox does not retry failed deliveries at all, so test your own queue's retry 
 
 Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Track which event IDs you have processed.
 
-Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information. For a longer gap, reconcile your stored transactions against the current Grant and Unintegrated Grant records instead, since listing Donations by `created_at` will not surface updates to gifts created earlier.
+Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information.
+
+For a gap longer than your event history covers, reconcile against the records themselves. What that means depends on which you can read:
+
+| | How to reconcile a long gap |
+| --- | --- |
+| Fundraising platforms | Walk your stored transactions and re-read each Grant and Unintegrated Grant by its stored ID. There is no list-by-updated-at, so your own records are the worklist. |
+| Nonprofits | Do the same for Donations and Deposits, and remember List Donations filters on `created_at`. A query for new gifts will not surface a gift created last month that was received yesterday, so drive the sweep from the records you already hold rather than from a date range. |
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)

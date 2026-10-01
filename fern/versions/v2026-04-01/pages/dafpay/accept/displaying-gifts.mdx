@@ -28,13 +28,34 @@ Make the Tracking ID and External Grant ID searchable and easy to copy, and stor
 
 Every DAFpay grant carries a Tracking ID, but that does not guarantee it appears with the funds. Some providers do not pass it through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
 
+## What a Grant gives you
+
+Everything your dashboard shows comes off the Grant, so this is the full surface you have to work with.
+
+| Field | Notes |
+| --- | --- |
+| `id` | The durable Grant ID. Store it on your transaction. |
+| `workflowSessionId` | Ties the Grant back to the browser session you recorded. |
+| `status` | `Initiated`, `Completed` or `Canceled`. |
+| `statuses` | When the Grant reached each status it has held, oldest first. |
+| `amount` | In cents. |
+| `fundId` | The provider. Resolve the name with Get DAF and show `orgName`. |
+| `trackingId` | The DAFpay identifier that may appear with the payment. |
+| `externalGrantId` | The provider's own identifier, when they return one. |
+| `paymentChannel` | `direct` or `dafpay_network`. How the funds travel, not whether they arrived. |
+| `createdAt` | Creation time, which is also what Grant billing keys on. |
+| Donor fields | Whatever the donor supplied or the provider returned. |
+| `metadata` | What you passed in `onDonationRequest`. |
+
+Fields that are empty right after creation can fill in later, so re-read the Grant on `grant.updated` rather than treating the first response as final.
+
 ## Keep the records current
 
 Subscribe to `grant.created` and `grant.updated`. When an event arrives, retrieve the current Grant and update the existing transaction using the stored Grant ID. If you support unintegrated providers, subscribe to `unintegrated_grant.created` and `unintegrated_grant.updated` and read those through their own endpoints.
 
 Display the status Chariot returns. A created grant means the request was submitted to the provider, and the nonprofit confirms receipt in Chariot when the funds arrive, which your platform picks up through grant updates.
 
-Grant status is derived by Chariot, so it is read only over the API and your platform cannot set one.
+Grant status is Chariot's record of what happened to the gift, so display it rather than offering your users a control that sets one. The nonprofit confirms receipt in Chariot and your platform picks that up through Grant updates.
 
 ## Keep the record types apart
 

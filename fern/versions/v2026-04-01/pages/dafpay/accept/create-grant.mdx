@@ -36,6 +36,40 @@ Never create a new workflow session to retry the same donor authorization.
 
 A timeout leaves the outcome uncertain. Keep the transaction pending while you resolve it rather than inviting the donor to start a second gift.
 
+Queueing a retry is not the same as submitting the gift. The authorization expires 15 minutes after the donor gives it, so a job that retries beyond that window will find a `410` and nothing to recover. Show the donor a pending state rather than a confirmation, resolve the outcome inside the window, and if it expires, tell them the request did not reach their provider and they need to authorize again.
+
+## A server-side example
+
+```javascript
+async function createGrant({ workflowSessionId, amount }) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const res = await fetch(`${CHARIOT_BASE_URL}/v1/grants`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ workflowSessionId, amount })
+    });
+
+    // 201 created it, 200 means it already existed. Both are success.
+    if (res.status === 201 || res.status === 200) return res.json();
+
+    // Submission is still running. Wait and ask again with the same session.
+    if (res.status === 409) {
+      await new Promise((r) => setTimeout(r, 2 ** attempt * 500));
+      continue;
+    }
+
+    // 410 means the 15 minutes elapsed. The donor has to authorize again.
+    throw new Error(`Create Grant failed: ${res.status}`);
+  }
+  throw new Error("Create Grant still pending after retries");
+}
+```
+
+Retry with the same `workflowSessionId` every time. A new session is a new authorization, and creating one is how you end up submitting the gift twice.
+
 ## Amount validation
 
 Use the amount returned by `CHARIOT_SUCCESS`. Amounts are in cents and must be whole dollars, so the value must be divisible by 100.
@@ -80,6 +114,23 @@ A recurring success contains `recurringGrantIntent` instead of `grantIntent`:
 }
 ```
 
+```javascript
+const res = await fetch(`${CHARIOT_BASE_URL}/v1/recurring_grants`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+    frequency: "MONTHLY",
+    amount: 2000
+  })
+});
+```
+
+Store the returned recurring Grant ID, the workflow session ID, the amount, the frequency, and any provider or tracking identifiers that came back. Fields that are empty at creation can be filled in from a later read.
+
 Call Create Recurring Grant, not Create Grant. It follows the same retry contract as Create Grant above. `workflowSessionId`, `frequency`, and `amount` are required, and `MONTHLY` is currently the only supported frequency. The endpoint also accepts the same optional donor, note, designation, and application fee fields. A recurring application fee applies to the first Grant only.
 
 
@@ -88,6 +139,16 @@ The DAF provider controls the schedule. Chariot records the initial setup but ma
 Model the initial record as the start of an arrangement, not proof of future payments. Treat each later gift as a separate one and reconcile it independently.
 
 Do not promise nonprofits a complete recurring schedule unless another data source supports it.
+
+What you will and will not see after setup:
+
+| | |
+| --- | --- |
+| You see | The initial arrangement, as one recurring Grant record. |
+| You may not see | A new Grant for each later payment. |
+| You will not see | The donor changing or canceling the schedule in their provider's portal. |
+
+Later gifts reach the nonprofit as Donations like any other. Reconcile them individually rather than projecting them from the original arrangement.
 
 ## Authorization, Grant status, and payment
 
@@ -113,7 +174,7 @@ There is no guarantee that a Grant reaches a terminal state on its own. Because 
 
 Grant billing is based on the Grant's `created_at` date and excludes Grants with a `Canceled` status. Billing is not triggered by the transition to `Completed`.
 
-Platforms cannot write a Grant status. Listen for changes and display them; do not offer your users a control that sets one.
+Listen for status changes and display them. Do not offer your users a control that sets one.
 
 ## Grant status history
 
