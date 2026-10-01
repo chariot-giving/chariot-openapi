@@ -4977,10 +4977,17 @@ components:
         id: "donation_01j8rs605a4gctmbm58d87mvsj"
         external_id: "INV-12345"
         source_id: "source_01m12tn300eh20gdqscje7s5jw"
-        amount_gross: 25000
-        amount_net: 25000
-        amount_fee: 0
-        currency: "USD"
+        amount:
+          gross: 25000
+          net: 25000
+          fee: 0
+          individual_gift: 25000
+          match: 0
+          currency: "USD"
+          exchange_rate: null
+        effective_date: "2026-09-24T00:00:00Z"
+        created_by:
+          name: "Fidelity Charitable"
         purpose: "Where needed most"
         note: "Please dedicate in memory of grandma"
         attribution:
@@ -4998,6 +5005,7 @@ components:
               country: "US"
         initiation:
           initiated_at: "2026-09-20T15:04:05Z"
+          initiation_amount: 25000
           platform: "Givebutter"
           identifier: "L9E182VBGP"
           url: "https://givebutter.com/example-nonprofit"
@@ -5021,16 +5029,17 @@ components:
         artifacts:
           - name: "grant_letter.pdf"
             file_id: "file_01j8rs605a4gctmbm58d87mvsj"
+        linked_objects:
+          - type: "mail_item"
+            id: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+            url: "/v1/mail_items/mail_item_01j8rs605a4gctmbm58d87mvsj"
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
         payment_status: "RECEIVED_IN_CHARIOT"
       required:
         - id
-        - amount_gross
-        - amount_net
-        - amount_fee
-        - currency
+        - amount
         - created_at
       properties:
         id:
@@ -5047,29 +5056,38 @@ components:
           type: string
           description: The identifier of the [Source](/api-reference/sources) that sent this donation.
           example: source_01m12tn300eh20gdqscje7s5jw
-        amount_gross:
-          type: integer
-          format: int64
-          description: |-
-            The original amount of the donation as intended by the donor in minor units of the currency.
-            For dollars, for example, this is cents.
-        amount_net:
-          type: integer
-          format: int64
-          description: |-
-            The amount of the donation that the nonprofit will receive after DAF and/or
-            platform processing fees are deducted in minor units of the currency.
-            For dollars, for example, this is cents.
-        amount_fee:
-          type: integer
-          format: int64
-          description: |-
-            The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
-            For dollars, for example, this is cents.
-        currency:
+        amount:
+          description: The donation's amounts, all in one currency.
+          allOf:
+            - $ref: "#/components/schemas/DonationAmount"
+        effective_date:
           type: string
-          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the Transaction's currency.
-          example: USD
+          format: date-time
+          description: |-
+            The date the gift took effect, as reported by the platform or DAF sponsor.
+            Expressed in RFC 3339 format.
+          example: "2026-09-25T00:00:00Z"
+        program:
+          type: string
+          description: |-
+            The name of the program the gift came through, such as a DAF sponsor's
+            program or a corporate matching program.
+          example: "Google Matching Grant Program"
+        created_by:
+          readOnly: true
+          description: Who created the donation.
+          allOf:
+            - $ref: "#/components/schemas/DonationCreator"
+        external_distribution_id:
+          type: string
+          description: |-
+            The platform's identifier for the payout that carried this donation. Platforms
+            such as Benevity batch many gifts into one payout, so several donations can
+            share the same value.
+        recipient:
+          description: Where within your organization the donor designated the gift.
+          allOf:
+            - $ref: "#/components/schemas/DonationRecipient"
         purpose:
           type: string
           description: |-
@@ -5124,6 +5142,16 @@ components:
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
             $ref: "#/components/schemas/Artifact"
+        linked_objects:
+          type: array
+          readOnly: true
+          description: |-
+            Other objects connected to this donation, such as the
+            [Grant](/api/grants) or [Mail Item](/api/mail-items)
+            that produced it. Each entry names the object's type and identifier;
+            fetch the object itself for its details.
+          items:
+            $ref: "#/components/schemas/LinkedObject"
         created_at:
           type: string
           format: date-time
@@ -5170,6 +5198,120 @@ components:
           type: string
           description: The unique identifier for the file that the artifact is associated with.
           example: "file_01j8rs605a4gctmbm58d87mvsj"
+    LinkedObject:
+      type: object
+      description: |-
+        A reference to another object connected to a donation.
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          description: |-
+            The kind of object. It matches the object's name in the API, such as
+            `grant` or `mail_item`.
+          example: "mail_item"
+        id:
+          type: string
+          description: The identifier of the linked object.
+          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
+        url:
+          type: string
+          nullable: true
+          description: |-
+            The API path that returns the linked object.
+          example: "/v1/mail_items/mail_item_01j8rs605a4gctmbm58d87mvsj"
+    DonationAmount:
+      type: object
+      description: |-
+        The amounts on a donation. Every amount is in minor units of `currency`.
+        For dollars, for example, this is cents.
+      required:
+        - gross
+        - net
+        - fee
+        - currency
+      properties:
+        gross:
+          type: integer
+          format: int64
+          description: The full amount of the donation, before fees.
+          example: 25000
+        net:
+          type: integer
+          format: int64
+          description: The amount the nonprofit receives after fees. Equal to `gross` minus `fee`.
+          example: 24500
+        fee:
+          type: integer
+          format: int64
+          description: The fee the DAF sponsor or platform deducted from the donation.
+          example: 500
+        individual_gift:
+          type: integer
+          format: int64
+          nullable: true
+          description: The portion of `gross` that the donor gave themselves.
+          example: 25000
+        match:
+          type: integer
+          format: int64
+          nullable: true
+          description: The portion of `gross` that a company contributed as a match.
+          example: 0
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+          example: USD
+        exchange_rate:
+          nullable: true
+          description: |-
+            The exchange rate used to convert the donation into `target_currency`.
+            Null when `currency` is already the target currency, or when no rate was reported.
+          allOf:
+            - $ref: "#/components/schemas/ExchangeRate"
+    ExchangeRate:
+      type: object
+      description: An exchange rate from a donation's currency to a target currency.
+      required:
+        - target_currency
+        - value
+      properties:
+        target_currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) of the currency the donation was converted into.
+          example: USD
+        value:
+          type: string
+          description: |-
+            The number of units of `target_currency` equal to one unit of the donation's
+            `currency`, as a decimal string.
+          example: "1.0834"
+    DonationRecipient:
+      type: object
+      description: The designation the donor chose for a gift.
+      properties:
+        primary_name:
+          type: string
+          description: The designated recipient of the gift, such as a fund, chapter, or campaign.
+          example: "Bay Area Chapter"
+        secondary_name:
+          type: string
+          description: A further designation under `primary_name`, such as a specific program within a fund.
+          example: "Youth Programs"
+        address:
+          type: string
+          description: The recipient's address, as a single line.
+          example: "123 Main St., San Francisco, CA 94105"
+    DonationCreator:
+      type: object
+      description: Who created a donation.
+      properties:
+        name:
+          type: string
+          description: The name of the person, integration, or process that created the donation.
+          example: "Jane Rivera"
     File:
       type: object
       description: |-
@@ -5367,23 +5509,31 @@ components:
         joint_donor:
           description: A second donor jointly credited with the gift.
           allOf:
-            - $ref: "#/components/schemas/Donor"
+            - $ref: "#/components/schemas/JointDonor"
+    JointDonor:
+      type: object
+      description: The name of a second donor jointly credited with a gift.
+      properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
+        first_name:
+          type: string
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
+        last_name:
+          type: string
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     CorporateMatch:
       type: object
       description: Corporate match details for the donation.
       properties:
-        match_amount:
-          type: integer
-          format: int64
-          description: The amount of the corporate match for the donation in minor units of the donation currency.
         company_name:
           type: string
           description: The name of the company that matched the donation.
           example: "Google"
-        program_name:
-          type: string
-          description: The name of the program that matched the donation.
-          example: "Google Matching Grant Program"
         source:
           type: string
           description: The source of the corporate match.
@@ -5403,9 +5553,6 @@ components:
           type: string
           description: The name of the donor's fund at the Donor Advised Fund sponsor.
           example: "The Smith Family Fund"
-        program_name:
-          type: string
-          description: The name of the program at the Donor Advised Fund sponsor.
     DonationSettlement:
       type: object
       description: How the funds moved from the donor to the recipient.
@@ -5460,6 +5607,15 @@ components:
           format: date-time
           description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        initiation_amount:
+          type: integer
+          format: int64
+          nullable: true
+          description: |-
+            The amount the donor intended to give when they initiated the gift, in minor
+            units of `amount.currency`. This can differ from `amount.gross` if the gift
+            changed before it settled.
+          example: 25000
         platform:
           type: string
           description: |-
@@ -6861,6 +7017,59 @@ components:
         address:
           allOf:
             - $ref: "#/components/schemas/AddressInput"
+    JointDonorInput:
+      type: object
+      description: |-
+        A second donor jointly credited with the gift. Provide either `full_name` or the
+        `first_name`/`last_name` pair.
+      properties:
+        full_name:
+          type: string
+          description: The donor's name as one string, for donors whose name doesn't split cleanly.
+        first_name:
+          type: string
+          description: The donor's given name.
+        last_name:
+          type: string
+          description: The donor's family name.
+    DonationAmountInput:
+      type: object
+      description: |-
+        The amounts to record on a donation, in minor units of `currency` (for USD, cents).
+        `net` is always `gross` minus `fee` and can't be set.
+      properties:
+        gross:
+          type: integer
+          format: int64
+          description: |-
+            The full amount of the donation, before fees. Must be non-negative. A platform that
+            nets its fee out of the gift records a gross of 0 against a non-zero fee.
+          example: 10000
+        fee:
+          type: integer
+          format: int64
+          description: The fee the DAF sponsor or platform deducted from the donation. Defaults to 0.
+          example: 0
+        individual_gift:
+          type: integer
+          format: int64
+          description: The portion of `gross` that the donor gave themselves.
+          example: 10000
+        match:
+          type: integer
+          format: int64
+          description: The portion of `gross` that a company contributed as a match.
+          example: 0
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation. Defaults to "USD".
+          example: "USD"
+        exchange_rate:
+          description: |-
+            The exchange rate used to convert the donation into `target_currency`, when the
+            platform or DAF sponsor reported one.
+          allOf:
+            - $ref: "#/components/schemas/ExchangeRate"
     RecipientInput:
       type: object
       description: |-
@@ -6891,26 +7100,16 @@ components:
         donor_fund_name:
           type: string
           description: The donor-advised fund the grant was paid from.
-        program_name:
-          type: string
-          description: The sponsor's granting program the gift came through.
     CorporateMatchInput:
       type: object
       description: |-
-        Corporate matching gift metadata to record on a donation.
+        Corporate matching gift metadata to record on a donation. Record the match amount
+        in `amount.match`.
       properties:
-        amount:
-          type: integer
-          format: int64
-          description: The amount of the corporate match in minor units of the donation currency.
-          example: 5000
         company_name:
           type: string
           description: The company matching the gift.
           example: "Acme Corp"
-        program_name:
-          type: string
-          description: The company's matching-gift program.
         source:
           type: string
           description: The platform or channel the match arrived through (e.g. "Benevity").
@@ -6923,6 +7122,13 @@ components:
           format: date-time
           description: When the donor initiated the gift. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        initiation_amount:
+          type: integer
+          format: int64
+          description: |-
+            The amount the donor intended to give when they initiated the gift, in minor
+            units of `amount.currency`.
+          example: 25000
         platform:
           type: string
           description: The name of the platform where the donor initiated the gift.
@@ -8497,8 +8703,8 @@ components:
                 type: array
                 description: |-
                   Field paths to null (dot notation, e.g. `note`, `attribution.primary_donor.email`).
-                  Unknown paths are rejected, as are the amounts, currency, and effective_date, which
-                  have no empty representation.
+                  Unknown paths are rejected. So are `amount.gross`, `amount.fee`, `amount.currency`,
+                  and `effective_date`, which have no empty representation.
                 items:
                   type: string
                 example:
@@ -8514,25 +8720,18 @@ components:
                 description: |-
                   The effective date of the donation. Expressed in RFC 3339 format.
                 example: "2026-01-15T00:00:00Z"
-              amount_gross:
-                type: integer
-                format: int64
+              amount:
                 description: |-
-                  The gross amount of the donation in minor units of the currency (for USD, cents).
-                  Must be non-negative; a platform that nets its fee out of the gift records $0.00 gross
-                  against a non-zero fee.
-                example: 10000
-              amount_fee:
-                type: integer
-                format: int64
-                description: |-
-                  The fee deducted by the DAF or processing platform in minor units of the currency.
-                  `amount_net` is always derived as gross minus fee and is not settable.
-                example: 0
-              currency:
+                  The amounts to update. Only the fields you set change.
+                allOf:
+                  - $ref: "#/components/schemas/DonationAmountInput"
+              program:
                 type: string
-                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency.
-                example: "USD"
+                description: The name of the program the gift came through.
+                example: "Google Matching Grant Program"
+              external_distribution_id:
+                type: string
+                description: The platform's identifier for the payout that carried this donation.
               purpose:
                 type: string
                 description: A description of the donor's intent for the donation.
@@ -8556,7 +8755,7 @@ components:
                       - $ref: "#/components/schemas/DonorInput"
                   joint_donor:
                     allOf:
-                      - $ref: "#/components/schemas/DonorInput"
+                      - $ref: "#/components/schemas/JointDonorInput"
               recipient:
                 allOf:
                   - $ref: "#/components/schemas/RecipientInput"
@@ -8587,8 +8786,11 @@ components:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
             example:
               purpose: "Capital Campaign"
-              primary_donor:
-                email: "warrenBuffet@example.com"
+              amount:
+                fee: 250
+              attribution:
+                primary_donor:
+                  email: "warrenBuffet@example.com"
               clear_fields:
                 - "note"
     CreateDonationRequest:
@@ -8600,7 +8802,7 @@ components:
           schema:
             type: object
             required:
-              - amount_gross
+              - amount
             properties:
               source_id:
                 type: string
@@ -8615,24 +8817,17 @@ components:
                   The effective date of the donation. Defaults to the current date if not provided.
                   Expressed in RFC 3339 format.
                 example: "2026-01-15T00:00:00Z"
-              amount_gross:
-                type: integer
-                format: int64
-                description: |-
-                  The gross amount of the donation as intended by the donor in minor units of the
-                  currency (for USD, cents). Must be non-negative.
-                example: 10000
-              amount_fee:
-                type: integer
-                format: int64
-                description: |-
-                  The fee deducted by the DAF or processing platform in minor units of the currency.
-                  Defaults to 0.
-                example: 0
-              currency:
+              amount:
+                description: The donation's amounts. `amount.gross` is required.
+                allOf:
+                  - $ref: "#/components/schemas/DonationAmountInput"
+              program:
                 type: string
-                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the donation's currency. Defaults to "USD".
-                example: "USD"
+                description: The name of the program the gift came through.
+                example: "Google Matching Grant Program"
+              external_distribution_id:
+                type: string
+                description: The platform's identifier for the payout that carried this donation.
               purpose:
                 type: string
                 description: A description of the donor's intent for the donation.
@@ -8656,7 +8851,7 @@ components:
                       - $ref: "#/components/schemas/DonorInput"
                   joint_donor:
                     allOf:
-                      - $ref: "#/components/schemas/DonorInput"
+                      - $ref: "#/components/schemas/JointDonorInput"
               recipient:
                 allOf:
                   - $ref: "#/components/schemas/RecipientInput"
@@ -8685,8 +8880,9 @@ components:
             example:
               source_id: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date: "2026-01-15T00:00:00Z"
-              amount_gross: 10000
-              currency: "USD"
+              amount:
+                gross: 10000
+                currency: "USD"
               purpose: "General Operating Support"
               external_id: "PAYROLL-2026-01-EMP-1234"
               attribution:
