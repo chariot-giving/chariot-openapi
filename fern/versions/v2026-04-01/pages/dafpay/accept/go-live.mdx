@@ -3,7 +3,7 @@ title: Go Live
 hidden: false
 ---
 
-Once you have completed the [integration checklist](/guides/dafpay/accept/checklist), request production access. If you are a fundraising platform, also work through [the platform section](#if-you-serve-many-nonprofits).
+Once you have completed the [integration checklist](/guides/dafpay/accept/checklist), request production access.
 
 ## Request production access
 
@@ -15,6 +15,16 @@ Email your Chariot contact or [integrations@givechariot.com](mailto:integrations
 - your webhook endpoint and the events you subscribe to;
 - which of recurring, unintegrated providers and platform fees you support; and
 - screenshots or a recording of your loading, success, exit and confirmation states.
+
+If you serve many nonprofits, also send:
+
+- your nonprofit onboarding and enablement flow;
+- your launch-backfill plan;
+- the help article and co-branded Chariot onboarding link your nonprofits will see;
+- the nonprofit and live form Chariot can use for the production test; and
+- your target launch date.
+
+When your agreement includes revenue share, also send billing contacts, ACH information and tax documentation.
 
 ## After approval
 
@@ -35,35 +45,3 @@ Production has no mock providers, so a live test gift has to come from a real do
 - [ ] Loading, confirmation and email copy read correctly.
 - [ ] The gift can be found and reconciled.
 - [ ] CRM sync and hard or soft credit match the agreed rules.
-
-## If you serve many nonprofits
-
-Send these alongside your production request:
-
-- your nonprofit onboarding and enablement flow;
-- your launch-backfill plan;
-- the help article and co-branded Chariot onboarding link your nonprofits will see;
-- the nonprofit and live form Chariot can use for the production test; and
-- your target launch date.
-
-When your agreement includes revenue share, also send billing contacts, ACH information and tax documentation.
-
-### Review adoption after 30 days
-
-Measure eligible nonprofits, how many enabled DAFpay, donors who opened DAFpay, donors who authorized a request, Grants created, Grants marked `Completed`, and where donors leave the flow.
-
-Agree what each metric means with Chariot before comparing numbers. A completed DAFpay session means the donor authorized a request; a `Completed` Grant means receipt was confirmed. The two counts will never match.
-
-Look at nonprofits that enabled DAFpay but have no activity. The usual causes are placement late in the form, missing form types, incomplete nonprofit setup, incorrect Connect routing, or an incomplete rollout.
-
-### Keep it current
-
-Name an internal owner for each of these:
-
-- API versions and Connect configuration
-- Supported form types and browser testing
-- Nonprofit help content
-- Account and tenant-routing escalations
-- Regular production testing
-
-Treat a change from opt-in to default-on as a new rollout, and repeat the tenant-routing and donor-experience checks before enabling nonprofits in bulk.
