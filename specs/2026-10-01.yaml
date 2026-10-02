@@ -5006,6 +5006,7 @@ components:
         initiation:
           initiated_at: "2026-09-20T15:04:05Z"
           initiation_amount: 25000
+          frequency: "ONE_TIME"
           platform: "Givebutter"
           identifier: "L9E182VBGP"
           url: "https://givebutter.com/example-nonprofit"
@@ -5616,6 +5617,15 @@ components:
             units of `amount.currency`. This can differ from `amount.gross` if the gift
             changed before it settled.
           example: 25000
+        frequency:
+          type: string
+          nullable: true
+          description: |-
+            How often the donor set the gift to repeat. Null when the platform didn't report it.
+          enum:
+            - ONE_TIME
+            - MONTHLY
+          example: "ONE_TIME"
         platform:
           type: string
           description: |-
