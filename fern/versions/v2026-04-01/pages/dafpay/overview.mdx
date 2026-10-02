@@ -1,0 +1,43 @@
+---
+title: DAFpay Overview
+hidden: false
+---
+
+DAFpay lets donors give to your organization directly from their donor-advised fund, on your own donation form.
+
+## How a DAFpay gift works
+
+1. A donor clicks DAFpay on your form and signs in to their DAF provider.
+2. The donor confirms the amount and authorizes a Grant request. This fires `CHARIOT_SUCCESS` in the browser.
+3. Your server calls Create Grant within 15 minutes. Nothing is submitted to the provider until you do.
+4. The DAF provider reviews the request and sends the funds.
+
+Authorizing, creating, and funding are three separate events. A completed DAFpay session means the donor authorized a request, not that the nonprofit has the money.
+
+## Key terms
+
+| Term | What it is |
+| --- | --- |
+| Connect | An instance of DAFpay. Its ID tells Chariot which organization receives the gift, and carries that organization's modal configuration. |
+| Workflow session | A single use of DAFpay. A new workflow session starts each time a donor clicks the DAFpay button, and you use its ID to create the Grant. |
+| Grant | Gifts initiated through a DAF provider that is directly connected to DAFpay. |
+| Unintegrated Grant | Gifts initiated through a DAF provider that is not directly connected to DAFpay. The donor completes the gift on the provider's website. These are a separate object with their own endpoints and events. |
+| Donation | Donations represent all gifts in Chariot. This includes gifts initiated through DAFpay and gifts received in your Chariot account from a disbursement partner or another connected payment source. |
+| Deposit | A transfer of funds into your Chariot account. One deposit can cover many donations. |
+
+Donations and deposits are organization-scoped, so they are only available to an individual nonprofit. Platforms that work across many nonprofits use grants instead. If you are a nonprofit, [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a grant becomes a donation and how to track it from there.
+
+## What varies by DAF provider
+
+| | What differs |
+| --- | --- |
+| Connection | Integrated providers accept the request through DAFpay. Unintegrated ones require the donor to finish in their own portal. |
+| Minimum amount | Minimum grant amounts are set by the provider, so a single minimum will not work for every DAFpay gift. |
+| Tracking ID | Every gift gets one, but some DAF providers do not send it on with the payment. Without one, you match an incoming gift on the donor's fund name, gift amount, and other grant details. |
+| Recurring | Not every provider supports monthly gifts. |
+
+## Before you start
+
+Each organization receiving gifts needs a claimed Chariot account that has completed compliance verification. See the [onboarding guide](https://help.givechariot.com/onboarding/onboarding-guide) for how that works.
+
+Next: [Find your use case](/guides/dafpay/use-cases)
