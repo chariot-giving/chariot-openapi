@@ -4985,6 +4985,8 @@ components:
           match: 0
           currency: "USD"
           exchange_rate: null
+        donation_type: "daf"
+        frequency: "one_time"
         effective_date: "2026-09-24T00:00:00Z"
         created_by:
           name: "Fidelity Charitable"
@@ -5006,7 +5008,6 @@ components:
         initiation:
           initiated_at: "2026-09-20T15:04:05Z"
           initiation_amount: 25000
-          frequency: "ONE_TIME"
           platform: "Givebutter"
           identifier: "L9E182VBGP"
           url: "https://givebutter.com/example-nonprofit"
@@ -5017,8 +5018,9 @@ components:
           received_at: "2026-09-25T14:00:00Z"
           settled_at: "2026-09-25T18:00:00Z"
           deposit_id: "deposit_01j8rs605a4gctmbm58d87mvsj"
-        donor_advised_fund_grant:
+        grantor:
           organization_name: "Fidelity Charitable"
+        donor_advised_fund_grant:
           donor_fund_name: "The Rivera Family Fund"
         metadata:
           crm_id: "0035e00000ABCDE"
@@ -5037,7 +5039,7 @@ components:
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
-        payment_status: "RECEIVED_IN_CHARIOT"
+        payment_status: "received_in_chariot"
       required:
         - id
         - amount
@@ -5061,6 +5063,33 @@ components:
           description: The donation's amounts, all in one currency.
           allOf:
             - $ref: "#/components/schemas/DonationAmount"
+        donation_type:
+          type: string
+          nullable: true
+          description: |-
+            The kind of gift.
+
+            - `individual`: a gift from an individual donor.
+            - `match`: a company's match of an employee's gift.
+            - `daf`: a grant from a donor-advised fund.
+            - `scholarship`: a scholarship payment.
+            - `other`: any other kind of gift.
+          enum:
+            - individual
+            - match
+            - daf
+            - scholarship
+            - other
+          example: "daf"
+        frequency:
+          type: string
+          nullable: true
+          description: |-
+            How often the donor set the gift to repeat. Null when the platform didn't report it.
+          enum:
+            - one_time
+            - monthly
+          example: "one_time"
         effective_date:
           type: string
           format: date-time
@@ -5068,12 +5097,12 @@ components:
             The date the gift took effect, as reported by the platform or DAF sponsor.
             Expressed in RFC 3339 format.
           example: "2026-09-25T00:00:00Z"
-        program:
-          type: string
+        grantor:
           description: |-
-            The name of the program the gift came through, such as a DAF sponsor's
-            program or a corporate matching program.
-          example: "Google Matching Grant Program"
+            The organization that sent the gift, such as a DAF sponsor or a company's
+            matching program.
+          allOf:
+            - $ref: "#/components/schemas/Grantor"
         created_by:
           readOnly: true
           description: Who created the donation.
@@ -5179,13 +5208,13 @@ components:
           type: string
           readOnly: true
           description: The payment status of the donation. Indicates the current state of the payment lifecycle.
-          example: "INCOMING_TO_CHARIOT"
+          example: "incoming_to_chariot"
           enum:
-            - INCOMING_TO_CHARIOT
-            - INCOMING_OUTSIDE_CHARIOT
-            - RECEIVED_IN_CHARIOT
-            - RECEIVED_OUTSIDE_CHARIOT
-            - CANCELED
+            - incoming_to_chariot
+            - incoming_outside_chariot
+            - received_in_chariot
+            - received_outside_chariot
+            - canceled
     Artifact:
       type: object
       description: |-
@@ -5539,17 +5568,24 @@ components:
           type: string
           description: The source of the corporate match.
           example: "Payroll"
-    DafGrant:
+    Grantor:
       type: object
-      description: Grant details from a Donor-Advised Fund sponsor.
-      required:
-        - organization_name
+      description: The organization that sent a gift.
       properties:
         organization_name:
           type: string
-          description: The name of the Donor Advised Fund sponsor.
-          readOnly: true
-          example: "Daffy Charitable Fund"
+          description: The name of the organization, such as a DAF sponsor or the company behind a matching program.
+          example: "Fidelity Charitable"
+        program_name:
+          type: string
+          description: The name of the organization's giving program the gift came through.
+          example: "Google Matching Grant Program"
+    DafGrant:
+      type: object
+      description: |-
+        Grant details from a Donor-Advised Fund sponsor. The sponsor's name is on
+        `grantor.organization_name`.
+      properties:
         donor_fund_name:
           type: string
           description: The name of the donor's fund at the Donor Advised Fund sponsor.
@@ -5617,15 +5653,6 @@ components:
             units of `amount.currency`. This can differ from `amount.gross` if the gift
             changed before it settled.
           example: 25000
-        frequency:
-          type: string
-          nullable: true
-          description: |-
-            How often the donor set the gift to repeat. Null when the platform didn't report it.
-          enum:
-            - ONE_TIME
-            - MONTHLY
-          example: "ONE_TIME"
         platform:
           type: string
           description: |-
@@ -7099,14 +7126,22 @@ components:
           description: |-
             The recipient's address as a single unstructured line. Useful when the source system reports
             an unparsed address (e.g. a stub or memo line).
-    DafGrantInput:
+    GrantorInput:
       type: object
-      description: |-
-        DAF grant metadata to record on a donation.
+      description: The organization that sent the gift.
       properties:
         organization_name:
           type: string
-          description: The DAF sponsor that issued the grant (e.g. "Fidelity Charitable").
+          description: The name of the organization, such as a DAF sponsor (e.g. "Fidelity Charitable") or the company behind a matching program.
+        program_name:
+          type: string
+          description: The name of the organization's giving program the gift came through.
+    DafGrantInput:
+      type: object
+      description: |-
+        DAF grant metadata to record on a donation. Record the sponsor's name in
+        `grantor.organization_name`.
+      properties:
         donor_fund_name:
           type: string
           description: The donor-advised fund the grant was paid from.
@@ -8735,10 +8770,26 @@ components:
                   The amounts to update. Only the fields you set change.
                 allOf:
                   - $ref: "#/components/schemas/DonationAmountInput"
-              program:
+              donation_type:
                 type: string
-                description: The name of the program the gift came through.
-                example: "Google Matching Grant Program"
+                description: The kind of gift. See `donation_type` on the Donation object.
+                enum:
+                  - individual
+                  - match
+                  - daf
+                  - scholarship
+                  - other
+                example: "daf"
+              frequency:
+                type: string
+                description: How often the donor set the gift to repeat.
+                enum:
+                  - one_time
+                  - monthly
+                example: "one_time"
+              grantor:
+                allOf:
+                  - $ref: "#/components/schemas/GrantorInput"
               external_distribution_id:
                 type: string
                 description: The platform's identifier for the payout that carried this donation.
@@ -8831,10 +8882,26 @@ components:
                 description: The donation's amounts. `amount.gross` is required.
                 allOf:
                   - $ref: "#/components/schemas/DonationAmountInput"
-              program:
+              donation_type:
                 type: string
-                description: The name of the program the gift came through.
-                example: "Google Matching Grant Program"
+                description: The kind of gift. See `donation_type` on the Donation object.
+                enum:
+                  - individual
+                  - match
+                  - daf
+                  - scholarship
+                  - other
+                example: "daf"
+              frequency:
+                type: string
+                description: How often the donor set the gift to repeat.
+                enum:
+                  - one_time
+                  - monthly
+                example: "one_time"
+              grantor:
+                allOf:
+                  - $ref: "#/components/schemas/GrantorInput"
               external_distribution_id:
                 type: string
                 description: The platform's identifier for the payout that carried this donation.
