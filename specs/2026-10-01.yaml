@@ -4984,7 +4984,6 @@ components:
           individual_gift: 25000
           match: 0
           currency: "USD"
-          exchange_rate: null
         donation_type: "daf"
         frequency: "one_time"
         effective_date: "2026-09-24T00:00:00Z"
@@ -5295,6 +5294,7 @@ components:
           description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
           example: USD
         exchange_rate:
+          type: object
           nullable: true
           description: |-
             The exchange rate used to convert the donation into `target_currency`.
