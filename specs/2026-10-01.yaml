@@ -5052,7 +5052,9 @@ components:
         external_id:
           type: string
           description: |-
-            The caller's own identifier for the donation, useful for reconciling against caller systems.
+            The identifier for the donation as reported by its source, such as the platform's
+            transaction ID or the DAF sponsor's grant ID. Use it to reconcile the donation against
+            the source's records.
           example: "INV-12345"
         source_id:
           type: string
@@ -5071,23 +5073,21 @@ components:
             - `individual`: a gift from an individual donor.
             - `match`: a company's match of an employee's gift.
             - `daf`: a grant from a donor-advised fund.
-            - `scholarship`: a scholarship payment.
             - `other`: any other kind of gift.
           enum:
             - individual
             - match
             - daf
-            - scholarship
             - other
           example: "daf"
         frequency:
           type: string
           nullable: true
           description: |-
-            How often the donor set the gift to repeat. Null when the platform didn't report it.
+            Whether the donor set the gift to repeat. Null when the source didn't report it.
           enum:
             - one_time
-            - monthly
+            - recurring
           example: "one_time"
         effective_date:
           type: string
@@ -5185,7 +5185,9 @@ components:
           type: string
           format: date-time
           readOnly: true
-          description: The date and time when the donation was created.
+          description: |-
+            The date and time the donation record was created in Chariot. This is often later
+            than when the gift was made. For that, see `effective_date` and `initiation.initiated_at`.
           example: "2020-01-31T23:59:59Z"
         updated_at:
           type: string
@@ -5281,7 +5283,7 @@ components:
           type: integer
           format: int64
           nullable: true
-          description: The portion of `gross` that the donor gave themselves.
+          description: The portion of the gross amount contributed by the donor.
           example: 25000
         match:
           type: integer
@@ -5291,7 +5293,9 @@ components:
           example: 0
         currency:
           type: string
-          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+          description: |-
+            The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+            Defaults to USD unless the source reports another currency.
           example: USD
         exchange_rate:
           type: object
@@ -5310,7 +5314,9 @@ components:
       properties:
         target_currency:
           type: string
-          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) of the currency the donation was converted into.
+          description: |-
+            The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) of the currency the rate
+            converts into, usually USD.
           example: USD
         value:
           type: string
@@ -7090,7 +7096,7 @@ components:
         individual_gift:
           type: integer
           format: int64
-          description: The portion of `gross` that the donor gave themselves.
+          description: The portion of the gross amount contributed by the donor.
           example: 10000
         match:
           type: integer
@@ -8777,15 +8783,14 @@ components:
                   - individual
                   - match
                   - daf
-                  - scholarship
                   - other
                 example: "daf"
               frequency:
                 type: string
-                description: How often the donor set the gift to repeat.
+                description: Whether the donor set the gift to repeat.
                 enum:
                   - one_time
-                  - monthly
+                  - recurring
                 example: "one_time"
               grantor:
                 allOf:
@@ -8803,7 +8808,7 @@ components:
                 example: "Please dedicate in memory of grandma"
               external_id:
                 type: string
-                description: An external identifier for the donation, useful for reconciliation against caller systems.
+                description: The identifier for the donation in its source's system, such as the platform's transaction ID or the DAF sponsor's grant ID.
                 example: "INV-12345"
               attribution:
                 type: object
@@ -8889,15 +8894,14 @@ components:
                   - individual
                   - match
                   - daf
-                  - scholarship
                   - other
                 example: "daf"
               frequency:
                 type: string
-                description: How often the donor set the gift to repeat.
+                description: Whether the donor set the gift to repeat.
                 enum:
                   - one_time
-                  - monthly
+                  - recurring
                 example: "one_time"
               grantor:
                 allOf:
@@ -8915,7 +8919,7 @@ components:
                 example: "Please dedicate in memory of grandma"
               external_id:
                 type: string
-                description: An external identifier for the donation, useful for reconciliation against caller systems.
+                description: The identifier for the donation in its source's system, such as the platform's transaction ID or the DAF sponsor's grant ID.
                 example: "INV-12345"
               attribution:
                 type: object
