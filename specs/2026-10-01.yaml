@@ -7162,6 +7162,15 @@ components:
             Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
           example: false
           default: false
+        earmark_funding:
+          type: boolean
+          description: |-
+            Reserve this disbursement's auto-funded inbound transfer for this disbursement. When true, the funds from the ACH debit Chariot creates for the disbursement are held in your account once the debit settles, so other disbursements and withdrawals can't spend them.
+            The hold is released when the disbursement's first transfer is created, or when the disbursement is canceled or rejected. If the ACH debit fails or is returned, there is nothing to hold and the disbursement draws from your available balance like any other.
+            An earmark never delays the disbursement. If your available balance covers the disbursement before the ACH debit settles, the disbursement is sent from that balance and the hold is released, so the debit's funds go to your available balance when it settles.
+            Requires `auto_fund` to be `true`. See [Funding earmarks](/guides/disbursements/disbursement-lifecycle#funding-earmarks).
+          example: false
+          default: false
         bypass_chariot_organization_verification:
           type: boolean
           description: |-
@@ -8093,6 +8102,28 @@ components:
                             { first_name: "Alice", last_name: "Williams" },
                         },
                       corporate_match: { company_name: "Acme Corporation" },
+                    },
+                  ]
+            EarmarkedAutoFundDisbursement:
+              summary: Auto-funded disbursement with its funding earmarked
+              value:
+                organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+                amount: 5000000
+                auto_fund: true
+                earmark_funding: true
+                transactions:
+                  [
+                    {
+                      amount: 5000000,
+                      internal_transaction_id: "GRANT-003",
+                      type: "donor_advised_fund_grant",
+                      purpose: "Capital campaign",
+                      donors:
+                        {
+                          primary_donor:
+                            { first_name: "Jane", last_name: "Doe" },
+                        },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
                     },
                   ]
     BulkCreateDisbursementsRequest:
