@@ -65,13 +65,13 @@ A funding earmark prevents this. Set `earmark_funding` to `true` alongside `auto
 }
 ```
 
-`earmark_funding` requires `auto_fund`. A request that sets `earmark_funding` without `auto_fund` fails with a `400` error.
-
 #### How Funding Earmarks Work
 
 1. **Hold placed**: When Chariot initiates the ACH debit for the disbursement, it places a hold on those funds.
 2. **Hold takes effect**: When the ACH debit settles, the held funds are excluded from your available balance. Other disbursements and withdrawals can't spend them.
 3. **Hold released**: When the disbursement's first transfer is created, the held funds pay for it and the hold is released in the same step.
+
+An earmark never delays a disbursement. If your available balance can cover the disbursement before its ACH debit settles, the disbursement is sent from your available balance without waiting. Its hold is then released, so the debit's funds go to your available balance when they settle.
 
 | Event | What happens to the earmark |
 |-------|-----------------------------|
