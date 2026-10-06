@@ -45,9 +45,43 @@ JIT disbursements is an optional feature that must be enabled on a per-account b
 
 1. **Create Disbursement**: Create a disbursement with `auto_fund` set to `true`
 2. **Approval & Auto-Funding**: When the disbursement is approved (either manually or via auto-approval), Chariot automatically creates an inbound transfer for the disbursement amount
-3. **Execution**: The disbursement is not tied to the specific auto-funded transfer. Instead, it executes like any other disbursement when the required funds are available in your account
+3. **Execution**: By default, the disbursement is not tied to the specific auto-funded transfer. Instead, it executes like any other disbursement when the required funds are available in your account. To reserve the auto-funded transfer for the disbursement, use a [funding earmark](#funding-earmarks)
 
 This eliminates the need to manually manage the funding of your account for each disbursement.
+
+### Funding Earmarks
+
+Your account's balance is one shared pool. A JIT disbursement's funding lands in that pool, and Chariot sends disbursements as funds become available, so a smaller or newer disbursement can spend the funds before the larger disbursement they were raised for. That disbursement then waits in `awaiting_balance` until your account has enough funds again.
+
+A funding earmark prevents this. Set `earmark_funding` to `true` alongside `auto_fund` when you [create a disbursement](/api/disbursements/create) and Chariot holds the disbursement's auto-funded transfer for that disbursement only.
+
+```json
+{
+  "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct",
+  "amount": 5000000,
+  "auto_fund": true,
+  "earmark_funding": true,
+  "transactions": [...]
+}
+```
+
+`earmark_funding` requires `auto_fund`. A request that sets `earmark_funding` without `auto_fund` fails with a `400` error.
+
+#### How Funding Earmarks Work
+
+1. **Hold placed**: When Chariot initiates the ACH debit for the disbursement, it places a hold on those funds.
+2. **Hold takes effect**: When the ACH debit settles, the held funds are excluded from your available balance. Other disbursements and withdrawals can't spend them.
+3. **Hold released**: When the disbursement's first transfer is created, the held funds pay for it and the hold is released in the same step.
+
+| Event | What happens to the earmark |
+|-------|-----------------------------|
+| The disbursement is canceled or rejected | The hold is released and the funds return to your available balance |
+| The ACH debit fails or is returned | There are no funds to hold. The disbursement draws from your available balance like any other |
+| The disbursement's payment is stopped or returned after it was sent | The earmark was used by the first transfer. If the disbursement is retried, it draws from your available balance like any other |
+
+<Note>
+Held funds can't be withdrawn. To return earmarked funds to your available balance, cancel the disbursement.
+</Note>
 
 ## Payment Rail Lifecycle
 
