@@ -5067,14 +5067,13 @@ components:
         id:
           type: string
           readOnly: true
-          description: The unique identifier for the donation.
+          description: The unique identifier for the donation in Chariot's system.
           example: donation_01j8rs605a4gctmbm58d87mvsj
         external_id:
           type: string
           description: |-
-            The identifier for the donation as reported by its source, such as the platform's
-            transaction ID or the DAF sponsor's grant ID. Use it to reconcile the donation against
-            the source's records.
+            The identifier for the donation as reported by its source, such as the transaction ID.
+            Use it to reconcile the donation in Chariot against the original source donation record.
           example: "INV-12345"
         source_id:
           type: string
@@ -5089,29 +5088,28 @@ components:
           type: integer
           format: int64
           description: |-
-            The original amount of the donation as intended by the donor in minor units of the currency.
+            The total amount of the donation in minor units of the currency.
             For dollars, for example, this is cents.
           example: 25000
         amount_net:
           type: integer
           format: int64
           description: |-
-            The amount of the donation that the nonprofit will receive after DAF and/or
-            platform processing fees are deducted in minor units of the currency.
-            For dollars, for example, this is cents.
+            The amount of the donation that the nonprofit will receive after processing fees
+            are deducted in minor units of the currency. For dollars, for example, this is cents.
           example: 24500
         amount_fee:
           type: integer
           format: int64
           description: |-
-            The amount of the fee that was deducted by the DAF or processing platform from the donation in minor units of the currency.
+            The amount of the fee that was deducted from the donation in minor units of the currency.
             For dollars, for example, this is cents.
           example: 500
         individual_gift_amount:
           type: integer
           format: int64
           nullable: true
-          description: The portion of the gross amount contributed by the donor.
+          description: The portion of the gross amount contributed directly by the donor.
           example: 25000
         currency:
           type: string
@@ -5156,13 +5154,11 @@ components:
           type: string
           format: date-time
           description: |-
-            The date the gift took effect, as reported by the platform or DAF sponsor.
-            Expressed in RFC 3339 format.
+            The date of the donation, as reported by the source. Expressed in RFC 3339 format.
           example: "2026-09-25T00:00:00Z"
         grantor:
           description: |-
-            The organization that sent the gift, such as a DAF sponsor or a company's
-            matching program.
+            The entity responsible for issuing a grant or payment to a recipient.
           allOf:
             - $ref: "#/components/schemas/Grantor"
         created_by:
@@ -5174,10 +5170,10 @@ components:
           type: string
           description: |-
             The platform's identifier for the payout that carried this donation. Platforms
-            such as Benevity batch many gifts into one payout, so several donations can
+            such as Benevity batch many donations into one payout, so several donations can
             share the same value.
         recipient:
-          description: Where within your organization the donor designated the gift.
+          description: Where within your organization the donor designated the donation.
           allOf:
             - $ref: "#/components/schemas/DonationRecipient"
         purpose:
@@ -5232,7 +5228,9 @@ components:
           allOf:
             - $ref: "#/components/schemas/DonationSettlement"
         donor_advised_fund_grant:
-          description: DAF-specific grant details, when the donation came from a Donor-Advised Fund.
+          description: |-
+            Details specific to Donor Advised Fund donations. Empty when the donation did not come
+            from a DAF provider.
           allOf:
             - $ref: "#/components/schemas/DafGrant"
         metadata:
@@ -5243,8 +5241,7 @@ components:
           additionalProperties: true
         corporate_match:
           description: |-
-            Corporate match details for the donation. Empty when no corporate
-            sponsor matched the gift.
+            Details specific to matched donations. Empty when no corporate sponsor matched the donation.
           allOf:
             - $ref: "#/components/schemas/CorporateMatch"
         properties:
@@ -5371,11 +5368,11 @@ components:
       properties:
         primary_name:
           type: string
-          description: The designated recipient of the gift, such as a fund, chapter, or campaign.
+          description: The designated recipient of the donation, such as a fund, chapter, or campaign.
           example: "Bay Area Chapter"
         secondary_name:
           type: string
-          description: A further designation under `primary_name`, such as a specific program within a fund.
+          description: A further designation under `primary_name`, such as a specific program, chapter, or campaign.
           example: "Youth Programs"
         address:
           type: string
@@ -5387,7 +5384,7 @@ components:
       properties:
         name:
           type: string
-          description: The name of the person, integration, or process that created the donation.
+          description: The name of the person, integration, or application that created the donation.
           example: "Jane Rivera"
     File:
       type: object
@@ -5627,15 +5624,17 @@ components:
           example: "Google Matching Grant Program"
     Grantor:
       type: object
-      description: The organization that sent a gift.
+      description: The entity responsible for issuing a grant or payment to a recipient.
       properties:
         organization_name:
           type: string
-          description: The name of the organization, such as a DAF sponsor or the company behind a matching program.
+          description: The legal organization responsible for issuing the grant or payment.
           example: "Fidelity Charitable"
         program_name:
           type: string
-          description: The name of the organization's giving program the gift came through.
+          description: |-
+            A specific program, initiative, or branded offering associated with the grantor organization
+            through which the grant or payment is made.
           example: "Google Matching Grant Program"
     DafGrant:
       type: object
@@ -5645,8 +5644,8 @@ components:
       properties:
         donor_fund_name:
           type: string
-          description: The name of the donor's fund at the Donor Advised Fund sponsor.
-          example: "The Smith Family Fund"
+          description: The name of the donor's fund at the Donor Advised Fund sponsor, such as the Doe Family Fund.
+          example: "The Doe Family Fund"
         sponsor_grant_id:
           type: string
           deprecated: true
