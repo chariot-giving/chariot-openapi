@@ -5837,7 +5837,6 @@ components:
         updated_at: "2026-09-25T18:00:00Z"
       required:
         - id
-        - source_id
         - status
         - transfer
         - created_at
@@ -5907,6 +5906,13 @@ components:
           format: date-time
           readOnly: true
           description: The date and time when the deposit was last updated.
+          example: "2020-01-31T23:59:59Z"
+        bank_created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          deprecated: true
+          description: Deprecated. Use `transfer.bank_created_at`.
           example: "2020-01-31T23:59:59Z"
     Transfer:
       type: object
