@@ -5052,7 +5052,6 @@ components:
         linked_objects:
           - type: "mail_item"
             id: "mail_item_01j8rs605a4gctmbm58d87mvsj"
-            url: "/v1/mail_items/mail_item_01j8rs605a4gctmbm58d87mvsj"
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
@@ -5347,12 +5346,6 @@ components:
           type: string
           description: The identifier of the linked object.
           example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
-        url:
-          type: string
-          nullable: true
-          description: |-
-            The API path that returns the linked object.
-          example: "/v1/mail_items/mail_item_01j8rs605a4gctmbm58d87mvsj"
     ExchangeRate:
       type: object
       description: An exchange rate from a donation's currency to a target currency.
@@ -5798,17 +5791,17 @@ components:
         fundraising_platform_name:
           type: string
           deprecated: true
-          description: Deprecated. The name of the fundraising platform that initiated the donation.
+          description: Deprecated. Use `initiation.form`.
           example: "Classy"
         dafpay_form:
           type: string
           deprecated: true
-          description: Deprecated. Use `form`.
+          description: Deprecated. Use `initiation.form`.
           example: "DAF day"
         dafpay_metadata:
           type: object
           deprecated: true
-          description: Deprecated. Use `metadata`.
+          description: Deprecated. Use `initiation.metadata`.
           additionalProperties:
             type: string
     Deposit:
