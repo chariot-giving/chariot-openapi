@@ -5173,7 +5173,7 @@ components:
             such as Benevity batch many donations into one payout, so several donations can
             share the same value.
         recipient:
-          description: Where within your organization the donor designated the donation.
+          description: The nonprofit the donation was made out to, as named by the source.
           allOf:
             - $ref: "#/components/schemas/DonationRecipient"
         purpose:
@@ -5364,16 +5364,16 @@ components:
           example: "1.0834"
     DonationRecipient:
       type: object
-      description: The designation the donor chose for a gift.
+      description: The nonprofit a donation was made out to.
       properties:
         primary_name:
           type: string
-          description: The designated recipient of the donation, such as a fund, chapter, or campaign.
-          example: "Bay Area Chapter"
+          description: The name of the nonprofit recipient, usually its legal name.
+          example: "Pan-Massachusetts Challenge INC"
         secondary_name:
           type: string
-          description: A further designation under `primary_name`, such as a specific program, chapter, or campaign.
-          example: "Youth Programs"
+          description: Another name for the recipient, such as the name it does business as.
+          example: "Pan-Mass Challenge"
         address:
           type: string
           description: The recipient's address, as a single line.
@@ -7207,18 +7207,16 @@ components:
           description: The donor's family name.
     RecipientInput:
       type: object
-      description: |-
-        The recipient designation for a gift — the fund, chapter, program, or campaign the donor wants
-        the funds directed to.
+      description: The nonprofit the donation was made out to, as named by the source.
       properties:
         primary_name:
           type: string
-          description: The designated recipient of the gift (for example a fund, chapter, or campaign).
-          example: "Emergency Response Fund"
+          description: The name of the nonprofit recipient, usually its legal name.
+          example: "Pan-Massachusetts Challenge INC"
         secondary_name:
           type: string
-          description: A further designation under the primary one (for example a specific program within a fund).
-          example: "Wildfire Relief"
+          description: Another name for the recipient, such as the name it does business as.
+          example: "Pan-Mass Challenge"
         address:
           type: string
           description: |-
