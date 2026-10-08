@@ -5063,8 +5063,6 @@ components:
         - amount_net
         - amount_fee
         - currency
-        - purpose
-        - note
         - created_at
       properties:
         id:
@@ -5205,8 +5203,27 @@ components:
           description: |-
             Deprecated. Information about the platform that facilitated the donation.
             Empty when no platform facilitated the donation.
-          allOf:
-            - $ref: "#/components/schemas/Platform"
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of the platform.
+              example: "PayPal Grant Payments"
+            platform_grant_id:
+              type: string
+              description: The identifier for the grant within the platform's system.
+              example: "93492947-7894-4663-a944-f2469d0027ca"
+            metadata:
+              type: object
+              description: Additional key value pairs that were passed to the platform during the donation initiation.
+              additionalProperties:
+                type: string
+            acceptance:
+              description: |-
+                Information about the acceptance of the grant from the platform.
+                This is only present if the platform requires grant acceptance before disbursing funds.
+              allOf:
+                - $ref: "#/components/schemas/PlatformAcceptance"
         initiation:
           description: How and where the donor initiated the gift.
           allOf:
@@ -5258,9 +5275,7 @@ components:
           type: string
           format: date-time
           readOnly: true
-          description: |-
-            The date and time the donation record was created in Chariot. This is often later
-            than when the gift was made. For that, see `effective_date` and `initiation.initiated_at`.
+          description: The date and time the donation record was created in Chariot.
           example: "2020-01-31T23:59:59Z"
         updated_at:
           type: string
@@ -5294,6 +5309,12 @@ components:
       description: |-
         An artifact is a source file that was used to create the donation.
       properties:
+        id:
+          type: string
+          readOnly: true
+          deprecated: true
+          description: Deprecated. The unique identifier for the artifact.
+          example: "artifact_01j8rs605a4gctmbm58d87mvsj"
         name:
           type: string
           description: The name of the artifact.
@@ -5606,6 +5627,11 @@ components:
           type: string
           description: The source of the corporate match.
           example: "Payroll"
+        program_name:
+          type: string
+          deprecated: true
+          description: Deprecated. Use `grantor.program_name`.
+          example: "Google Matching Grant Program"
     Grantor:
       type: object
       description: The organization that sent a gift.
@@ -5633,31 +5659,16 @@ components:
           deprecated: true
           description: Deprecated. Use `external_id`.
           example: "93492947-7894-4663-a944-f2469d0027ca"
-    Platform:
-      type: object
-      deprecated: true
-      description: |-
-        Deprecated. Information about the platform that facilitated the donation.
-      properties:
-        name:
+        organization_name:
           type: string
-          description: The name of the platform.
-          example: "PayPal Grant Payments"
-        platform_grant_id:
+          readOnly: true
+          deprecated: true
+          description: Deprecated. Use `grantor.organization_name`.
+          example: "Daffy Charitable Fund"
+        program_name:
           type: string
-          description: The identifier for the grant within the platform's system.
-          example: "93492947-7894-4663-a944-f2469d0027ca"
-        metadata:
-          type: object
-          description: Additional key value pairs that were passed to the platform during the donation initiation.
-          additionalProperties:
-            type: string
-        acceptance:
-          description: |-
-            Information about the acceptance of the grant from the platform.
-            This is only present if the platform requires grant acceptance before disbursing funds.
-          allOf:
-            - $ref: "#/components/schemas/PlatformAcceptance"
+          deprecated: true
+          description: Deprecated. Use `grantor.program_name`.
     PlatformAcceptance:
       type: object
       description: |-
@@ -5776,6 +5787,30 @@ components:
               "campaign_id": "spring-appeal",
               "utm_source": "newsletter",
             }
+        frequency:
+          type: string
+          deprecated: true
+          description: Deprecated. Use the donation's top-level `frequency`.
+          example: "ONE_TIME"
+          enum:
+            - ONE_TIME
+            - MONTHLY
+        fundraising_platform_name:
+          type: string
+          deprecated: true
+          description: Deprecated. The name of the fundraising platform that initiated the donation.
+          example: "Classy"
+        dafpay_form:
+          type: string
+          deprecated: true
+          description: Deprecated. Use `form`.
+          example: "DAF day"
+        dafpay_metadata:
+          type: object
+          deprecated: true
+          description: Deprecated. Use `metadata`.
+          additionalProperties:
+            type: string
     Deposit:
       type: object
       description: |-
