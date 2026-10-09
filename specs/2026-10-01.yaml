@@ -5721,8 +5721,6 @@ components:
       description: |-
         A subhash describing where and how the donation was initiated by the donor before it
         reached Chariot.
-      required:
-        - initiated_at
       properties:
         initiated_at:
           type: string
@@ -7169,42 +7167,50 @@ components:
     DonorInput:
       type: object
       description: |-
-        A donor to record on a donation. Every field is optional; provide either `full_name` or the
-        `first_name`/`last_name` pair depending on how the source system reports the donor.
+        The donor information for the donation. Provide either `full_name` or the
+        `first_name`/`last_name` pair, depending on how the source reports the donor.
       properties:
         full_name:
           type: string
-          description: The donor's name as one string, for donors whose name doesn't split cleanly.
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "John Doe"
         first_name:
           type: string
-          description: The donor's given name.
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "John"
         last_name:
           type: string
-          description: The donor's family name.
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Doe"
         email:
           type: string
-          description: The donor's email address.
+          description: "The email address of the donor. Maximum length: 255 characters."
+          example: "bob@me.com"
         phone:
           type: string
-          description: The donor's phone number.
+          description: "The phone number of the donor. Maximum length: 20 characters."
+          example: "415-555-1212"
         address:
           allOf:
             - $ref: "#/components/schemas/AddressInput"
     JointDonorInput:
       type: object
       description: |-
-        A second donor jointly credited with the gift. Provide either `full_name` or the
+        The name of a second donor jointly credited with a gift. Provide either `full_name` or the
         `first_name`/`last_name` pair.
       properties:
         full_name:
           type: string
-          description: The donor's name as one string, for donors whose name doesn't split cleanly.
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
         first_name:
           type: string
-          description: The donor's given name.
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
         last_name:
           type: string
-          description: The donor's family name.
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     RecipientInput:
       type: object
       description: The nonprofit the donation was made out to, as named by the source.
@@ -7219,32 +7225,33 @@ components:
           example: "Pan-Mass Challenge"
         address:
           type: string
-          description: |-
-            The recipient's address as a single unstructured line. Useful when the source system reports
-            an unparsed address (e.g. a stub or memo line).
+          description: The recipient's address, as a single line.
+          example: "123 Main St., San Francisco, CA 94105"
     GrantorInput:
       type: object
-      description: The organization that sent the gift.
+      description: The entity responsible for issuing a grant or payment to a recipient.
       properties:
         organization_name:
           type: string
-          description: The name of the organization, such as a DAF sponsor (e.g. "Fidelity Charitable") or the company behind a matching program.
+          description: The legal organization responsible for issuing the grant or payment.
+          example: "Fidelity Charitable"
         program_name:
           type: string
-          description: The name of the organization's giving program the gift came through.
+          description: |-
+            A specific program, initiative, or branded offering associated with the grantor organization
+            through which the grant or payment is made.
+          example: "Google Matching Grant Program"
     DafGrantInput:
       type: object
-      description: |-
-        DAF grant metadata to record on a donation. Record the sponsor's name in
-        `grantor.organization_name`.
+      description: Details specific to Donor Advised Fund donations.
       properties:
         donor_fund_name:
           type: string
-          description: The donor-advised fund the grant was paid from.
+          description: The name of the donor's fund at the Donor Advised Fund sponsor, such as the Doe Family Fund.
+          example: "The Doe Family Fund"
     CorporateMatchInput:
       type: object
-      description: |-
-        Corporate matching gift metadata to record on a donation.
+      description: Details specific to matched donations.
       properties:
         match_amount:
           type: integer
@@ -7253,39 +7260,59 @@ components:
           example: 10000
         company_name:
           type: string
-          description: The company matching the gift.
-          example: "Acme Corp"
+          description: The name of the company that matched the donation.
+          example: "Google"
         source:
           type: string
-          description: The platform or channel the match arrived through (e.g. "Benevity").
+          description: The source of the corporate match.
+          example: "Payroll"
     DonationInitiationInput:
       type: object
-      description: Where and how the donor initiated the gift.
+      description: Where and how the donor initiated the donation before it reached Chariot.
       properties:
         initiated_at:
           type: string
           format: date-time
-          description: When the donor initiated the gift. Expressed in RFC 3339 format.
+          description: Time when the donation was initiated. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         amount_initiated:
           type: integer
           format: int64
           description: |-
             The amount the donor intended to give when they initiated the gift, in minor
-            units of `currency`.
+            units of `currency`. This can differ from `amount_gross` if the gift
+            changed before it settled.
           example: 25000
-        identifier:
+        channel:
           type: string
-          description: The initiating platform's own identifier for the gift, for reconciliation against that platform's records.
-          example: "L9E182VBGP"
+          description: |-
+            The DAFpay integration channel used to initiate the donation.
+            - `INTEGRATED` - The donation was initiated through an integrated DAFpay instance where the DAF sponsor
+              processes the grant electronically via the DAFpay network.
+            - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
+              completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
+          example: "INTEGRATED"
+          enum:
+            - INTEGRATED
+            - UNINTEGRATED
         web_location_url:
           type: string
-          description: The URL of the page where the donor initiated the gift.
+          description: The URL of the web location where the donation was initiated.
           example: "https://www.example.com/donation/1234567890"
+        dafpay_tracking_id:
+          type: string
+          description: The tracking ID for the donation as generated by DAFpay.
+          example: L9E182VBGP
         form:
           type: string
-          description: The form where the donor initiated the gift.
+          description: The form where the donor initiated the donation.
           example: "DAF day"
+        identifier:
+          type: string
+          description: |-
+            The initiating platform's own identifier for the donation. Use it to reconcile the
+            donation against records in the platform's system.
+          example: "L9E182VBGP"
         metadata:
           type: object
           description: Additional key-value pairs the platform captured when the donation was initiated.
@@ -8857,50 +8884,56 @@ components:
                   - "attribution.primary_donor.email"
               source_id:
                 type: string
-                description: The identifier of the source that sent the donation.
-                example: "source_01m12tn300eh20gdqscje7s5jw"
-              effective_date:
-                type: string
-                format: date-time
                 description: |-
-                  The effective date of the donation. Expressed in RFC 3339 format.
-                example: "2026-01-15T00:00:00Z"
-              payment_source_id:
+                  The identifier of the [Source](/api-reference/sources) that sent this donation.
+                  The source must already exist.
+                example: "source_01m12tn300eh20gdqscje7s5jw"
+              external_id:
                 type: string
-                deprecated: true
-                description: Deprecated. Use `source_id`.
-                example: "payment_source_01m12tn300eh20gdqscje7s5jw"
+                description: |-
+                  The identifier for the donation as reported by its source, such as the transaction ID.
+                  Use it to reconcile the donation in Chariot against the original source donation record.
+                example: "INV-12345"
               amount_gross:
                 type: integer
                 format: int64
                 description: |-
-                  The full amount of the donation before fees, in minor units of `currency`. Must be non-negative.
+                  The total amount of the donation in minor units of the currency. Must be non-negative.
+                  For dollars, for example, this is cents.
                 example: 10000
               amount_fee:
                 type: integer
                 format: int64
                 description: |-
-                  The fee the DAF sponsor or platform deducted from the donation, in minor units of `currency`.
-                  `amount_net` is always `amount_gross` minus `amount_fee` and can't be set.
+                  The amount of the fee that was deducted from the donation in minor units of the currency.
+                  `amount_net` is always `amount_gross` minus `amount_fee`, so you can't set it.
                 example: 0
               individual_gift_amount:
                 type: integer
                 format: int64
-                description: The portion of the gross amount contributed by the donor.
+                description: The portion of the gross amount contributed directly by the donor.
                 example: 10000
               currency:
                 type: string
-                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+                description: |-
+                  The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+                  Can't be cleared.
                 example: "USD"
               exchange_rate:
                 description: |-
                   The exchange rate used to convert the donation into `target_currency`, when the
-                  platform or DAF sponsor reported one.
+                  source reported one.
                 allOf:
                   - $ref: "#/components/schemas/ExchangeRate"
               donation_type:
                 type: string
-                description: The kind of gift. See `donation_type` on the Donation object.
+                description: |-
+                  The kind of gift.
+
+                  - `individual`: a gift from an individual donor.
+                  - `match`: a company's match of an employee's gift.
+                  - `daf`: a grant from a donor-advised fund.
+                  - `other`: any other kind of gift.
                 enum:
                   - individual
                   - match
@@ -8914,60 +8947,75 @@ components:
                   - one_time
                   - recurring
                 example: "one_time"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The date of the donation, as reported by the source. Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
               grantor:
+                description: The entity responsible for issuing a grant or payment to a recipient.
                 allOf:
                   - $ref: "#/components/schemas/GrantorInput"
               external_distribution_id:
                 type: string
-                description: The platform's identifier for the payout that carried this donation.
+                description: |-
+                  The platform's identifier for the payout that carried this donation. Platforms
+                  such as Benevity batch many donations into one payout, so several donations can
+                  share the same value.
+              recipient:
+                description: The nonprofit the donation was made out to, as named by the source.
+                allOf:
+                  - $ref: "#/components/schemas/RecipientInput"
               purpose:
                 type: string
-                description: A description of the donor's intent for the donation.
-                example: "Capital Campaign"
+                description: |-
+                  A description of the donor's intent for the donation.
+                  For example, "Where needed most" or "General Operating Support" or "Specific Campaign".
+                example: "Where needed most"
               note:
                 type: string
                 description: An informational note from the donor to the nonprofit about the donation.
                 example: "Please dedicate in memory of grandma"
-              external_id:
-                type: string
-                description: The identifier for the donation in its source's system, such as the platform's transaction ID or the DAF sponsor's grant ID.
-                example: "INV-12345"
               attribution:
                 type: object
-                description: |-
-                  How the donation is attributed to a donor. Mirrors the shape of
-                  the `attribution` object on the donation response.
+                description: How the donation is attributed to a donor.
                 properties:
                   primary_donor:
+                    description: The primary donor.
                     allOf:
                       - $ref: "#/components/schemas/DonorInput"
                   joint_donor:
+                    description: A second donor jointly credited with the gift.
                     allOf:
                       - $ref: "#/components/schemas/JointDonorInput"
-              recipient:
-                allOf:
-                  - $ref: "#/components/schemas/RecipientInput"
               initiation:
+                description: How and where the donor initiated the gift.
                 allOf:
                   - $ref: "#/components/schemas/DonationInitiationInput"
               donor_advised_fund_grant:
+                description: |-
+                  Details specific to Donor Advised Fund donations. Leave it out when the donation did
+                  not come from a DAF provider.
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
               corporate_match:
+                description: |-
+                  Details specific to matched donations. Leave it out when no corporate sponsor matched
+                  the donation.
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatchInput"
               metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value pairs to record against the donation. Supplying this field
-                  replaces the stored map wholesale; naming `metadata` in `clear_fields` drops it.
+                  Arbitrary key-value pairs recorded against the donation. Setting this field replaces the
+                  stored map. Naming `metadata` in `clear_fields` removes it.
                 additionalProperties: true
               artifact_file_ids:
                 type: array
                 description: |-
-                  Files to link to the donation as additional artifacts, as File identifiers this
-                  organization owns. Additive: passing this field never removes existing artifact links.
-                  Repeating the same id is a no-op.
+                  Files to attach to the donation, as File identifiers your organization owns. Existing
+                  artifacts stay attached. Repeating an identifier has no effect.
                 items:
                   type: string
                 example:
@@ -8994,53 +9042,55 @@ components:
               source_id:
                 type: string
                 description: |-
-                  The identifier of the source that sent the donation. If provided,
-                  the referenced source must already exist.
+                  The identifier of the [Source](/api-reference/sources) that sent this donation.
+                  The source must already exist.
                 example: "source_01m12tn300eh20gdqscje7s5jw"
-              effective_date:
+              external_id:
                 type: string
-                format: date-time
                 description: |-
-                  The effective date of the donation. Defaults to the current date if not provided.
-                  Expressed in RFC 3339 format.
-                example: "2026-01-15T00:00:00Z"
-              payment_source_id:
-                type: string
-                deprecated: true
-                description: Deprecated. Use `source_id`.
-                example: "payment_source_01m12tn300eh20gdqscje7s5jw"
+                  The identifier for the donation as reported by its source, such as the transaction ID.
+                  Use it to reconcile the donation in Chariot against the original source donation record.
+                example: "INV-12345"
               amount_gross:
                 type: integer
                 format: int64
                 description: |-
-                  The full amount of the donation before fees, in minor units of `currency`. Must be non-negative.
-                  A platform that nets its fee out of the gift records a gross of 0 against a non-zero fee.
+                  The total amount of the donation in minor units of the currency. Must be non-negative.
+                  For dollars, for example, this is cents.
                 example: 10000
               amount_fee:
                 type: integer
                 format: int64
                 description: |-
-                  The fee the DAF sponsor or platform deducted from the donation, in minor units of `currency`.
-                  `amount_net` is always `amount_gross` minus `amount_fee` and can't be set.
+                  The amount of the fee that was deducted from the donation in minor units of the currency.
+                  `amount_net` is always `amount_gross` minus `amount_fee`, so you can't set it.
                 example: 0
               individual_gift_amount:
                 type: integer
                 format: int64
-                description: The portion of the gross amount contributed by the donor.
+                description: The portion of the gross amount contributed directly by the donor.
                 example: 10000
               currency:
                 type: string
-                description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation. Defaults to "USD".
+                description: |-
+                  The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for every amount on the donation.
+                  Defaults to USD.
                 example: "USD"
               exchange_rate:
                 description: |-
                   The exchange rate used to convert the donation into `target_currency`, when the
-                  platform or DAF sponsor reported one.
+                  source reported one.
                 allOf:
                   - $ref: "#/components/schemas/ExchangeRate"
               donation_type:
                 type: string
-                description: The kind of gift. See `donation_type` on the Donation object.
+                description: |-
+                  The kind of gift.
+
+                  - `individual`: a gift from an individual donor.
+                  - `match`: a company's match of an employee's gift.
+                  - `daf`: a grant from a donor-advised fund.
+                  - `other`: any other kind of gift.
                 enum:
                   - individual
                   - match
@@ -9054,57 +9104,75 @@ components:
                   - one_time
                   - recurring
                 example: "one_time"
+              effective_date:
+                type: string
+                format: date-time
+                description: |-
+                  The date of the donation, as reported by the source. Defaults to the current date.
+                  Expressed in RFC 3339 format.
+                example: "2026-01-15T00:00:00Z"
               grantor:
+                description: The entity responsible for issuing a grant or payment to a recipient.
                 allOf:
                   - $ref: "#/components/schemas/GrantorInput"
               external_distribution_id:
                 type: string
-                description: The platform's identifier for the payout that carried this donation.
+                description: |-
+                  The platform's identifier for the payout that carried this donation. Platforms
+                  such as Benevity batch many donations into one payout, so several donations can
+                  share the same value.
+              recipient:
+                description: The nonprofit the donation was made out to, as named by the source.
+                allOf:
+                  - $ref: "#/components/schemas/RecipientInput"
               purpose:
                 type: string
-                description: A description of the donor's intent for the donation.
+                description: |-
+                  A description of the donor's intent for the donation.
+                  For example, "Where needed most" or "General Operating Support" or "Specific Campaign".
                 example: "Where needed most"
               note:
                 type: string
                 description: An informational note from the donor to the nonprofit about the donation.
                 example: "Please dedicate in memory of grandma"
-              external_id:
-                type: string
-                description: The identifier for the donation in its source's system, such as the platform's transaction ID or the DAF sponsor's grant ID.
-                example: "INV-12345"
               attribution:
                 type: object
-                description: |-
-                  How the donation is attributed to a donor. Mirrors the shape of
-                  the `attribution` object on the donation response.
+                description: How the donation is attributed to a donor.
                 properties:
                   primary_donor:
+                    description: The primary donor.
                     allOf:
                       - $ref: "#/components/schemas/DonorInput"
                   joint_donor:
+                    description: A second donor jointly credited with the gift.
                     allOf:
                       - $ref: "#/components/schemas/JointDonorInput"
-              recipient:
-                allOf:
-                  - $ref: "#/components/schemas/RecipientInput"
               initiation:
+                description: How and where the donor initiated the gift.
                 allOf:
                   - $ref: "#/components/schemas/DonationInitiationInput"
               donor_advised_fund_grant:
+                description: |-
+                  Details specific to Donor Advised Fund donations. Leave it out when the donation did
+                  not come from a DAF provider.
                 allOf:
                   - $ref: "#/components/schemas/DafGrantInput"
               corporate_match:
+                description: |-
+                  Details specific to matched donations. Leave it out when no corporate sponsor matched
+                  the donation.
                 allOf:
                   - $ref: "#/components/schemas/CorporateMatchInput"
               metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value pairs to record against the donation.
+                  Arbitrary key-value pairs recorded against the donation. Use this for
+                  reconciliation data, campaign identifiers, or other integration data.
                 additionalProperties: true
               artifact_file_ids:
                 type: array
                 description: |-
-                  Files to attach to the created donation, as File identifiers this organization owns.
+                  Files to attach to the donation, as File identifiers your organization owns.
                 items:
                   type: string
                 example:
