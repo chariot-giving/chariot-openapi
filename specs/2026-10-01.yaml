@@ -8860,6 +8860,9 @@ components:
         The request to update fields on an existing donation.
 
         - **Fields set in the body** are written, including empty strings and zeros.
+        - **Objects** such as `recipient` or `attribution.primary_donor` update key by key. Only the
+          fields you set inside the object change.
+        - **`metadata`** replaces the stored map as a whole.
         - **Fields listed in `clear_fields`** are nulled. Only nullable columns may be cleared; a path that
           resolves to a NOT NULL column is rejected.
         - **Fields that are neither set nor listed** are left unchanged.
