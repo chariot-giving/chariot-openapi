@@ -1,0 +1,33 @@
+---
+title: Authentication
+hidden: false
+---
+
+Server-side calls authenticate with an API key passed as a bearer token.
+
+```text
+Authorization: Bearer <API_KEY>
+```
+
+Sandbox and production use separate API keys, separate Connects, and separate data, and you create each key yourself in the Chariot dashboard.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
+
+Configure the base URL, API key, and Connect ID together so you are never pointing a sandbox key at production or the reverse.
+
+## Where each credential belongs
+
+The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key must only ever be used from your server. Every call that uses it, including Create Grant, is made from your backend, never from the browser.
+
+See [Authentication](/api/authentication) for more information.
+
+## Sandbox
+
+No real funds move in sandbox. Every DAF provider in the list is a mock, and sandbox exposes simulations for completing and canceling a Grant, so you can test how your integration handles received funds without waiting on a provider. The test login and the rest of the test plan are on [Testing and QA](/guides/dafpay/accept/sandbox).
+
+Next: [Create Connects](/guides/dafpay/accept/connects)

@@ -16,7 +16,7 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
 
   ```json Webhook Event Payload
   {
-    "id": "event_123abc",
+    "id": "9f8c1f1e-0b3a-4a6f-9f2c-6b3a1d5e7c40",
     "created_at": "2023-01-31T23:59:59Z",
     "category": "grant.created",
     "associated_object_type": "grant",
@@ -58,7 +58,7 @@ Note that you can create Event Subscriptions in Production and Sandbox. Sandbox 
 
 Individual Events don’t contain very much information on their own. This is by design, as the API structure can remain extremely stable and avoid difficult webhook migrations in the future as the Chariot API changes. If you need additional metadata, such as the amount or status of the Grant in the above example, make a GET request to the API for that information.
 
-If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). Events will remain in the Chariot system for up to 30 days.
+If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). 
 
 ## Secure your webhooks
 
@@ -68,7 +68,7 @@ After you've confirmed that your webhook endpoint connections works as expected,
 In order to verify signatures for webhooks, you need to specify the signing secret that you will use in the [Create Event Subscription API](/api/event-subscriptions/create).
 </Note>
 
-Chariot will include the `Chariot-Webhook-Signature` header in each webhook request. This header will contain a timestamp and one or more signatures. The timestamp is prefixed by `t=`, and each signature is prefixed by a scheme. Schemes start with `v`, followed by an integer. Currently, the only valid live signature scheme is `v1`.
+Chariot will include the `Chariot-Webhook-Signature` header in each webhook request. This header will contain a timestamp and a signature. The timestamp is prefixed by `t=`, and each signature is prefixed by a scheme. Schemes start with `v`, followed by an integer. Currently, the only valid live signature scheme is `v1`.
 
 ```
 Chariot-Webhook-Signature: t=2024-01-19T18:48:56Z,v1=e0632fb61f7d1068ecbde75410d5c3cc152926f97eaacf53c6228624647329da
@@ -104,12 +104,12 @@ To protect against timing attacks, use a constant-time-string comparison to comp
 
 ## Failures and Retries
 
-In production, if your application returns anything other than a 20x HTTP status code, we’ll retry it up to 10 times with exponentially increasing backoffs. In your webhook endpoint implementation, we recommend you place inbound Events into your application’s own queuing system for asynchronous event processing, and return a 200 response from your endpoint as quickly as possible. Because we can't guarantee we'll receive your 200 acknowledgement, your webhook implementation should gracefully handle receiving the same webhook multiple times.
+In production, if your application returns anything other than a `200` HTTP status code, we’ll retry it up to 10 times with exponentially increasing backoffs, spanning roughly four hours end to end. In your webhook endpoint implementation, we recommend you place inbound Events into your application’s own queuing system for asynchronous event processing, and return a 200 response from your endpoint as quickly as possible. Because we can't guarantee we'll receive your 200 acknowledgement, your webhook implementation should gracefully handle receiving the same webhook multiple times.
 
 To avoid queueing issues, we will not retry failed webhooks in the sandbox.
 
 <Info> 
-If all attempts to a webhook endpoint fail, after 5 days the endpoint will be disabled and we will stop sending event messages to that endpoint.
+If every attempt fails, the subscription moves to `requires_attention`. Monitor your subscription status so a failing endpoint does not go unnoticed.
 </Info>
 
 ## Best Practices
@@ -130,9 +130,9 @@ You can [Update an Event Subscription](/api/event-subscriptions/update) to chang
 
 If you use an HTTPS URL for your webhook endpoint, Chariot validates that the connection to your server is secure before sending your webhook data. For this to work, your server must be correctly configured to support HTTPS with a valid server certificate. The Production environment requires HTTPS URLs.
 
-### Quickly return a 2xx response
+### Quickly return a 200 response
 
-Your endpoint must quickly return a successful status code (2xx) prior to any complex logic that could cause a timeout.
+Your endpoint must quickly return `200` prior to any complex logic that could cause a timeout. Only `200` is treated as success; any other status, including `202` and `204`, is recorded as a failed delivery and retried.
 
 ### Verify webhook signatures
 

@@ -1,0 +1,253 @@
+---
+title: Create the Grant
+hidden: false
+---
+
+Call Create Grant from your server after `CHARIOT_SUCCESS`. A successful browser session does not create the Grant by itself.
+
+<EndpointRequestSnippet endpoint="POST /v1/grants" />
+
+## Server-side sequence
+
+1. Receive the workflow session ID and amount returned by DAFpay.
+2. Resolve the nonprofit and platform transaction from your stored session record.
+3. Save the platform transaction, and submit your own donation form first.
+4. Call Create Grant with the server-side API key.
+5. Store the Grant ID and response.
+
+Submit your own form before calling Create Grant. If your form fails after the Grant exists, the donor sees an error for a gift that was actually submitted to their DAF provider, and there is no way for them to tell.
+
+Complete this sequence within 15 minutes of authorization.
+
+## Retry safely
+
+Create Grant and Create Recurring Grant are both idempotent for a workflow session. If the first request times out, call the same endpoint again with the same `workflowSessionId`.
+
+| Response | What to do |
+| --- | --- |
+| `201 Created` | The Grant was created. Store it and stop retrying. |
+| `200 OK` | A Grant already exists for this workflow session. Store it and stop retrying. |
+| `409 Conflict` | Submission for this session is already being processed. Wait, then retry with the same workflow session. |
+| `410 Gone` | The authorization expired. Ask the donor to complete DAFpay again. |
+| `400 Bad Request` | A value cannot be submitted. Read the error and handle the invalid amount, provider requirement, or fee. |
+| `401` or `403` | Authentication or access failed. Check the API key, the environment, and account access. |
+
+Never create a new workflow session to retry the same donor authorization.
+
+A timeout leaves the outcome uncertain. Keep the transaction pending while you resolve it rather than inviting the donor to start a second gift.
+
+Queueing a retry is not the same as submitting the gift. The authorization expires 15 minutes after the donor gives it, and the session is checked before anything else, so a job that retries past that window gets a `410` whether or not a Grant was created.
+
+A `410` therefore means you can no longer resolve the outcome through this endpoint. It does not prove the gift never reached the provider.
+
+There is no way to look a Grant up by workflow session, so if you subscribe to `grant.created` that event is how you find out a Grant exists despite your call failing. Resolve inside the window wherever you can, keep the donor on a pending state until you have, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) when you cannot tell what happened.
+
+## A server-side example
+
+```javascript
+class CreateGrantError extends Error {
+  constructor(status, body) {
+    super(`Create Grant failed: ${status}`);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+async function createGrant({ workflowSessionId, amount, applicationFeeAmount }) {
+  const deadline = Date.now() + 60_000;
+
+  for (let attempt = 0; Date.now() < deadline; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10_000);
+
+    try {
+      const res = await fetch(`${CHARIOT_BASE_URL}/v1/grants`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${CHARIOT_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ workflowSessionId, amount, applicationFeeAmount }),
+        signal: controller.signal
+      });
+
+      // 201 created it, 200 means it already existed. Both are success.
+      if (res.status === 201 || res.status === 200) return res.json();
+
+      // Submission is still running, or the request is worth sending again.
+      if (res.status === 409 || res.status >= 500) {
+        await backoff(attempt);
+        continue;
+      }
+
+      // 410 expired, 400 invalid, 401/403 wrong credentials. The caller decides.
+      throw new CreateGrantError(res.status, await res.json().catch(() => null));
+    } catch (err) {
+      // A timed-out request may still have created the Grant. Ask again with the
+      // same session: that is what the idempotency contract is for.
+      if (err.name === "AbortError") {
+        await backoff(attempt);
+        continue;
+      }
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  throw new CreateGrantError(408, null);
+}
+
+const backoff = (attempt) =>
+  new Promise((r) => setTimeout(r, 2 ** attempt * 500 + Math.random() * 250));
+```
+
+Retry with the same `workflowSessionId`. Starting a new session creates a new authorization and can result in a duplicate gift.
+
+If a request times out, retry it with the same workflow session ID. The response table above covers what each status means for the donor.
+
+Create Grant also accepts `donor`, `note` and `designation`. Pass these fields from trusted server-side records when you need to override values supplied by the browser.
+
+## Amount validation
+
+Use the amount returned by `CHARIOT_SUCCESS`. Amounts are in cents and must be whole dollars, so the value must be divisible by 100.
+
+Create Grant enforces this, not the modal. An amount that is not a whole dollar is accepted when the session starts and fails later, at creation, so validate it before you open DAFpay.
+
+Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provider, and DAFpay prompts the donor to adjust an amount that is below the selected provider's minimum or above their available balance.
+
+<Frame>
+    <img src='../../../images/15e7e65-Error-handling-picture.png' />
+</Frame>
+
+Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
+
+When a `fundId` is available, use [Get DAF](/api/donor-advised-funds/get) to retrieve the provider's `minimumGrantAmount` and current availability. Treat an unavailable provider as a temporary error, not an invalid donor request.
+
+## Platform fees
+
+Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents.
+
+Create Grant validates `applicationFeeAmount` on its own against the Grant amount. The default ceiling is 210 basis points, and your Chariot agreement can raise it for your application. Chariot's own fee is charged separately and is not part of this check.
+
+A donor-covered fee increases the Grant amount. It is not a separate tip. Do not offer a tip to a for-profit platform in a DAF transaction.
+
+## Recurring gifts
+
+When recurring Grants are enabled, a donor can ask their DAF provider to send a monthly Grant.
+
+A recurring success contains `recurringGrantIntent` instead of `grantIntent`:
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "recurringGrantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "frequency": "MONTHLY",
+    "metadata": {
+      "platformTransactionId": "txn_123"
+    }
+  }
+}
+```
+
+```javascript
+const res = await fetch(`${CHARIOT_BASE_URL}/v1/recurring_grants`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+    frequency: "MONTHLY",
+    amount: 2000
+  })
+});
+```
+
+Store the returned recurring Grant ID, the workflow session ID, the amount, the frequency, and any provider or tracking identifiers that came back. Fields that are empty at creation can be filled in from a later read.
+
+Call Create Recurring Grant, not Create Grant. It follows the same retry contract as Create Grant above. `workflowSessionId`, `frequency`, and `amount` are required, and `MONTHLY` is currently the only supported frequency. The endpoint also accepts the same optional donor, note, designation, and application fee fields. A recurring application fee applies to the first Grant only.
+
+
+The DAF provider controls the schedule. Chariot records the initial setup but may not receive a new Grant for each later payment or learn when the donor changes or cancels the recurrence.
+
+Model the initial record as the start of an arrangement, not proof of future payments. Treat each later gift as a separate one and reconcile it independently.
+
+Do not promise nonprofits a complete recurring schedule unless another data source supports it.
+
+What you will and will not see after setup:
+
+| | |
+| --- | --- |
+| You see | The initial arrangement, as one recurring Grant record. |
+| You may not see | A new Grant for each later payment. |
+| You will not see | The donor changing or canceling the schedule in their provider's portal. |
+
+Later gifts reach the nonprofit as Donations like any other. Reconcile them individually rather than projecting them from the original arrangement.
+
+## Authorization, Grant status, and payment
+
+A completed DAFpay session means the donor authorized a Grant request. Creating the Grant records the request and submits it to the DAF provider. Neither event means the nonprofit has received the funds.
+
+After Create Grant succeeds, create a pending or initiated transaction in your system. Do not mark it paid, settled, or received based only on the DAFpay result or successful Grant creation.
+
+DAF providers review and send Grants on their own timelines. Depending on the provider and payment route, Chariot may receive additional status or payment information after the Grant is created.
+
+## Grant status
+
+A Grant carries status information in two separate places. Read the one that matches what you are displaying.
+
+`status` on the Grant object is the lifecycle most platforms display. Every DAFpay Grant from an integrated provider starts at `Initiated`.
+
+| API value | Meaning | Terminal | What happens next |
+| --- | --- | --- | --- |
+| `Initiated` | The request was submitted to and received by the DAF provider. The provider is still processing the gift. | No | Moves to `Completed` when receipt of the payment is confirmed, or to `Canceled` if the payment never arrives. |
+| `Completed` | Receipt of the payment has been confirmed, either by Chariot recording the settlement or by the nonprofit confirming it. | Operationally final, but may return to `Initiated` if the associated settlement is removed. | No further automatic transitions. |
+| `Canceled` | The donor canceled the Grant, or the DAF provider did not approve it. | Yes | No processing fees are taken or charged. |
+
+There is no guarantee that a Grant reaches a terminal state on its own. Because DAFpay does not receive the funds, the transition out of `Initiated` often depends on the nonprofit confirming receipt. In the Chariot dashboard, that action is labeled **Received** and advances the Grant to `Completed`.
+
+Grant billing is based on the Grant's `created_at` date and excludes Grants with a `Canceled` status. Billing is not triggered by the transition to `Completed`.
+
+Listen for status changes and display them. Do not offer your users a control that sets one.
+
+## Grant status history
+
+`statuses` on the Grant object is an array of `GrantStatus` entries recording when the Grant reached each status it has held. The entries carry the same three values as `status`, ordered oldest first, with one entry per distinct status.
+
+Every Grant has at least one entry, written when the Grant is created. Read `status` for the current state and `statuses` only when you need the time a state was reached.
+
+## Keep the Grant current
+
+Grant events are delivered to fundraising platforms only. If you are a nonprofit integrating your own form, you will not receive them — track the gift through Donation events instead, as [Processing Donations](/guides/dafpay/accept/processing-donations) describes.
+
+A platform subscribes to `grant.updated`. A webhook tells you that the Grant changed, but it does not identify which fields changed. When an event arrives:
+
+1. Verify the webhook signature.
+2. Retrieve the current Grant.
+3. Find your own record using the stored Grant ID.
+4. Apply the current Grant data without creating a second record.
+5. Store the event ID so repeated deliveries can be processed safely.
+
+Use a periodic recovery process when status freshness matters. Webhooks can be delayed, delivered more than once, or missed by your application.
+
+If you support unintegrated Grants, subscribe to `unintegrated_grant.updated` as well. These are separate records with their own events.
+
+## Represent the status accurately
+
+Use the exact status returned by the API. In your product, distinguish among:
+
+- the donor authorizing a Grant request;
+- Chariot creating or submitting the Grant;
+- the DAF provider processing the request; and
+- the nonprofit receiving the payment.
+
+Do not use Paid, Settled, Completed, or Received unless the corresponding API data confirms that meaning.
+
+A nonprofit may receive a provider payment that Chariot cannot confirm automatically. Document how that payment gets reconciled and how the confirmation reaches your system.
+
+Next: [Unintegrated Providers](/guides/dafpay/accept/unintegrated)
+

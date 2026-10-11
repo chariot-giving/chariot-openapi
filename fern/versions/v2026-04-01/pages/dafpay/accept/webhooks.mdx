@@ -1,0 +1,138 @@
+---
+title: Webhooks
+hidden: false
+---
+
+Rather than polling for changes, you can subscribe to events and have Chariot send them to your endpoint. Create a subscription with the Create Event Subscription endpoint.
+
+Each subscription carries exactly one category, so create one per event you want to receive.
+
+<Warning>
+  Generate your own `signing_secret` and pass it when you create the subscription. It is write-only: no endpoint returns it, and nothing in the subscription you get back contains it. If you leave it out, Chariot generates a random one you can never read, every delivery fails verification, and the only fix is to delete the subscription and create it again.
+</Warning>
+
+```sh
+# 32 random bytes, stored in your secret manager before you create anything
+openssl rand -hex 32
+```
+
+<EndpointRequestSnippet endpoint="POST /v1/event_subscriptions" />
+
+## Events
+
+| Event | Who can subscribe | When it fires |
+| --- | --- | --- |
+| `grant.created` | Platforms | A DAFpay Grant was created. Fires only for DAFpay. |
+| `grant.updated` | Platforms | A Grant changed, including a status change. |
+| `unintegrated_grant.created` | Platforms | An Unintegrated Grant was recorded. |
+| `unintegrated_grant.updated` | Platforms | An Unintegrated Grant changed. |
+| `donation.created` | Nonprofits | A Donation was created, from DAFpay or from any other payment source. |
+| `donation.updated` | Nonprofits | A Donation changed, including gaining a settlement. |
+| `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
+| `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
+
+Event delivery depends on your API key's scope. Grant and Unintegrated Grant events are delivered against a fundraising application, so they never reach a nonprofit's own key. Donation and Deposit events are delivered against an organization, so they never reach a platform's key.
+
+Nothing rejects a category you cannot receive. The subscription is created, stored and returned, and then never fires. Subscribe only to the rows above that match your key.
+
+If you are a nonprofit, build your CRM sync on the Donation events. They cover DAFpay gifts and gifts from your other payment sources through one code path, and they are the only events you will receive.
+
+## What an event contains
+
+An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself.
+
+```json
+{
+  "id": "9f8c1f1e-0b3a-4a6f-9f2c-6b3a1d5e7c40",
+  "created_at": "2026-01-31T23:59:59Z",
+  "category": "grant.created",
+  "associated_object_type": "grant",
+  "associated_object_id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+}
+```
+
+Anything you passed in `onDonationRequest`, including metadata, is not in the payload. Retrieve the current object from the API and act on its current state.
+
+In a delivered webhook, Grant IDs arrive as raw UUIDs while Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
+
+List Events returns the raw UUID for every object type, including Donations and Deposits. The same event therefore reaches you in two different ID formats depending on whether it was delivered or recovered, so normalize before you look anything up.
+
+## Verify the signature
+
+Every delivery carries a `Chariot-Webhook-Signature` header holding a timestamp and one or more signatures:
+
+```text
+Chariot-Webhook-Signature: t=2026-01-19T18:48:56Z,v1=e0632fb61f7d1068ecbde75410d5c3cc152926f97eaacf53c6228624647329da
+```
+
+To verify it:
+
+1. Split the header on commas and read `t` and each `v1` value. Ignore any other signature scheme.
+2. Build the signed payload as the exact timestamp string, a period, then the raw request body: `timestamp.rawBody`.
+3. Compute an HMAC with SHA-256, using the `signing_secret` you supplied when you created the subscription.
+4. Compare your hex digest against each supplied `v1` with a constant-time comparison.
+5. Check that the timestamp falls within your tolerance, and reject anything invalid or stale.
+
+```javascript
+import crypto from "node:crypto";
+
+function verify(header, rawBody, signingSecret) {
+  let timestamp;
+  const signatures = [];
+  for (const part of header.split(",")) {
+    const i = part.indexOf("=");
+    const key = part.slice(0, i).trim();
+    const value = part.slice(i + 1).trim();
+    if (key === "t") timestamp = value;
+    if (key === "v1") signatures.push(value);
+  }
+  if (!timestamp || signatures.length === 0) return false;
+
+  const expected = Buffer.from(
+    crypto
+      .createHmac("sha256", signingSecret)
+      .update(`${timestamp}.${rawBody}`)
+      .digest("hex")
+  );
+
+  const matched = signatures.some((sig) => {
+    const given = Buffer.from(sig);
+    return (
+      given.length === expected.length && crypto.timingSafeEqual(given, expected)
+    );
+  });
+  if (!matched) return false;
+
+  // Bound the timestamp in both directions, so a future value cannot pass.
+  return Math.abs(Date.now() - Date.parse(timestamp)) < 5 * 60 * 1000;
+}
+```
+
+Keep the raw request body for this check. Parsing JSON and reserializing it changes the bytes and the signature will not match. In Express that means `express.raw()` on this route, not `express.json()`.
+
+## Handle events reliably
+
+Store the event ID and make processing idempotent. Events can be delivered more than once even when your endpoint returns success, and a repeat must not create a second transaction.
+
+Return `200` promptly and do the work afterward. Only `200` counts as success: a `202` or `204` is treated as a failed delivery and retried. Only mark an event processed once that work has succeeded.
+
+Events can also arrive out of order. Because you retrieve the current object rather than trusting the payload, a late event will not write an older state over a newer one.
+
+## Retries and recovery
+
+In production, a delivery is attempted up to 10 times with a growing backoff, which spans roughly four hours end to end. If the last attempt fails, the subscription moves to `requires_attention`. Monitor your endpoint's health and your subscription's status.
+
+Sandbox does not retry failed deliveries at all, so test your own queue's retry and duplicate handling explicitly rather than relying on Chariot to redeliver.
+
+Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Track which event IDs you have processed.
+
+Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information.
+
+For a gap longer than your event history covers, reconcile against the records themselves. What that means depends on which you can read:
+
+| | How to reconcile a long gap |
+| --- | --- |
+| Fundraising platforms | Walk your stored transactions and re-read each Grant and Unintegrated Grant by its stored ID. There is no list-by-updated-at, so your own records are the worklist. |
+| Nonprofits | Do the same for Donations and Deposits, and remember List Donations filters on `created_at`. A query for new gifts will not surface a gift created last month that was received yesterday, so drive the sweep from the records you already hold rather than from a date range. |
+
+Next: [Testing and QA](/guides/dafpay/accept/sandbox)
