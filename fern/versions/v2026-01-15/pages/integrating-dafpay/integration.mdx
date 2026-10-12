@@ -196,6 +196,27 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
 
 Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
 
+### Embedding Connect in an iframe
+If your donation form runs inside an iframe that is taller than the donor's screen, the checkout is positioned within your iframe rather than the donor's screen. Listen for the `CHARIOT_OPEN` and `CHARIOT_CLOSE` events to resize your iframe to the donor's viewport while the checkout is open.
+
+```javascript JavaScript
+const chariot = document.getElementById('chariot');
+
+chariot.addEventListener('CHARIOT_OPEN', () => {
+    // Expand your iframe to fill the donor's viewport.
+});
+
+chariot.addEventListener('CHARIOT_CLOSE', () => {
+    // Restore your iframe to its original size.
+});
+```
+
+To always open the checkout in a popup window, set `context="popup"` on the `chariot-connect` component. If your iframe has a `sandbox` attribute, it must include `allow-popups` and `allow-popups-to-escape-sandbox`.
+
+```html HTML
+<chariot-connect id="chariot" cid="GENERATED_CONNECT_IDENTIFIER" context="popup"></chariot-connect>
+```
+
 ### Disabling Connect
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.
@@ -282,6 +303,12 @@ const App = () => {
     "description": "User exited the flow" // A human readable string containing a brief sentence explaining the exit reason.
   }
 ```
+
+```json onOpenCloseMetadata
+  {
+    "context": "iframe" // Where the checkout opened: "iframe" (within your page) or "popup" (a separate window).
+  }
+```
 </CodeBlocks>
 
 | Event Name         | Description                                                                                                                                                                                                                                                                               | Metadata Type         |
@@ -289,6 +316,8 @@ const App = () => {
 | `CHARIOT_INIT`     | The init event is called when the Chariot Connect script is initialized and ready to be run. This is useful to be able to know when Chariot Connect is initialized and ready to be used.                                                                                                   | No metadata is provided for this event. |
 | `CHARIOT_SUCCESS`  | The success event contains a final summary of the Connect workflow session. It contains the workflow session id and relevant donation information.  <br /><br />Once you receive the success event don't forget to complete the transaction by calling the [Create Grant](/api/grants/create) or [Create Recurring Grant](/api/recurring-grants/create) route based on the grant intent data. | `OnSuccessMetadata`   |
 | `CHARIOT_EXIT`     | The exit event is called when a user exits without successfully completing the flow, when an error occurs during the flow, or when a user confirms an unintegrated grant.                                                                                                                  | `OnExitMetadata`      |
+| `CHARIOT_OPEN`     | The open event is called each time the checkout opens.                                                                                                                                                                                                                                    | `OnOpenCloseMetadata` |
+| `CHARIOT_CLOSE`    | The close event is called each time the checkout closes, whether or not the donor completed the flow.                                                                                                                                                                                    | `OnOpenCloseMetadata` |
 
 **Exit Reasons**
 
