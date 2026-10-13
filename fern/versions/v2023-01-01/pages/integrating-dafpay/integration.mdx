@@ -138,9 +138,9 @@ By default, Chariot chooses whether the checkout opens as a modal on your page o
 | `iframe` | Opens the checkout as a modal over your page.    |
 | `popup`  | Opens the checkout in a separate browser window. |
 
-<Note>
-In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default.
-</Note>
+<Warning>
+We recommend leaving `context` unset. Forcing `iframe` can break the checkout in Safari and on mobile, and if your donation form is itself embedded in an iframe, the modal only covers that frame. If you set `iframe`, test the checkout across browsers and devices.
+</Warning>
 
 ### Disabling Connect
 
