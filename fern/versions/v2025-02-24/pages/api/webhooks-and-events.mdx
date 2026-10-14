@@ -48,7 +48,7 @@ Note that you can create Event Subscriptions in Production and Sandbox. Sandbox 
 
 Individual Events don’t contain very much information on their own. This is by design, as the API structure can remain extremely stable and avoid difficult webhook migrations in the future as the Chariot API changes. If you need additional metadata, such as the amount or status of the Grant in the above example, make a GET request to the API for that information.
 
-If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). Events will remain in the Chariot system for up to 30 days.
+If you don't want to use webhooks, or need to do some batch processing, you can also request Events from the Chariot API using the [List Events API](/api/events/list). Events are only guaranteed to remain in the Chariot system for 30 days.
 
 ## Secure your webhooks
 
