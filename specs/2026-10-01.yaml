@@ -3052,6 +3052,9 @@ paths:
       description: |-
         Updates a custom source. Canonical sources are read-only; a PATCH on
         one returns `403 Forbidden`.
+
+        If another source on your account already has the new name, the
+        request returns `409 Conflict`.
       operationId: updateSource
       tags:
         - sources
@@ -3082,13 +3085,15 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Delete a Source
       description: |-
-        Deletes a custom source. Fails with `409 Conflict` if any donations,
-        deposits, or deposit addresses reference the source. Canonical
+        Deletes a custom source. Fails with `409 Conflict` while the source is
+        in use, such as by a deposit address, donation, or deposit. Canonical
         sources are read-only; a DELETE on one returns `403 Forbidden`.
       operationId: deleteSource
       tags:
@@ -3365,6 +3370,9 @@ paths:
 
         An address is unique per `(source_id, type)`. Provisioning a second
         address for the same source and rail returns `409 Conflict`.
+
+        If your organization has no open Processing account, the request
+        returns `400 Bad Request`.
       operationId: createDepositAddress
       tags:
         - deposit_addresses
@@ -3397,6 +3405,8 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/ConflictError"
         "500":
@@ -4823,31 +4833,6 @@ components:
         - processed
         - rejected
       example: "processed"
-    FinancialAddress:
-      type: object
-      description: |-
-        A subhash containing information about the electronic bank address payment rail details.
-        This is only available for manual and connected_account payment sources.
-      properties:
-        ach:
-          $ref: "#/components/schemas/AchAddress"
-    AchAddress:
-      type: object
-      description: |-
-        A subhash containing information about the electronic bank address payment rail details.
-      required:
-        - institution_name
-        - account_number
-        - routing_number
-      properties:
-        account_number:
-          type: string
-          description: The account number of that uniquely identifies the account at the institution
-          example: "987654321"
-        routing_number:
-          type: string
-          description: The American Bankers' Association (ABA) Routing Transit Number (RTN) for the destination account.
-          example: "101050001"
     Source:
       type: object
       description: |-
@@ -4926,13 +4911,11 @@ components:
           account_number: "987654321"
           routing_number: "101050001"
         created_at: "2026-09-28T12:34:56Z"
-        updated_at: "2026-09-28T12:34:56Z"
       required:
         - id
         - type
         - source_id
         - created_at
-        - updated_at
       properties:
         id:
           type: string
@@ -4963,11 +4946,6 @@ components:
           format: date-time
           readOnly: true
           description: When this deposit address was provisioned.
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: When this deposit address was last modified.
     DepositAddressAch:
       type: object
       description: ACH account details for a deposit address.
@@ -5003,7 +4981,7 @@ components:
         frequency: "one_time"
         effective_date: "2026-09-24T00:00:00Z"
         created_by:
-          name: "Fidelity Charitable"
+          name: "Chariot Data Sync"
         purpose: "Where needed most"
         note: "Please dedicate in memory of grandma"
         attribution:
@@ -5049,9 +5027,6 @@ components:
           - name: "grant_letter.pdf"
             file_id: "file_01j8rs605a4gctmbm58d87mvsj"
             created_at: "2026-09-25T14:00:00Z"
-        linked_objects:
-          - type: "mail_item"
-            id: "mail_item_01j8rs605a4gctmbm58d87mvsj"
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
@@ -5127,7 +5102,6 @@ components:
             - $ref: "#/components/schemas/ExchangeRate"
         donation_type:
           type: string
-          nullable: true
           description: |-
             The kind of gift.
 
@@ -5135,20 +5109,26 @@ components:
             - `match`: a company's match of an employee's gift.
             - `daf`: a grant from a donor-advised fund.
             - `other`: any other kind of gift.
+            - `unknown`: the source did not report the kind of gift.
           enum:
             - individual
             - match
             - daf
             - other
+            - unknown
           example: "daf"
         frequency:
           type: string
-          nullable: true
           description: |-
-            Whether the donor set the gift to repeat. Null when the source didn't report it.
+            Whether the donor set the gift to repeat.
+
+            - `one_time`: the donor gave once.
+            - `recurring`: the donor set the gift to repeat.
+            - `unknown`: the source did not report whether the gift repeats.
           enum:
             - one_time
             - recurring
+            - unknown
           example: "one_time"
         effective_date:
           type: string
@@ -5257,16 +5237,6 @@ components:
             These can include the raw source files (PDFs, CSVs, etc.) that were received from upstream platforms or systems.
           items:
             $ref: "#/components/schemas/Artifact"
-        linked_objects:
-          type: array
-          readOnly: true
-          description: |-
-            Other objects connected to this donation, such as the
-            [Grant](/api/grants) or [Mail Item](/api/mail-items)
-            that produced it. Each entry names the object's type and identifier;
-            fetch the object itself for its details.
-          items:
-            $ref: "#/components/schemas/LinkedObject"
         created_at:
           type: string
           format: date-time
@@ -5325,24 +5295,6 @@ components:
           readOnly: true
           description: The date and time when the artifact was created.
           example: "2020-01-31T23:59:59Z"
-    LinkedObject:
-      type: object
-      description: |-
-        A reference to another object connected to a donation.
-      required:
-        - type
-        - id
-      properties:
-        type:
-          type: string
-          description: |-
-            The kind of object. It matches the object's name in the API, such as
-            `grant` or `mail_item`.
-          example: "mail_item"
-        id:
-          type: string
-          description: The identifier of the linked object.
-          example: "mail_item_01j8rs605a4gctmbm58d87mvsj"
     ExchangeRate:
       type: object
       description: An exchange rate from a donation's currency to a target currency.
@@ -8638,7 +8590,7 @@ components:
             - "enabled"
             - "disabled"
           description: |-
-            The status of the program's ability to connect payment sources to process donations and grants to your organization.
+            The status of the program's ability to process donations and grants to your organization.
           example: "enabled"
           readOnly: true
         created_at:
@@ -8937,18 +8889,26 @@ components:
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
                   - `other`: any other kind of gift.
+                  - `unknown`: the kind of gift wasn't specified.
                 enum:
                   - individual
                   - match
                   - daf
                   - other
+                  - unknown
                 example: "daf"
               frequency:
                 type: string
-                description: Whether the donor set the gift to repeat.
+                description: |-
+                  Whether the donor set the gift to repeat.
+
+                  - `one_time`: the donor gave once.
+                  - `recurring`: the donor set the gift to repeat.
+                  - `unknown`: it wasn't specified whether the gift repeats.
                 enum:
                   - one_time
                   - recurring
+                  - unknown
                 example: "one_time"
               effective_date:
                 type: string
@@ -9068,11 +9028,6 @@ components:
                   The amount of the fee that was deducted from the donation in minor units of the currency.
                   `amount_net` is always `amount_gross` minus `amount_fee`, so you can't set it.
                 example: 0
-              individual_gift_amount:
-                type: integer
-                format: int64
-                description: The portion of the gross amount contributed directly by the donor.
-                example: 10000
               currency:
                 type: string
                 description: |-
@@ -9094,18 +9049,26 @@ components:
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
                   - `other`: any other kind of gift.
+                  - `unknown`: the kind of gift wasn't specified.
                 enum:
                   - individual
                   - match
                   - daf
                   - other
+                  - unknown
                 example: "daf"
               frequency:
                 type: string
-                description: Whether the donor set the gift to repeat.
+                description: |-
+                  Whether the donor set the gift to repeat.
+
+                  - `one_time`: the donor gave once.
+                  - `recurring`: the donor set the gift to repeat.
+                  - `unknown`: it wasn't specified whether the gift repeats.
                 enum:
                   - one_time
                   - recurring
+                  - unknown
                 example: "one_time"
               effective_date:
                 type: string
