@@ -1,0 +1,13 @@
+## Summary
+
+Corrections to the Grant and Recurring Grant specifications.
+
+### Fixed
+
+- **Create Recurring Grant documents its `200` response.** A repeat request for a workflow session that already produced a recurring grant returns `200 OK` with that grant. Only `409 Conflict` was documented, which described a request still being processed.
+- **`GrantStatus` lists the statuses the API returns.** `Initiated`, `Completed` and `Canceled`, replacing four values that were never emitted. The `comment` field has been removed; it was never returned.
+- **The application fee ceiling is described correctly.** `applicationFeeAmount` is validated on its own against the grant amount. Chariot's own fee is charged separately and is not part of that check.
+- **`donation_id` on the Grant is now `donationId`.** The Grant service serializes with JSON names, so this is the field name the API has always returned.
+- **Removed `donor_account_id` from the Grant schema.** The field was documented but never returned. Use the `donor_account_id` filter on List Grants to find grants from a Donor Account.
+
+<Tip>If you have any feedback or suggestions, please reach out to us at developers@givechariot.com</Tip>
