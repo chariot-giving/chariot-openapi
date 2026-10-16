@@ -7267,13 +7267,15 @@ components:
           example: "L9E182VBGP"
         metadata:
           type: object
-          description: Additional key-value pairs the platform captured when the donation was initiated.
-          additionalProperties:
-            type: string
+          description: |-
+            Additional data the platform captured when the donation was initiated, as a JSON
+            object. Values can be strings, numbers, booleans, arrays, or nested objects.
+          additionalProperties: true
           example:
             {
               "campaign_id": "spring-appeal",
               "utm_source": "newsletter",
+              "donor_email_opt_in": true,
             }
     GrantAddress:
       type: object
