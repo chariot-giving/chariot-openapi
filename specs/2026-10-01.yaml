@@ -372,6 +372,24 @@ paths:
             type: string
           required: false
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: tracking_id
+          in: query
+          description: |-
+            Filter grants by their DAFpay tracking ID. Use this to find the grant behind a tracking ID you already have.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "L9E182VBGP"
+        - name: external_grant_id
+          in: query
+          description: |-
+            Filter grants by the ID the donor advised fund gave the grant. Use this to find the grant behind a DAF's grant ID.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "897823sdjf8sfjs"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -658,6 +676,15 @@ paths:
             type: string
           required: false
           example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+        - name: tracking_id
+          in: query
+          description: |-
+            Filter unintegrated grants by their DAFpay tracking ID. Use this to find the unintegrated grant behind a tracking ID you already have.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "L9E182VBGP"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
