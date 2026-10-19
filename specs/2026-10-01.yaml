@@ -3736,10 +3736,10 @@ paths:
         - name: has_donations
           in: query
           description: |-
-            Set to `true` to return only deposits that have at least one donation
-            reconciled to them. Set to `false` to return only deposits that have no
-            donations yet. A deposit counts as having donations even when the donation
-            amounts don't add up to the deposit amount.
+            When `true`, returns only deposits with at least one donation reconciled
+            to them. When `false`, returns only deposits with no donations. A deposit
+            counts as having donations even when the donation amounts don't add up to
+            the deposit amount.
           required: false
           schema:
             type: boolean
@@ -5858,9 +5858,8 @@ components:
           format: int32
           readOnly: true
           description: |-
-            The number of donations reconciled to this deposit. Use
-            `POST /v1/deposits/{id}/reconcile` to add donations. This is `0` when
-            you haven't reconciled any donations yet.
+            The number of donations reconciled to this deposit. `0` when no
+            donations are reconciled to it.
           example: 1
         properties:
           type: array
