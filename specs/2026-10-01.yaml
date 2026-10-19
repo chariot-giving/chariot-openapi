@@ -5872,7 +5872,6 @@ components:
         - amount
         - currency
         - financial_account_id
-        - bank_created_at
       properties:
         amount:
           type: integer
