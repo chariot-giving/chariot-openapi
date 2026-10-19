@@ -3733,6 +3733,17 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: has_donations
+          in: query
+          description: |-
+            Set to `true` to return only deposits that have at least one donation
+            reconciled to them. Set to `false` to return only deposits that have no
+            donations yet. A deposit counts as having donations even when the donation
+            amounts don't add up to the deposit amount.
+          required: false
+          schema:
+            type: boolean
+          example: false
       responses:
         "200":
           $ref: "#/components/responses/ListDepositsResponse"
@@ -5768,6 +5779,7 @@ components:
         deposit_address_id: "deposit_address_01m12tn300eh20gdqscje7s5jw"
         status: "complete"
         settled_at: "2026-09-25T18:00:00Z"
+        donation_count: 1
         transfer:
           amount: 25000
           currency: "USD"
@@ -5790,6 +5802,7 @@ components:
         - id
         - status
         - transfer
+        - donation_count
         - created_at
         - updated_at
       properties:
@@ -5840,6 +5853,15 @@ components:
           description: The transfer that carried the funds.
           allOf:
             - $ref: "#/components/schemas/Transfer"
+        donation_count:
+          type: integer
+          format: int32
+          readOnly: true
+          description: |-
+            The number of donations reconciled to this deposit. Use
+            `POST /v1/deposits/{id}/reconcile` to add donations. This is `0` when
+            you haven't reconciled any donations yet.
+          example: 1
         properties:
           type: array
           description: |-
