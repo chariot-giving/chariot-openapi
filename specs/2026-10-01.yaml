@@ -5697,10 +5697,12 @@ components:
               processes the grant electronically via the DAFpay network.
             - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
               completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
+            - `UNKNOWN` - It wasn't specified how the donation was initiated.
           example: "INTEGRATED"
           enum:
             - INTEGRATED
             - UNINTEGRATED
+            - UNKNOWN
         web_location_url:
           type: string
           description: The URL of the web location where the donation was initiated.
@@ -7243,10 +7245,12 @@ components:
               processes the grant electronically via the DAFpay network.
             - `UNINTEGRATED` - The donation was initiated through an unintegrated DAFpay flow where the donor
               completes the grant manually on the DAF sponsor's website (e.g., Luminate Online, standalone embeds).
+            - `UNKNOWN` - It wasn't specified how the donation was initiated.
           example: "INTEGRATED"
           enum:
             - INTEGRATED
             - UNINTEGRATED
+            - UNKNOWN
         web_location_url:
           type: string
           description: The URL of the web location where the donation was initiated.
