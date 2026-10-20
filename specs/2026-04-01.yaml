@@ -5207,6 +5207,12 @@ components:
           type: string
           description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
           example: "GRANT-2024-001"
+        payment_related_info:
+          type: string
+          description: |-
+            Payment details the originator attached to the ACH transfer, taken from the Payment Related Information field of the ACH addenda record.
+            Up to 80 characters. Omitted when the originator didn't send any.
+          example: "Grant 12345 for the Annual Fund"
     CheckDeposit:
       type: object
       description: |-

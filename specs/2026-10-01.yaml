@@ -5822,6 +5822,7 @@ components:
             effective_date: "2026-09-25T00:00:00Z"
             status: "accepted"
             company_discretionary_data: "GRANT-2026-001"
+            payment_related_info: "Grant 12345 for the Annual Fund"
         properties: []
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
@@ -6025,6 +6026,12 @@ components:
           type: string
           description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
           example: "GRANT-2024-001"
+        payment_related_info:
+          type: string
+          description: |-
+            Payment details the originator attached to the ACH transfer, taken from the Payment Related Information field of the ACH addenda record.
+            Up to 80 characters. Omitted when the originator didn't send any.
+          example: "Grant 12345 for the Annual Fund"
     CheckDeposit:
       type: object
       description: |-
