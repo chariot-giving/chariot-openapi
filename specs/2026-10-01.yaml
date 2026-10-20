@@ -3736,16 +3736,26 @@ paths:
           schema:
             type: string
           example: "payment_source_01j8rs605a4gctmbm58d87mvsj"
-        - name: status
+        - name: status.in
           in: query
-          description: Filter deposits by status.
+          description: |-
+            Filter deposits to only those with the specified status.
+            For GET requests, encode this as a comma-delimited string,
+            such as `?status.in=pending,complete`.
           required: false
+          style: form
+          explode: false
           schema:
-            type: string
-            enum:
-              - pending
-              - complete
-              - failed
+            type: array
+            items:
+              type: string
+              enum:
+                - pending
+                - complete
+                - failed
+          example:
+            - pending
+            - complete
         - name: settled_at.after
           in: query
           description: Return deposits with a settled date and time after the given date and time.
