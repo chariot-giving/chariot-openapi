@@ -280,6 +280,19 @@ Refresh tokens use a **sliding window** expiration:
 | Access token       | 15 minutes                      |
 | Refresh token      | 31 days (sliding), 365 days max |
 
+## Webhooks
+
+A single [Event Subscription](/api/event-subscriptions/create) delivers [webhooks](/api/webhooks) from every nonprofit that has given your application an [organization authorization](#authorization-subjects). Create it with a token from the `client_credentials` grant rather than a nonprofit's access token:
+
+```curl
+curl -X POST https://api.givechariot.com/auth/oauth/token \
+  -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
+  -d "grant_type=client_credentials" \
+  -d "scope=read_write"
+```
+
+Each event includes the `organization_id` of the nonprofit it belongs to. When a nonprofit removes your application's access, you receive a `connection.revoked` event and stop receiving its events.
+
 ## Error Handling
 
 Common errors during the token exchange:

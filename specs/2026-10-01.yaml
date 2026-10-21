@@ -8526,7 +8526,7 @@ components:
       description: |
         The category of the event. This is useful for filtering events.
 
-        Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
+        Event names follow the pattern `{resource}.{event_type}` where `event_type` is usually `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
       enum:
         - "grant.created"
         - "grant.updated"
@@ -8548,6 +8548,7 @@ components:
         - "deposit.updated"
         - "verification_request.created"
         - "verification_request.updated"
+        - "connection.revoked"
     Event:
       type: object
       description: |
@@ -8575,6 +8576,11 @@ components:
           type: string
           description: The type of the associated object
           example: "grant"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization the event belongs to
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
           readOnly: true
     EventSubscriptionStatus:
       type: string
