@@ -51,7 +51,7 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
   - `deposit.updated`: This event is triggered when a deposit is updated. This can happen when the status of the deposit or underlying transfer changes.
   - `verification_request.created`: This event is triggered when a verification request is created.
   - `verification_request.updated`: This event is triggered when a verification request is updated.
-  - `connection.revoked`: This event is triggered when a nonprofit removes your [OAuth](/guides/oauth) application's access. Revoking a single token does not trigger it. The associated object is the organization.
+  - `connection.revoked`: This event is triggered when a nonprofit revokes your [OAuth](/guides/oauth) application's access.
 </Aside>
 
 Note that you can create Event Subscriptions in Production and Sandbox. Sandbox Event Subscriptions will receive events for Sandbox events and vice versa.
