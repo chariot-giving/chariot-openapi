@@ -26,7 +26,7 @@ Chariot implements the **OAuth 2.0 Authorization Code** flow with **PKCE** (Proo
 
 ## Authentication
 
-When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server sends these credentials only to the token endpoint, using HTTP Basic Auth,, and calls the rest of the Chariot API with the access tokens it gets back. There are two kinds:
+When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server sends these credentials only to the token endpoint, using HTTP Basic Auth, and calls the rest of the Chariot API with the access tokens it gets back. There are two kinds:
 
 - A **nonprofit access token**, from the [authorization code flow](#authorization-code-flow), acts on behalf of one nonprofit. Use it for almost every API call.
 - An **application access token**, from the `client_credentials` grant, acts on behalf of your application itself. Use it to set up [webhooks](#webhooks).
