@@ -5620,7 +5620,7 @@ components:
         program_name:
           type: string
           deprecated: true
-          description: Deprecated. Use `grantor.program_name`.
+          description: Deprecated.
           example: "Google Matching Grant Program"
     Grantor:
       type: object
@@ -5649,7 +5649,7 @@ components:
         sponsor_grant_id:
           type: string
           deprecated: true
-          description: Deprecated. Use `external_id`.
+          description: Deprecated. Use `initiation.identifier`.
           example: "93492947-7894-4663-a944-f2469d0027ca"
         organization_name:
           type: string
