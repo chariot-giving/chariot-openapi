@@ -26,7 +26,7 @@ Chariot implements the **OAuth 2.0 Authorization Code** flow with **PKCE** (Proo
 
 ## Authentication
 
-When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server uses these credentials (via HTTP Basic Auth) to authenticate with Chariot during the OAuth token exchange and refresh flows. Once you have an access token, your server uses that token — not the client credentials — to call the Chariot API on behalf of the nonprofit.
+When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server uses these credentials (via HTTP Basic Auth) to authenticate with Chariot during the OAuth token exchange and refresh flows. Once you have an access token, your server uses that token — not the client credentials — to call the Chariot API on behalf of the nonprofit. The exception is [webhooks](#webhooks), which your application sets up with an access token of its own.
 
 Your client secret should be kept secure and should never be exposed to the public.
 
@@ -282,13 +282,34 @@ Refresh tokens use a **sliding window** expiration:
 
 ## Webhooks
 
-A single [Event Subscription](/api/event-subscriptions/create) delivers [webhooks](/api/webhooks) from every nonprofit that has given your application an [organization authorization](#authorization-subjects). Create it with a token from the `client_credentials` grant rather than a nonprofit's access token:
+To receive [webhooks](/api/webhooks) for the nonprofits that use your application, create [Event Subscriptions](/api/event-subscriptions/create) that belong to your application rather than to any one nonprofit. An Event Subscription your application owns receives events from every nonprofit that has given it an [organization authorization](#authorization-subjects), including nonprofits that authorize it after you create the subscription.
+
+Because the subscription belongs to your application, you create it with your application's own access token instead of a nonprofit's.
+
+### Step 1: Get an Application Access Token
+
+Request a token with the `client_credentials` grant, authenticating with HTTP Basic Auth. No nonprofit is involved:
 
 ```curl
 curl -X POST https://api.givechariot.com/auth/oauth/token \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "grant_type=client_credentials" \
   -d "scope=read_write"
+```
+
+### Step 2: Create the Event Subscription
+
+Call [Create Event Subscription](/api/event-subscriptions/create) with that token. Create one subscription for each event category you want:
+
+```curl
+curl -X POST https://api.givechariot.com/v1/event_subscriptions \
+  -H "Authorization: Bearer APPLICATION_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/webhook",
+    "category": "grant.created",
+    "signing_secret": "YOUR_SIGNING_SECRET"
+  }'
 ```
 
 Each event includes the `organization_id` of the nonprofit it belongs to. When a nonprofit removes your application's access, you receive a `connection.revoked` event and stop receiving its events.
