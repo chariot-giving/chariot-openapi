@@ -39,7 +39,13 @@ Store the returned Connect ID on the corresponding nonprofit record:
 platform_nonprofit_id → chariot_organization_id → chariot_connect_id
 ```
 
-Create the Connect when the nonprofit enables DAFpay, not during donor checkout. Treat the call as idempotent and reuse the existing Connect returned for that organization.
+Create the Connect when the nonprofit enables DAFpay, not during donor checkout. The call is idempotent: it returns the existing Connect for that organization on your platform. Non-crowdfunding platforms must still send the contact email on repeat calls.
+
+Creating a Connect does not email the nonprofit; Chariot stores the contact for its team to review. You cannot pass verification data for a nonprofit; it completes verification itself when it claims.
+
+## Create Connects at Scale
+
+Create Connect allows about 50 requests per second and 10,000 per hour, and reports the limits in the response headers. For a large launch, create every Connect first, then turn on the button.
 
 ## Prevent Tenant Mix-ups
 

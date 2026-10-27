@@ -27,7 +27,7 @@ chariot.addEventListener("CHARIOT_EXIT", ({ detail }) => {
 });
 ```
 
-A one-time success payload has this shape:
+A one-time success payload has this shape. `user` holds the donor's details when Chariot has them:
 
 ```json
 {
@@ -35,7 +35,13 @@ A one-time success payload has this shape:
   "grantIntent": {
     "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
     "amount": 2000,
+    "trackingId": "7HX2KNQ4R8",
     "metadata": {}
+  },
+  "user": {
+    "firstName": "Michael",
+    "lastName": "Scott",
+    "email": "michael@example.org"
   }
 }
 ```
@@ -44,16 +50,16 @@ A one-time success payload has this shape:
 
 Associate `detail.workflowSessionId` with the current platform transaction, nonprofit, and Connect ID.
 
-Use the amount returned in the success payload, not the amount your form collected. A donor who selected $75 on your form can change it to $150 inside DAFpay, and the returned amount is the one they authorized. Show that amount on your confirmation page and record it on your transaction.
+Use the amount returned in the success payload, not the amount your form collected. A donor who selected $75 on your form can change it to $150 inside DAFpay, and the returned amount is the one they authorized. Show that amount on your confirmation page and record it on your transaction. Read the donor's details from `detail.user` the same way.
 
-Save your transaction before calling Chariot. Show a loading state while your server calls Create Grant. Do not show final success until the Grant exists. If the request is queued for retry, show a pending message until Grant creation is confirmed.
+Save your transaction before calling Chariot. Show a loading state while your server calls Create Grant. Do not show final success until the Grant exists. If the request is queued for retry, show a pending message until Grant creation is confirmed. Use one submit action: submit your form when `CHARIOT_SUCCESS` fires rather than asking the donor to click Give again.
 
 <Frame caption="Loading screen example">
     <img src='../../../images/dafpay_form_click.png' />
     <img src='../../../images/dafpay_loading_screen.png' />
 </Frame>
 
-Tell the donor that the request was submitted to their DAF provider. Do not say that the nonprofit received the funds or that the donor will receive another charitable tax receipt.
+Tell the donor that the request was submitted to their DAF provider. Do not say that the nonprofit received the funds or that the donor will receive another charitable tax receipt. Say that the gift can take from a few days to several weeks to arrive.
 
 ## On `CHARIOT_EXIT`
 
@@ -69,7 +75,7 @@ All reasons:
 
 | Reason | Meaning |
 | --- | --- |
-| `USER_EXIT` | The donor left the flow. |
+| `USER_EXIT` | The donor left the flow. If the donor closes the popup window, `detail` may carry only the reason, with no `workflowSessionId`. |
 | `UNINTEGRATED_DAF` | The selected provider is not integrated with DAFpay. |
 | `UNINTEGRATED_GRANT_CONFIRMED` | The donor confirmed an unintegrated Grant. Follow [Unintegrated DAF Providers](/guides/dafpay/accept/unintegrated). |
 | `UNINTEGRATED_DAF_NOT_SUPPORTED` | The selected provider does not support the unintegrated Grant flow. |
@@ -79,7 +85,7 @@ All reasons:
 | `NONPROFIT_NOT_FOUND` | The provider does not support Grants to the nonprofit. |
 | `CREDENTIALS_ERROR` | The provider credentials are invalid. |
 | `TFA_VERIFICATION_ERROR` | Two-factor authentication failed. |
-| `ACCOUNT_ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. |
+| `ACCOUNT_ACCESS_RESTRICTED` | Electronic access to the provider account is restricted. DAFpay explains this to the donor, so you do not need to. |
 | `NO_CHARITABLE_ACCOUNTS` | The signed-in account has no charitable accounts. |
 | `INVALID_PRESELECTED_DAF` | The supplied `fundId` is invalid. |
 | `INVALID_CARD` | The card number is invalid. |

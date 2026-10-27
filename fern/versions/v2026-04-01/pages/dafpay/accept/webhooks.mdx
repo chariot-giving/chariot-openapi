@@ -3,10 +3,10 @@ title: Webhooks
 hidden: false
 ---
 
-Create a subscription with the Create Event Subscription endpoint to be notified whenever there is an update in Chariot. Each subscription carries exactly one category.
+Create a subscription with the Create Event Subscription endpoint to be notified whenever there is an update in Chariot. Each subscription carries exactly one category. Webhooks are not plan-gated, but nonprofits need a plan with API key management to create the key.
 
 <Warning title="Set Your Own Signing Secret">
-  Generate your own `signing_secret` and pass it when you create the subscription. It is write-only: no endpoint returns it, and nothing in the subscription you get back contains it. If you leave it out, Chariot generates a random one you can never read, every delivery fails verification, and the only fix is to delete the subscription and create it again.
+  Generate your own `signing_secret` and pass it when you create the subscription. Chariot returns it in the Create response only; no other endpoint returns it. If you omit it, Chariot reuses the secret of any existing subscription on the same URL, or else generates one and returns it in the Create response. Store it then, because you cannot read it again.
 </Warning>
 
 ```sh
@@ -20,18 +20,18 @@ openssl rand -hex 32
 
 | Event | Who can subscribe | When it fires |
 | --- | --- | --- |
-| `grant.created` | Platforms | A DAFpay Grant was created. Fires only for DAFpay. |
-| `grant.updated` | Platforms | A Grant changed, including a status change. |
+| `grant.created` | Platforms, and nonprofits for Grants on their own Connect | A DAFpay Grant was created. Fires only for DAFpay. |
+| `grant.updated` | Platforms, and nonprofits for Grants on their own Connect | A Grant changed, including a status change. |
 | `unintegrated_grant.created` | Platforms | An Unintegrated Grant was recorded. |
 | `unintegrated_grant.updated` | Platforms | An Unintegrated Grant changed. |
 | `donation.created` | Nonprofits | A Donation was created, from DAFpay or from any other payment source. |
-| `donation.updated` | Nonprofits | A Donation changed, including gaining a settlement. |
-| `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
+| `donation.updated` | Nonprofits | A Donation changed, including gaining a settlement. Assigning a property also fires it. |
+| `deposit.created` | Nonprofits | An inbound transfer to your Chariot account was recorded. Settlement arrives as `deposit.updated`. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
 ## What an Event Contains
 
-An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself. Use the GET endpoint for the resource using the returned ID to retrieve the object.
+An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself. Use the GET endpoint for the resource using the returned ID to retrieve the object. Use the GET endpoint for the resource using the returned ID to retrieve the object.
 
 ```json
 {
@@ -45,7 +45,7 @@ An event tells you that a resource changed. It does not tell you which fields ch
 
 ## Verify the Signature
 
-Every delivery carries a `Chariot-Webhook-Signature` header holding a timestamp and one or more signatures:
+Every delivery carries a `Chariot-Webhook-Signature` header holding a timestamp and a `v1` signature. Chariot sends one `v1` today, but accept several:
 
 ```text
 Chariot-Webhook-Signature: t=2026-01-19T18:48:56Z,v1=e0632fb61f7d1068ecbde75410d5c3cc152926f97eaacf53c6228624647329da
@@ -102,15 +102,13 @@ function verify(header, rawBody, signingSecret) {
 
 Store the event ID and make processing idempotent. Events can be delivered more than once even when your endpoint returns success, and a repeat must not create a second transaction.
 
-Return `200` promptly and do the work afterward. Only `200` counts as success: a `202` or `204` is treated as a failed delivery and retried. Only mark an event processed once that work has succeeded.
+Return a 2xx promptly and do the work afterward. Any 2xx counts as delivered. Any other status, a redirect, a timeout of about 8 seconds, or a connection error is retried. Only mark an event processed once that work has succeeded.
 
 Events can also arrive out of order. Because you retrieve the current object rather than trusting the payload, a late event will not write an older state over a newer one.
 
 ## Retries and Recovery
 
 In production, a delivery is attempted up to 10 times with a growing backoff, which spans roughly four hours end to end. If the last attempt fails, the subscription moves to `requires_attention`. Monitor your endpoint's health and your subscription's status.
-
-Sandbox does not retry failed deliveries at all, so test your own queue's retry and duplicate handling explicitly rather than relying on Chariot to redeliver.
 
 Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Track which event IDs you have processed.
 

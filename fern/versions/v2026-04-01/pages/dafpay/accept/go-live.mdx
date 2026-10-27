@@ -3,26 +3,30 @@ title: Go Live
 hidden: false
 ---
 
-Once you have completed the [integration checklist](/guides/dafpay/accept/checklist), request production access.
+Once you have completed the [integration checklist](/guides/dafpay/accept/checklist), request production access. Chariot issues production keys after reviewing your sandbox integration. You do not need to deploy to production first.
 
 ## Request Production Access
 
 Email your Chariot contact or [integrations@givechariot.com](mailto:integrations@givechariot.com) with:
 
-- your technical and operational contacts;
-- your sandbox form URL and how to test it;
-- your production domains;
-- your webhook endpoint and the events you subscribe to;
-- which of recurring, unintegrated providers and platform fees you support; and
-- screenshots or a recording of your loading, success, exit and confirmation states.
+- Sandbox form URL and how to test it
+- Production domains
+- Webhook endpoint and the events you subscribe to
+- Which of recurring, unintegrated providers and platform fees you support
+- Which donor fields the modal shows, and whether each is hidden, optional, or required
+  - Donor name (always required)
+  - Email (always required)
+  - Address
+  - Note
+- Screenshots or a recording of your loading, success, exit and confirmation states, plus the nonprofit enable and disable setting and the data you store, so Chariot can give QA feedback
 
 If you serve many nonprofits, also send:
 
-- your nonprofit onboarding and enablement flow;
-- your launch-backfill plan;
-- the help article and co-branded Chariot onboarding link your nonprofits will see;
-- the nonprofit and live form Chariot can use for the production test; and
-- your target launch date.
+- Nonprofit onboarding and enablement flow
+- Launch-backfill plan
+- Help article and co-branded Chariot onboarding link
+- Nonprofit and live form Chariot can use for the production test
+- Target launch date
 
 When your agreement includes revenue share, also send billing contacts, ACH information and tax documentation.
 
@@ -37,7 +41,7 @@ Production credentials do not mean DAFpay is working end to end. Validate a live
 
 ## Validate the First Live Gift
 
-Production has no mock providers, so a live test gift has to come from a real donor-advised fund. Arrange who is giving before you schedule the test. Chariot can make the gift if nobody on your side holds a DAF.
+Production has no mock providers, so a live test gift has to come from a real donor-advised fund. Arrange who is giving before you schedule the test. Chariot can make the gift if nobody on your side holds a DAF. Test with a nonprofit that has already claimed its Chariot account, and tell it beforehand. For ongoing production checks, use a team DAF such as Daffy, never a sandbox Connect.
 
 - [ ] The form used the intended production Connect ID.
 - [ ] Exactly one Grant was created.

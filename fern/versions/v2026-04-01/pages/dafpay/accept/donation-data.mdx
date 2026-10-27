@@ -26,13 +26,13 @@ chariot.onDonationRequest(async () => ({
 | Field | Type | Notes |
 | --- | --- | --- |
 | `amount` | number | Amount in cents. Pass it when the donor selected an amount. If omitted, DAFpay may recommend an amount based on the available DAF balance. |
-| `firstName` | string | Donor's first name. Maximum 255 characters. |
-| `lastName` | string | Donor's last name. Maximum 255 characters. |
-| `email` | string | Valid donor email. Maximum 255 characters. |
-| `phone` | string | Include the country code and omit special characters. Maximum 255 characters. |
-| `note` | string | Donor note to the nonprofit. Maximum 400 characters. |
+| `firstName` | string | Donor's first name. Truncated at 255 characters. |
+| `lastName` | string | Donor's last name. Truncated at 255 characters. |
+| `email` | string | Donor email. Truncated at 255 characters. |
+| `phone` | string | Include the country code and omit special characters. Truncated at 255 characters. |
+| `note` | string | Donor note to the nonprofit. Truncated at 400 characters. |
 | `anonymous` | boolean | Whether the donor requested anonymity. Defaults to `false`. |
-| `designation` | string | Defaults to `Where needed most`. Truncated at 255 characters when the workflow session is created. Create Grant's own `designation` field caps at 100. |
+| `designation` | string | Truncated at 255 characters when stored, and at 100 when sent to the DAF provider. If you send none, the provider applies its own default, usually `Where needed most`. |
 | `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
 | `metadata` | object | Name-value pairs associated with the workflow session. Metadata is visible in the Chariot dashboard but is not shared with DAF providers. |
 | `lockAmount` | boolean | Prevents the donor from changing the amount inside DAFpay. Defaults to `false`. |
@@ -40,14 +40,16 @@ chariot.onDonationRequest(async () => ({
 | `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
 
 <Note title="Whole-Dollar Amounts">
-  DAF Grants must use whole-dollar amounts, so `amount` must be divisible by 100. The modal accepts a value that is not a whole dollar and Create Grant rejects it later, so validate before you open DAFpay.
+  DAF Grants use whole-dollar amounts. DAFpay drops any cents, so 2550 opens as $25, and Create Grant rejects an `amount` that is not divisible by 100. Validate before you open DAFpay.
 </Note>
+
+There is no maximum-amount field. To enforce a maximum, set `lockAmount` or check the returned amount before you call Create Grant.
 
 ## What to Pass in Metadata
 
 1. **Form identifiers:** Pass stable identifiers the nonprofit needs for CRM coding, such as campaign, appeal, designation, source, form, comment, dedication, and tribute data. You do not need to pass the page URL: Chariot records it on the Donation as `initiation.web_location_url`, including any tracking parameters already in it, such as a source or campaign code.
-2. **Donor information:** For express checkout, you do not need to pass any donor information. When your Connect is set to return donor information, DAFpay fills in the donor's details from their DAF account after they sign in; otherwise it asks the donor for them. If your form collects donor details before showing the DAFpay button, pass them in `onDonationRequest` so the donor does not have to enter them twice.
-3. **Purpose or designation:** You can pass the donor's designation in one of two places. In the top-level `designation` field, it is sent to the DAF provider with the Grant request, truncated at 100 characters, and it fixes the purpose on the Donation. Some providers review a restricted designation before releasing the Grant, which can slow the gift. In `metadata`, the request stays unrestricted: the Grant is initiated with a purpose of "Where needed most", and your designation shows up in the Chariot dashboard.
+2. **Donor information:** For express checkout, you do not need to pass any donor information. When your Connect is set to return donor information, DAFpay fills in the donor's details from their DAF account after they sign in; otherwise DAFpay asks for whichever fields your Connect's donor form requires. If your form collects donor details before showing the DAFpay button, pass them in `onDonationRequest` so the donor does not have to enter them twice. Values you pass take priority; DAFpay only fills the fields you leave empty.
+3. **Purpose or designation:** You can pass the donor's designation in one of two places. In the top-level `designation` field, it is sent to the DAF provider with the Grant request, truncated at 100 characters, and it fixes the purpose on the Donation. Some providers review a restricted designation before releasing the Grant, which can slow the gift. In `metadata`, the request stays unrestricted: the provider applies its own default purpose, usually "Where needed most", and your designation shows up in the Chariot dashboard.
     1. If your form allows a donor to divide one gift among multiple designations, you can use a custom object in the metadata to specify the breakdown between the designations.
 
 ```javascript
@@ -64,7 +66,7 @@ chariot.onDonationRequest(async () => ({
 
 If your donation form has required fields, disable the DAFpay button until the form passes validation. Keep your own form validation and error messages alongside it, so the donor can see what to fix.
 
-Setting the `disabled` attribute on the element will prevent the modal from launching.
+Setting the `disabled` attribute on the element will prevent the modal from launching. The button looks the same when disabled, so show your own validation messages.
 
 ```javascript
 const chariot = document.getElementById("chariot");

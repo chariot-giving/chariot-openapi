@@ -7,7 +7,7 @@ hidden: false
   This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts) instead.
 </Note>
 
-Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant.
+Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant. That only happens if Chariot sees the gift, through a connected source or funds landing in your Chariot account.
 
 Building your gift processing around Donations allows you to use the same workflow for DAFpay gifts and gifts from your other connected payment sources.
 
@@ -23,8 +23,8 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 
 | Value | What it means |
 | --- | --- |
-| `INCOMING_TO_CHARIOT` | The funds are on their way into your Chariot account. When the funds arrive, Chariot matches them to the initiated gift and marks it `RECEIVED_IN_CHARIOT` automatically. Nobody has to do anything. |
-| `INCOMING_OUTSIDE_CHARIOT` | The funds are on their way to you directly from the provider, so Chariot cannot see them land. Someone on your team manually marks the gift received in the dashboard. |
+| `INCOMING_TO_CHARIOT` | The funds are on their way into your Chariot account. Chariot usually matches them automatically and marks the gift `RECEIVED_IN_CHARIOT` once the deposit completes; a deposit Chariot cannot match is reconciled in the dashboard. Chariot emails you once the funds are available. |
+| `INCOMING_OUTSIDE_CHARIOT` | The funds are on their way to you directly from the provider, so Chariot cannot see them land. Someone on your team marks the gift received in the dashboard, unless a connected source records the payment first. |
 | `RECEIVED_IN_CHARIOT` | The funds arrived in your Chariot account. |
 | `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
 | `CANCELED` | The gift will not be paid. |
@@ -37,7 +37,7 @@ A Donation can read as received before the money is usable. Check the timestamps
 | --- | --- |
 | `created_at` | When Chariot created the Donation record. |
 | `initiation.initiated_at` | When the gift was initiated through DAFpay. |
-| `settlement.settled_at` | When the funds settled and became available. |
+| `settlement.settled_at` | When the deposit settled at the bank. |
 | `settlement.deposit_id` | The Deposit the funds arrived in. |
 
 ## Retrieving Donations and Deposits
@@ -61,6 +61,6 @@ To write your own status back to Chariot, for example to record that a gift has 
 | Provider Grant ID | Grant `externalGrantId` | Match the provider's own grant record when the tracking ID is absent. |
 | Your transaction ID | `initiation.dafpay_metadata` | Find the original form submission. |
 
-If no identifier appears with the payment, compare the donor's fund name, amount, date, and designation, and review an uncertain match before marking the Donation received. Make the tracking ID and provider Grant ID searchable in your own tools.
+If no identifier appears with the payment, compare the donor's fund name, amount, date, and designation, and review an uncertain match before marking the Donation received. Make the tracking ID and provider Grant ID searchable in your own tools. Some providers batch several gifts into one payment, so one payment can match more than one Donation.
 
 Next: [Webhooks](/guides/dafpay/accept/webhooks)

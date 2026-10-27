@@ -30,9 +30,12 @@ Create Grant and Create Recurring Grant are both idempotent for a workflow sessi
 | `201 Created` | The Grant was created. Store it and stop retrying. |
 | `200 OK` | A Grant already exists for this workflow session. Store it and stop retrying. |
 | `409 Conflict` | Submission for this session is already being processed. Wait, then retry with the same workflow session. |
-| `410 Gone` | The authorization expired. Ask the donor to complete DAFpay again. |
+| `410 Gone` | No Grant was created and the authorization expired. Ask the donor to complete DAFpay again. |
 | `400 Bad Request` | A value cannot be submitted. Read the error and handle the invalid amount, provider requirement, or fee. |
 | `401` or `403` | Authentication or access failed. Check the API key, the environment, and account access. |
+| `404 Not Found` | The DAF provider does not recognize the nonprofit. Offer another payment method. |
+| `412 Precondition Failed` | The nonprofit is not eligible, for example not in good standing with the IRS. |
+| `502 Bad Gateway` | The provider is down or the submission failed. Retrying submits the gift to the provider again. |
 
 ## A Server-Side Example
 
@@ -115,6 +118,8 @@ Create Grant may still return a validation error if the final amount cannot be s
 Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents.
 
 Create Grant validates `applicationFeeAmount` on its own against the Grant amount. The default ceiling is 210 basis points, and your Chariot agreement can raise it for your application. Chariot's own fee is charged separately and is not part of this check.
+
+There is no combined cap on Chariot's and your platform's fees.
 
 A donor-covered fee increases the Grant amount. It is not a separate tip. Do not offer a tip to a for-profit platform in a DAF transaction.
 
