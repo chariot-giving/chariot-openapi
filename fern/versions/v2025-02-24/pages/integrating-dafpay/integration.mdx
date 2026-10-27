@@ -148,6 +148,31 @@ To ensure a seamless integration with DAFpay, platforms must be mindful of poten
 
 Following these guidelines will ensure a smooth user experience and prevent popup-blocking issues on mobile devices. If you encounter integration challenges, reach out to Chariot support for further assistance.
 
+### Checkout Mode
+
+By default, Chariot chooses whether the checkout opens as a modal on your page or in a popup window, based on the donor's browser and where the button is placed. To always use one mode, set the `context` attribute.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect id="chariot" cid="GENERATED_CONNECT_IDENTIFIER" context="popup"></chariot-connect>
+```
+```javascript React
+<ChariotConnect
+    cid="GENERATED_CONNECT_IDENTIFIER"
+    context="popup"
+/>
+```
+</CodeBlocks>
+
+| Value    | Behavior                                         |
+|----------|--------------------------------------------------|
+| `iframe` | Opens the checkout as a modal over your page.    |
+| `popup`  | Opens the checkout in a separate browser window. |
+
+<Note>
+In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default. In `popup` mode, follow the guidance in [Preventing Blocked Popups](#preventing-blocked-popups).
+</Note>
+
 ### Disabling Connect
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.

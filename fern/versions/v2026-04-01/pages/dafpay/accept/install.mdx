@@ -15,6 +15,31 @@ Load Chariot Connect and initialize it with the Connect ID stored for the nonpro
 </chariot-connect>
 ```
 
+## Checkout mode
+
+By default, Chariot chooses whether the checkout opens as a modal on your page or in a popup window, based on the donor's browser and where the button is placed. To always use one mode, set the `context` attribute.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID" context="popup"></chariot-connect>
+```
+```javascript React
+<ChariotConnect
+    cid="NONPROFIT_CONNECT_ID"
+    context="popup"
+/>
+```
+</CodeBlocks>
+
+| Value | Behavior |
+| --- | --- |
+| `iframe` | Opens the checkout as a modal over your page. |
+| `popup` | Opens the checkout in a separate browser window. |
+
+<Note>
+In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default. In `popup` mode, follow the guidance in [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
+</Note>
+
 ## Prevent tenant mix-ups
 
 Resolve the Connect ID from the same nonprofit record used to render the form. Do not hardcode an ID, store it in process-wide mutable state, reuse the last value loaded, or fall back to a platform default.
