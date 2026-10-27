@@ -9,5 +9,6 @@ Corrections to the Grant and Recurring Grant specifications.
 - **The application fee ceiling is described correctly.** `applicationFeeAmount` is validated on its own against the grant amount. Chariot's own fee is charged separately and is not part of that check.
 - **`donation_id` on the Grant is now `donationId`.** The Grant service serializes with JSON names, so this is the field name the API has always returned.
 - **Removed `donor_account_id` from the Grant schema.** The field was documented but never returned. Use the `donor_account_id` filter on List Grants to find grants from a Donor Account.
+- **Create Event Subscription documents its response.** The response wraps the subscription in `event_subscription` and includes `signing_secret`, the only response that returns it. The `signing_secret` request field now explains that an omitted secret reuses the one already set for the same URL, or is generated.
 
 <Tip>If you have any feedback or suggestions, please reach out to us at developers@givechariot.com</Tip>

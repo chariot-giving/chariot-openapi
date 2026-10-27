@@ -1851,7 +1851,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EventSubscription"
+                type: object
+                properties:
+                  event_subscription:
+                    allOf:
+                      - $ref: "#/components/schemas/EventSubscription"
+                      - type: object
+                        properties:
+                          signing_secret:
+                            type: string
+                            description: |-
+                              The secret used to sign webhooks sent to this URL.
+                              Only the Create response returns it; Get, List and Update leave it out.
+                            example: "9f0c2a7e4b1d8c3f6a5e2d9b0c7f4a1e8d3b6c9f2a5e8d1b4c7f0a3e6d9b2c5f"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -8253,11 +8265,11 @@ components:
               signing_secret:
                 type: string
                 description: |-
-                  The key that will be used to sign webhooks.
-                  If no value is passed, a random string will be used as default.
-                  This is necessary to verify that the webhook is coming from Chariot.
-                  While this parameter is optional, it is highly recommended to pass a value
-                  for the secret and implement webhook signature verification.
+                  The key used to sign webhooks sent to this URL, so you can verify they come from Chariot.
+                  If you omit it, Chariot reuses the secret of any existing subscription you have on the same URL,
+                  or otherwise generates a random one.
+                  The Create response is the only response that returns the secret, so store it then.
+                  Passing your own value is recommended.
     UpdateEventSubscriptionRequest:
       description: The request body for creating an event subscription
       required: true
