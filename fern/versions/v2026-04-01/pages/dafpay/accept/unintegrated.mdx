@@ -13,13 +13,13 @@ Some DAF providers cannot accept a Grant directly through DAFpay. Chariot sets o
     <img src='../../../images/disconnected-return.png' />
 </Frame>
 
-## How the confirmation arrives
+## How the Confirmation Arrives
 
 Confirming an unintegrated Grant is delivered as a `CHARIOT_EXIT` event with the reason `UNINTEGRATED_GRANT_CONFIRMED`, not as `CHARIOT_SUCCESS`. Handle it in your exit listener even though the donor completed the step.
 
 Chariot creates the Unintegrated Grant record itself when that event fires. There is no endpoint for you to call, and none is needed. You read Unintegrated Grants and subscribe to their events; you never create one.
 
-## What the event carries
+## What the Event Carries
 
 The exit event's `detail` includes the Unintegrated Grant Chariot created:
 
@@ -50,7 +50,7 @@ Join it to your own record on `workflowSessionId`, which you stored when the ses
 
 Use `fund.redirectUrl` for the provider link and `fund.name` for the provider's name rather than showing the raw `fundId`.
 
-## Confirmation experience
+## Confirmation Experience
 
 When `CHARIOT_EXIT` has the reason `UNINTEGRATED_GRANT_CONFIRMED`, show:
 
@@ -65,7 +65,9 @@ Tell the donor that they still need to submit the Grant through their provider a
     <img src='../../../images/unintegrated-grant-intent.png' />
 </Frame>
 
-DAFpay also emails the donor the same instructions. Check whether Chariot's own confirmation screen is on for your Connect before you build this page: with both on the donor sees two confirmations, and with both off they leave without a tracking ID.
+<Note title="Avoid Duplicate Confirmations">
+  DAFpay also emails the donor these instructions. Check whether Chariot's own confirmation screen is on for your Connect before you build this page: with both on the donor sees two confirmations, and with both off they leave without a tracking ID.
+</Note>
 
 <Frame caption="Unintegrated Grant donor instructions email">
     <img src='../../../images/grant-intent-email.png' />

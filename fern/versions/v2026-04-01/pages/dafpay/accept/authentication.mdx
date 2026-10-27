@@ -3,7 +3,7 @@ title: Authentication
 hidden: false
 ---
 
-Server-side calls authenticate with an API key passed as a bearer token.
+Start by setting up your API key. Server-side calls authenticate with it, passed as a bearer token.
 
 ```text
 Authorization: Bearer <API_KEY>
@@ -16,7 +16,7 @@ Sandbox and production use separate API keys, separate Connects, and separate da
 | Sandbox | `https://sandboxapi.givechariot.com` |
 | Production | `https://api.givechariot.com` |
 
-## Where each credential belongs
+## Where Each Credential Belongs
 
 The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key must only ever be used from your server. See [Authentication](/api/authentication) for more information.
 
@@ -36,7 +36,9 @@ Content-Security-Policy:
   img-src 'self' https://cdn.givechariot.com data:;
 ```
 
-This is an example, not a complete policy. Merge each source into your existing response header. Do not replace your full policy with this block.
+<Note title="Merge, Do Not Replace">
+  This is an example, not a complete policy. Merge each source into your existing response header rather than replacing your policy with this block.
+</Note>
 
 The parent page does not need to add Chariot to `connect-src`. DAFpay API traffic originates inside the cross-origin frame.
 

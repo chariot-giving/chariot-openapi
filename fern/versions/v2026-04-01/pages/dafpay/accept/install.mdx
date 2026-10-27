@@ -3,9 +3,10 @@ title: Install DAFpay
 hidden: false
 ---
 
-Load Chariot Connect and initialize it with the Connect ID stored for the nonprofit whose form the donor is viewing.
+With a Connect ID in hand, add the DAFpay button to your form. Load Chariot Connect directly from Chariot's CDN, rather than bundling or self-hosting it, and initialize it with the Connect ID stored for the nonprofit whose form the donor is viewing.
 
-```html
+<CodeBlocks>
+```html HTML
 <script src="https://cdn.givechariot.com/chariot-connect.umd.js"></script>
 
 <chariot-connect
@@ -14,8 +15,15 @@ Load Chariot Connect and initialize it with the Connect ID stored for the nonpro
   theme="LightModeTheme">
 </chariot-connect>
 ```
+```javascript React
+// npm install --save react-chariot-connect
+import ChariotConnect from "react-chariot-connect";
 
-## Checkout mode
+<ChariotConnect cid="NONPROFIT_CONNECT_ID" theme="LightModeTheme" />
+```
+</CodeBlocks>
+
+## Checkout Mode
 
 By default, Chariot chooses whether the checkout opens as a modal on your page or in a popup window, based on the donor's browser and where the button is placed. To always use one mode, set the `context` attribute.
 
@@ -36,19 +44,25 @@ By default, Chariot chooses whether the checkout opens as a modal on your page o
 | `iframe` | Opens the checkout as a modal over your page. |
 | `popup` | Opens the checkout in a separate browser window. |
 
-<Note>
-In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default. In `popup` mode, follow the guidance in [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
+<Note title="Buttons Inside an Iframe">
+  In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default. In `popup` mode, follow [Prevent Blocked Popups](#prevent-blocked-popups).
 </Note>
 
-## Prevent tenant mix-ups
+## Prevent Blocked Popups
 
-Resolve the Connect ID from the same nonprofit record used to render the form. Do not hardcode an ID, store it in process-wide mutable state, reuse the last value loaded, or fall back to a platform default.
+DAFpay must open in direct response to the donor's click. Keep the time between the click and the DAFpay window opening under one second.
 
-If the nonprofit has no enabled Connect, do not render DAFpay. Show the appropriate setup state in the nonprofit's platform settings instead.
+Load required data and validate nonprofit eligibility before the click. Avoid network requests, donation-history lookups, and other slow work inside `onDonationRequest`.
 
-## Make DAFpay easy to find
+Using an `async` callback is fine. The risk comes from waiting for slow work before it returns.
 
-{/* TODO: add the express checkout conversion stat ("DAFpay as express checkout performs x% better") once the number is confirmed. */}
+If your platform uses a custom button or Shadow DOM, do not call your server between the donor's click and triggering DAFpay. Complete the request first, then let the click open DAFpay immediately.
+
+## Make DAFpay Easy to Find
+
+<Tip title="About 10x More DAF Giving">
+  Platforms that show DAFpay up front see about 10x more DAF giving: 9.0x on everyday forms and 10.7x on campaign forms.
+</Tip>
 
 For Express Checkout, place DAFpay near the amount selection alongside other primary payment methods.
 
@@ -58,8 +72,8 @@ For a multi-step form, show DAFpay on the first step or clearly indicate that Do
     <img src='../../../images/button-placement.png' />
 </Frame>
 
-<Warning>
-  Test its placement at mobile widths and across every form and campaign type that supports it.
+<Warning title="Test the Placement">
+  Check it at mobile widths and on every form and campaign type that supports DAFpay.
 </Warning>
 
 ## Styling

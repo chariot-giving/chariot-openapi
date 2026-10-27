@@ -3,11 +3,9 @@ title: Webhooks
 hidden: false
 ---
 
-Rather than polling for changes, you can subscribe to events and have Chariot send them to your endpoint. Create a subscription with the Create Event Subscription endpoint.
+Create a subscription with the Create Event Subscription endpoint to be notified whenever there is an update in Chariot. Each subscription carries exactly one category.
 
-Each subscription carries exactly one category, so create one per event you want to receive.
-
-<Warning>
+<Warning title="Set Your Own Signing Secret">
   Generate your own `signing_secret` and pass it when you create the subscription. It is write-only: no endpoint returns it, and nothing in the subscription you get back contains it. If you leave it out, Chariot generates a random one you can never read, every delivery fails verification, and the only fix is to delete the subscription and create it again.
 </Warning>
 
@@ -31,13 +29,9 @@ openssl rand -hex 32
 | `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-Grant and Unintegrated Grant events reach only a fundraising platform's key, and Donation and Deposit events reach only a nonprofit's key. Nothing rejects a category you cannot receive: the subscription is created and never fires.
+## What an Event Contains
 
-If you are a nonprofit, build your CRM sync on the Donation events. They cover DAFpay gifts and gifts from your other payment sources through one code path, and they are the only events you will receive.
-
-## What an event contains
-
-An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself.
+An event tells you that a resource changed. It does not tell you which fields changed, and it does not carry the resource itself. Use the GET endpoint for the resource using the returned ID to retrieve the object.
 
 ```json
 {
@@ -49,11 +43,7 @@ An event tells you that a resource changed. It does not tell you which fields ch
 }
 ```
 
-Anything you passed in `onDonationRequest`, including metadata, is not in the payload. Retrieve the current object from the API and act on its current state.
-
-Delivered webhooks carry Grant IDs as raw UUIDs, and Donation and Deposit IDs as prefixed IDs such as `donation_01m2...`, the same form as `donationId` on the Grant. List Events returns raw UUIDs for every object type, so normalize IDs before you look anything up.
-
-## Verify the signature
+## Verify the Signature
 
 Every delivery carries a `Chariot-Webhook-Signature` header holding a timestamp and one or more signatures:
 
@@ -104,9 +94,11 @@ function verify(header, rawBody, signingSecret) {
 }
 ```
 
-Keep the raw request body for this check. Parsing JSON and reserializing it changes the bytes and the signature will not match. In Express that means `express.raw()` on this route, not `express.json()`.
+<Warning title="Use the Raw Request Body">
+  Parsing JSON and reserializing it changes the bytes, so the signature will not match. In Express, use `express.raw()` on this route, not `express.json()`.
+</Warning>
 
-## Handle events reliably
+## Handle Events Reliably
 
 Store the event ID and make processing idempotent. Events can be delivered more than once even when your endpoint returns success, and a repeat must not create a second transaction.
 
@@ -114,7 +106,7 @@ Return `200` promptly and do the work afterward. Only `200` counts as success: a
 
 Events can also arrive out of order. Because you retrieve the current object rather than trusting the payload, a late event will not write an older state over a newer one.
 
-## Retries and recovery
+## Retries and Recovery
 
 In production, a delivery is attempted up to 10 times with a growing backoff, which spans roughly four hours end to end. If the last attempt fails, the subscription moves to `requires_attention`. Monitor your endpoint's health and your subscription's status.
 
@@ -123,12 +115,5 @@ Sandbox does not retry failed deliveries at all, so test your own queue's retry 
 Keep a scheduled recovery query running alongside your webhooks for anything your endpoint misses. List Events returns past events, filters by `category`, and pages with the `cursor` parameter and the returned `nextPageToken`. Track which event IDs you have processed.
 
 Run recovered events through the same processing path as live deliveries. See [Webhooks and Events](/api/webhooks) for more information.
-
-For a gap longer than your event history covers, reconcile against the records themselves. What that means depends on which you can read:
-
-| | How to reconcile a long gap |
-| --- | --- |
-| Fundraising platforms | Walk your stored transactions and re-read each Grant and Unintegrated Grant by its stored ID. There is no list-by-updated-at, so your own records are the worklist. |
-| Nonprofits | Do the same for Donations and Deposits. List Donations filters on `created_at`, so drive the sweep from the records you hold rather than from a date range. |
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)

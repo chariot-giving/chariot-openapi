@@ -3,8 +3,8 @@ title: Processing Donations
 hidden: false
 ---
 
-<Note>
-  **For nonprofits.** This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts) instead.
+<Note title="For Nonprofits">
+  This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts) instead.
 </Note>
 
 Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant.
@@ -17,7 +17,7 @@ A donation record is created after the Grant. Once the Donation exists, its ID i
 
 Store `donationId` on your record as soon as the Grant returns it. It is the link that is present for every provider, and reading it once is cheaper than looking the Grant up again later.
 
-## Payment status on the Donation
+## Payment Status on the Donation
 
 The Grant tells you what the donor authorized. The Donation's `payment_status` tells you where the money is.
 
@@ -29,7 +29,7 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 | `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
 | `CANCELED` | The gift will not be paid. |
 
-## Settlement timestamps
+## Settlement Timestamps
 
 A Donation can read as received before the money is usable. Check the timestamps when your workflow depends on funds being available.
 
@@ -44,17 +44,15 @@ A Donation can read as received before the money is usable. Check the timestamps
 
 List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, and `dafpay_tracking_id`.
 
-<Warning>
-  List Donations filters on `created_at`, not `updated_at`. A query for newly created gifts will never surface a change to a gift created earlier, so pair it with update events rather than using it as your only sync.
+<Warning title="Filtered by Creation Date">
+  List Donations filters on `created_at`, not `updated_at`, so it will not show changes to older gifts. Pair it with `donation.updated` events.
 </Warning>
 
-List Deposits uses the same paging pattern but different date filters, `settled_at.after` and `settled_at.before`. Use the Deposit ID to tie settlement information to the Donations whose funds it carried; one Deposit can cover many gifts.
-
-## Record processing in your systems
+## Record Processing in Your Systems
 
 To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a Donation, and you can retrieve them alongside the rest of the Donation data.
 
-## Matching a payment that arrives outside Chariot
+## Matching a Payment That Arrives Outside Chariot
 
 | Identifier | Where to find it | Use |
 | --- | --- | --- |

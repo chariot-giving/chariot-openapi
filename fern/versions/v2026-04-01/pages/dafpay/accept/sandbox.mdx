@@ -3,9 +3,9 @@ title: Testing and QA
 hidden: false
 ---
 
-Complete this test matrix in sandbox before requesting production access.
+Before you request production access, complete this test matrix in sandbox.
 
-## Sandbox credentials
+## Sandbox Credentials
 
 Point your development and staging environments at `https://sandboxapi.givechariot.com` with your `sk_test_` key and your `test_` Connect ID. Every DAF provider in the sandbox list is a mock, and the same login works for all of them:
 
@@ -23,7 +23,7 @@ POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/cancel
 
 Send your sandbox key in the `Authorization` header. Use the resulting events to confirm your integration retrieves the changed record and updates its own transaction.
 
-## Test tenant routing
+## Test Tenant Routing
 
 Test at least two nonprofits at the same time.
 
@@ -35,7 +35,7 @@ Test at least two nonprofits at the same time.
 
 These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 
-## Test the donor flow
+## Test the Donor Flow
 
 - Complete a one-time Grant.
 - Complete a recurring Grant, if enabled.
@@ -47,7 +47,7 @@ These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
 - Verify webhook signatures and repeated delivery.
 - Simulate Grant completion and cancellation.
 
-## Test browsers and devices
+## Test Browsers and Devices
 
 DAFpay opens in a frame or popup depending on the browser and screen size. Test the full donor flow on:
 
@@ -58,11 +58,11 @@ DAFpay opens in a frame or popup depending on the browser and screen size. Test 
 
 On each supported browser, confirm that DAFpay renders, opens from the donor's click, and can be completed. Verify your loading and confirmation states and confirm that exactly one Grant is created.
 
-## Test with popups blocked
+## Test with Popups Blocked
 
 When DAFpay uses a popup, it must open directly from the donor's click. Some donors also block popups in their browser settings. Test with popup blocking enabled and confirm that your page explains what to do if DAFpay cannot open.
 
-If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent blocked popups](/guides/dafpay/accept/donation-data#prevent-blocked-popups).
+If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent Blocked Popups](/guides/dafpay/accept/install#prevent-blocked-popups).
 
 Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
 

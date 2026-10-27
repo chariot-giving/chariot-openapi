@@ -3,11 +3,11 @@ title: Creating Grants
 hidden: false
 ---
 
-Call Create Grant from your server after `CHARIOT_SUCCESS` to submit the gift.
+Once `CHARIOT_SUCCESS` fires, call Create Grant from your server to submit the gift.
 
 <EndpointRequestSnippet endpoint="POST /v1/grants" />
 
-## Server-side sequence
+## Server-Side Sequence
 
 1. Receive the workflow session ID and amount returned by DAFpay.
 2. Resolve the nonprofit and platform transaction from your stored session record.
@@ -15,11 +15,13 @@ Call Create Grant from your server after `CHARIOT_SUCCESS` to submit the gift.
 4. Call Create Grant with the server-side API key.
 5. Store the Grant ID and response.
 
-Submit your own form before calling Create Grant. If your form fails after the Grant exists, the donor sees an error for a gift that was actually submitted to their DAF provider, and there is no way for them to tell.
+<Warning title="Submit Your Form First">
+  If your form fails after the Grant exists, the donor sees an error for a gift that was already submitted to their DAF provider, with no way to tell.
+</Warning>
 
 Complete this sequence within 15 minutes of authorization.
 
-## Retry safely
+## Retry Safely
 
 Create Grant and Create Recurring Grant are both idempotent for a workflow session. If the first request times out, call the same endpoint again with the same `workflowSessionId`.
 
@@ -32,9 +34,11 @@ Create Grant and Create Recurring Grant are both idempotent for a workflow sessi
 | `400 Bad Request` | A value cannot be submitted. Read the error and handle the invalid amount, provider requirement, or fee. |
 | `401` or `403` | Authentication or access failed. Check the API key, the environment, and account access. |
 
-## A server-side example
+## A Server-Side Example
 
-Retry with the same `workflowSessionId`. Starting a new session creates a new authorization and can result in a duplicate gift.
+<Warning title="Same Workflow Session">
+  Retry with the same `workflowSessionId`. Starting a new session creates a new authorization and can result in a duplicate gift.
+</Warning>
 
 ```javascript
 class CreateGrantError extends Error {
@@ -94,7 +98,7 @@ const backoff = (attempt) =>
   new Promise((r) => setTimeout(r, 2 ** attempt * 500 + Math.random() * 250));
 ```
 
-## Amount validation
+## Amount Validation
 
 Use the amount returned by `CHARIOT_SUCCESS`. It is in cents and must be a whole-dollar amount, divisible by 100. Create Grant rejects anything else, so validate the amount before you open DAFpay.
 
@@ -106,7 +110,7 @@ Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provide
 
 Create Grant may still return a validation error if the final amount cannot be submitted. Handle that error without marking the transaction complete.
 
-## Platform fees
+## Platform Fees
 
 Use `applicationFeeAmount` only for the platform fee defined in your Chariot agreement. It is denominated in cents.
 
