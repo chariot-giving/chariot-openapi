@@ -68,6 +68,12 @@ navigation:
               - page: Unintegrated Providers
                 slug: unintegrated
                 path: ./pages/dafpay/accept/unintegrated.mdx
+              - page: Recurring Grants
+                slug: recurring-grants
+                path: ./pages/dafpay/accept/recurring-grants.mdx
+              - page: Flow of Funds
+                slug: flow-of-funds
+                path: ./pages/dafpay/accept/flow-of-funds.mdx
               - page: Displaying DAFpay Gifts
                 slug: displaying-gifts
                 path: ./pages/dafpay/accept/displaying-gifts.mdx

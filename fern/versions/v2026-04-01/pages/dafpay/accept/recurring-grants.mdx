@@ -1,0 +1,59 @@
+---
+title: Recurring Grants
+hidden: false
+---
+
+When recurring Grants are enabled, a donor can ask their DAF provider to send a monthly Grant.
+
+A recurring success contains `recurringGrantIntent` instead of `grantIntent`:
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "recurringGrantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "frequency": "MONTHLY",
+    "metadata": {
+      "platformTransactionId": "txn_123"
+    }
+  }
+}
+```
+
+```javascript
+const res = await fetch(`${CHARIOT_BASE_URL}/v1/recurring_grants`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+    frequency: "MONTHLY",
+    amount: 2000
+  })
+});
+```
+
+Store the returned recurring Grant ID, the workflow session ID, the amount, the frequency, and any provider or tracking identifiers that came back. Fields that are empty at creation can be filled in from a later read.
+
+Call Create Recurring Grant, not Create Grant. It follows the same [retry contract](/guides/dafpay/accept/create-grant#retry-safely) as Create Grant. `workflowSessionId`, `frequency`, and `amount` are required, and `MONTHLY` is currently the only supported frequency. The endpoint also accepts the same optional donor, note, designation, and application fee fields. A recurring application fee applies to the first Grant only.
+
+The DAF provider controls the schedule. Chariot records the initial setup but may not receive a new Grant for each later payment or learn when the donor changes or cancels the recurrence.
+
+Model the initial record as the start of an arrangement, not proof of future payments. Treat each later gift as a separate one and reconcile it independently.
+
+Do not promise nonprofits a complete recurring schedule unless another data source supports it.
+
+What you will and will not see after setup:
+
+| | |
+| --- | --- |
+| You see | The initial arrangement, as one recurring Grant record. |
+| You may not see | A new Grant for each later payment. |
+| You will not see | The donor changing or canceling the schedule in their provider's portal. |
+
+Later gifts reach the nonprofit as Donations like any other. Reconcile them individually rather than projecting them from the original arrangement.
+
+Next: [Flow of Funds](/guides/dafpay/accept/flow-of-funds)

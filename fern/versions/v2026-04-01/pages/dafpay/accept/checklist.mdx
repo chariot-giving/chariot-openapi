@@ -3,43 +3,36 @@ title: Integration Checklist
 hidden: false
 ---
 
-## Decide before you build
-
-- [ ] [Decide whether recurring is on](/guides/dafpay/accept/create-grant#recurring-gifts)
-- [ ] [Decide how unintegrated providers behave](/guides/dafpay/accept/unintegrated)
+Use this list to track your progress. Each item links to the page that explains it.
 
 ## Build
 
 - [ ] [Keep the API key on your server](/guides/dafpay/accept/authentication#where-each-credential-belongs)
-- [ ] [Apply the CSP directives](/guides/dafpay/accept/install#content-security-policy)
-- [ ] [Omit donor fields you do not have](/guides/dafpay/accept/donation-data#where-each-donor-field-comes-from)
-- [ ] [Save your transaction before calling Create Grant](/guides/dafpay/accept/create-grant#server-side-sequence)
-- [ ] [Call Create Grant within 15 minutes](/guides/dafpay/accept/create-grant#retry-safely)
+- [ ] [Add Chariot's sources to your Content Security Policy](/guides/dafpay/accept/authentication#content-security-policy)
+- [ ] [Disable DAFpay until the form is valid and the amount is a whole dollar](/guides/dafpay/accept/donation-data#disable-dafpay-from-opening-when-the-form-is-not-ready)
+- [ ] [Save your transaction, then call Create Grant within 15 minutes](/guides/dafpay/accept/create-grant#server-side-sequence)
 - [ ] [Retry with the same workflow session, never a new one](/guides/dafpay/accept/create-grant#retry-safely)
-- [ ] [Store every identifier as it arrives](/guides/dafpay/accept/displaying-gifts#identifier-map)
+- [ ] [Store the workflow session, Grant, tracking and external Grant IDs](/guides/dafpay/accept/displaying-gifts#what-to-show)
 - [ ] [Verify webhook signatures against the raw body](/guides/dafpay/accept/webhooks#verify-the-signature)
 
-## Validate
+## Test in sandbox
 
-- [ ] [Repeat Create Grant and confirm one Grant exists](/guides/dafpay/accept/create-grant#retry-safely)
-- [ ] [Complete the donor flow with popups blocked](/guides/dafpay/accept/sandbox#test-with-popups-blocked)
-- [ ] [Deliver the same event twice](/guides/dafpay/accept/webhooks#handle-events-reliably)
+- [ ] [Send the same Create Grant twice and confirm one Grant exists](/guides/dafpay/accept/sandbox#test-the-donor-flow)
+- [ ] [Complete a gift with popups blocked](/guides/dafpay/accept/sandbox#test-with-popups-blocked)
 - [ ] [Simulate a completed and a canceled Grant](/guides/dafpay/accept/sandbox#sandbox-credentials)
 
-## Launch
+## Go live
 
-- [ ] [Complete Chariot's production review](/guides/dafpay/accept/go-live#request-production-access)
+- [ ] [Request production access](/guides/dafpay/accept/go-live#request-production-access)
 - [ ] [Create production event subscriptions](/guides/dafpay/accept/go-live#after-approval)
 - [ ] [Make one live gift from a real DAF](/guides/dafpay/accept/go-live#validate-the-first-live-gift)
 
-## If you serve many nonprofits
+## Platforms serving many nonprofits
 
-These steps apply to fundraising platforms serving multiple nonprofits. If you are integrating your own nonprofit's form, you can skip them.
+Skip this section if you are integrating your own nonprofit's form.
 
 - [ ] [Create one Connect per nonprofit](/guides/dafpay/accept/connects#create-the-connect)
-- [ ] [Load the Connect ID from the form's own record](/guides/dafpay/accept/install#prevent-tenant-mix-ups)
-- [ ] [Hide DAFpay when a nonprofit has no Connect](/guides/dafpay/accept/install#prevent-tenant-mix-ups)
-- [ ] [Show Tracking and External Grant IDs, searchable](/guides/dafpay/accept/displaying-gifts#what-to-show)
+- [ ] [Load the Connect ID from the form's own record, and hide DAFpay when there is none](/guides/dafpay/accept/install#prevent-tenant-mix-ups)
 - [ ] [Test two nonprofits at once](/guides/dafpay/accept/sandbox#test-tenant-routing)
 
 Next: [Authentication](/guides/dafpay/accept/authentication)

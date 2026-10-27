@@ -7,7 +7,7 @@ hidden: false
   This page is for fundraising platforms that serve many nonprofits and create a Connect for each one. If you are a nonprofit integrating your own donation form, Chariot provisions your sandbox and production Connects and sends you the IDs. Skip to [Install DAFpay](/guides/dafpay/accept/install).
 </Note>
 
-Each nonprofit on your platform has its own Connect. The Connect ID tells Chariot which nonprofit should receive the Grant.
+Each nonprofit on your platform has its own Connect. The Connect ID tells Chariot which nonprofit should receive the Grant. Use the same search-and-create sequence for existing eligible nonprofits included in your launch and all new nonprofits that DAFpay is enabled for.
 
 <Frame caption="Steps 1 and 2 are the per-nonprofit setup covered on this page. Steps 3 and 4 are the donor flow, covered on the pages that follow.">
     <img src='../../../images/DAFpay_API_Docs_Image.png' />
@@ -36,13 +36,5 @@ platform_nonprofit_id → chariot_organization_id → chariot_connect_id
 ```
 
 Create the Connect when the nonprofit enables DAFpay, not during donor checkout. Treat the call as idempotent and reuse the existing Connect returned for that organization.
-
-## Plan the launch backfill
-
-Use the same search-and-create sequence for existing eligible nonprofits included in your launch. Rate-limit the job, store individual failures, and make it safe to restart.
-
-<Note title="Confirm the account-claim rule">
-  Before launch, confirm with Chariot whether your agreement allows DAFpay to appear before a nonprofit claims and verifies its Chariot account. Document any effect this has on onboarding, payment routing, fees, and support.
-</Note>
 
 Next: [Install DAFpay](/guides/dafpay/accept/install)

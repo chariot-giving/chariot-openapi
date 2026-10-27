@@ -31,9 +31,7 @@ openssl rand -hex 32
 | `deposit.created` | Nonprofits | Funds arrived in your Chariot account. |
 | `deposit.updated` | Nonprofits | A Deposit changed, including its settlement status. |
 
-Event delivery depends on your API key's scope. Grant and Unintegrated Grant events are delivered against a fundraising application, so they never reach a nonprofit's own key. Donation and Deposit events are delivered against an organization, so they never reach a platform's key.
-
-Nothing rejects a category you cannot receive. The subscription is created, stored and returned, and then never fires. Subscribe only to the rows above that match your key.
+Grant and Unintegrated Grant events reach only a fundraising platform's key, and Donation and Deposit events reach only a nonprofit's key. Nothing rejects a category you cannot receive: the subscription is created and never fires.
 
 If you are a nonprofit, build your CRM sync on the Donation events. They cover DAFpay gifts and gifts from your other payment sources through one code path, and they are the only events you will receive.
 
@@ -53,9 +51,7 @@ An event tells you that a resource changed. It does not tell you which fields ch
 
 Anything you passed in `onDonationRequest`, including metadata, is not in the payload. Retrieve the current object from the API and act on its current state.
 
-In a delivered webhook, Grant IDs arrive as raw UUIDs while Donation and Deposit IDs arrive as prefixed IDs such as `donation_01m2...`, which is the same form `donationId` takes on the Grant, so the two match without conversion.
-
-List Events returns the raw UUID for every object type, including Donations and Deposits. The same event therefore reaches you in two different ID formats depending on whether it was delivered or recovered, so normalize before you look anything up.
+Delivered webhooks carry Grant IDs as raw UUIDs, and Donation and Deposit IDs as prefixed IDs such as `donation_01m2...`, the same form as `donationId` on the Grant. List Events returns raw UUIDs for every object type, so normalize IDs before you look anything up.
 
 ## Verify the signature
 
@@ -133,6 +129,6 @@ For a gap longer than your event history covers, reconcile against the records t
 | | How to reconcile a long gap |
 | --- | --- |
 | Fundraising platforms | Walk your stored transactions and re-read each Grant and Unintegrated Grant by its stored ID. There is no list-by-updated-at, so your own records are the worklist. |
-| Nonprofits | Do the same for Donations and Deposits, and remember List Donations filters on `created_at`. A query for new gifts will not surface a gift created last month that was received yesterday, so drive the sweep from the records you already hold rather than from a date range. |
+| Nonprofits | Do the same for Donations and Deposits. List Donations filters on `created_at`, so drive the sweep from the records you hold rather than from a date range. |
 
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)
