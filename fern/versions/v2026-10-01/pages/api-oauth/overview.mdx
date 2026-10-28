@@ -49,7 +49,7 @@ Additional OAuth 2.0 and OIDC metadata can be found at the environment's well-kn
 
 Scopes define what your application can access. Specify multiple as a URL encoded space-separated string when requesting authorization.
 
-Scopes take the form `resource:action`, where `action` is `read` or `write`. A `write` scope includes read access to the same resource.
+Scopes typically take the form `resource:action`, where `action` is `read` or `write`. A `write` scope includes read access to the same resource.
 
 | Resource                     | Read                         | Write                                 |
 | ---------------------------- | ---------------------------- | ------------------------------------- |
@@ -71,7 +71,7 @@ Scopes take the form `resource:action`, where `action` is `read` or `write`. A `
 | Event subscriptions          | `event_subscriptions:read`   | `event_subscriptions:write`           |
 | Events                       | `events:read`                |                                       |
 
-These scopes don't grant access to a resource:
+### Other Scopes
 
 | Scope              | Grants                                                                                                       |
 | ------------------ | ------------------------------------------------------------------------------------------------------------ |
