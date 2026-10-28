@@ -4502,7 +4502,7 @@ components:
           type: string
           readOnly: true
           description: |-
-            Unique donation identifier, when provided by the source or granting organization.
+            Identifier provided by the source or granting organization, when provided.
           example: "29247869"
         payment_source_id:
           type: string
