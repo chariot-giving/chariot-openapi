@@ -8914,7 +8914,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  Unique donation identifier from the source / granting organization.
+                  Unique donation identifier from the source / granting organization. Not always populated.
                 example: "INV-12345"
               amount_gross:
                 type: integer
@@ -9078,7 +9078,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  Unique donation identifier from the source / granting organization.
+                  Unique donation identifier from the source / granting organization. Not always populated.
                 example: "INV-12345"
               amount_gross:
                 type: integer
