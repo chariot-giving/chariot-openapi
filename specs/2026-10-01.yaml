@@ -5095,7 +5095,7 @@ components:
         external_id:
           type: string
           description: |-
-            Identifier provided by the source or granting organization, when provided.
+            Identifier provided by the source or granting organization, when present.
           example: "INV-12345"
         source_id:
           type: string
@@ -8914,7 +8914,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  Identifier provided by the source or granting organization, when provided.
+                  Identifier provided by the source or granting organization, when present.
                 example: "INV-12345"
               amount_gross:
                 type: integer
@@ -9078,7 +9078,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  Identifier provided by the source or granting organization, when provided.
+                  Identifier provided by the source or granting organization, when present.
                 example: "INV-12345"
               amount_gross:
                 type: integer

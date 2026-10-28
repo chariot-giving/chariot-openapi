@@ -12,7 +12,7 @@ Each Donation carries:
 - **Initiation.** Where the donor started the gift — the platform name, the platform's identifier, the URL they gave from, and any metadata the platform passed along.
 - **Settlement.** How the funds are moving to your account.
 - **Payment status.** Where the donation is in its journey to your account.
-- **Reconciliation handles.** An `external_id` (the identifier provided by the source or granting organization, when provided) and a `metadata` map for anything else.
+- **Reconciliation handles.** An `external_id` (the identifier provided by the source or granting organization, when present) and a `metadata` map for anything else.
 
 A donation can point at the [Source](../sources/overview) that sent it, and can roll up into a `deposit` once the funds arrive.
 

@@ -4502,7 +4502,7 @@ components:
           type: string
           readOnly: true
           description: |-
-            Identifier provided by the source or granting organization, when provided.
+            Identifier provided by the source or granting organization, when present.
           example: "29247869"
         payment_source_id:
           type: string
