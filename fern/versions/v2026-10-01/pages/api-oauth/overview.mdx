@@ -87,12 +87,12 @@ Scopes typically take the form `resource:action`, where `action` is `read` or `w
 | `read_only`  | The `read` scope for each resource you need  |
 | `read_write` | The `write` scope for each resource you need |
 
-Existing applications that request `read_only` or `read_write` keep working. New applications should request the scopes they need.
+These still work, but new applications shouldn't request them.
 
 <Note>
-  A token only receives the permissions your client and the authorization have
-  in common, narrowed by the consenting user's role for delegated access. The
-  approving user must hold every scope you request.
+  The user who approves your application must hold every scope you request.
+  With delegated access, the token also loses any permission that user's role
+  later loses.
 </Note>
 
 ## Delegated Access and App Installs
