@@ -10,7 +10,7 @@ updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
   OAuth access is not self-service. Contact
   [support@givechariot.com](mailto:support@givechariot.com) to register your
   application and receive client credentials. Include your application's display
-  name, logo, callback URLs, and optionally the IP addresses to whitelist.
+  name, logo, and callback URLs.
 </Warning>
 
 ## How It Works
@@ -289,21 +289,6 @@ Common errors during the token exchange:
 | `400`       | Malformed request (invalid parameters, missing fields)               |
 | `401`       | Invalid authorization code, expired token, or bad client credentials |
 | `412`       | User lacks the required permissions for the requested scopes         |
-
-## IP Whitelisting
-
-Some APIs restrict access to a set of registered IP addresses in addition to OAuth. Where this applies, the check runs before the token is validated — a request from an unregistered address receives a `403 Forbidden` even with a valid access token:
-
-```json
-{
-  "type": "about:blank",
-  "title": "You have insufficient permissions to perform this action.",
-  "status": 403,
-  "detail": "Your IP address is not in the allowed CIDR range to access this resource."
-}
-```
-
-Addresses are registered as CIDR ranges when your application is set up. Contact [support@givechariot.com](mailto:support@givechariot.com) to add or change them.
 
 ## Redirect URI Requirements
 
