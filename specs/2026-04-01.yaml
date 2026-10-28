@@ -4502,8 +4502,7 @@ components:
           type: string
           readOnly: true
           description: |-
-            A short human-readable identifier for the donation, useful for reconciling against your own systems.
-            This is the same identifier shown on the donation in the Chariot dashboard.
+            Unique donation identifier from the source / granting organization. Not always populated.
           example: "29247869"
         payment_source_id:
           type: string

@@ -5095,8 +5095,7 @@ components:
         external_id:
           type: string
           description: |-
-            The identifier for the donation as reported by its source, such as the transaction ID.
-            Use it to reconcile the donation in Chariot against the original source donation record.
+            Unique donation identifier from the source / granting organization. Not always populated.
           example: "INV-12345"
         source_id:
           type: string
@@ -8915,8 +8914,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  The identifier for the donation as reported by its source, such as the transaction ID.
-                  Use it to reconcile the donation in Chariot against the original source donation record.
+                  Unique donation identifier from the source / granting organization.
                 example: "INV-12345"
               amount_gross:
                 type: integer
@@ -9080,8 +9078,7 @@ components:
               external_id:
                 type: string
                 description: |-
-                  The identifier for the donation as reported by its source, such as the transaction ID.
-                  Use it to reconcile the donation in Chariot against the original source donation record.
+                  Unique donation identifier from the source / granting organization.
                 example: "INV-12345"
               amount_gross:
                 type: integer
