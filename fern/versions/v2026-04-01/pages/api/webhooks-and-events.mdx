@@ -58,7 +58,7 @@ Note that you can create Event Subscriptions in Production and Sandbox. Sandbox 
 
 ## OAuth Applications
 
-An [OAuth](/guides/oauth) application doesn't need a separate Event Subscription for each nonprofit. Instead, it creates Event Subscriptions that belong to the application itself, authenticating with a token from the `client_credentials` grant rather than an API key or a nonprofit's access token. Those subscriptions receive events from every nonprofit that has authorized the application, and each event's `organization_id` tells you which nonprofit it came from. See [OAuth webhooks](/guides/oauth#webhooks) for the steps.
+An [OAuth](/guides/oauth) application can receive events from every nonprofit that [installed it](/guides/oauth#delegated-access-and-app-installs). See [OAuth webhooks](/guides/oauth#webhooks).
 
 ## Consuming Events
 
