@@ -49,21 +49,59 @@ Additional OAuth 2.0 and OIDC metadata can be found at the environment's well-kn
 
 Scopes define what your application can access. Specify multiple as a URL encoded space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
 
-| Scope            | Grants                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------------- |
-| `read_only`      | Read access across every resource in the Chariot API                                         |
-| `read_write`     | Read and write access across every resource in the Chariot API                               |
-| `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
-| `offline_access` | Accepted for compatibility with OIDC clients                                                 |
+Scopes take the form `resource:action`, where `action` is `read` or `write`. A `write` scope includes read access to the same resource.
 
-`read_only` and `read_write` are aggregates — they grant their level of access across every resource, so you do not have to enumerate a scope per resource or request new ones as the API grows. Neither grants Chariot's internal administrative operations.
+| Resource                     | Read                         | Write                                 |
+| ---------------------------- | ---------------------------- | ------------------------------------- |
+| Donations                    | `donations:read`             | `donations:write`                     |
+| Properties                   | `properties:read`            | `properties:write`                    |
+| Exports                      | `exports:read`               | `exports:write`                       |
+| Deposits                     | `deposits:read`              | `deposits:write`                      |
+| Mail items                   | `mail_items:read`            | `mail_items:write`                    |
+| Lockboxes                    | `lockboxes:read`             |                                       |
+| Workflows                    | `workflows:read`             | `workflows:write`                     |
+| Policies                     | `policies:read`              | `policies:write`                      |
+| Grants and recurring grants  | `grants:read`                | `grants:write`                        |
+| Connects                     | `connects:read`              | `connects:write`                      |
+| Grant requests               | `grant_requests:read`        | `grant_requests:write`                |
+| Donor accounts               | `donor_accounts:read`        | `donor_accounts:write`                |
+| Payment sources              | `sources:read`               | `sources:write`                       |
+| Deposit addresses            | `deposit_addresses:read`     | `deposit_addresses:write`             |
+| Nonprofits                   | `nonprofits:read`            | `nonprofits:write`                    |
+| Disbursements                | `disbursements:read`         | `disbursements:write`                 |
+| Inbound transfers            | `inbound_transfers:read`     | `inbound_transfers:write`             |
+| Verification requests        | `verification_requests:read` | `verification_requests:write`         |
+| Ledger transactions          | `ledger_transactions:read`   |                                       |
+| Financial accounts           | `financial_accounts:read`    |                                       |
+| Financial account statements |                              | `financial_account_statements:write`  |
+| Users                        | `users:read`                 |                                       |
+| Domain claims                | `domain_claims:read`         | `domain_claims:write`                 |
+| Event subscriptions          | `event_subscriptions:read`   | `event_subscriptions:write`           |
+| Events                       | `events:read`                |                                       |
+| Invoices                     | `invoices:read`              |                                       |
+| Integrations                 | `integrations:read`          |                                       |
+
+These scopes are for identity and OIDC compatibility:
+
+| Scope              | Grants                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `openid`           | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
+| `profile`, `email` | Same as `openid`                                                                             |
+| `offline_access`   | Accepted for compatibility with OIDC clients                                                 |
+
+### Deprecated Scopes
+
+| Scope        | Use instead                                  |
+| ------------ | -------------------------------------------- |
+| `read_only`  | The `read` scope for each resource you need  |
+| `read_write` | The `write` scope for each resource you need |
+
+Existing applications that request `read_only` or `read_write` keep working. New applications should request the scopes they need.
 
 <Note>
   A token only receives the permissions your client and the authorization have
   in common, narrowed by the consenting user's role where the authorization
-  belongs to a user. Request `read_only` alongside `read_write` if you serve
-  nonprofits whose users hold read-only roles — a read-only user cannot approve
-  a request for `read_write` alone.
+  belongs to a user. The approving user must hold every scope you request.
 </Note>
 
 ## Authorization Subjects
@@ -181,7 +219,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=openid%20read_write
+  &scope=openid%20donations:read
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
