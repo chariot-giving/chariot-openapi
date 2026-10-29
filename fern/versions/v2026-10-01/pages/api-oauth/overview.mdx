@@ -47,38 +47,78 @@ Additional OAuth 2.0 and OIDC metadata can be found at the environment's well-kn
 
 ## Scopes
 
-Scopes define what your application can access. Specify multiple as a URL encoded space-separated string when requesting authorization. The scopes your client is allowed to request are fixed during client registration.
+Scopes define what your application can access. Specify multiple as a URL encoded space-separated string when requesting authorization.
 
-| Scope            | Grants                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------------- |
-| `read_only`      | Read access across every resource in the Chariot API                                         |
-| `read_write`     | Read and write access across every resource in the Chariot API                               |
-| `openid`         | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity) |
-| `offline_access` | Accepted for compatibility with OIDC clients                                                 |
+Scopes typically take the form `resource:action`, where `action` is `read` or `write`. A `write` scope includes read access to the same resource.
 
-`read_only` and `read_write` are aggregates — they grant their level of access across every resource, so you do not have to enumerate a scope per resource or request new ones as the API grows. Neither grants Chariot's internal administrative operations.
+| Resource                     | Read                         | Write                                 |
+| ---------------------------- | ---------------------------- | ------------------------------------- |
+| Donations                    | `donations:read`             | `donations:write`                     |
+| Properties                   | `properties:read`            | `properties:write`                    |
+| Deposits                     | `deposits:read`              | `deposits:write`                      |
+| Mail items                   | `mail_items:read`            | `mail_items:write`                    |
+| Lockboxes                    | `lockboxes:read`             |                                       |
+| Grants and recurring grants  | `grants:read`                | `grants:write`                        |
+| Connects                     | `connects:read`              | `connects:write`                      |
+| Grant requests               | `grant_requests:read`        | `grant_requests:write`                |
+| Donor accounts               | `donor_accounts:read`        | `donor_accounts:write`                |
+| Payment sources              | `sources:read`               | `sources:write`                       |
+| Deposit addresses            | `deposit_addresses:read`     | `deposit_addresses:write`             |
+| Disbursements                | `disbursements:read`         | `disbursements:write`                 |
+| Inbound transfers            | `inbound_transfers:read`     | `inbound_transfers:write`             |
+| Verification requests        | `verification_requests:read` | `verification_requests:write`         |
+| Financial accounts           | `financial_accounts:read`    |                                       |
+| Event subscriptions          | `event_subscriptions:read`   | `event_subscriptions:write`           |
+| Events                       | `events:read`                |                                       |
+
+### Other Scopes
+
+| Scope              | Grants                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `app_install`      | Install your application for the nonprofit. See [Delegated Access and App Installs](#delegated-access-and-app-installs) |
+| `openid`           | Issue an `id_token` and access the UserInfo endpoint. See [Identity](/guides/oauth/identity)                 |
+| `profile`, `email` | Same as `openid`                                                                                             |
+| `offline_access`   | Accepted for compatibility with OIDC clients                                                                 |
+
+### Deprecated Scopes
+
+| Scope        | Use instead                                  |
+| ------------ | -------------------------------------------- |
+| `read_only`  | The `read` scope for each resource you need  |
+| `read_write` | The `write` scope for each resource you need |
+
+These scopes are deprecated and will be removed in the future.
 
 <Note>
-  A token only receives the permissions your client and the authorization have
-  in common, narrowed by the consenting user's role where the authorization
-  belongs to a user. Request `read_only` alongside `read_write` if you serve
-  nonprofits whose users hold read-only roles — a read-only user cannot approve
-  a request for `read_write` alone.
+  The user who approves your application must hold every scope you request.
+  With delegated access, the token also loses any permission that user's role
+  later loses.
 </Note>
 
-## Authorization Subjects
+## Delegated Access and App Installs
 
-An authorization belongs either to the user who approved it or to the nonprofit organization they approved it for. Which one applies is fixed when your application is registered.
+Chariot supports two authorization models:
 
-| | **User** | **Organization** |
-| --- | --- | --- |
-| Permissions | The user's current role narrows the token on every call | Stay as approved |
-| If the approver's role changes | Access narrows with it | Unaffected |
-| If the approver leaves the nonprofit | Access stops | Unaffected |
-| Identity | `openid` returns an `id_token`. See [Identity](/guides/oauth/identity) | No `id_token` |
-| Revoked by | The user who approved it | Any Owner or Admin at the nonprofit |
+- **Delegated access**: Your application acts on behalf of the user who authorized it. Its permissions are limited by that user's current role.
+- **App install**: Your application acts independently of any individual user, with permissions approved by a nonprofit Owner or Admin.
 
-Applications are registered against a user by default. Ask us about an organization authorization if yours is a server-to-server integration meant to outlive the person who sets it up.
+To request an app install, include the `app_install` scope. Otherwise, the authorization uses delegated access.
+
+|                                              | **Delegated Access**                                                                    | **App Install**              |
+| -------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+| Acts as                                      | The authorizing user                                                                    | Your application             |
+| Approved by                                  | Any user who holds the requested scopes                                                 | A nonprofit Owner or Admin   |
+| Permissions                                  | Limited by the authorizing user's current role                                          | Remain as approved           |
+| If the authorizing user's role changes       | Permissions change to match                                                             | Unaffected                   |
+| If the authorizing user leaves the nonprofit | Access is revoked, and your application must be authorized again                        | Unaffected                   |
+| Identity                                     | Can request `openid`, `profile` and `email`. See [Identity](/guides/oauth/identity)     | Not available                |
+| Revoked by                                   | The authorizing user                                                                    | Any nonprofit Owner or Admin |
+
+### Which Should I Use?
+
+Use delegated access when your application should act on behalf of a specific user. Use an app install for integrations that should keep working after the person who authorized them leaves the nonprofit.
+
+Because an app install isn't associated with a user, `app_install` can't be combined with `openid`, `profile` or `email`. Requesting them together returns an `invalid_scope` error.
 
 ## Authorization Code Flow
 
@@ -181,7 +221,7 @@ https://dashboard.givechariot.com/oauth/authorize
   ?client_id=YOUR_CLIENT_ID
   &redirect_uri=https://example.com/callback
   &response_type=code
-  &scope=openid%20read_write
+  &scope=openid%20donations:read
   &state=RANDOM_CSRF_TOKEN
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
@@ -285,24 +325,35 @@ Refresh tokens use a **sliding window** expiration:
 
 ## Webhooks
 
-To receive [webhooks](/api/webhooks) for the nonprofits that use your application, create [Event Subscriptions](/api/event-subscriptions/create) that belong to your application rather than to any one nonprofit. An Event Subscription your application owns receives events from every nonprofit that has given it an [organization authorization](#authorization-subjects), including nonprofits that authorize it after you create the subscription.
+Receive [webhooks](/api/webhooks) from every nonprofit that installs your application by creating application-level [Event Subscriptions](/api/event-subscriptions/create).
 
-Because the subscription belongs to your application, you create it with your application's own access token instead of a nonprofit's.
+Unlike subscriptions associated with a specific nonprofit, application-level subscriptions receive events from all nonprofits that have authorized your application through an app install, including those that install it in the future.
+
+You only need to create each subscription once, using your application's own access token.
+
+<Note>
+  The `event_subscriptions:write` scope is only available to applications using
+  [app installs](#delegated-access-and-app-installs). Applications using
+  delegated access cannot request this scope. Attempting to do so returns an
+  `invalid_scope` error.
+</Note>
 
 ### Step 1: Get an Application Access Token
 
-Request a token with the `client_credentials` grant, authenticating with HTTP Basic Auth:
+Use the `client_credentials` grant to obtain an access token for your application. Authenticate using HTTP Basic Auth:
 
 ```curl
 curl -X POST https://api.givechariot.com/auth/oauth/token \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "grant_type=client_credentials" \
-  -d "scope=read_write"
+  -d "scope=event_subscriptions:write"
 ```
 
-### Step 2: Create the Event Subscription
+### Step 2: Create an Event Subscription
 
-Call [Create Event Subscription](/api/event-subscriptions/create) with that token. Create one subscription for each event category you want:
+Call [Create Event Subscription](/api/event-subscriptions/create) using your application access token.
+
+Create one subscription for each event category you want to receive:
 
 ```curl
 curl -X POST https://api.givechariot.com/v1/event_subscriptions \
@@ -315,7 +366,11 @@ curl -X POST https://api.givechariot.com/v1/event_subscriptions \
   }'
 ```
 
-Each event includes the `organization_id` of the nonprofit it belongs to. When a nonprofit removes your application's access, you receive a `connection.revoked` event and stop receiving its events.
+### Identifying Nonprofits and Handling Revocations
+
+Each event includes an `organization_id` identifying the nonprofit that generated it.
+
+We recommend subscribing to `connection.revoked` to be notified when a nonprofit removes your application's access. Once access is revoked, you'll stop receiving events for that nonprofit.
 
 ## Error Handling
 
