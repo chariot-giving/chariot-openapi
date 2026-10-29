@@ -97,19 +97,28 @@ These scopes are deprecated and will be removed in the future.
 
 ## Delegated Access and App Installs
 
-An authorization is either **delegated access**, where your application acts on behalf of the user who approved it, or an **app install**, where the nonprofit installs your application and it acts as itself. Request the `app_install` scope to ask for an app install. Without it, the authorization is delegated access.
+Chariot supports two authorization models:
 
-|                                      | **Delegated Access**                                                   | **App Install**                     |
-| ------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------- |
-| Acts as                              | The user who approved it                                               | Your application                    |
-| Approved by                          | Any user who holds the requested scopes                                | An Owner or Admin                   |
-| Permissions                          | The user's current role narrows the token on every call                | Stay as approved                    |
-| If the approver's role changes       | Access narrows with it                                                 | Unaffected                          |
-| If the approver leaves the nonprofit | Access stops                                                           | Unaffected                          |
-| Identity                             | `openid` returns an `id_token`. See [Identity](/guides/oauth/identity) | Not available                       |
-| Revoked by                           | The user who approved it                                               | Any Owner or Admin at the nonprofit |
+- **Delegated access**: Your application acts on behalf of the user who authorized it. Its permissions are limited by that user's current role.
+- **App install**: Your application acts independently of any individual user, with permissions approved by a nonprofit Owner or Admin.
 
-Use an app install for a server-to-server integration that should outlive the person who sets it up. An app install has no user behind it, so a request for `app_install` together with `openid`, `profile` or `email` returns an `invalid_scope` error.
+To request an app install, include the `app_install` scope. Otherwise, the authorization uses delegated access.
+
+|                                              | **Delegated Access**                                                                    | **App Install**              |
+| -------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+| Acts as                                      | The authorizing user                                                                    | Your application             |
+| Approved by                                  | Any user who holds the requested scopes                                                 | A nonprofit Owner or Admin   |
+| Permissions                                  | Limited by the authorizing user's current role                                          | Remain as approved           |
+| If the authorizing user's role changes       | Permissions change to match                                                             | Unaffected                   |
+| If the authorizing user leaves the nonprofit | Access is revoked, and your application must be authorized again                        | Unaffected                   |
+| Identity                                     | Can request `openid`, `profile` and `email`. See [Identity](/guides/oauth/identity)     | Not available                |
+| Revoked by                                   | The authorizing user                                                                    | Any nonprofit Owner or Admin |
+
+### Which Should I Use?
+
+Use delegated access when your application should act on behalf of a specific user. Use an app install for integrations that should keep working after the person who authorized them leaves the nonprofit.
+
+Because an app install isn't associated with a user, `app_install` can't be combined with `openid`, `profile` or `email`. Requesting them together returns an `invalid_scope` error.
 
 ## Authorization Code Flow
 
