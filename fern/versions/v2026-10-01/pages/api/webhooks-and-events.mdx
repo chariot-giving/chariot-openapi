@@ -20,7 +20,8 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
     "created_at": "2023-01-31T23:59:59Z",
     "category": "grant.created",
     "associated_object_type": "grant",
-    "associated_object_id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361"
+    "associated_object_id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361",
+    "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct"
   }
   ```
 
@@ -28,7 +29,7 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
 
   These events represent specific occurrences within our system that you can subscribe to and receive notifications for.
 
-  Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are delivered as `{resource}.updated` events — fetch the object to read its current status.
+  Event names follow the pattern `{resource}.{event_type}` where `event_type` is usually `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are delivered as `{resource}.updated` events — fetch the object to read its current status.
 
   - `grant.created`: This event is triggered when a grant is created.
   - `grant.updated`: This event is triggered when a grant is updated. This can happen when the status changes for example.
@@ -50,9 +51,14 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
   - `deposit.updated`: This event is triggered when a deposit is updated. This can happen when the status of the deposit or underlying transfer changes.
   - `verification_request.created`: This event is triggered when a verification request is created.
   - `verification_request.updated`: This event is triggered when a verification request is updated.
+  - `connection.revoked`: This event is triggered when a nonprofit revokes your [OAuth](/guides/oauth) application's access.
 </Aside>
 
 Note that you can create Event Subscriptions in Production and Sandbox. Sandbox Event Subscriptions will receive events for Sandbox events and vice versa.
+
+## OAuth Applications
+
+An [OAuth](/guides/oauth) application doesn't need a separate Event Subscription for each nonprofit. Instead, it creates Event Subscriptions that belong to the application itself, authenticating with a token from the `client_credentials` grant rather than an API key or a nonprofit's access token. Those subscriptions receive events from every nonprofit that has authorized the application, and each event's `organization_id` tells you which nonprofit it came from. See [OAuth webhooks](/guides/oauth#webhooks) for the steps.
 
 ## Consuming Events
 
