@@ -324,13 +324,22 @@ Refresh tokens use a **sliding window** expiration:
 
 ## Webhooks
 
-To receive [webhooks](/api/webhooks) for the nonprofits that use your application, create [Event Subscriptions](/api/event-subscriptions/create) that belong to your application rather than to any one nonprofit. An Event Subscription your application owns receives events from every nonprofit that has installed it with an [app install](#delegated-access-and-app-installs), including nonprofits that install it after you create the subscription.
+Receive [webhooks](/api/webhooks) from every nonprofit that installs your application by creating application-level [Event Subscriptions](/api/event-subscriptions/create).
 
-Because the subscription belongs to your application, you create it with your application's own access token instead of a nonprofit's.
+Unlike subscriptions associated with a specific nonprofit, application-level subscriptions receive events from all nonprofits that have authorized your application through an app install, including those that install it in the future.
+
+You only need to create each subscription once, using your application's own access token.
+
+<Note>
+  The `event_subscriptions:write` scope is only available to applications using
+  [app installs](#delegated-access-and-app-installs). Applications using
+  delegated access cannot request this scope. Attempting to do so returns an
+  `invalid_scope` error.
+</Note>
 
 ### Step 1: Get an Application Access Token
 
-Request a token with the `client_credentials` grant, authenticating with HTTP Basic Auth:
+Use the `client_credentials` grant to obtain an access token for your application. Authenticate using HTTP Basic Auth:
 
 ```curl
 curl -X POST https://api.givechariot.com/auth/oauth/token \
@@ -339,9 +348,11 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
   -d "scope=event_subscriptions:write"
 ```
 
-### Step 2: Create the Event Subscription
+### Step 2: Create an Event Subscription
 
-Call [Create Event Subscription](/api/event-subscriptions/create) with that token. Create one subscription for each event category you want:
+Call [Create Event Subscription](/api/event-subscriptions/create) using your application access token.
+
+Create one subscription for each event category you want to receive:
 
 ```curl
 curl -X POST https://api.givechariot.com/v1/event_subscriptions \
@@ -354,7 +365,11 @@ curl -X POST https://api.givechariot.com/v1/event_subscriptions \
   }'
 ```
 
-Each event includes the `organization_id` of the nonprofit it belongs to. When a nonprofit removes your application's access, you receive a `connection.revoked` event and stop receiving its events.
+### Identifying Nonprofits and Handling Revocations
+
+Each event includes an `organization_id` identifying the nonprofit that generated it.
+
+We recommend subscribing to `connection.revoked` to be notified when a nonprofit removes your application's access. Once access is revoked, you'll stop receiving events for that nonprofit.
 
 ## Error Handling
 
