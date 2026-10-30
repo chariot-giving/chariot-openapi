@@ -129,6 +129,7 @@ paths:
         - Organizations
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["nonprofits:write"]
       parameters:
         - name: id
           in: path
@@ -261,6 +262,7 @@ paths:
         - Connects
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["connects:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -314,6 +316,7 @@ paths:
         - Connects
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["connects:read"]
       parameters:
         - name: id
           in: path
@@ -356,6 +359,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -496,6 +500,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -542,6 +547,7 @@ paths:
         - recurring_grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -638,6 +644,7 @@ paths:
         - recurring_grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -684,6 +691,7 @@ paths:
         - unintegrated_grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -736,6 +744,7 @@ paths:
         - unintegrated_grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -878,6 +887,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateDonorAccountRequest"
       responses:
@@ -920,6 +930,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:read"]
       parameters:
         - name: giving_pool_id
           in: query
@@ -986,6 +997,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -1031,6 +1043,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1084,6 +1097,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1135,6 +1149,7 @@ paths:
         - Donor Accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1526,6 +1541,7 @@ paths:
         - Grant Requests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grant_requests:read"]
       parameters:
         - name: donor_account_id
           in: query
@@ -1663,6 +1679,7 @@ paths:
         - Grant Requests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grant_requests:read"]
       parameters:
         - name: id
           in: path
@@ -1718,6 +1735,7 @@ paths:
         - Grant Requests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grant_requests:write"]
       parameters:
         - name: id
           in: path
@@ -1773,6 +1791,7 @@ paths:
         - Grant Requests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grant_requests:write"]
       parameters:
         - name: id
           in: path
@@ -1819,6 +1838,8 @@ paths:
         - Events
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["events:read"]
+        - applicationAccessToken: ["events:read"]
       parameters:
         - name: limit
           in: query
@@ -1863,6 +1884,8 @@ paths:
         - Events
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["events:read"]
+        - applicationAccessToken: ["events:read"]
       parameters:
         - name: id
           in: path
@@ -1899,6 +1922,8 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["event_subscriptions:write"]
+        - applicationAccessToken: ["event_subscriptions:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
       responses:
@@ -1932,6 +1957,8 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["event_subscriptions:read"]
+        - applicationAccessToken: ["event_subscriptions:read"]
       parameters:
         - name: limit
           in: query
@@ -1969,6 +1996,8 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["event_subscriptions:read"]
+        - applicationAccessToken: ["event_subscriptions:read"]
       parameters:
         - name: id
           in: path
@@ -2004,6 +2033,8 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["event_subscriptions:write"]
+        - applicationAccessToken: ["event_subscriptions:write"]
       parameters:
         - name: id
           in: path
@@ -2042,6 +2073,7 @@ paths:
         - financial_accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["financial_accounts:read"]
       responses:
         "200":
           $ref: "#/components/responses/ListFinancialAccountsResponse"
@@ -2065,6 +2097,7 @@ paths:
         - financial_accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["financial_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -2102,6 +2135,7 @@ paths:
         - financial_accounts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["financial_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -2140,6 +2174,7 @@ paths:
         - verificationRequests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["verification_requests:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateVerificationRequestRequest"
       responses:
@@ -2173,6 +2208,7 @@ paths:
         - verificationRequests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["verification_requests:write"]
       parameters:
         - name: ein
           in: query
@@ -2217,6 +2253,7 @@ paths:
         - verificationRequests
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["verification_requests:write"]
       parameters:
         - name: id
           in: path
@@ -2254,6 +2291,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: Idempotency-Key
           in: header
@@ -2300,6 +2338,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:read"]
       parameters:
         - name: organization_id
           in: query
@@ -2369,6 +2408,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       requestBody:
         $ref: "#/components/requestBodies/BulkCreateDisbursementsRequest"
       responses:
@@ -2415,6 +2455,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:read"]
       parameters:
         - name: id
           in: path
@@ -2456,6 +2497,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2500,6 +2542,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       requestBody:
         required: true
         content:
@@ -2558,6 +2601,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2604,6 +2648,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2648,6 +2693,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2690,6 +2736,7 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2727,6 +2774,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:write"]
       parameters:
         - name: id
           in: path
@@ -2769,6 +2817,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["grants:write"]
       parameters:
         - name: id
           in: path
@@ -2810,6 +2859,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: Idempotency-Key
           in: header
@@ -2852,6 +2902,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:read"]
       parameters:
         - name: page_limit
           in: query
@@ -2897,6 +2948,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:read"]
       parameters:
         - name: id
           in: path
@@ -2936,6 +2988,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -2981,6 +3034,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -3018,6 +3072,7 @@ paths:
         - inboundTransfers
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -3060,6 +3115,7 @@ paths:
         - paymentSources
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["sources:read"]
       parameters:
         - name: limit
           in: query
@@ -3106,6 +3162,7 @@ paths:
         - paymentSources
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["sources:read"]
       parameters:
         - name: id
           in: path
@@ -3147,6 +3204,7 @@ paths:
         - lockboxes
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["lockboxes:read"]
       parameters:
         - name: limit
           in: query
@@ -3186,6 +3244,7 @@ paths:
         - lockboxes
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["lockboxes:read"]
       parameters:
         - name: id
           in: path
@@ -3227,6 +3286,7 @@ paths:
         - mailItems
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["mail_items:read"]
       parameters:
         - name: limit
           in: query
@@ -3302,6 +3362,7 @@ paths:
         - mailItems
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["mail_items:read"]
       parameters:
         - name: id
           in: path
@@ -3339,6 +3400,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donations:read"]
       parameters:
         - name: limit
           in: query
@@ -3410,6 +3472,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["donations:read"]
       parameters:
         - name: id
           in: path
@@ -3447,6 +3510,7 @@ paths:
         - deposits
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["deposits:read"]
       parameters:
         - name: limit
           in: query
@@ -3516,6 +3580,7 @@ paths:
         - deposits
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["deposits:read"]
       parameters:
         - name: id
           in: path
@@ -3734,6 +3799,7 @@ paths:
         - properties
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["properties:read"]
       parameters:
         - name: limit
           in: query
@@ -3777,6 +3843,7 @@ paths:
         - properties
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["properties:read"]
       parameters:
         - name: id
           in: path
@@ -3814,6 +3881,7 @@ paths:
         - properties
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["properties:read"]
       parameters:
         - name: id
           in: path
@@ -3862,6 +3930,7 @@ paths:
         - properties
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["properties:write"]
       parameters:
         - name: id
           in: path
@@ -3995,6 +4064,7 @@ paths:
         - nonprofitAddresses
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["nonprofits:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitAddressSuggestionRequest"
       responses:
@@ -4023,6 +4093,7 @@ paths:
         - nonprofitContacts
       security:
         - bearerAuth: []
+        - nonprofitAccessToken: ["nonprofits:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitContactSuggestionRequest"
       responses:
@@ -4043,6 +4114,51 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+      description: Your API key.
+    nonprofitAccessToken:
+      type: oauth2
+      description: A nonprofit access token from the OAuth authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
+          refreshUrl: https://api.givechariot.com/auth/oauth/token
+          scopes:
+            donations:read: Read donations
+            properties:read: Read properties
+            properties:write: Write properties
+            deposits:read: Read deposits
+            mail_items:read: Read mail items
+            lockboxes:read: Read lockboxes
+            grants:read: Read grants and recurring grants
+            grants:write: Write grants and recurring grants
+            connects:read: Read connects
+            connects:write: Write connects
+            grant_requests:read: Read grant requests
+            grant_requests:write: Write grant requests
+            donor_accounts:read: Read donor accounts
+            donor_accounts:write: Write donor accounts
+            sources:read: Read payment sources
+            disbursements:read: Read disbursements
+            disbursements:write: Write disbursements
+            inbound_transfers:read: Read inbound transfers
+            inbound_transfers:write: Write inbound transfers
+            verification_requests:write: Write verification requests
+            financial_accounts:read: Read financial accounts
+            event_subscriptions:read: Read event subscriptions
+            event_subscriptions:write: Write event subscriptions
+            events:read: Read events
+            nonprofits:write: Write nonprofits
+    applicationAccessToken:
+      type: oauth2
+      description: An application access token from the OAuth client credentials grant.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
+          scopes:
+            event_subscriptions:read: Read event subscriptions
+            event_subscriptions:write: Write event subscriptions
+            events:read: Read events
   schemas:
     OrganizationSummary:
       type: object
