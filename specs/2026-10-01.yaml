@@ -5912,7 +5912,7 @@ components:
         transfer:
           description: The transfer that carried the funds.
           allOf:
-            - $ref: "#/components/schemas/Transfer"
+            - $ref: "#/components/schemas/DepositTransfer"
         donation_count:
           type: integer
           format: int32
@@ -5946,7 +5946,7 @@ components:
           deprecated: true
           description: Deprecated. Use `transfer.bank_created_at`.
           example: "2020-01-31T23:59:59Z"
-    Transfer:
+    DepositTransfer:
       type: object
       description: The transfer that carried the funds for a deposit.
       required:
@@ -5995,6 +5995,61 @@ components:
           description: An ACH credit received from an external bank.
           allOf:
             - $ref: "#/components/schemas/InboundAchTransfer"
+        check_deposit:
+          description: A check that Chariot processed and deposited.
+          allOf:
+            - $ref: "#/components/schemas/CheckDeposit"
+        inbound_real_time_payments_transfer:
+          description: A real-time payments transfer received from an external bank.
+          allOf:
+            - $ref: "#/components/schemas/InboundRealTimePaymentsTransfer"
+        inbound_wire_transfer:
+          description: A wire transfer received from an external bank.
+          allOf:
+            - $ref: "#/components/schemas/InboundWireTransfer"
+    Transfer:
+      type: object
+      description: The transfer that carried the funds for a deposit.
+      required:
+        - amount
+        - currency
+        - financial_account_id
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: The amount of the transfer in minor currency units. For example, for dollars, this is cents.
+          example: 10000
+        currency:
+          type: string
+          description: The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) for the transfer's currency.
+          example: USD
+        financial_account_id:
+          type: string
+          description: The unique identifier for the financial account that the transfer was made to.
+          example: "fa_01j8rs605a4gctmbm58d87mvsj"
+        description:
+          type: string
+          description: A description of the transfer.
+          example: "Disbursement to nonprofit"
+        bank_created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time the bank recorded the transfer.
+          example: "2020-01-31T23:59:59Z"
+        inbound_account_transfer:
+          description: An instant transfer from another Chariot account.
+          allOf:
+            - $ref: "#/components/schemas/InboundAccountTransfer"
+        inbound_ach_transfer:
+          description: An ACH credit received from an external bank.
+          allOf:
+            - $ref: "#/components/schemas/InboundAchTransfer"
+        ach_transfer:
+          description: An ACH debit Chariot pulled from an external bank account to fund the account.
+          allOf:
+            - $ref: "#/components/schemas/AchTransfer"
         check_deposit:
           description: A check that Chariot processed and deposited.
           allOf:
