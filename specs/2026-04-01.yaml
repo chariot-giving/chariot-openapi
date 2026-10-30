@@ -122,6 +122,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `nonprofits:write`
       operationId: onboardOrganization
       tags:
         - Organizations
@@ -252,6 +254,8 @@ paths:
         Only one Connect object can be created per organization.
         If one already exists, this will return a `200 OK` status with the existing object.
         </Note>
+
+        OAuth scope: `connects:write`
       operationId: create-connect
       tags:
         - Connects
@@ -303,6 +307,8 @@ paths:
       summary: Get Connect
       description: |-
         Retrieve a connect with the given ID.
+
+        OAuth scope: `connects:read`
       operationId: get-connect
       tags:
         - Connects
@@ -343,6 +349,8 @@ paths:
         Returns a list of all grants for a given Connect. This API allows for paginating over many results.
 
         DAF providers can use `donor_account_id` to filter Grant Requests associated with a specific [Donor Account](/api/donor-accounts).
+
+        OAuth scope: `grants:read`
       operationId: list-grants
       tags:
         - Grants
@@ -481,6 +489,8 @@ paths:
       summary: Get Grant
       description: |-
         Retrieve a grant with the given ID.
+
+        OAuth scope: `grants:read`
       operationId: get-grant
       tags:
         - Grants
@@ -525,6 +535,8 @@ paths:
       summary: List Recurring Grants
       description: |-
         Returns a list of all recurring grants for a given Connect. This API allows for paginating over many results.
+
+        OAuth scope: `grants:read`
       operationId: list-recurring-grants
       tags:
         - recurring_grants
@@ -619,6 +631,8 @@ paths:
       summary: Get Recurring Grant
       description: |-
         Retrieve a recurring grant with a given ID.
+
+        OAuth scope: `grants:read`
       operationId: get-recurring-grant
       tags:
         - recurring_grants
@@ -663,6 +677,8 @@ paths:
       summary: List Unintegrated Grants
       description: |-
         Returns a list of all unintegrated grants for a given Connect. This API allows for paginating over many results.
+
+        OAuth scope: `grants:read`
       operationId: list-unintegrated-grants
       tags:
         - unintegrated_grants
@@ -713,6 +729,8 @@ paths:
       summary: Get Unintegrated Grant
       description: |-
         Retrieve an unintegrated grant with a given ID.
+
+        OAuth scope: `grants:read`
       operationId: get-unintegrated-grant
       tags:
         - unintegrated_grants
@@ -853,6 +871,8 @@ paths:
         See the [DAF-Initiated Setup guide](/guides/dafpay/donor-accounts/daf-initiated-setup) for the most common use of this endpoint.
 
         On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor enters the code in DAFpay, the Donor Account is automatically approved.
+
+        OAuth scope: `donor_accounts:write`
       operationId: create-donor-account
       tags:
         - Donor Accounts
@@ -893,6 +913,8 @@ paths:
       description: |-
         Returns a list of Donor Accounts for the authenticated DAF.
         This endpoint supports cursor-based pagination as well as filtering by fund, status, and email.
+
+        OAuth scope: `donor_accounts:read`
       operationId: list-donor-accounts
       tags:
         - Donor Accounts
@@ -957,6 +979,8 @@ paths:
       summary: Get Donor Account
       description: |-
         Retrieve a Donor Account with the given ID.
+
+        OAuth scope: `donor_accounts:read`
       operationId: get-donor-account
       tags:
         - Donor Accounts
@@ -1000,6 +1024,8 @@ paths:
         Update mutable properties on a Donor Account such as `external_id`, the nested `donor` fields, and `metadata`.
 
         The Donor Account's status is managed automatically through the Authorization Token verification flow and cannot be changed directly via this endpoint.
+
+        OAuth scope: `donor_accounts:write`
       operationId: update-donor-account
       tags:
         - Donor Accounts
@@ -1051,6 +1077,8 @@ paths:
         <Warning>
         - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
         </Warning>
+
+        OAuth scope: `donor_accounts:write`
       operationId: disable-donor-account
       tags:
         - Donor Accounts
@@ -1100,6 +1128,8 @@ paths:
         <Warning>
         - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
         </Warning>
+
+        OAuth scope: `donor_accounts:write`
       operationId: enable-donor-account
       tags:
         - Donor Accounts
@@ -1489,6 +1519,8 @@ paths:
         Returns a list of Grant Requests accessible to the authenticated DAF account.
 
         Use `donor_account_id` to retrieve all Grant Requests associated with a specific donor.
+
+        OAuth scope: `grant_requests:read`
       operationId: list-grant-requests
       tags:
         - Grant Requests
@@ -1624,6 +1656,8 @@ paths:
       summary: Get Grant Request
       description: |-
         Retrieve a Grant Request with the given ID.
+
+        OAuth scope: `grant_requests:read`
       operationId: get-grant-request
       tags:
         - Grant Requests
@@ -1677,6 +1711,8 @@ paths:
         - The Grant Request must be in `pending` status. If the linked [Donor Account](/api/donor-accounts) is not yet `approved`, the Grant Request will be in `awaiting_account_decision` and this request returns status `412 Precondition Failed`.
         - A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
+
+        OAuth scope: `grant_requests:write`
       operationId: submit-grant-request
       tags:
         - Grant Requests
@@ -1730,6 +1766,8 @@ paths:
         <Warning>
         A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
+
+        OAuth scope: `grant_requests:write`
       operationId: reject-grant-request
       tags:
         - Grant Requests
@@ -1774,6 +1812,8 @@ paths:
       summary: List Events
       description: |-
         List all events corresponding to your Chariot account.
+
+        OAuth scope: `events:read`
       operationId: listEvents
       tags:
         - Events
@@ -1816,6 +1856,8 @@ paths:
       summary: Get Event
       description: |-
         Retrieve an event with the given ID.
+
+        OAuth scope: `events:read`
       operationId: getEvent
       tags:
         - Events
@@ -1850,6 +1892,8 @@ paths:
       summary: Create an Event Subscription
       description: |-
         Create an event subscription corresponding to your Chariot account.
+
+        OAuth scope: `event_subscriptions:write`
       operationId: createEventSubscription
       tags:
         - Event Subscriptions
@@ -1881,6 +1925,8 @@ paths:
       summary: List Event Subscriptions
       description: |-
         List all event subscriptions corresponding to your Chariot account.
+
+        OAuth scope: `event_subscriptions:read`
       operationId: listEventSubscriptions
       tags:
         - Event Subscriptions
@@ -1916,6 +1962,8 @@ paths:
       summary: Get an Event Subscription
       description: |-
         Retrieve an event subscription with the given ID.
+
+        OAuth scope: `event_subscriptions:read`
       operationId: getEventSubscription
       tags:
         - Event Subscriptions
@@ -1949,6 +1997,8 @@ paths:
       summary: Update an Event Subscription
       description: |-
         Update an event subscription with the given ID.
+
+        OAuth scope: `event_subscriptions:write`
       operationId: updateEventSubscription
       tags:
         - Event Subscriptions
@@ -1985,6 +2035,8 @@ paths:
       summary: List financial accounts
       description: |
         Returns a list of financial accounts.
+
+        OAuth scope: `financial_accounts:read`
       operationId: listFinancialAccounts
       tags:
         - financial_accounts
@@ -2006,6 +2058,8 @@ paths:
       summary: Get a financial account
       description: |
         Get a financial account by its unique identifier.
+
+        OAuth scope: `financial_accounts:read`
       operationId: getFinancialAccount
       tags:
         - financial_accounts
@@ -2041,6 +2095,8 @@ paths:
       summary: Get a financial account balance
       description: |
         Get a financial account balance by its unique identifier.
+
+        OAuth scope: `financial_accounts:read`
       operationId: getFinancialAccountBalance
       tags:
         - financial_accounts
@@ -2077,6 +2133,8 @@ paths:
       description: |
         Request verification of an unlisted organization. If the organization cannot be found through Chariot's search,
         you can submit a verification request so that Chariot's compliance team can review and verify the organization.
+
+        OAuth scope: `verification_requests:write`
       operationId: createVerificationRequest
       tags:
         - verificationRequests
@@ -2108,6 +2166,8 @@ paths:
       summary: List verification requests
       description: |
         Returns a paginated list of all verification requests for the authenticated grantmaker.
+
+        OAuth scope: `verification_requests:write`
       operationId: listVerificationRequests
       tags:
         - verificationRequests
@@ -2150,6 +2210,8 @@ paths:
       summary: Get a verification request
       description: |
         Get a specific verification request by its unique identifier.
+
+        OAuth scope: `verification_requests:write`
       operationId: getVerificationRequest
       tags:
         - verificationRequests
@@ -2185,6 +2247,8 @@ paths:
       summary: Create a disbursement
       description: |
         Create a disbursement to send money to an organization.
+
+        OAuth scope: `disbursements:write`
       operationId: createDisbursement
       tags:
         - disbursements
@@ -2229,6 +2293,8 @@ paths:
       summary: List disbursements
       description: |
         Returns a list of disbursements.
+
+        OAuth scope: `disbursements:read`
       operationId: listDisbursements
       tags:
         - disbursements
@@ -2296,6 +2362,8 @@ paths:
         the entire request will fail and no disbursements will be created.
 
         **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`.
+
+        OAuth scope: `disbursements:write`
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
@@ -2340,6 +2408,8 @@ paths:
       summary: Get a disbursement
       description: |
         Get a disbursement by its unique identifier.
+
+        OAuth scope: `disbursements:read`
       operationId: getDisbursement
       tags:
         - disbursements
@@ -2379,6 +2449,8 @@ paths:
       description: |
         Approve a disbursement in a pending_approval state.
         If the disbursement is in a different state, this will return a 400 error.
+
+        OAuth scope: `disbursements:write`
       operationId: approveDisbursement
       tags:
         - disbursements
@@ -2421,6 +2493,8 @@ paths:
 
         All disbursements must be in the `pending_approval` state. If any disbursement
         cannot be approved, the entire request will fail and no disbursements will be approved.
+
+        OAuth scope: `disbursements:write`
       operationId: bulkApproveDisbursements
       tags:
         - disbursements
@@ -2477,6 +2551,8 @@ paths:
       description: |
         Cancel a pending disbursement in a pending_approval state.
         If the disbursement is in a different state, this will return a 400 error.
+
+        OAuth scope: `disbursements:write`
       operationId: cancelDisbursement
       tags:
         - disbursements
@@ -2521,6 +2597,8 @@ paths:
         - Check must not have already been deposited
 
         After successfully stopping payment, the disbursement status will be updated to `stopped`.
+
+        OAuth scope: `disbursements:write`
       operationId: stopDisbursement
       tags:
         - disbursements
@@ -2563,6 +2641,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `disbursements:write`
       operationId: simulateDisbursementCompletion
       tags:
         - disbursements
@@ -2603,6 +2683,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `disbursements:write`
       operationId: simulateDisbursementFailure
       tags:
         - disbursements
@@ -2638,6 +2720,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `grants:write`
       operationId: simulateGrantCompletion
       tags:
         - Grants
@@ -2678,6 +2762,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `grants:write`
       operationId: simulateGrantCancellation
       tags:
         - Grants
@@ -2717,6 +2803,8 @@ paths:
         from an externally linked bank account.
         In Production, this requires that an external bank account has been setup
         and verified for your account through the Chariot Dashboard.
+
+        OAuth scope: `inbound_transfers:write`
       operationId: createInboundTransfer
       tags:
         - inboundTransfers
@@ -2757,6 +2845,8 @@ paths:
       summary: List Inbound Transfers
       description: |-
         List inbound transfers for your account.
+
+        OAuth scope: `inbound_transfers:read`
       operationId: listInboundTransfers
       tags:
         - inboundTransfers
@@ -2800,6 +2890,8 @@ paths:
       summary: Get an Inbound Transfer
       description: |-
         Get an inbound transfer by its unique identifier.
+
+        OAuth scope: `inbound_transfers:read`
       operationId: getInboundTransfer
       tags:
         - inboundTransfers
@@ -2837,6 +2929,8 @@ paths:
         Cancel an inbound transfer.
         Returns the Inbound Transfer object if the cancelation succeeded.
         Returns a 412 Precondition Failed if the Inbound Transfer has already been canceled or cannot be canceled.
+
+        OAuth scope: `inbound_transfers:write`
       operationId: cancelInboundTransfer
       tags:
         - inboundTransfers
@@ -2880,6 +2974,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `inbound_transfers:write`
       operationId: simulateInboundTransferFailure
       tags:
         - inboundTransfers
@@ -2915,6 +3011,8 @@ paths:
         <Note title="Sandbox Only" icon="fa-light fa-atom-simple">
         This API is only available in the sandbox environment.
         </Note>
+
+        OAuth scope: `inbound_transfers:write`
       operationId: simulateInboundTransferCompletion
       tags:
         - inboundTransfers
@@ -2955,6 +3053,8 @@ paths:
         Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
 
         Payment Sources should be setup and managed through the Chariot Dashboard.
+
+        OAuth scope: `sources:read`
       operationId: listPaymentSources
       tags:
         - paymentSources
@@ -2999,6 +3099,8 @@ paths:
         Payment Sources are not separately ledgered which means you can't get the balance of a Payment Source separately from the Financial Account.
 
         Payment Sources should be setup and managed through the Chariot Dashboard.
+
+        OAuth scope: `sources:read`
       operationId: getPaymentSource
       tags:
         - paymentSources
@@ -3038,6 +3140,8 @@ paths:
         A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
         Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
         Lockboxes are provisioned and managed by Chariot.
+
+        OAuth scope: `lockboxes:read`
       operationId: listLockboxes
       tags:
         - lockboxes
@@ -3075,6 +3179,8 @@ paths:
         Get a lockbox by its unique identifier.
 
         A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
+
+        OAuth scope: `lockboxes:read`
       operationId: getLockbox
       tags:
         - lockboxes
@@ -3114,6 +3220,8 @@ paths:
         A Mail Item is a unit of physical mail received at a Lockbox. It has its own lifecycle
         and is the operational unit reviewers act on. Each Mail Item may produce zero or more
         Donations and zero or one Deposit.
+
+        OAuth scope: `mail_items:read`
       operationId: listMailItems
       tags:
         - mailItems
@@ -3187,6 +3295,8 @@ paths:
         Get a mail item by its unique identifier.
 
         A Mail Item is a unit of physical mail received at a Lockbox.
+
+        OAuth scope: `mail_items:read`
       operationId: getMailItem
       tags:
         - mailItems
@@ -3222,6 +3332,8 @@ paths:
       summary: List Donations
       description: |-
         List donations for your account.
+
+        OAuth scope: `donations:read`
       operationId: listDonations
       tags:
         - donations
@@ -3291,6 +3403,8 @@ paths:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        OAuth scope: `donations:read`
       operationId: getDonation
       tags:
         - donations
@@ -3326,6 +3440,8 @@ paths:
       summary: List Deposits
       description: |-
         List deposits for your account.
+
+        OAuth scope: `deposits:read`
       operationId: listDeposits
       tags:
         - deposits
@@ -3393,6 +3509,8 @@ paths:
       summary: Get a Deposit
       description: |-
         Get a deposit by its unique identifier.
+
+        OAuth scope: `deposits:read`
       operationId: getDeposit
       tags:
         - deposits
@@ -3609,6 +3727,8 @@ paths:
       summary: List Properties
       description: |-
         List properties for your account.
+
+        OAuth scope: `properties:read`
       operationId: listProperties
       tags:
         - properties
@@ -3650,6 +3770,8 @@ paths:
       summary: Get a Property
       description: |-
         Get a property by its unique identifier.
+
+        OAuth scope: `properties:read`
       operationId: getProperty
       tags:
         - properties
@@ -3685,6 +3807,8 @@ paths:
       summary: List Property Options
       description: |-
         List all options for an enum or user property.
+
+        OAuth scope: `properties:read`
       operationId: listPropertyOptions
       tags:
         - properties
@@ -3731,6 +3855,8 @@ paths:
         Appends a Property to one or more Donations or Deposits.
         A maximum of 100 resources can be assigned to a property at a time.
         The resource identifiers must be of the same resource_type as the Property, otherwise a 400 Bad Request error will be returned.
+
+        OAuth scope: `properties:write`
       operationId: assignProperty
       tags:
         - properties
@@ -3862,6 +3988,8 @@ paths:
       description: |-
         Submit mailing addresses for one or more nonprofits. Uploaded
         addresses are used as suggestions for where to send disbursements.
+
+        OAuth scope: `nonprofits:write`
       operationId: createNonprofitAddressSuggestion
       tags:
         - nonprofitAddresses
@@ -3888,6 +4016,8 @@ paths:
       description: |-
         Submit contact information for one or more nonprofits. Uploaded
         contacts are used as suggestions for who to notify about disbursements.
+
+        OAuth scope: `nonprofits:write`
       operationId: createNonprofitContactSuggestion
       tags:
         - nonprofitContacts
