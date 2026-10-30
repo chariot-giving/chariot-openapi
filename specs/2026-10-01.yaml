@@ -348,6 +348,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - oauth: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -433,6 +434,7 @@ paths:
         - Grants
       security:
         - bearerAuth: []
+        - oauth: ["grants:write"]
       requestBody:
         $ref: "#/components/requestBodies/GrantCaptureRequest"
       responses:
@@ -1855,6 +1857,7 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - oauth: ["event_subscriptions:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
       responses:
@@ -1886,6 +1889,7 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - oauth: ["event_subscriptions:read"]
       parameters:
         - name: limit
           in: query
@@ -1921,6 +1925,7 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - oauth: ["event_subscriptions:read"]
       parameters:
         - name: id
           in: path
@@ -1954,6 +1959,7 @@ paths:
         - Event Subscriptions
       security:
         - bearerAuth: []
+        - oauth: ["event_subscriptions:write"]
       parameters:
         - name: id
           in: path
@@ -3486,6 +3492,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - oauth: ["donations:read"]
       parameters:
         - name: limit
           in: query
@@ -3563,6 +3570,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - oauth: ["donations:write"]
       parameters:
         - name: Idempotency-Key
           in: header
@@ -3604,6 +3612,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - oauth: ["donations:read"]
       parameters:
         - name: id
           in: path
@@ -3641,6 +3650,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - oauth: ["donations:write"]
       parameters:
         - name: id
           in: path
@@ -3676,6 +3686,7 @@ paths:
         - donations
       security:
         - bearerAuth: []
+        - oauth: ["donations:write"]
       parameters:
         - name: id
           in: path
@@ -4349,6 +4360,25 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+    oauth:
+      type: oauth2
+      description: OAuth access token for a Chariot application. See the OAuth guide for how to get one.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
+          refreshUrl: https://api.givechariot.com/auth/oauth/token
+          scopes:
+            donations:read: Read donations
+            donations:write: Create, update, and delete donations
+            grants:read: Read grants
+            grants:write: Create grants
+            event_subscriptions:read: Read event subscriptions
+        clientCredentials:
+          tokenUrl: https://api.givechariot.com/auth/oauth/token
+          scopes:
+            event_subscriptions:read: Read event subscriptions
+            event_subscriptions:write: Create and update event subscriptions
   schemas:
     OrganizationSummary:
       type: object
