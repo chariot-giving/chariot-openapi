@@ -2202,13 +2202,13 @@ paths:
       description: |
         Returns a paginated list of all verification requests for the authenticated grantmaker.
 
-        Required OAuth scope: `verification_requests:write`
+        Required OAuth scope: `verification_requests:read`
       operationId: listVerificationRequests
       tags:
         - verificationRequests
       security:
         - bearerAuth: []
-        - organizationAccessToken: ["verification_requests:write"]
+        - organizationAccessToken: ["verification_requests:read"]
       parameters:
         - name: ein
           in: query
@@ -2247,13 +2247,13 @@ paths:
       description: |
         Get a specific verification request by its unique identifier.
 
-        Required OAuth scope: `verification_requests:write`
+        Required OAuth scope: `verification_requests:read`
       operationId: getVerificationRequest
       tags:
         - verificationRequests
       security:
         - bearerAuth: []
-        - organizationAccessToken: ["verification_requests:write"]
+        - organizationAccessToken: ["verification_requests:read"]
       parameters:
         - name: id
           in: path
@@ -4143,6 +4143,7 @@ components:
             disbursements:write: Write disbursements
             inbound_transfers:read: Read inbound transfers
             inbound_transfers:write: Write inbound transfers
+            verification_requests:read: Read verification requests
             verification_requests:write: Write verification requests
             financial_accounts:read: Read financial accounts
             event_subscriptions:read: Read event subscriptions
