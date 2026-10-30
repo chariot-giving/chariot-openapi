@@ -1,0 +1,71 @@
+---
+title: Testing and QA
+hidden: false
+---
+
+Before you request production access, complete this test matrix in sandbox.
+
+## Sandbox Credentials
+
+Point your development and staging environments at `https://sandboxapi.givechariot.com` with your `sk_test_` key and your `test_` Connect ID. Every integrated provider in the sandbox list is a mock, and the same login works for all of them:
+
+```text
+username: good-user
+password: password123
+```
+
+No real money moves. Sandbox-only endpoints let you drive any Grant to a terminal state so you can test your received-funds handling end to end. There is no sandbox dashboard for platforms, so use these instead of marking gifts received by hand:
+
+```text
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/complete
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/cancel
+```
+
+Send your sandbox key in the `Authorization` header. Use the resulting events to confirm your integration retrieves the changed record and updates its own transaction.
+
+## Test Tenant Routing
+
+Test at least two nonprofits at the same time.
+
+- Create a separate Connect for each nonprofit.
+- Open both donation forms concurrently.
+- Confirm each form loads the correct Connect ID.
+- Confirm each Grant belongs to the intended nonprofit.
+- Confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
+
+These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
+
+## Test the Donor Flow
+
+- Complete a one-time Grant.
+- Complete a recurring Grant, if enabled.
+- Test every exit reason your interface handles.
+- Test an unintegrated DAF provider, if supported.
+- Confirm DAFpay is visible without opening an unlabeled More or See more menu.
+- Confirm DAFpay opens within one second of the donor's click.
+- Test duplicate clicks and Create Grant retries, and confirm only one Grant is created.
+- Verify webhook signatures and repeated delivery.
+- Simulate Grant completion and cancellation.
+
+## Test Browsers and Devices
+
+DAFpay opens in a frame or popup depending on the browser and screen size. Test the full donor flow on:
+
+- Chrome, Safari, and Firefox on desktop.
+- Safari and Chrome on iPhone.
+- Chrome on Android.
+- Every in-app or embedded browser your platform supports.
+
+On each supported browser, confirm that DAFpay renders, opens from the donor's click, and can be completed. Verify your loading and confirmation states and confirm that exactly one Grant is created.
+
+## Test with Popups Blocked
+
+When DAFpay uses a popup, it must open directly from the donor's click. Some donors also block popups in their browser settings. Test with popup blocking enabled and confirm that your page explains what to do if DAFpay cannot open.
+
+If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent Blocked Popups](/guides/dafpay/accept/install#prevent-blocked-popups).
+
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
+
+Run all tests supported by mock providers in sandbox. Production tests require a real donor-advised fund.
+
+Next: [Go Live](/guides/dafpay/accept/go-live)

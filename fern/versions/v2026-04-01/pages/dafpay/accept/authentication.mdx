@@ -1,0 +1,51 @@
+---
+title: Authentication
+hidden: false
+---
+
+Start by setting up your API key. Server-side calls authenticate with it, passed as a bearer token.
+
+```text
+Authorization: Bearer <API_KEY>
+```
+
+Sandbox and production use separate API keys, separate Connects, and separate data. Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
+
+| Environment | Base URL |
+| --- | --- |
+| Sandbox | `https://sandboxapi.givechariot.com` |
+| Production | `https://api.givechariot.com` |
+
+## Where Each Credential Belongs
+
+The Connect ID appears in your page's HTML, because the browser needs it to render DAFpay. The API key must only ever be used from your server. See [Authentication](/api/authentication) for more information.
+
+## Content Security Policy
+
+Chariot Connect loads its script from Chariot's CDN. Depending on the browser and viewport, DAFpay opens in a cross-origin frame or popup at `https://secure.dafpay.com`.
+
+If your donation pages send a Content Security Policy, merge these sources into the applicable directives:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.givechariot.com;
+  frame-src https://secure.dafpay.com;
+  font-src 'self' https://cdn.givechariot.com;
+  style-src 'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src 'self' https://cdn.givechariot.com data:;
+```
+
+<Note title="Merge, Do Not Replace">
+  This is an example, not a complete policy. Merge each source into your existing response header rather than replacing your policy with this block.
+</Note>
+
+The parent page does not need to add Chariot to `connect-src`. DAFpay API traffic originates inside the cross-origin frame.
+
+If your security policy cannot allow inline styles, confirm the supported nonce or hash approach with Chariot before launch.
+
+If your page sends a Permissions-Policy header, allow `publickey-credentials-get` and `publickey-credentials-create` for `https://secure.dafpay.com`, or passkey sign-in inside the checkout will fail.
+
+If the button does not render or the modal does not open, see [Troubleshooting](/guides/dafpay/troubleshooting).
+
+Next: [Create Connects](/guides/dafpay/accept/connects)

@@ -1,0 +1,45 @@
+---
+title: Displaying DAFpay Gifts
+hidden: false
+---
+
+<Note title="For Fundraising Platforms">
+  This page is for platforms offering DAFpay across many nonprofits' forms. If you are a nonprofit integrating your own donation form, go to [Processing Donations](/guides/dafpay/accept/processing-donations) instead.
+</Note>
+
+The `trackingId` and `externalGrantId` allow a nonprofit to reconcile the funds to the initiated DAFpay grant when the funds arrive. Display both IDs prominently and searchable in your dashboard.
+
+## What to Show
+
+| Dashboard field | Grant field | Why the nonprofit needs it |
+| --- | --- | --- |
+| Tracking ID | `trackingId` | Match the gift to an incoming payment or remittance. |
+| External Grant ID | `externalGrantId` | Match the provider's own grant or payment record. |
+| Amount | `amount` | The submitted amount, converted from cents. |
+| DAF provider | `fundId` | Use the Grant's `fundId` with [Get DAF](/api/donor-advised-funds/get) to display the fund's human-readable name, such as Fidelity Charitable or DAFgiving360. |
+| Donor information | The donor fields you have | Identify the gift. |
+| Grant status | `status` | The current state Chariot returns. |
+
+<Note title="Missing Tracking IDs">
+  Some DAF providers do not pass the Tracking ID through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, the nonprofit falls back to the fund name, amount, date, and designation.
+</Note>
+
+## Keep the Records Current
+
+Subscribe to `grant.created` and `grant.updated`. When an event arrives, retrieve the current Grant and update the existing transaction using the stored Grant ID. If you support unintegrated providers, subscribe to `unintegrated_grant.created` and `unintegrated_grant.updated` and read those through their own endpoints.
+
+Display the status Chariot returns. Grant creation means the request was submitted to the provider. When the Grant moves to Completed, either automatically when the funds are recorded or when the nonprofit marks it received, update your transaction from the Grant update.
+
+## Syncing to a CRM
+
+Since the funds in a DAF legally belong to the provider, most nonprofits hard credit the DAF and soft credit the donor in their CRM. If your platform has a CRM integration, DAF gifts should be synced accordingly.
+
+Additionally, DAFpay gifts should be recorded in a pending state since the funds have not arrived on initiation. If your integration supports it, you can listen to the `grant.updated` webhook and update the CRM record status when the grant is received.
+
+Inconsistencies in how DAF gifts are synced are a common reason nonprofits turn DAFpay off, so you should offer a setting to turn CRM sync off for DAFpay gifts.
+
+## Cancellations and Refunds
+
+A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Chariot does not have visibility if a donor cancels with their provider, but if the donor or nonprofit reaches out to Chariot, we can mark the gift as canceled. Grants canceled before billing runs incur no processing fees. Your platform cannot cancel a Grant through the API.
+
+Next: [Processing Donations](/guides/dafpay/accept/processing-donations)

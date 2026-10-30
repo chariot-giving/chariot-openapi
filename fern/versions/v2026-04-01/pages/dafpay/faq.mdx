@@ -1,0 +1,165 @@
+---
+title: "FAQ"
+subtitle: "Common questions about accepting DAFpay gifts."
+hidden: false
+---
+
+## Connects and Architecture
+
+<AccordionGroup>
+
+<Accordion title="**How many Connects does our platform need?**">
+One per nonprofit. Store each Connect ID on the corresponding tenant record.
+</Accordion>
+
+<Accordion title="**When should we create a Connect?**">
+When the nonprofit enables DAFpay. Do not create it during donor checkout. Backfill existing nonprofits using a restartable batch job.
+</Accordion>
+
+<Accordion title="**Can the Connect ID appear in browser code?**">
+Yes. The Connect ID initializes the component. The API key must remain on your server.
+</Accordion>
+
+<Accordion title="**Where do we get API keys?**">
+Nonprofits create their own sandbox and production keys in the Chariot dashboard. Fundraising platforms request keys from Chariot.
+</Accordion>
+
+<Accordion title="**Can we enable DAFpay before the nonprofit claims its Chariot account?**">
+Yes, if your platform uses the DAFpay Network. Depending on how Chariot configures your platform, gifts to a nonprofit that has not claimed its Chariot account are routed through the DAFpay Network, so DAFpay can accept gifts for any eligible 501(c)(3). Recurring gifts and some providers are always sent directly.
+
+Claiming still matters: until the nonprofit claims and verifies its Chariot account, it has no dashboard to reconcile gifts in, and funds reach it through the DAFpay Network rather than directly. Confirm the onboarding experience you want with Chariot before launch.
+</Accordion>
+
+</AccordionGroup>
+
+## Checkout and Grant Creation
+
+<AccordionGroup>
+
+<Accordion title="**What does `CHARIOT_SUCCESS` mean?**">
+The donor authorized the DAF request. Your server must still create the Grant. It does not mean the nonprofit received the money.
+</Accordion>
+
+<Accordion title="**Can a donor change their donation amount in the modal?**">
+Yes, for three reasons:
+
+1. Donors who can see their fund balance often choose to give more.
+2. Some DAF providers set a minimum grant amount.
+3. The amount cannot exceed the fund balance.
+
+Use the amount returned by `CHARIOT_SUCCESS` when you call Create Grant, not the amount your form collected.
+</Accordion>
+
+<Accordion title="**Why is DAFpay blocked on some mobile browsers?**">
+Browsers may block a popup that opens too long after the donor's click. Prefetch data and keep all work between the click and DAFpay opening under one second.
+</Accordion>
+
+<Accordion title="**What if Create Grant times out or returns `410`?**">
+Retry with the same workflow session; never start a new one. The authorization expires 15 minutes after the donor gives it. After that, a retry returns `200` with the Grant if one was created, and `410` if none was.
+
+To check whether a Grant exists, call Create Grant again with the same `workflowSessionId`: it returns the existing Grant with `200`. Keep the donor on a pending state until you know, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if you cannot tell what happened.
+</Accordion>
+
+<Accordion title="**Can we add or correct metadata after the donor authorizes?**">
+No. Metadata can only be set in the browser through `onDonationRequest`, and Create Grant has no metadata field. Pass string values: anything else comes back stringified when you read the Grant.
+</Accordion>
+
+</AccordionGroup>
+
+## Fees
+
+<AccordionGroup>
+
+<Accordion title="**How can our platform collect its processing fee?**">
+Pass `applicationFeeAmount` on [Create Grant](/api/grants/create). On gifts routed through the DAFpay Network, Chariot deducts it before paying the nonprofit. On other gifts, Chariot invoices it, to the nonprofit or to your platform depending on your billing setup.
+
+Create Grant validates the amount against a ceiling set for your fundraising application and returns a `400` above it.
+</Accordion>
+
+<Accordion title="**Can we add an optional tip?**">
+DAF giving cannot be used to give to a for-profit entity, which means tipping the fundraising platform is not allowed.
+
+If a donor has selected DAFpay, you must suppress the option to add a tip.
+</Accordion>
+
+<Accordion title="**How can donors cover fees?**">
+Add the fee to the amount before the donor opens DAFpay. Raising the amount also raises the fee, so solve for the final amount, and round down to a whole dollar to stay under the fee ceiling. If the donor changes the amount in DAFpay, drop the fee coverage or ask them to reconfirm, and send [Create Grant](/api/grants/create) the returned amount.
+</Accordion>
+
+</AccordionGroup>
+
+## Receiving Funds
+
+<AccordionGroup>
+
+<Accordion title="**How do nonprofits receive the money?**">
+It depends on the provider. Gifts from Chariot's disbursement partners arrive electronically in the nonprofit's Chariot account. Other providers pay the organization directly, by ACH or check, on their own schedule. On platforms that use the DAFpay Network, gifts to nonprofits that have not claimed their Chariot account go through the network instead. [Flow of Funds](/guides/dafpay/accept/flow-of-funds) compares the routes.
+
+Either way DAFpay does not hold the funds. Authorizing a request, creating the Grant and receiving the money are three separate events.
+</Accordion>
+
+<Accordion title="**What is the DAFpay Network?**">
+Depending on how Chariot configures your platform, gifts to a nonprofit that has not claimed its Chariot account (or, for some platforms, all gifts) are routed through a 501(c)(3) named [DAFpay Network](https://www.dafpaynetwork.org/), which pays the nonprofit less processing fees: electronically if it has or claims a Chariot account, otherwise by check after about five business days. Recurring gifts and some providers never use it. Tracking IDs carry through on this route.
+</Accordion>
+
+<Accordion title="**How do nonprofits match a payment to a specific gift?**">
+A DAF payment often arrives weeks or months after the donor gave, with little to identify it. DAFpay records two identifiers to close that gap: the Tracking ID, generated by DAFpay and usually passed through in the grant note, and the External Grant ID, generated by the provider. Both are on the Grant, and both appear in the Chariot dashboard.
+
+Match on the Tracking ID where you have it and fall back to the External Grant ID. [Flow of Funds](/guides/dafpay/accept/flow-of-funds) shows what the remittances look like.
+</Accordion>
+
+</AccordionGroup>
+
+## Recurring and Unintegrated Providers
+
+<AccordionGroup>
+
+<Accordion title="**Does Chariot manage recurring Grant schedules?**">
+No. A recurring DAFpay gift records that the donor set the gift up monthly; Chariot does not create a Grant each month. The DAF provider runs the schedule, and a donor cancels by logging into their provider's portal, so Chariot does not learn about cancellations. Reconcile the later Donations individually.
+</Accordion>
+
+<Accordion title="**What is an unintegrated DAF provider?**">
+A provider DAFpay cannot submit the request to directly. If the feature is enabled, the modal collects the amount and donor details so the nonprofit is notified in real time, and gives the donor a Tracking ID to include in the note when they complete the gift in their provider's portal.
+
+Because the donor leaves your site to finish, Chariot has no visibility into whether the gift was actually made. Do not mark that intent paid.
+</Accordion>
+
+</AccordionGroup>
+
+## Operations
+
+<AccordionGroup>
+
+<Accordion title="**Which identifiers should we store?**">
+Store the platform transaction ID, workflow session ID, Connect ID, Grant ID, and Donation ID. Also store and expose `trackingId` and `externalGrantId` when present.
+</Accordion>
+
+<Accordion title="**Should we use webhooks?**">
+Yes, when you need timely state changes. Verify signatures, process events idempotently, and keep a scheduled recovery process for important state. Webhooks are not plan-gated, but they need an API key, and nonprofits can create keys in the dashboard only on a plan that includes API key management.
+</Accordion>
+
+<Accordion title="**Can a completed DAF Grant be refunded?**">
+DAF funds are controlled by the provider, not the donor. Whether a request can be canceled depends on the provider and how far it has progressed. Do not present a standard refund action.
+</Accordion>
+
+<Accordion title="**What do the Grant statuses mean?**">
+`Initiated` means the request was submitted to the provider. `Completed` means receipt was confirmed: Chariot recorded the settlement, a connected source recorded the payment, or the nonprofit clicked **Received** in the dashboard. It returns to `Initiated` only if an offline settlement recorded for it is removed. `Canceled` means the donor canceled or the provider did not approve the Grant. A Grant paid by a DAFpay Network check stays `Initiated` until the nonprofit marks it Received.
+</Accordion>
+
+<Accordion title="**When is a Grant billed?**">
+Grant billing is based on the Grant's `created_at` date, not on it reaching `Completed`. Grants canceled before billing runs are not billed.
+</Accordion>
+
+<Accordion title="**How do we get from a Donation back to its Grant?**">
+A Donation does not carry a grant ID. Call List Grants with `donation_id`, or match the Donation's `initiation.dafpay_tracking_id` to the Grant's `trackingId`. In the other direction, the Grant's `donationId` is filled in shortly after creation, so if it is empty, read the Grant again later.
+</Accordion>
+
+<Accordion title="**Can our platform mark a Grant received?**">
+No. The nonprofit marks it Received in the Chariot dashboard, and your platform learns about it from `grant.updated`.
+</Accordion>
+
+<Accordion title="**Who handles what?**">
+Your platform supports donors on your form and your nonprofits' setup. Chariot handles nonprofit onboarding and verification, payouts, and Grant issues, at [integrations@givechariot.com](mailto:integrations@givechariot.com). The DAF provider handles the donor's account and any cancellation.
+</Accordion>
+
+</AccordionGroup>
