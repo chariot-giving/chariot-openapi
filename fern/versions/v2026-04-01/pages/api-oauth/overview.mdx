@@ -326,7 +326,7 @@ Refresh tokens use a **sliding window** expiration:
 
 Receive [webhooks](/api/webhooks) from every nonprofit that installs your application by creating application-level [Event Subscriptions](/api/event-subscriptions/create).
 
-Unlike subscriptions associated with a specific nonprofit, application-level subscriptions receive events from all nonprofits that have authorized your application through an app install, including those that install it in the future.
+Unlike subscriptions associated with a specific nonprofit, application-level subscriptions receive events from all nonprofits that have authorized your application through an app install with the `events:read` scope, including those that install it in the future.
 
 Each event includes an `organization_id` identifying the nonprofit that generated it. When a nonprofit revokes your application's access, you'll stop receiving its events without affecting events from other nonprofits. We recommend subscribing to `connection.revoked` to be notified when this happens.
 
