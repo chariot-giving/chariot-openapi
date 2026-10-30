@@ -329,12 +329,13 @@ Receive [webhooks](/api/webhooks) from every nonprofit that installs your applic
 
 Unlike subscriptions associated with a specific nonprofit, application-level subscriptions receive events from all nonprofits that have authorized your application through an app install, including those that install it in the future.
 
+Each event includes an `organization_id` identifying the nonprofit that generated it. When a nonprofit revokes your application's access, you'll stop receiving its events without affecting events from other nonprofits. We recommend subscribing to `connection.revoked` to be notified when this happens.
+
 You only need to create each subscription once, using your application's own access token.
 
 <Note>
-  The `event_subscriptions:write` scope is only available to applications using
-  [app installs](#delegated-access-and-app-installs). Applications using
-  delegated access cannot request this scope. Attempting to do so returns an
+  The `event_subscriptions:write` scope is not available through delegated
+  access. Requesting it through a delegated authorization returns an
   `invalid_scope` error.
 </Note>
 
@@ -365,12 +366,6 @@ curl -X POST https://api.givechariot.com/v1/event_subscriptions \
     "signing_secret": "YOUR_SIGNING_SECRET"
   }'
 ```
-
-### Identifying Nonprofits and Handling Revocations
-
-Each event includes an `organization_id` identifying the nonprofit that generated it.
-
-We recommend subscribing to `connection.revoked` to be notified when a nonprofit removes your application's access. Once access is revoked, you'll stop receiving events for that nonprofit.
 
 ## Error Handling
 
