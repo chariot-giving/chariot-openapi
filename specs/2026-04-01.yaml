@@ -123,13 +123,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `nonprofits:write`
+        Required OAuth scope: `nonprofits:write`
       operationId: onboardOrganization
       tags:
         - Organizations
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["nonprofits:write"]
+        - organizationAccessToken: ["nonprofits:write"]
       parameters:
         - name: id
           in: path
@@ -256,13 +256,13 @@ paths:
         If one already exists, this will return a `200 OK` status with the existing object.
         </Note>
 
-        OAuth scope: `connects:write`
+        Required OAuth scope: `connects:write`
       operationId: create-connect
       tags:
         - Connects
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["connects:write"]
+        - organizationAccessToken: ["connects:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateConnectRequest"
       responses:
@@ -310,13 +310,13 @@ paths:
       description: |-
         Retrieve a connect with the given ID.
 
-        OAuth scope: `connects:read`
+        Required OAuth scope: `connects:read`
       operationId: get-connect
       tags:
         - Connects
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["connects:read"]
+        - organizationAccessToken: ["connects:read"]
       parameters:
         - name: id
           in: path
@@ -353,13 +353,13 @@ paths:
 
         DAF providers can use `donor_account_id` to filter Grant Requests associated with a specific [Donor Account](/api/donor-accounts).
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: list-grants
       tags:
         - Grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -494,13 +494,13 @@ paths:
       description: |-
         Retrieve a grant with the given ID.
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: get-grant
       tags:
         - Grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -541,13 +541,13 @@ paths:
       description: |-
         Returns a list of all recurring grants for a given Connect. This API allows for paginating over many results.
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: list-recurring-grants
       tags:
         - recurring_grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -638,13 +638,13 @@ paths:
       description: |-
         Retrieve a recurring grant with a given ID.
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: get-recurring-grant
       tags:
         - recurring_grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -685,13 +685,13 @@ paths:
       description: |-
         Returns a list of all unintegrated grants for a given Connect. This API allows for paginating over many results.
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: list-unintegrated-grants
       tags:
         - unintegrated_grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: connect_id
           in: query
@@ -738,13 +738,13 @@ paths:
       description: |-
         Retrieve an unintegrated grant with a given ID.
 
-        OAuth scope: `grants:read`
+        Required OAuth scope: `grants:read`
       operationId: get-unintegrated-grant
       tags:
         - unintegrated_grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:read"]
+        - organizationAccessToken: ["grants:read"]
       parameters:
         - name: id
           in: path
@@ -881,13 +881,13 @@ paths:
 
         On creation, the Donor Account is placed in `pending` status. To make the account immediately usable for grant submissions, follow up with [Create Authorization Token](/api/donor-accounts/create-authorization-token) and provide the resulting code to the donor — when the donor enters the code in DAFpay, the Donor Account is automatically approved.
 
-        OAuth scope: `donor_accounts:write`
+        Required OAuth scope: `donor_accounts:write`
       operationId: create-donor-account
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:write"]
+        - organizationAccessToken: ["donor_accounts:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateDonorAccountRequest"
       responses:
@@ -924,13 +924,13 @@ paths:
         Returns a list of Donor Accounts for the authenticated DAF.
         This endpoint supports cursor-based pagination as well as filtering by fund, status, and email.
 
-        OAuth scope: `donor_accounts:read`
+        Required OAuth scope: `donor_accounts:read`
       operationId: list-donor-accounts
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:read"]
+        - organizationAccessToken: ["donor_accounts:read"]
       parameters:
         - name: giving_pool_id
           in: query
@@ -991,13 +991,13 @@ paths:
       description: |-
         Retrieve a Donor Account with the given ID.
 
-        OAuth scope: `donor_accounts:read`
+        Required OAuth scope: `donor_accounts:read`
       operationId: get-donor-account
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:read"]
+        - organizationAccessToken: ["donor_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -1037,13 +1037,13 @@ paths:
 
         The Donor Account's status is managed automatically through the Authorization Token verification flow and cannot be changed directly via this endpoint.
 
-        OAuth scope: `donor_accounts:write`
+        Required OAuth scope: `donor_accounts:write`
       operationId: update-donor-account
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:write"]
+        - organizationAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1091,13 +1091,13 @@ paths:
         - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
         </Warning>
 
-        OAuth scope: `donor_accounts:write`
+        Required OAuth scope: `donor_accounts:write`
       operationId: disable-donor-account
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:write"]
+        - organizationAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1143,13 +1143,13 @@ paths:
         - The Donor Account must be in `approved` status. Calls on a `pending` or `rejected` account return status `409 Conflict`.
         </Warning>
 
-        OAuth scope: `donor_accounts:write`
+        Required OAuth scope: `donor_accounts:write`
       operationId: enable-donor-account
       tags:
         - Donor Accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donor_accounts:write"]
+        - organizationAccessToken: ["donor_accounts:write"]
       parameters:
         - name: id
           in: path
@@ -1535,13 +1535,13 @@ paths:
 
         Use `donor_account_id` to retrieve all Grant Requests associated with a specific donor.
 
-        OAuth scope: `grant_requests:read`
+        Required OAuth scope: `grant_requests:read`
       operationId: list-grant-requests
       tags:
         - Grant Requests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grant_requests:read"]
+        - organizationAccessToken: ["grant_requests:read"]
       parameters:
         - name: donor_account_id
           in: query
@@ -1673,13 +1673,13 @@ paths:
       description: |-
         Retrieve a Grant Request with the given ID.
 
-        OAuth scope: `grant_requests:read`
+        Required OAuth scope: `grant_requests:read`
       operationId: get-grant-request
       tags:
         - Grant Requests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grant_requests:read"]
+        - organizationAccessToken: ["grant_requests:read"]
       parameters:
         - name: id
           in: path
@@ -1729,13 +1729,13 @@ paths:
         - A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
 
-        OAuth scope: `grant_requests:write`
+        Required OAuth scope: `grant_requests:write`
       operationId: submit-grant-request
       tags:
         - Grant Requests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grant_requests:write"]
+        - organizationAccessToken: ["grant_requests:write"]
       parameters:
         - name: id
           in: path
@@ -1785,13 +1785,13 @@ paths:
         A Grant Request that is already `submitted` or `rejected` cannot be updated. Subsequent calls return status `409 Conflict`.
         </Warning>
 
-        OAuth scope: `grant_requests:write`
+        Required OAuth scope: `grant_requests:write`
       operationId: reject-grant-request
       tags:
         - Grant Requests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grant_requests:write"]
+        - organizationAccessToken: ["grant_requests:write"]
       parameters:
         - name: id
           in: path
@@ -1832,13 +1832,13 @@ paths:
       description: |-
         List all events corresponding to your Chariot account.
 
-        OAuth scope: `events:read`
+        Required OAuth scope: `events:read`
       operationId: listEvents
       tags:
         - Events
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["events:read"]
+        - organizationAccessToken: ["events:read"]
         - applicationAccessToken: ["events:read"]
       parameters:
         - name: limit
@@ -1878,13 +1878,13 @@ paths:
       description: |-
         Retrieve an event with the given ID.
 
-        OAuth scope: `events:read`
+        Required OAuth scope: `events:read`
       operationId: getEvent
       tags:
         - Events
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["events:read"]
+        - organizationAccessToken: ["events:read"]
         - applicationAccessToken: ["events:read"]
       parameters:
         - name: id
@@ -1916,13 +1916,13 @@ paths:
       description: |-
         Create an event subscription corresponding to your Chariot account.
 
-        OAuth scope: `event_subscriptions:write`
+        Required OAuth scope: `event_subscriptions:write`
       operationId: createEventSubscription
       tags:
         - Event Subscriptions
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["event_subscriptions:write"]
+        - organizationAccessToken: ["event_subscriptions:write"]
         - applicationAccessToken: ["event_subscriptions:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateEventSubscriptionRequest"
@@ -1951,13 +1951,13 @@ paths:
       description: |-
         List all event subscriptions corresponding to your Chariot account.
 
-        OAuth scope: `event_subscriptions:read`
+        Required OAuth scope: `event_subscriptions:read`
       operationId: listEventSubscriptions
       tags:
         - Event Subscriptions
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["event_subscriptions:read"]
+        - organizationAccessToken: ["event_subscriptions:read"]
         - applicationAccessToken: ["event_subscriptions:read"]
       parameters:
         - name: limit
@@ -1990,13 +1990,13 @@ paths:
       description: |-
         Retrieve an event subscription with the given ID.
 
-        OAuth scope: `event_subscriptions:read`
+        Required OAuth scope: `event_subscriptions:read`
       operationId: getEventSubscription
       tags:
         - Event Subscriptions
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["event_subscriptions:read"]
+        - organizationAccessToken: ["event_subscriptions:read"]
         - applicationAccessToken: ["event_subscriptions:read"]
       parameters:
         - name: id
@@ -2027,13 +2027,13 @@ paths:
       description: |-
         Update an event subscription with the given ID.
 
-        OAuth scope: `event_subscriptions:write`
+        Required OAuth scope: `event_subscriptions:write`
       operationId: updateEventSubscription
       tags:
         - Event Subscriptions
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["event_subscriptions:write"]
+        - organizationAccessToken: ["event_subscriptions:write"]
         - applicationAccessToken: ["event_subscriptions:write"]
       parameters:
         - name: id
@@ -2067,13 +2067,13 @@ paths:
       description: |
         Returns a list of financial accounts.
 
-        OAuth scope: `financial_accounts:read`
+        Required OAuth scope: `financial_accounts:read`
       operationId: listFinancialAccounts
       tags:
         - financial_accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["financial_accounts:read"]
+        - organizationAccessToken: ["financial_accounts:read"]
       responses:
         "200":
           $ref: "#/components/responses/ListFinancialAccountsResponse"
@@ -2091,13 +2091,13 @@ paths:
       description: |
         Get a financial account by its unique identifier.
 
-        OAuth scope: `financial_accounts:read`
+        Required OAuth scope: `financial_accounts:read`
       operationId: getFinancialAccount
       tags:
         - financial_accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["financial_accounts:read"]
+        - organizationAccessToken: ["financial_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -2129,13 +2129,13 @@ paths:
       description: |
         Get a financial account balance by its unique identifier.
 
-        OAuth scope: `financial_accounts:read`
+        Required OAuth scope: `financial_accounts:read`
       operationId: getFinancialAccountBalance
       tags:
         - financial_accounts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["financial_accounts:read"]
+        - organizationAccessToken: ["financial_accounts:read"]
       parameters:
         - name: id
           in: path
@@ -2168,13 +2168,13 @@ paths:
         Request verification of an unlisted organization. If the organization cannot be found through Chariot's search,
         you can submit a verification request so that Chariot's compliance team can review and verify the organization.
 
-        OAuth scope: `verification_requests:write`
+        Required OAuth scope: `verification_requests:write`
       operationId: createVerificationRequest
       tags:
         - verificationRequests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["verification_requests:write"]
+        - organizationAccessToken: ["verification_requests:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateVerificationRequestRequest"
       responses:
@@ -2202,13 +2202,13 @@ paths:
       description: |
         Returns a paginated list of all verification requests for the authenticated grantmaker.
 
-        OAuth scope: `verification_requests:write`
+        Required OAuth scope: `verification_requests:write`
       operationId: listVerificationRequests
       tags:
         - verificationRequests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["verification_requests:write"]
+        - organizationAccessToken: ["verification_requests:write"]
       parameters:
         - name: ein
           in: query
@@ -2247,13 +2247,13 @@ paths:
       description: |
         Get a specific verification request by its unique identifier.
 
-        OAuth scope: `verification_requests:write`
+        Required OAuth scope: `verification_requests:write`
       operationId: getVerificationRequest
       tags:
         - verificationRequests
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["verification_requests:write"]
+        - organizationAccessToken: ["verification_requests:write"]
       parameters:
         - name: id
           in: path
@@ -2285,13 +2285,13 @@ paths:
       description: |
         Create a disbursement to send money to an organization.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: createDisbursement
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: Idempotency-Key
           in: header
@@ -2332,13 +2332,13 @@ paths:
       description: |
         Returns a list of disbursements.
 
-        OAuth scope: `disbursements:read`
+        Required OAuth scope: `disbursements:read`
       operationId: listDisbursements
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:read"]
+        - organizationAccessToken: ["disbursements:read"]
       parameters:
         - name: organization_id
           in: query
@@ -2402,13 +2402,13 @@ paths:
 
         **Note:** Disbursements created through this endpoint cannot be looked up via `GET /v1/disbursements?idempotency_key=...`. The `idempotency_key` field on the returned disbursements will be `null`.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: bulkCreateDisbursements
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       requestBody:
         $ref: "#/components/requestBodies/BulkCreateDisbursementsRequest"
       responses:
@@ -2449,13 +2449,13 @@ paths:
       description: |
         Get a disbursement by its unique identifier.
 
-        OAuth scope: `disbursements:read`
+        Required OAuth scope: `disbursements:read`
       operationId: getDisbursement
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:read"]
+        - organizationAccessToken: ["disbursements:read"]
       parameters:
         - name: id
           in: path
@@ -2491,13 +2491,13 @@ paths:
         Approve a disbursement in a pending_approval state.
         If the disbursement is in a different state, this will return a 400 error.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: approveDisbursement
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2536,13 +2536,13 @@ paths:
         All disbursements must be in the `pending_approval` state. If any disbursement
         cannot be approved, the entire request will fail and no disbursements will be approved.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: bulkApproveDisbursements
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       requestBody:
         required: true
         content:
@@ -2595,13 +2595,13 @@ paths:
         Cancel a pending disbursement in a pending_approval state.
         If the disbursement is in a different state, this will return a 400 error.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: cancelDisbursement
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2642,13 +2642,13 @@ paths:
 
         After successfully stopping payment, the disbursement status will be updated to `stopped`.
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: stopDisbursement
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2687,13 +2687,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: simulateDisbursementCompletion
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2730,13 +2730,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `disbursements:write`
+        Required OAuth scope: `disbursements:write`
       operationId: simulateDisbursementFailure
       tags:
         - disbursements
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["disbursements:write"]
+        - organizationAccessToken: ["disbursements:write"]
       parameters:
         - name: id
           in: path
@@ -2768,13 +2768,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `grants:write`
+        Required OAuth scope: `grants:write`
       operationId: simulateGrantCompletion
       tags:
         - Grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:write"]
+        - organizationAccessToken: ["grants:write"]
       parameters:
         - name: id
           in: path
@@ -2811,13 +2811,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `grants:write`
+        Required OAuth scope: `grants:write`
       operationId: simulateGrantCancellation
       tags:
         - Grants
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["grants:write"]
+        - organizationAccessToken: ["grants:write"]
       parameters:
         - name: id
           in: path
@@ -2853,13 +2853,13 @@ paths:
         In Production, this requires that an external bank account has been setup
         and verified for your account through the Chariot Dashboard.
 
-        OAuth scope: `inbound_transfers:write`
+        Required OAuth scope: `inbound_transfers:write`
       operationId: createInboundTransfer
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:write"]
+        - organizationAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: Idempotency-Key
           in: header
@@ -2896,13 +2896,13 @@ paths:
       description: |-
         List inbound transfers for your account.
 
-        OAuth scope: `inbound_transfers:read`
+        Required OAuth scope: `inbound_transfers:read`
       operationId: listInboundTransfers
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:read"]
+        - organizationAccessToken: ["inbound_transfers:read"]
       parameters:
         - name: page_limit
           in: query
@@ -2942,13 +2942,13 @@ paths:
       description: |-
         Get an inbound transfer by its unique identifier.
 
-        OAuth scope: `inbound_transfers:read`
+        Required OAuth scope: `inbound_transfers:read`
       operationId: getInboundTransfer
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:read"]
+        - organizationAccessToken: ["inbound_transfers:read"]
       parameters:
         - name: id
           in: path
@@ -2982,13 +2982,13 @@ paths:
         Returns the Inbound Transfer object if the cancelation succeeded.
         Returns a 412 Precondition Failed if the Inbound Transfer has already been canceled or cannot be canceled.
 
-        OAuth scope: `inbound_transfers:write`
+        Required OAuth scope: `inbound_transfers:write`
       operationId: cancelInboundTransfer
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:write"]
+        - organizationAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -3028,13 +3028,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `inbound_transfers:write`
+        Required OAuth scope: `inbound_transfers:write`
       operationId: simulateInboundTransferFailure
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:write"]
+        - organizationAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -3066,13 +3066,13 @@ paths:
         This API is only available in the sandbox environment.
         </Note>
 
-        OAuth scope: `inbound_transfers:write`
+        Required OAuth scope: `inbound_transfers:write`
       operationId: simulateInboundTransferCompletion
       tags:
         - inboundTransfers
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["inbound_transfers:write"]
+        - organizationAccessToken: ["inbound_transfers:write"]
       parameters:
         - name: id
           in: path
@@ -3109,13 +3109,13 @@ paths:
 
         Payment Sources should be setup and managed through the Chariot Dashboard.
 
-        OAuth scope: `sources:read`
+        Required OAuth scope: `sources:read`
       operationId: listPaymentSources
       tags:
         - paymentSources
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["sources:read"]
+        - organizationAccessToken: ["sources:read"]
       parameters:
         - name: limit
           in: query
@@ -3156,13 +3156,13 @@ paths:
 
         Payment Sources should be setup and managed through the Chariot Dashboard.
 
-        OAuth scope: `sources:read`
+        Required OAuth scope: `sources:read`
       operationId: getPaymentSource
       tags:
         - paymentSources
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["sources:read"]
+        - organizationAccessToken: ["sources:read"]
       parameters:
         - name: id
           in: path
@@ -3198,13 +3198,13 @@ paths:
         Lockboxes are the source of Mail Items, which in turn produce Donations and Deposits.
         Lockboxes are provisioned and managed by Chariot.
 
-        OAuth scope: `lockboxes:read`
+        Required OAuth scope: `lockboxes:read`
       operationId: listLockboxes
       tags:
         - lockboxes
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["lockboxes:read"]
+        - organizationAccessToken: ["lockboxes:read"]
       parameters:
         - name: limit
           in: query
@@ -3238,13 +3238,13 @@ paths:
 
         A Lockbox represents a vendor that receives physical mail and scans checks on Chariot's behalf.
 
-        OAuth scope: `lockboxes:read`
+        Required OAuth scope: `lockboxes:read`
       operationId: getLockbox
       tags:
         - lockboxes
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["lockboxes:read"]
+        - organizationAccessToken: ["lockboxes:read"]
       parameters:
         - name: id
           in: path
@@ -3280,13 +3280,13 @@ paths:
         and is the operational unit reviewers act on. Each Mail Item may produce zero or more
         Donations and zero or one Deposit.
 
-        OAuth scope: `mail_items:read`
+        Required OAuth scope: `mail_items:read`
       operationId: listMailItems
       tags:
         - mailItems
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["mail_items:read"]
+        - organizationAccessToken: ["mail_items:read"]
       parameters:
         - name: limit
           in: query
@@ -3356,13 +3356,13 @@ paths:
 
         A Mail Item is a unit of physical mail received at a Lockbox.
 
-        OAuth scope: `mail_items:read`
+        Required OAuth scope: `mail_items:read`
       operationId: getMailItem
       tags:
         - mailItems
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["mail_items:read"]
+        - organizationAccessToken: ["mail_items:read"]
       parameters:
         - name: id
           in: path
@@ -3394,13 +3394,13 @@ paths:
       description: |-
         List donations for your account.
 
-        OAuth scope: `donations:read`
+        Required OAuth scope: `donations:read`
       operationId: listDonations
       tags:
         - donations
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donations:read"]
+        - organizationAccessToken: ["donations:read"]
       parameters:
         - name: limit
           in: query
@@ -3466,13 +3466,13 @@ paths:
       description: |-
         Get a donation by its unique identifier.
 
-        OAuth scope: `donations:read`
+        Required OAuth scope: `donations:read`
       operationId: getDonation
       tags:
         - donations
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["donations:read"]
+        - organizationAccessToken: ["donations:read"]
       parameters:
         - name: id
           in: path
@@ -3504,13 +3504,13 @@ paths:
       description: |-
         List deposits for your account.
 
-        OAuth scope: `deposits:read`
+        Required OAuth scope: `deposits:read`
       operationId: listDeposits
       tags:
         - deposits
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["deposits:read"]
+        - organizationAccessToken: ["deposits:read"]
       parameters:
         - name: limit
           in: query
@@ -3574,13 +3574,13 @@ paths:
       description: |-
         Get a deposit by its unique identifier.
 
-        OAuth scope: `deposits:read`
+        Required OAuth scope: `deposits:read`
       operationId: getDeposit
       tags:
         - deposits
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["deposits:read"]
+        - organizationAccessToken: ["deposits:read"]
       parameters:
         - name: id
           in: path
@@ -3793,13 +3793,13 @@ paths:
       description: |-
         List properties for your account.
 
-        OAuth scope: `properties:read`
+        Required OAuth scope: `properties:read`
       operationId: listProperties
       tags:
         - properties
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["properties:read"]
+        - organizationAccessToken: ["properties:read"]
       parameters:
         - name: limit
           in: query
@@ -3837,13 +3837,13 @@ paths:
       description: |-
         Get a property by its unique identifier.
 
-        OAuth scope: `properties:read`
+        Required OAuth scope: `properties:read`
       operationId: getProperty
       tags:
         - properties
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["properties:read"]
+        - organizationAccessToken: ["properties:read"]
       parameters:
         - name: id
           in: path
@@ -3875,13 +3875,13 @@ paths:
       description: |-
         List all options for an enum or user property.
 
-        OAuth scope: `properties:read`
+        Required OAuth scope: `properties:read`
       operationId: listPropertyOptions
       tags:
         - properties
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["properties:read"]
+        - organizationAccessToken: ["properties:read"]
       parameters:
         - name: id
           in: path
@@ -3924,13 +3924,13 @@ paths:
         A maximum of 100 resources can be assigned to a property at a time.
         The resource identifiers must be of the same resource_type as the Property, otherwise a 400 Bad Request error will be returned.
 
-        OAuth scope: `properties:write`
+        Required OAuth scope: `properties:write`
       operationId: assignProperty
       tags:
         - properties
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["properties:write"]
+        - organizationAccessToken: ["properties:write"]
       parameters:
         - name: id
           in: path
@@ -4058,13 +4058,13 @@ paths:
         Submit mailing addresses for one or more nonprofits. Uploaded
         addresses are used as suggestions for where to send disbursements.
 
-        OAuth scope: `nonprofits:write`
+        Required OAuth scope: `nonprofits:write`
       operationId: createNonprofitAddressSuggestion
       tags:
         - nonprofitAddresses
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["nonprofits:write"]
+        - organizationAccessToken: ["nonprofits:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitAddressSuggestionRequest"
       responses:
@@ -4087,13 +4087,13 @@ paths:
         Submit contact information for one or more nonprofits. Uploaded
         contacts are used as suggestions for who to notify about disbursements.
 
-        OAuth scope: `nonprofits:write`
+        Required OAuth scope: `nonprofits:write`
       operationId: createNonprofitContactSuggestion
       tags:
         - nonprofitContacts
       security:
         - bearerAuth: []
-        - nonprofitAccessToken: ["nonprofits:write"]
+        - organizationAccessToken: ["nonprofits:write"]
       requestBody:
         $ref: "#/components/requestBodies/CreateNonprofitContactSuggestionRequest"
       responses:
@@ -4114,10 +4114,10 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Your API key.
-    nonprofitAccessToken:
+      description: "**API key.** A secret API key generated in the Chariot dashboard."
+    organizationAccessToken:
       type: oauth2
-      description: A nonprofit access token from the OAuth authorization code flow.
+      description: "**Organization access token.** An OAuth access token obtained through the authorization code flow. Grants access to a specific organization."
       flows:
         authorizationCode:
           authorizationUrl: https://dashboard.givechariot.com/oauth/authorize
@@ -4151,7 +4151,7 @@ components:
             nonprofits:write: Write nonprofits
     applicationAccessToken:
       type: oauth2
-      description: An application access token from the OAuth client credentials grant.
+      description: "**Application access token.** An OAuth access token obtained through the client_credentials grant. Grants access as an application, independently of any organization."
       flows:
         clientCredentials:
           tokenUrl: https://api.givechariot.com/auth/oauth/token
