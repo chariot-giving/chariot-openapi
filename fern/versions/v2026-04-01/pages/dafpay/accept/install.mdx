@@ -56,6 +56,34 @@ By default, DAFpay opens a popup on mobile devices and in desktop Safari. When t
 
 Chariot Connect does not emit open or close events, and its internal markup can change without notice, so do not build on it.
 
+## Content Security Policy
+
+Chariot Connect loads its script from Chariot's CDN. Depending on the browser and viewport, DAFpay opens in a cross-origin frame or popup at `https://secure.dafpay.com`.
+
+If your donation pages send a Content Security Policy, merge these sources into the applicable directives:
+
+```text
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.givechariot.com;
+  frame-src https://secure.dafpay.com;
+  font-src 'self' https://cdn.givechariot.com;
+  style-src 'self' 'unsafe-inline' https://cdn.givechariot.com;
+  img-src 'self' https://cdn.givechariot.com data:;
+```
+
+<Note title="Merge, Do Not Replace">
+  This is an example, not a complete policy. Merge each source into your existing response header rather than replacing your policy with this block.
+</Note>
+
+The parent page does not need to add Chariot to `connect-src`. DAFpay API traffic originates inside the cross-origin frame.
+
+If your security policy cannot allow inline styles, confirm the supported nonce or hash approach with Chariot before launch.
+
+If your page sends a Permissions-Policy header, allow `publickey-credentials-get` and `publickey-credentials-create` for `https://secure.dafpay.com`, or passkey sign-in inside the checkout will fail.
+
+If the button does not render or the modal does not open, see [Troubleshooting](/guides/dafpay/troubleshooting).
+
 ## Prevent Blocked Popups
 
 DAFpay must open in direct response to the donor's click. Keep the time between the click and the DAFpay window opening under one second.
