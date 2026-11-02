@@ -265,9 +265,12 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
   "access_token": "ACCESS_TOKEN",
   "refresh_token": "REFRESH_TOKEN",
   "expires_in": 900,
-  "token_type": "Bearer"
+  "token_type": "Bearer",
+  "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct"
 }
 ```
+
+For an app install, `organization_id` identifies the nonprofit that installed your application. Use it with [Get Organization](/api/organizations/get).
 
 ## Using Access Tokens
 
@@ -305,7 +308,8 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
   "access_token": "NEW_ACCESS_TOKEN",
   "refresh_token": "NEW_REFRESH_TOKEN",
   "expires_in": 900,
-  "token_type": "Bearer"
+  "token_type": "Bearer",
+  "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct"
 }
 ```
 
