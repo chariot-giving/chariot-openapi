@@ -9,6 +9,8 @@ hidden: false
 
 Each nonprofit on your platform has its own Connect. The Connect ID tells Chariot which nonprofit should receive the Grant. Use the same search-and-create sequence for existing eligible nonprofits included in your launch and all new nonprofits that DAFpay is enabled for.
 
+Each nonprofit needs a Chariot account before you can create its Connect. Send nonprofits that do not have one to your co-branded Chariot onboarding link first.
+
 <Frame caption="Steps 1 and 2 are the per-nonprofit setup covered on this page. Steps 3 and 4 are the donor flow, covered on the pages that follow.">
     <img src='../../../images/DAFpay_API_Docs_Image.png' />
 </Frame>
@@ -29,8 +31,7 @@ Your onboarding flow should also account for fiscal sponsors, organizations that
 
 ## Create the Connect
 
-Call Create Connect with the Chariot organization ID and a contact email that belongs to the nonprofit. Do not use your platform's support address. Crowdfunding platforms can omit the email if they do not have one for the nonprofit.
-
+Call Create Connect with the Chariot organization ID and a contact email that belongs to the nonprofit. Do not use your platform's support address.
 <EndpointRequestSnippet endpoint="POST /v1/connects" />
 
 Store the returned Connect ID on the corresponding nonprofit record:
@@ -39,9 +40,9 @@ Store the returned Connect ID on the corresponding nonprofit record:
 platform_nonprofit_id → chariot_organization_id → chariot_connect_id
 ```
 
-Create the Connect when the nonprofit enables DAFpay, not during donor checkout. The call is idempotent: it returns the existing Connect for that organization on your platform. Non-crowdfunding platforms must still send the contact email on repeat calls.
+Create the Connect when the nonprofit enables DAFpay, not during donor checkout. The call is idempotent: it returns the existing Connect for that organization on your platform. Send the contact email on repeat calls too.
 
-Creating a Connect does not email the nonprofit; Chariot stores the contact for its team to review. You cannot pass verification data for a nonprofit; it completes verification itself when it claims.
+Creating a Connect does not email the nonprofit; Chariot stores the contact for its team to review. You cannot pass verification data for a nonprofit; it completes verification itself in its Chariot account.
 
 ## Create Connects at Scale
 
