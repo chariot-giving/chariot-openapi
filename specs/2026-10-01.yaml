@@ -3627,17 +3627,10 @@ paths:
       description: |-
         Get a donation by its unique identifier.
 
-        ## Retrieving a deleted or merged donation
+        ### Retrieving a deleted or merged donation
 
         This endpoint still returns a deleted or merged donation. The response
-        sets `deleted_at`, and `merged_into_donation_id` for a merge. So a partner
-        that receives a `donation.deleted` webhook can still fetch the record and
-        follow `merged_into_donation_id` to the donation it was merged into.
-
-        A merged donation keeps its ID and points at the donation that now holds
-        the gift. Writes to it return `409` with that donation's ID. The list
-        endpoint excludes deleted and merged donations. Earlier API versions
-        return `404` here instead.
+        sets `deleted_at`, and `merged_into_donation_id` for a merge.
       operationId: getDonation
       tags:
         - donations
