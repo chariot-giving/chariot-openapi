@@ -16,8 +16,8 @@ Let your donors who have a donor-advised fund use DAFpay to initiate grants dire
 
 | Term | Definition |
 | --- | --- |
-| Connect | The web component that renders the DAFpay button. Each Connect ID is tied to an organization receiving the DAFpay gift. Organizations can have multiple DAFpay Connects if they receive DAFpay from multiple places online. |
-| Workflow session | A single DAFpay session. A new workflow session starts each time a donor clicks the DAFpay button. |
+| Connect | The DAFpay setup for one organization. Its ID tells Chariot which organization receives the gift. Organizations can have multiple Connects if they receive DAFpay from multiple places online. |
+| Workflow session | A single DAFpay session. A new workflow session starts each time a donor clicks the DAFpay button, and you use its ID to create the Grant. |
 | Grant | A grant initiated to a DAF provider, created via the Create Grant endpoint. |
 | Donation | Donations represent gifts in Chariot and are only available to Chariot Deposit Account holders. Donations can be created from DAFpay gifts created via Create Grant, or other gifts that land in an organization's account from a Chariot disbursement partner or a connected payment source. [Processing Donations](/guides/dafpay/accept/processing-donations) covers the lifecycle of how a Grant becomes a Donation. |
 
