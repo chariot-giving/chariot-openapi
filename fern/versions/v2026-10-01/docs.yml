@@ -284,9 +284,6 @@ navigation:
                   - page: The Donation object
                     slug: object
                     path: ./pages/api/donations/object.mdx
-                  - page: Merging donations
-                    slug: merging
-                    path: ./pages/api/donations/merging.mdx
                   - endpoint: POST /v1/donations
                   - endpoint: GET /v1/donations
                   - endpoint: GET /v1/donations/{id}
