@@ -3481,7 +3481,7 @@ paths:
       summary: List Donations
       description: |-
         List donations for your account. The list excludes deleted and merged
-        donations. Fetch a tombstone by its ID with `GET /v1/donations/{id}`.
+        donations. Fetch one by its ID with `GET /v1/donations/{id}`.
       operationId: listDonations
       tags:
         - donations
@@ -3603,15 +3603,15 @@ paths:
 
         ## Retrieving a deleted or merged donation
 
-        This endpoint returns a deleted or merged donation as a tombstone. The
-        response sets `deleted_at`, and `canonical_donation_id` for a merge. So a
-        partner that receives a `donation.deleted` webhook can still fetch the
-        record and follow `canonical_donation_id` to the surviving donation.
+        This endpoint still returns a deleted or merged donation. The response
+        sets `deleted_at`, and `canonical_donation_id` for a merge. So a partner
+        that receives a `donation.deleted` webhook can still fetch the record and
+        follow `canonical_donation_id` to the donation it was merged into.
 
-        A merged donation is a tombstone: it keeps its ID and points at the
-        donation that now holds the gift. Writes to it return `404` with the
-        canonical donation's ID. The list endpoint excludes tombstones. Earlier
-        API versions return `404` here instead of a tombstone.
+        A merged donation keeps its ID and points at the donation that now holds
+        the gift. Writes to it return `404` with that donation's ID. The list
+        endpoint excludes deleted and merged donations. Earlier API versions
+        return `404` here instead.
       operationId: getDonation
       tags:
         - donations
@@ -3714,17 +3714,20 @@ paths:
     post:
       summary: Merge a Donation
       description: |-
-        Merge a duplicate donation into this one. The donation at `{id}` survives
-        and keeps its ID. The donation named by `donation_id` is soft-deleted and
-        becomes a tombstone that points at the survivor through
-        `canonical_donation_id`. The response is the surviving donation.
+        Merge another donation into this one. The donation at `{id}` is kept and
+        keeps its ID. The donation named by `donation_id` is soft-deleted and
+        points at this donation through `canonical_donation_id`.
+
+        The response is this donation after the merge. Chariot rebuilds it from
+        the source records of both donations. A value already set on the donation
+        at `{id}` is kept. A value it is missing can fill from the merged donation.
 
         Use this when the same gift reaches you twice. For example, you record a
         donation by hand, and the same gift later arrives from a platform.
 
         A merge cannot be undone. Repeating a completed merge is safe: it returns
-        the surviving donation again. The merge emits a `donation.updated` event
-        for the survivor and a `donation.deleted` event for the tombstone.
+        this donation again. The merge emits a `donation.updated` event for this
+        donation and a `donation.deleted` event for the merged one.
 
         ## Errors
 
@@ -3743,7 +3746,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The surviving donation that keeps its ID.
+          description: This donation. It is kept and keeps its ID.
           required: true
           schema:
             type: string
@@ -3766,12 +3769,14 @@ paths:
                 donation_id:
                   type: string
                   description: |-
-                    The donation to merge into the survivor. It is soft-deleted
-                    and points at the survivor.
+                    The donation ID to merge into this donation. It is
+                    soft-deleted and points at this donation.
                   example: "donation_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
-          description: The donations were merged. The body is the surviving donation.
+          description: |-
+            The merge is done. The body is this donation, with values from the
+            merged donation filled in where this donation had none.
           content:
             application/json:
               schema:
@@ -5406,17 +5411,17 @@ components:
           nullable: true
           description: |-
             When the donation was deleted or merged. Null for a live donation.
-            A deleted or merged donation is a tombstone: `GET /v1/donations/{id}`
-            still returns it, but `GET /v1/donations` (list) excludes it.
-            Expressed in RFC 3339 format.
+            `GET /v1/donations/{id}` still returns a deleted or merged donation,
+            but `GET /v1/donations` (list) excludes it. Expressed in RFC 3339
+            format.
           example: null
         canonical_donation_id:
           type: string
           readOnly: true
           nullable: true
           description: |-
-            The surviving donation this one was merged into. Set only for a
-            merged donation, as a donation ID. Null for a live or plain-deleted
+            The donation this one was merged into. Set only for a merged
+            donation, as a donation ID. Null for a live or plain-deleted
             donation. Follow it to the donation that now holds the gift.
           example: null
         payment_status:
