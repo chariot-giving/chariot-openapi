@@ -5,29 +5,29 @@ subtitle: "Combine two donation records into one."
 
 ## What a merge does
 
-You call merge with two donation IDs. Chariot keeps the donation named by `canonical_donation_id` and its ID. It soft-deletes the donation named by `merged_donation_id` and points it at the canonical donation through `canonical_donation_id`.
+You call merge with two donation IDs: `from` and `into`. Chariot keeps the `into` donation and its ID. It soft-deletes the `from` donation and points it at the `into` donation through `merged_into_donation_id`.
 
 ```json
 POST /v1/donations/merge
 {
-  "canonical_donation_id": "donation_to_keep",
-  "merged_donation_id": "donation_to_merge_in"
+  "from": "donation_to_merge_in",
+  "into": "donation_to_keep"
 }
 ```
 
-`canonical_donation_id` is the donation you keep. `merged_donation_id` is the donation you merge in. The response is the canonical donation after the merge.
+`into` is the donation you keep. `from` is the donation you merge in. The response is the `into` donation after the merge.
 
 ## How field values combine
 
-A value already set on the canonical donation is kept. A value it is missing can be filled with the value from the merged donation.
+A value already set on the `into` donation is kept. A value it is missing can be filled with the value from the `from` donation.
 
 ## What you see afterward
 
-- `GET` on the canonical donation's ID returns it as usual.
-- `GET` on the merged donation's ID still returns it. It carries `deleted_at` and `canonical_donation_id`.
-- The list endpoint stops returning the merged donation.
-- A write to the merged donation returns `404`. The error carries the canonical donation's ID, so you can retry against it.
-- Webhooks fire. The canonical donation sends `donation.updated`. The merged donation sends `donation.deleted`.
+- `GET` on the `into` donation's ID returns it as usual.
+- `GET` on the `from` donation's ID still returns it. It carries `deleted_at` and `merged_into_donation_id`.
+- The list endpoint stops returning the `from` donation.
+- A write to the `from` donation returns `404`. The error carries the `into` donation's ID, so you can retry against it.
+- Webhooks fire. The `into` donation sends `donation.updated`. The `from` donation sends `donation.deleted`.
 
 ## A merge is permanent
 
@@ -38,4 +38,4 @@ You cannot undo a merge. Check both donations before you merge them.
 - **Both donations are reconciled to a deposit.** The merge returns `409` with problem type `donation_merge_conflict`. Chariot cannot merge two settled gifts.
 - **An input is already deleted or merged.** The merge returns `404` with problem type `donation_deleted` or `donation_merged`.
 - **The same donation on both sides.** The merge returns `400`.
-- **A repeat.** Repeating a completed merge is safe. It returns `200` with the canonical donation.
+- **A repeat.** Repeating a completed merge is safe. It returns `200` with the `into` donation.
