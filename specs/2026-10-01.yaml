@@ -3506,7 +3506,8 @@ paths:
     get:
       summary: List Donations
       description: |-
-        List donations for your account.
+        List donations for your account. The list excludes deleted and merged
+        donations. Fetch one by its ID with `GET /v1/donations/{id}`.
       operationId: listDonations
       tags:
         - donations
@@ -3625,6 +3626,11 @@ paths:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        ### Retrieving a deleted or merged donation
+
+        This endpoint still returns a deleted or merged donation. The response
+        sets `deleted_at`, and `merged_into_donation_id` for a merge.
       operationId: getDonation
       tags:
         - donations
@@ -3733,6 +3739,125 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/DonationLifecycleConflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donations/merge:
+    post:
+      summary: Merge Donations
+      description: |-
+        Merge one donation into another. The donation named by `into` is kept
+        and keeps its ID. The donation named by `from` is soft-deleted and points
+        at the `into` donation.
+
+        The response is the `into` donation after the merge. A value already set
+        on it is kept. A value it is missing can be filled with the value from
+        the `from` donation.
+
+        A merge cannot be undone. Repeating a completed merge is safe: it returns
+        the `into` donation again. The merge emits a `donation.updated` event for
+        the `into` donation and a `donation.deleted` event for the `from` one.
+
+        ## Errors
+
+        - `400` when the same donation is on both sides.
+        - `404` when a donation does not exist.
+        - `409` when an input is deleted or merged. The problem `type` is
+          `donation_deleted` or `donation_merged`, and a merged input carries the
+          ID of the donation it was merged into. A deleted or merged donation
+          still exists, so a write conflicts with its state.
+        - `409` when both donations are reconciled to a deposit. The problem
+          `type` is `donation_merge_conflict`.
+      operationId: mergeDonations
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - from
+                - into
+              properties:
+                from:
+                  type: string
+                  description: |-
+                    The donation to merge. It is soft-deleted and points at the
+                    into donation.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+                into:
+                  type: string
+                  description: The donation that is kept. It keeps its ID.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: |-
+            The merge is done. The body is the into donation, with values from
+            the from donation filled in where it had none.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: |-
+            The merge conflicts with the state of a donation. The problem `type`
+            identifies the case.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ProblemDetails"
+                  - type: object
+                    properties:
+                      resource_id:
+                        type: string
+                        description: |-
+                          The donation the merged input points at. Present when
+                          the problem type is `donation_merged`.
+              examples:
+                donation_merge_conflict:
+                  summary: Both donations are reconciled to a deposit
+                  value:
+                    type: donation_merge_conflict
+                    title: API Error
+                    status: 409
+                    detail: Both donations are reconciled to a deposit and cannot be merged
+                donation_merged:
+                  summary: An input is already merged into another donation
+                  value:
+                    type: donation_merged
+                    title: API Error
+                    status: 409
+                    detail: Donation is merged into another donation
+                    resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+                donation_deleted:
+                  summary: An input is already deleted
+                  value:
+                    type: donation_deleted
+                    title: API Error
+                    status: 409
+                    detail: Donation is deleted
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
@@ -5116,6 +5241,8 @@ components:
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
+        deleted_at: null
+        merged_into_donation_id: null
         payment_status: "RECEIVED_IN_CHARIOT"
       required:
         - id
@@ -5344,6 +5471,26 @@ components:
             complete and the recipient did not receive the gift. Expressed in
             RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        deleted_at:
+          type: string
+          readOnly: true
+          format: date-time
+          nullable: true
+          description: |-
+            When the donation was deleted or merged. Null for a live donation.
+            `GET /v1/donations/{id}` still returns a deleted or merged donation,
+            but `GET /v1/donations` (list) excludes it. Expressed in RFC 3339
+            format.
+          example: null
+        merged_into_donation_id:
+          type: string
+          readOnly: true
+          nullable: true
+          description: |-
+            The donation this one was merged into. Set only for a merged
+            donation, as a donation ID. Null for a live or plain-deleted
+            donation. Follow it to the donation that now holds the gift.
+          example: null
         payment_status:
           type: string
           readOnly: true
@@ -8581,6 +8728,7 @@ components:
         - "inbound_transfer.updated"
         - "donation.created"
         - "donation.updated"
+        - "donation.deleted"
         - "deposit.created"
         - "deposit.updated"
         - "verification_request.created"
