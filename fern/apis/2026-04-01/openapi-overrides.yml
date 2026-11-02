@@ -8,6 +8,11 @@ paths:
       x-fern-sdk-group-name:
         - organizations
       x-fern-sdk-method-name: search
+  /v1/organizations/current:
+    get:
+      x-fern-sdk-group-name:
+        - organizations
+      x-fern-sdk-method-name: getCurrent
   /v1/organizations/{id}:
     get:
       x-fern-sdk-group-name:
