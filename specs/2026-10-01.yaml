@@ -70,7 +70,7 @@ paths:
     get:
       summary: Get current organization
       description: |-
-        Retrieves the organization associated with your API key or access token.
+        Retrieves the organization associated with your API key or access token. Returns a 403 if the API key or access token is not scoped to an organization.
       operationId: getCurrentOrganization
       tags:
         - Organizations
