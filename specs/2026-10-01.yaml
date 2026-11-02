@@ -3747,16 +3747,16 @@ paths:
         The response is this donation after the merge. A value already set on the donation
         at `{id}` is kept. A value it is missing can be filled with the value from the merged donation.
 
-        A merge cannot be undone. The merge emits a `donation.updated` event for this
+        A merge cannot be undone. Repeating a completed merge is safe: it returns
+        this donation again. The merge emits a `donation.updated` event for this
         donation and a `donation.deleted` event for the merged one.
 
         ## Errors
 
         - `400` when the same donation is on both sides.
-        - `404` when a donation is not visible to you, or when an input is already
-          deleted or merged. The problem `type` is `donation_deleted` or
-          `donation_merged`, and a merged input carries the canonical donation's
-          ID.
+        - `404` when an input is already deleted or merged. The problem `type` is
+          `donation_deleted` or `donation_merged`, and a merged input carries the
+          canonical donation's ID.
         - `409` when both donations are reconciled to a deposit. The problem
           `type` is `donation_merge_conflict`.
       operationId: mergeDonation
