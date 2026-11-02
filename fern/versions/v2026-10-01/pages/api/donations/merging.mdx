@@ -26,7 +26,7 @@ A value already set on the `into` donation is kept. A value it is missing can be
 - `GET` on the `into` donation's ID returns it as usual.
 - `GET` on the `from` donation's ID still returns it. It carries `deleted_at` and `merged_into_donation_id`.
 - The list endpoint stops returning the `from` donation.
-- A write to the `from` donation returns `404`. The error carries the `into` donation's ID, so you can retry against it.
+- A write to the `from` donation returns `409`. The error carries the `into` donation's ID, so you can retry against it.
 - Webhooks fire. The `into` donation sends `donation.updated`. The `from` donation sends `donation.deleted`.
 
 ## A merge is permanent
@@ -36,6 +36,6 @@ You cannot undo a merge. Check both donations before you merge them.
 ## Errors and retries
 
 - **Both donations are reconciled to a deposit.** The merge returns `409` with problem type `donation_merge_conflict`. Chariot cannot merge two settled gifts.
-- **An input is already deleted or merged.** The merge returns `404` with problem type `donation_deleted` or `donation_merged`.
+- **An input is already deleted or merged.** The merge returns `409` with problem type `donation_deleted` or `donation_merged`.
 - **The same donation on both sides.** The merge returns `400`.
 - **A repeat.** Repeating a completed merge is safe. It returns `200` with the `into` donation.

@@ -3635,7 +3635,7 @@ paths:
         follow `merged_into_donation_id` to the donation it was merged into.
 
         A merged donation keeps its ID and points at the donation that now holds
-        the gift. Writes to it return `404` with that donation's ID. The list
+        the gift. Writes to it return `409` with that donation's ID. The list
         endpoint excludes deleted and merged donations. Earlier API versions
         return `404` here instead.
       operationId: getDonation
@@ -3755,9 +3755,11 @@ paths:
         ## Errors
 
         - `400` when the same donation is on both sides.
-        - `404` when an input is already deleted or merged. The problem `type` is
+        - `404` when a donation does not exist.
+        - `409` when an input is deleted or merged. The problem `type` is
           `donation_deleted` or `donation_merged`, and a merged input carries the
-          ID of the donation it was merged into.
+          ID of the donation it was merged into. A deleted or merged donation
+          still exists, so a write conflicts with its state.
         - `409` when both donations are reconciled to a deposit. The problem
           `type` is `donation_merge_conflict`.
       operationId: mergeDonations
