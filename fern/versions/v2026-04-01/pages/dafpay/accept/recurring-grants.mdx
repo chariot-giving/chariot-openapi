@@ -1,0 +1,45 @@
+---
+title: Recurring Grants
+hidden: false
+---
+
+Recurring donations are a powerful way to generate consistent revenue for nonprofits. Chariot enables a donor to initiate **`MONTHLY`** recurring grants through their Donor Advised Fund.
+
+## Managing the Recurrence Schedule
+
+When a recurring donation is made via DAFpay, it indicates that the donation was set up as a monthly recurring donation. However, the actual recurrence is managed by the DAF provider. If the donor wishes to cancel or modify the recurrence, they must do so through their DAF provider portal. As a result, Chariot is not notified when a recurrence is canceled or updated. Therefore, Chariot only records the initial grant with a monthly frequency and does not create a new grant each month.
+
+When a user completes a Chariot Connect session for a recurring donation, instead of receiving a **`grantIntent`** as part of the **`CHARIOT_SUCCESS`** event, you will receive a **`recurringGrantIntent`**.
+
+```json
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "recurringGrantIntent": {
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "amount": 2000,
+    "frequency": "MONTHLY",
+    "metadata": {
+      "platformTransactionId": "txn_123"
+    }
+  }
+}
+```
+
+When you receive a `recurringGrantIntent`, call Create Recurring Grant instead of Create Grant. `MONTHLY` is the only supported frequency, and an application fee applies to the first Grant only.
+
+```javascript
+const res = await fetch(`${CHARIOT_BASE_URL}/v1/recurring_grants`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CHARIOT_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    workflowSessionId: "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+    frequency: "MONTHLY",
+    amount: 2000
+  })
+});
+```
+
+Next: [Flow of Funds](/guides/dafpay/accept/flow-of-funds)

@@ -1,0 +1,48 @@
+---
+title: "Troubleshooting"
+subtitle: "What to check when a DAFpay integration misbehaves."
+hidden: false
+---
+
+<AccordionGroup>
+
+<Accordion title="**The Popup Is Blocked on Mobile**">
+DAFpay must open within one second of the donor's click, with no call to your server in between. See [Prevent Blocked Popups](/guides/dafpay/accept/install#prevent-blocked-popups).
+</Accordion>
+
+<Accordion title="**DAFpay Completed, but No Grant Exists**">
+Confirm that your server received `CHARIOT_SUCCESS` and called Create Grant within 15 minutes. Preserve the workflow session, Connect ID, nonprofit, and platform transaction ID for investigation.
+</Accordion>
+
+<Accordion title="**The Wrong Nonprofit Received the Grant**">
+Treat this as a tenant-routing incident. Stop the affected rollout, preserve all identifiers and timestamps, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) immediately.
+
+Check for a hardcoded, cached, fallback, last-seen, or process-wide Connect ID.
+</Accordion>
+
+<Accordion title="**Create Grant Returned an Error**">
+Look up the status code in the response table on [Create the Grant](/guides/dafpay/accept/create-grant#retry-safely).
+</Accordion>
+
+<Accordion title="**Webhook Events Are Missing**">
+Confirm the event type, environment, endpoint, and signature code. Use List Events to determine whether Chariot created the event or delivery failed. Keep a recovery process for state that must not be missed.
+</Accordion>
+
+<Accordion title="**The Button Does Not Render or Open**">
+If the button does not render or clicking it does nothing:
+
+1. Check the browser console for a blocked script, frame, font, style, or image.
+2. Check the Network panel for requests blocked to `cdn.givechariot.com` or `secure.dafpay.com`.
+3. Test with the same response headers used in production.
+4. Check both enforced and report-only policies.
+
+When CSP is delivered through a `<meta http-equiv="Content-Security-Policy">` tag, `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are ignored. Use a response header when possible.
+
+The directives DAFpay needs are on [Authentication](/guides/dafpay/accept/authentication#content-security-policy).
+</Accordion>
+
+</AccordionGroup>
+
+<Note title="Contacting Chariot">
+  Send identifiers and timestamps. Never send an API key.
+</Note>

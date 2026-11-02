@@ -24,6 +24,86 @@ versions:
     availability: deprecated
     hidden: true
 
+redirects:
+  # The DAFpay guide was restructured in v2026-04-01. Earlier versions keep
+  # their own integrating-dafpay pages, so these are scoped to this version
+  # and its unversioned (default) URLs rather than wildcarded across all.
+
+  - source: "/guides/dafpay/integrating-dafpay/checklist"
+    destination: "/guides/dafpay/accept/checklist"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/guides/dafpay/accept/connects"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/installation"
+    destination: "/guides/dafpay/accept/install"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/integration"
+    destination: "/guides/dafpay/accept/donation-data"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/guides/dafpay/accept/processing-donations"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/prod-keys"
+    destination: "/guides/dafpay/accept/go-live"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay/faq"
+    destination: "/guides/dafpay/faq"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts/:slug"
+    destination: "/guides/dafpay/send/donor-accounts/:slug"
+    permanent: true
+  - source: "/guides/dafpay/donor-accounts"
+    destination: "/guides/dafpay/send/donor-accounts/overview"
+    permanent: true
+  - source: "/guides/dafpay/oauth/:slug"
+    destination: "/guides/dafpay/send/oauth/:slug"
+    permanent: true
+  - source: "/guides/dafpay/oauth"
+    destination: "/guides/dafpay/send/oauth/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts/:slug"
+    destination: "/v2026-04-01/guides/dafpay/send/donor-accounts/:slug"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/donor-accounts"
+    destination: "/v2026-04-01/guides/dafpay/send/donor-accounts/overview"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth/:slug"
+    destination: "/v2026-04-01/guides/dafpay/send/oauth/:slug"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/oauth"
+    destination: "/v2026-04-01/guides/dafpay/send/oauth/overview"
+    permanent: true
+  - source: "/guides/dafpay/integrating-dafpay"
+    destination: "/guides/dafpay/accept/api"
+    permanent: true
+
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/checklist"
+    destination: "/v2026-04-01/guides/dafpay/accept/checklist"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/set-up"
+    destination: "/v2026-04-01/guides/dafpay/accept/connects"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/installation"
+    destination: "/v2026-04-01/guides/dafpay/accept/install"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/integration"
+    destination: "/v2026-04-01/guides/dafpay/accept/donation-data"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/transactions"
+    destination: "/v2026-04-01/guides/dafpay/accept/processing-donations"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/prod-keys"
+    destination: "/v2026-04-01/guides/dafpay/accept/go-live"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/faq"
+    destination: "/v2026-04-01/guides/dafpay/faq"
+    permanent: true
+  - source: "/v2026-04-01/guides/dafpay/integrating-dafpay"
+    destination: "/v2026-04-01/guides/dafpay/accept/api"
+    permanent: true
+
+
 logo:
   href: /
   light: assets/chariot_full-logo_glacier.png
