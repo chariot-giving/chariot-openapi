@@ -3480,7 +3480,8 @@ paths:
     get:
       summary: List Donations
       description: |-
-        List donations for your account.
+        List donations for your account. The list excludes deleted and merged
+        donations. Fetch a tombstone by its ID with `GET /v1/donations/{id}`.
       operationId: listDonations
       tags:
         - donations
@@ -3599,6 +3600,18 @@ paths:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        ## Retrieving a deleted or merged donation
+
+        This endpoint returns a deleted or merged donation as a tombstone. The
+        response sets `deleted_at`, and `canonical_donation_id` for a merge. So a
+        partner that receives a `donation.deleted` webhook can still fetch the
+        record and follow `canonical_donation_id` to the surviving donation.
+
+        A merged donation is a tombstone: it keeps its ID and points at the
+        donation that now holds the gift. Writes to it return `404` with the
+        canonical donation's ID. The list endpoint excludes tombstones. Earlier
+        API versions return `404` here instead of a tombstone.
       operationId: getDonation
       tags:
         - donations
@@ -3695,6 +3708,84 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donations/{id}/merge:
+    post:
+      summary: Merge a Donation
+      description: |-
+        Merge a duplicate donation into this one. The donation at `{id}` survives
+        and keeps its ID. The donation named by `donation_id` is soft-deleted and
+        becomes a tombstone that points at the survivor through
+        `canonical_donation_id`. The response is the surviving donation.
+
+        Use this when the same gift reaches you twice. For example, you record a
+        donation by hand, and the same gift later arrives from a platform.
+
+        A merge cannot be undone. Repeating a completed merge is safe: it returns
+        the surviving donation again. The merge emits a `donation.updated` event
+        for the survivor and a `donation.deleted` event for the tombstone.
+
+        ## Errors
+
+        - `400` when the same donation is on both sides.
+        - `404` when a donation is not visible to you, or when an input is already
+          deleted or merged. The problem `type` is `donation_deleted` or
+          `donation_merged`, and a merged input carries the canonical donation's
+          ID.
+        - `409` when both donations are reconciled to a deposit. The problem
+          `type` is `donation_merge_conflict`.
+      operationId: mergeDonation
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The surviving donation that keeps its ID.
+          required: true
+          schema:
+            type: string
+          example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - donation_id
+              properties:
+                donation_id:
+                  type: string
+                  description: |-
+                    The donation to merge into the survivor. It is soft-deleted
+                    and points at the survivor.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: The donations were merged. The body is the surviving donation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
@@ -5078,6 +5169,8 @@ components:
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
+        deleted_at: null
+        canonical_donation_id: null
         payment_status: "RECEIVED_IN_CHARIOT"
       required:
         - id
@@ -5306,6 +5399,26 @@ components:
             complete and the recipient did not receive the gift. Expressed in
             RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        deleted_at:
+          type: string
+          readOnly: true
+          format: date-time
+          nullable: true
+          description: |-
+            When the donation was deleted or merged. Null for a live donation.
+            A deleted or merged donation is a tombstone: `GET /v1/donations/{id}`
+            still returns it, but `GET /v1/donations` (list) excludes it.
+            Expressed in RFC 3339 format.
+          example: null
+        canonical_donation_id:
+          type: string
+          readOnly: true
+          nullable: true
+          description: |-
+            The surviving donation this one was merged into. Set only for a
+            merged donation, as a donation ID. Null for a live or plain-deleted
+            donation. Follow it to the donation that now holds the gift.
+          example: null
         payment_status:
           type: string
           readOnly: true
@@ -8543,6 +8656,7 @@ components:
         - "inbound_transfer.updated"
         - "donation.created"
         - "donation.updated"
+        - "donation.deleted"
         - "deposit.created"
         - "deposit.updated"
         - "verification_request.created"

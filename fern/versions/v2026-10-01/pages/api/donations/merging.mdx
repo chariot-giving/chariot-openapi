@@ -1,0 +1,40 @@
+---
+title: "Merging donations"
+subtitle: "Combine two records of the same gift into one."
+---
+
+Sometimes the same gift reaches you twice. You record a donation by hand, and the same gift later arrives from a platform. Now you hold two records for one gift. Merge them into one.
+
+## What a merge does
+
+You pick a survivor and a duplicate. The survivor keeps its ID and stays in your lists and reports. The duplicate becomes a **tombstone**. Chariot soft-deletes it and points it at the survivor through `canonical_donation_id`.
+
+```json
+POST /v1/donations/{id}/merge
+{ "donation_id": "donation_of_the_duplicate" }
+```
+
+`{id}` is the survivor. `donation_id` is the duplicate. The response is the survivor.
+
+## How field values combine
+
+After the merge, Chariot rebuilds the survivor from the source records of both donations. The survivor keeps its own values. A field the survivor is missing can fill from the duplicate. So a merge adds detail rather than losing it.
+
+## What you see afterward
+
+- `GET /v1/donations/{survivor_id}` returns the survivor as usual.
+- `GET /v1/donations/{duplicate_id}` returns the tombstone. It carries `deleted_at` and `canonical_donation_id`.
+- The list endpoint stops returning the duplicate.
+- A write to the duplicate returns `404`. The error carries the survivor's ID, so you can retry against the survivor.
+- Webhooks fire. The survivor sends `donation.updated`. The duplicate sends `donation.deleted`.
+
+## A merge is permanent
+
+You cannot undo a merge. Check both donations before you merge them.
+
+## Errors and retries
+
+- **Both donations are reconciled to a deposit.** The merge returns `409` with problem type `donation_merge_conflict`. Chariot cannot merge two settled gifts.
+- **An input is already deleted or merged.** The merge returns `404` with problem type `donation_deleted` or `donation_merged`.
+- **The same donation on both sides.** The merge returns `400`.
+- **A repeat.** Repeating a completed merge is safe. It returns `200` with the survivor.
