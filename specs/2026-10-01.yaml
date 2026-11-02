@@ -3805,7 +3805,47 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
         "409":
-          $ref: "#/components/responses/ConflictError"
+          description: |-
+            The merge conflicts with the state of a donation. The problem `type`
+            identifies the case.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ProblemDetails"
+                  - type: object
+                    properties:
+                      resource_id:
+                        type: string
+                        description: |-
+                          The donation the merged input points at. Present when
+                          the problem type is `donation_merged`.
+              examples:
+                donation_merge_conflict:
+                  summary: Both donations are reconciled to a deposit
+                  value:
+                    type: donation_merge_conflict
+                    title: API Error
+                    status: 409
+                    detail: Both donations are reconciled to a deposit and cannot be merged
+                donation_merged:
+                  summary: An input is already merged into another donation
+                  value:
+                    type: donation_merged
+                    title: API Error
+                    status: 409
+                    detail: Donation is merged into another donation
+                    resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+                donation_deleted:
+                  summary: An input is already deleted
+                  value:
+                    type: donation_deleted
+                    title: API Error
+                    status: 409
+                    detail: Donation is deleted
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
