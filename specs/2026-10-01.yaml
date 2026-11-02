@@ -3736,20 +3736,23 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /v1/donations/{id}/merge:
+  /v1/donations/merge:
     post:
-      summary: Merge a Donation
+      summary: Merge Donations
       description: |-
-        Merge another donation into this one. The donation at `{id}` is kept and
-        keeps its ID. The donation named by `donation_id` is soft-deleted and
-        points at this donation through `canonical_donation_id`.
+        Merge one donation into another. The donation named by
+        `canonical_donation_id` is kept and keeps its ID. The donation named by
+        `merged_donation_id` is soft-deleted and points at the canonical donation
+        through `canonical_donation_id`.
 
-        The response is this donation after the merge. A value already set on the donation
-        at `{id}` is kept. A value it is missing can be filled with the value from the merged donation.
+        The response is the canonical donation after the merge. A value already
+        set on it is kept. A value it is missing can be filled with the value
+        from the merged donation.
 
         A merge cannot be undone. Repeating a completed merge is safe: it returns
-        this donation again. The merge emits a `donation.updated` event for this
-        donation and a `donation.deleted` event for the merged one.
+        the canonical donation again. The merge emits a `donation.updated` event
+        for the canonical donation and a `donation.deleted` event for the merged
+        one.
 
         ## Errors
 
@@ -3759,19 +3762,12 @@ paths:
           canonical donation's ID.
         - `409` when both donations are reconciled to a deposit. The problem
           `type` is `donation_merge_conflict`.
-      operationId: mergeDonation
+      operationId: mergeDonations
       tags:
         - donations
       security:
         - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          description: This donation. It is kept and keeps its ID.
-          required: true
-          schema:
-            type: string
-          example: "donation_01j8rs605a4gctmbm58d87mvsj"
         - name: Idempotency-Key
           in: header
           description: The idempotency key for the request.
@@ -3785,19 +3781,24 @@ paths:
             schema:
               type: object
               required:
-                - donation_id
+                - canonical_donation_id
+                - merged_donation_id
               properties:
-                donation_id:
+                canonical_donation_id:
+                  type: string
+                  description: The donation that remains as the canonical record. It keeps its ID.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+                merged_donation_id:
                   type: string
                   description: |-
-                    The donation ID to merge into this donation. It will be
-                    soft-deleted and pointed at this donation.
+                    The donation to merge into the canonical donation. It will be
+                    soft-deleted and pointed at the canonical donation.
                   example: "donation_01j8rs605a4gctmbm58d87mvsj"
       responses:
         "200":
           description: |-
-            The merge is done. The body is this donation, with values from the
-            merged donation filled in where this donation had none.
+            The merge is done. The body is the canonical donation, with values
+            from the merged donation filled in where it had none.
           content:
             application/json:
               schema:

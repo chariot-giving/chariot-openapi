@@ -292,7 +292,7 @@ navigation:
                   - endpoint: GET /v1/donations/{id}
                   - endpoint: PATCH /v1/donations/{id}
                   - endpoint: DELETE /v1/donations/{id}
-                  - endpoint: POST /v1/donations/{id}/merge
+                  - endpoint: POST /v1/donations/merge
               - section: Deposits
                 contents:
                   - page: Overview
