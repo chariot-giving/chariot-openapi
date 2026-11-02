@@ -47,7 +47,7 @@ When a noteworthy event happens, Chariot first generates an [Event](/api/events/
   - `inbound_transfer.updated`: This event is triggered when an inbound transfer is updated. This can happen when the status of the inbound transfer changes.
   - `donation.created`: This event is triggered when a donation is created.
   - `donation.updated`: This event is triggered when a donation is updated.
-  - `donation.deleted`: This event is triggered when a donation is deleted or merged. The payload is the deleted donation, with `deleted_at` set and, for a merge, `canonical_donation_id`.
+  - `donation.deleted`: This event is triggered when a donation is deleted or merged.
   - `deposit.created`: This event is triggered when a deposit is created.
   - `deposit.updated`: This event is triggered when a deposit is updated. This can happen when the status of the deposit or underlying transfer changes.
   - `verification_request.created`: This event is triggered when a verification request is created.
@@ -144,4 +144,3 @@ Your endpoint must quickly return a successful status code (2xx) prior to any co
 ### Verify webhook signatures
 
 See the section above on [verifying webhook signatures](/api/webhooks#secure-your-webhooks)
-

@@ -1,32 +1,30 @@
 ---
 title: "Merging donations"
-subtitle: "Combine two records of the same gift into one."
+subtitle: "Combine two donation records into one."
 ---
-
-Sometimes the same gift reaches you twice. You record a donation by hand, and the same gift later arrives from a platform. Now you hold two records for one gift. Merge them into one.
 
 ## What a merge does
 
-You call merge on the donation you want to keep. You pass the ID of the duplicate to merge into it. Chariot keeps the donation at `{id}` and its ID. It soft-deletes the duplicate and points it at the kept donation through `canonical_donation_id`.
+You call merge on the donation you want to keep. You pass the ID of the donation to merge in. Chariot keeps the donation at `{id}` and its ID. It soft-deletes the merged donation and points it at this donation through `canonical_donation_id`.
 
 ```json
 POST /v1/donations/{id}/merge
-{ "donation_id": "donation_of_the_duplicate" }
+{ "donation_id": "donation_to_merge_in" }
 ```
 
-`{id}` is this donation, the one you keep. `donation_id` is the duplicate to merge in. The response is this donation after the merge.
+`{id}` is the donation record you'd like to keep. `donation_id` is the donation record you'd like to merge in. The response is this donation after the merge.
 
 ## How field values combine
 
-After the merge, Chariot rebuilds this donation from the source records of both donations. A value already set on the donation at `{id}` is kept. A value it is missing can fill from the duplicate. So a merge adds detail rather than losing it.
+A value already set on the donation at `{id}` is kept. A value it is missing can be filled with the value from the merged donation.
 
 ## What you see afterward
 
 - `GET /v1/donations/{id}` returns this donation as usual.
-- `GET` on the duplicate's ID still returns it. It carries `deleted_at` and `canonical_donation_id`.
-- The list endpoint stops returning the duplicate.
-- A write to the duplicate returns `404`. The error carries this donation's ID, so you can retry against it.
-- Webhooks fire. This donation sends `donation.updated`. The duplicate sends `donation.deleted`.
+- `GET` on the merged donation's ID still returns it. It carries `deleted_at` and `canonical_donation_id`.
+- The list endpoint stops returning the merged donation.
+- A write to the merged donation returns `404`. The error carries this donation's ID, so you can retry against it.
+- Webhooks fire. This donation sends `donation.updated`. The merged donation sends `donation.deleted`.
 
 ## A merge is permanent
 
