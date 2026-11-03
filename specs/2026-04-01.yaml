@@ -5189,15 +5189,31 @@ components:
           description: The date and time the account transfer was created
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    StandardEntryClassCode:
+      type: string
+      description: |-
+        The Standard Entry Class (SEC) code for the ACH transfer.
+        The SEC code tells you what kind of ACH payment it is.
+        Possible values include:
+          - `corporate_credit_or_debit`: A payment between two businesses or organizations (CCD).
+          - `prearranged_payments_and_deposit`: A preauthorized payment to or from a person's bank account (PPD).
+          - `international_ach_transaction`: A payment that involves a bank outside the United States (IAT).
+          - `internet_initiated`: A payment that a person authorized online (WEB).
+          - `corporate_trade_exchange`: A payment between two businesses or organizations that carries extra payment details (CTX).
+      example: "corporate_credit_or_debit"
+      enum:
+        - corporate_credit_or_debit
+        - prearranged_payments_and_deposit
+        - international_ach_transaction
+        - internet_initiated
+        - corporate_trade_exchange
     InboundAchTransfer:
       type: object
       description: |-
         An ACH transfer initiated outside of Chariot to your financial account.
       properties:
         standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: The company entry description for the ACH transfer.
@@ -6919,16 +6935,7 @@ components:
             - credit
             - debit
         standard_entry_class_code:
-          type: string
-          description: |-
-            The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "corporate_credit_or_debit"
-          enum:
-            - corporate_credit_or_debit
-            - prearranged_payments_and_deposit
-            - international_ach_transaction
-            - internet_initiated
-            - corporate_trade_exchange
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: |-
