@@ -64,9 +64,11 @@ There is no maximum-amount field. To enforce a maximum, set `lockAmount` or chec
 
 ## Fees the Donor Covers
 
-Donor-covered fees go in the amount rather than in `applicationFeeAmount`, which is a platform fee. Raising the amount also raises the fee, so solve for the final amount and round it to a whole dollar.
+Donor-covered fees go in the amount rather than in `applicationFeeAmount`, which is a platform fee. Raising the amount also raises the fee, so solve for the final amount and round down to a whole dollar to stay under the fee ceiling.
 
 Tips are not permitted on DAF gifts, because DAF funds cannot go to a for-profit entity. Suppress any tip option when the donor selects DAFpay.
+
+Metadata can only be set here, in the browser. Create Grant has no metadata field, so anything you want stored against the gift has to be passed at this point and cannot be added or corrected from your server afterwards.
 
 ## Disable DAFpay Until the Form Is Ready
 
