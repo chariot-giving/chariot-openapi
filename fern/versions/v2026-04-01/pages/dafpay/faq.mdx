@@ -69,7 +69,7 @@ No. Metadata can only be set in the browser through `onDonationRequest`, and Cre
 <AccordionGroup>
 
 <Accordion title="**How can our platform collect its processing fee?**">
-Pass `applicationFeeAmount` on [Create Grant](/api/grants/create). Chariot invoices it, to the nonprofit or to your platform depending on your billing setup.
+Pass `applicationFeeAmount` on [Create Grant](/api/grants/create). Create Grant validates it against a ceiling set for your fundraising application and returns a `400` above it. How the fee is collected is set in your Chariot agreement.
 
 Create Grant validates the amount against a ceiling set for your fundraising application and returns a `400` above it.
 </Accordion>
@@ -139,9 +139,6 @@ DAF funds are controlled by the provider, not the donor. Whether a request can b
 <Accordion title="**What do the Grant statuses mean?**">
 `Initiated` means the request was submitted to the provider. `Completed` means receipt was confirmed: Chariot recorded the settlement, a connected source recorded the payment, or the nonprofit clicked **Received** in the dashboard. It returns to `Initiated` only if an offline settlement recorded for it is removed. `Canceled` means the donor canceled or the provider did not approve the Grant.</Accordion>
 
-<Accordion title="**When is a Grant billed?**">
-Grant billing is based on the Grant's `created_at` date, not on it reaching `Completed`. Grants canceled before billing runs are not billed.
-</Accordion>
 
 <Accordion title="**How do we get from a Donation back to its Grant?**">
 A Donation does not carry a grant ID. Call List Grants with `donation_id`, or match the Donation's `initiation.dafpay_tracking_id` to the Grant's `trackingId`. In the other direction, the Grant's `donationId` is filled in shortly after creation, so if it is empty, read the Grant again later.
