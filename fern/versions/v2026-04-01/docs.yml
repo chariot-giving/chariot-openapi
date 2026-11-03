@@ -38,7 +38,7 @@ navigation:
           - section: Integrate DAFpay
             slug: accept
             contents:
-              - section: Get Set Up
+              - section: Set Up
                 slug: setup
                 contents:
                   - page: Build a Custom Integration
@@ -47,7 +47,7 @@ navigation:
                   - page: Create Connects
                     slug: connects
                     path: ./pages/dafpay/accept/connects.mdx
-              - section: Add the Checkout
+              - section: Adding DAFpay
                 slug: checkout
                 contents:
                   - page: Install DAFpay
@@ -59,7 +59,7 @@ navigation:
                   - page: Handle the Result
                     slug: result
                     path: ./pages/dafpay/accept/result.mdx
-              - section: Create the Grant
+              - section: Creating Grants
                 slug: grant
                 contents:
                   - page: Authentication
@@ -74,7 +74,7 @@ navigation:
                   - page: Recurring Grants
                     slug: recurring-grants
                     path: ./pages/dafpay/accept/recurring-grants.mdx
-              - section: Handle What Comes Back
+              - section: Managing Gifts
                 slug: results
                 contents:
                   - page: Flow of Funds
@@ -89,7 +89,7 @@ navigation:
                   - page: Webhooks
                     slug: webhooks
                     path: ./pages/dafpay/accept/webhooks.mdx
-              - section: Launch
+              - section: Going Live
                 slug: launch
                 contents:
                   - page: Integration Checklist
