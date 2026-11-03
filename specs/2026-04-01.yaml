@@ -5951,7 +5951,7 @@ components:
         A RecurringGrant represents a successfully initiated recurring grant request with a Donor Advised Fund.
         RecurringGrants are created when a person interacts with an instance of Chariot Connect and successfully submits a recurring grant and completes the workflow.
         On creation, each RecurringGrant object will also have a Grant object created to represent the first grant of the recurring grant.
-        There can be many grants associated with the same recurring grant.
+        Chariot does not create a Grant for the later gifts in the series. The DAF provider runs the schedule in its own system, so those gifts arrive as ordinary Donations and produce no Grant and no grant event.
       required:
         - id
         - workflowSessionId
