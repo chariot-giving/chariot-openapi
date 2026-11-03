@@ -103,7 +103,7 @@ const backoff = (attempt) =>
 
 ## Amount Validation
 
-Use the amount returned by `CHARIOT_SUCCESS`. It is in cents and must be a whole-dollar amount, divisible by 100. Create Grant rejects anything else, so validate the amount before you open DAFpay.
+The amount is in cents and must be a whole-dollar amount, divisible by 100. Create Grant rejects anything else, so validate it before you open DAFpay.
 
 Do not set a universal minimum for DAFpay. Minimum Grant amounts vary by provider, and DAFpay prompts the donor to adjust an amount that is below the selected provider's minimum or above their available balance.
 
