@@ -48,6 +48,12 @@ Yes, for three reasons:
 Use the amount returned by `CHARIOT_SUCCESS` when you call Create Grant, not the amount your form collected.
 </Accordion>
 
+<Accordion title="**Can we force DAFpay to open as a modal or a popup?**">
+Chariot chooses between a modal on your page and a popup window based on the donor's browser and where the button sits. The `context` attribute on the element overrides that, but we do not recommend it. Forcing `iframe` can break the checkout in Safari, on mobile devices, and in embedded forms, and in `iframe` mode the modal only covers the frame the button renders in, so a button inside a tall iframe can leave the checkout partly off screen.
+
+If you have a case where the default does not work, talk to us before overriding it.
+</Accordion>
+
 <Accordion title="**Why is DAFpay blocked on some mobile browsers?**">
 Browsers may block a popup that opens too long after the donor's click. Prefetch data and keep all work between the click and DAFpay opening under one second.
 </Accordion>

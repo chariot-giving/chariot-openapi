@@ -23,31 +23,6 @@ import ChariotConnect from "react-chariot-connect";
 ```
 </CodeBlocks>
 
-## Checkout Mode
-
-By default, Chariot chooses whether the checkout opens as a modal on your page or in a popup window, based on the donor's browser and where the button is placed. To always use one mode, set the `context` attribute.
-
-<CodeBlocks>
-```html HTML
-<chariot-connect id="chariot" cid="NONPROFIT_CONNECT_ID" context="popup"></chariot-connect>
-```
-```javascript React
-<ChariotConnect
-    cid="NONPROFIT_CONNECT_ID"
-    context="popup"
-/>
-```
-</CodeBlocks>
-
-| Value | Behavior |
-| --- | --- |
-| `iframe` | Opens the checkout as a modal over your page. |
-| `popup` | Opens the checkout in a separate browser window. |
-
-<Note title="Buttons Inside an Iframe">
-  In `iframe` mode the modal covers the frame the button is rendered in. If the button sits inside an iframe that is taller than the donor's screen, use `popup` or the default. Forcing `iframe` can break the checkout in Safari, on mobile devices, and in embedded forms. In `popup` mode, follow [Prevent Blocked Popups](#prevent-blocked-popups).
-</Note>
-
 ## Where You Can Embed DAFpay
 
 DAFpay works on any domain and inside nested cross-origin iframes. You do not need to register a domain, and the checkout does not need third-party cookies or storage access.
