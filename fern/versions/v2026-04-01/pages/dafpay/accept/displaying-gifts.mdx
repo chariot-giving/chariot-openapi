@@ -30,13 +30,13 @@ Subscribe to `grant.created` and `grant.updated`. When an event arrives, retriev
 
 Display the status Chariot returns. Grant creation means the request was submitted to the provider. When the Grant moves to Completed, either automatically when the funds are recorded or when the nonprofit marks it received, update your transaction from the Grant update.
 
-## Syncing to a CRM
+## Recording DAFpay Gifts
 
-Since the funds in a DAF legally belong to the provider, most nonprofits hard credit the DAF and soft credit the donor in their CRM. If your platform has a CRM integration, DAF gifts should be synced accordingly.
+The funds in a DAF legally belong to the provider, so most nonprofits hard credit the DAF and soft credit the donor.
 
-Additionally, DAFpay gifts should be recorded in a pending state since the funds have not arrived on initiation. If your integration supports it, you can listen to the `grant.updated` webhook and update the CRM record status when the grant is received.
+A DAFpay gift is initiated, not received. Record it in a pending state rather than as paid, and update it on `grant.updated` once the grant is received.
 
-Inconsistencies in how DAF gifts are synced are a common reason nonprofits turn DAFpay off, so you should offer a setting to turn CRM sync off for DAFpay gifts.
+Nonprofits often ask whether DAFpay gifts sync automatically, since the records usually need review before they land.
 
 ## Cancellations and Refunds
 
