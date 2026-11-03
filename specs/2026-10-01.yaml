@@ -4191,6 +4191,38 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}/unreconcile:
+    post:
+      summary: Unreconcile a Deposit
+      description: |-
+        Unlink every donation from a deposit. The donations themselves aren't deleted, and their
+        payment status updates to reflect that they're no longer part of the deposit.
+      operationId: unreconcileDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to unreconcile
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "204":
+          description: The deposit was unreconciled.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/properties:
     get:
       summary: List Properties
