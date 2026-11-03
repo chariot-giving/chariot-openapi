@@ -46,6 +46,15 @@ Create the Connect when the organization enables DAFpay, not during donor checko
 
 Create Connect allows about 50 requests per second and 10,000 per hour, and reports the limits in the response headers. For a large launch, create every Connect first, then turn on the button.
 
+## Settings Chariot Controls
+
+Some settings live on the Connect rather than in your code. Ask Chariot if you want any of these changed:
+
+- Whether the donor can switch between one-time and monthly inside the modal
+- Whether unintegrated grants are enabled
+- Which optional fields the modal collects, and which of them are required
+- Whether DAFpay returns donor information from the provider
+
 ## Prevent Tenant Mix-ups
 
 Resolve the Connect ID from the same organization record used to render the form. Do not hardcode an ID, store it in process-wide mutable state, reuse the last value loaded, or fall back to a platform default.

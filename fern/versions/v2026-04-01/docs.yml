@@ -47,9 +47,6 @@ navigation:
                   - page: Build a Custom Integration
                     slug: api
                     path: ./pages/dafpay/accept/api.mdx
-                  - page: Authentication
-                    slug: authentication
-                    path: ./pages/dafpay/accept/authentication.mdx
                   - page: Create Connects
                     slug: connects
                     path: ./pages/dafpay/accept/connects.mdx
@@ -68,6 +65,9 @@ navigation:
               - section: Create the Grant
                 slug: grant
                 contents:
+                  - page: Authentication
+                    slug: authentication
+                    path: ./pages/dafpay/accept/authentication.mdx
                   - page: Create the Grant
                     slug: create-grant
                     path: ./pages/dafpay/accept/create-grant.mdx

@@ -62,6 +62,12 @@ There is no maximum-amount field. To enforce a maximum, set `lockAmount` or chec
 }
 ```
 
+## Fees the Donor Covers
+
+Donor-covered fees go in the amount rather than in `applicationFeeAmount`, which is a platform fee. Raising the amount also raises the fee, so solve for the final amount and round it to a whole dollar.
+
+Tips are not permitted on DAF gifts, because DAF funds cannot go to a for-profit entity. Suppress any tip option when the donor selects DAFpay.
+
 ## Disable DAFpay Until the Form Is Ready
 
 If your donation form has required fields, disable the DAFpay button until the form passes validation. Keep your own form validation and error messages alongside it, so the donor can see what to fix.

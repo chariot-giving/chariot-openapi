@@ -5,6 +5,8 @@ hidden: false
 
 <Note title="For Nonprofits">
   This page is for nonprofits integrating their own donation form. If you are a fundraising platform offering DAFpay across many nonprofits' forms, see [Displaying DAFpay Gifts](/guides/dafpay/accept/displaying-gifts) instead.
+
+  Donations and Deposits are scoped to an organization. A platform API key is bound to a fundraising application rather than to an organization, so these calls return a `401`. A platform can create a donation subscription and it will be accepted, but it will never deliver.
 </Note>
 
 Every Grant has a Donation, but not every Donation has a Grant. A donor who gives from their provider's own app, without ever touching your form, produces a Donation and no Grant. That only happens if Chariot sees the gift, through a connected source or funds landing in your Chariot account.
