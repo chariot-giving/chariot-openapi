@@ -38,18 +38,15 @@ navigation:
           - section: Integrate DAFpay
             slug: accept
             contents:
-              - section: Set Up
-                slug: setup
-                contents:
-                  - page: Build a Custom Integration
-                    slug: api
-                    path: ./pages/dafpay/accept/api.mdx
-                  - page: Create Connects
-                    slug: connects
-                    path: ./pages/dafpay/accept/connects.mdx
+              - page: Build a Custom Integration
+                slug: api
+                path: ./pages/dafpay/accept/api.mdx
               - section: Adding DAFpay
                 slug: checkout
                 contents:
+                  - page: Create Connects
+                    slug: connects
+                    path: ./pages/dafpay/accept/connects.mdx
                   - page: Install DAFpay
                     slug: install
                     path: ./pages/dafpay/accept/install.mdx
