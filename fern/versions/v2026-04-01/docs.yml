@@ -179,6 +179,9 @@ navigation:
           - page: Getting Started
             slug: getting-started
             path: ./pages/processing/getting-started.mdx
+          - page: Donation Status
+            slug: donation-status
+            path: ./pages/processing/donation-status.mdx
           - page: FAQ
             slug: faq
             path: ./pages/processing/faq.mdx

@@ -21,42 +21,11 @@ Store `donationId` on your record as soon as the Grant returns it. It is the lin
 
 Most donation IDs appear within a second or two. A small number take several seconds, and occasionally one takes considerably longer, so retrieve the Grant again with a short backoff rather than calling once and treating the donation as missing.
 
-## Payment Status on the Donation
+## What Happens Next
 
-The Grant tells you what the donor authorized. The Donation's `payment_status` tells you where the money is.
+Once the Donation exists, it behaves like any other gift in Chariot. [Donation Status](/guides/processing/donation-status) covers `payment_status`, settlement timestamps, retrieving donations, and writing your own status back.
 
-| Value | What it means |
-| --- | --- |
-| `INCOMING_TO_CHARIOT` | The funds are on their way into your Chariot account. Chariot usually matches them automatically and marks the gift `RECEIVED_IN_CHARIOT` once the deposit completes; a deposit Chariot cannot match is reconciled in the dashboard. Chariot emails you once the funds are available. |
-| `INCOMING_OUTSIDE_CHARIOT` | The funds are on their way to you directly from the provider, so Chariot cannot see them land. Someone on your team marks the gift received in the dashboard, unless a connected source records the payment first. |
-| `RECEIVED_IN_CHARIOT` | The funds arrived in your Chariot account. |
-| `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
-| `CANCELED` | The gift will not be paid. |
-
-A gift paid directly to you stays `INCOMING_OUTSIDE_CHARIOT` until someone confirms it, and the Grant stays `Initiated` alongside it. That confirmation is a manual step, so both can sit there for a long time. Treat them as a resting state rather than a sign that something failed, and do not build a workflow that waits on them advancing by themselves.
-
-## Settlement Timestamps
-
-A Donation can read as received before the money is usable. Check the timestamps when your workflow depends on funds being available.
-
-| Field | What it marks |
-| --- | --- |
-| `created_at` | When Chariot created the Donation record. |
-| `initiation.initiated_at` | When the gift was initiated through DAFpay. |
-| `settlement.settled_at` | When the deposit settled at the bank. |
-| `settlement.deposit_id` | The Deposit the funds arrived in. |
-
-## Retrieving Donations and Deposits
-
-List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, and `dafpay_tracking_id`.
-
-<Warning title="Filtered by Creation Date">
-  List Donations filters on `created_at`, not `updated_at`, so it will not show changes to older gifts. Pair it with `donation.updated` events.
-</Warning>
-
-## Record Processing in Your Systems
-
-To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a Donation, and you can retrieve them alongside the rest of the Donation data.
+Two things are worth knowing before you get there. A DAFpay gift paid directly to you stays incoming until someone confirms receipt, and the Grant stays `Initiated` alongside it. Both can sit there for a long time, so treat them as a resting state rather than a failure.
 
 ## Matching a Payment That Arrives Outside Chariot
 
