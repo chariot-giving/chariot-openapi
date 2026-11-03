@@ -35,9 +35,6 @@ navigation:
           - page: Overview
             slug: overview
             path: ./pages/dafpay/overview.mdx
-          - page: Find Your Use Case
-            slug: use-cases
-            path: ./pages/dafpay/use-cases.mdx
           - section: Integrate DAFpay
             slug: accept
             contents:
