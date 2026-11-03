@@ -38,64 +38,73 @@ navigation:
           - page: Find Your Use Case
             slug: use-cases
             path: ./pages/dafpay/use-cases.mdx
-          - section: Accept Grant Requests
+          - section: Integrate DAFpay
             slug: accept
             contents:
-              - page: Build a Custom Integration
-                slug: api
-                path: ./pages/dafpay/accept/api.mdx
-              - page: Integration Checklist
-                slug: checklist
-                path: ./pages/dafpay/accept/checklist.mdx
-              - page: Authentication
-                slug: authentication
-                path: ./pages/dafpay/accept/authentication.mdx
-              - page: Create Connects
-                slug: connects
-                path: ./pages/dafpay/accept/connects.mdx
-              - page: Install DAFpay
-                slug: install
-                path: ./pages/dafpay/accept/install.mdx
-              - page: Capture Donation Data
-                slug: donation-data
-                path: ./pages/dafpay/accept/donation-data.mdx
-              - page: Handle the Result
-                slug: result
-                path: ./pages/dafpay/accept/result.mdx
-              - page: Create the Grant
-                slug: create-grant
-                path: ./pages/dafpay/accept/create-grant.mdx
-              - page: Unintegrated Providers
-                slug: unintegrated
-                path: ./pages/dafpay/accept/unintegrated.mdx
-              - page: Recurring Grants
-                slug: recurring-grants
-                path: ./pages/dafpay/accept/recurring-grants.mdx
-              - page: Flow of Funds
-                slug: flow-of-funds
-                path: ./pages/dafpay/accept/flow-of-funds.mdx
-              - page: Displaying DAFpay Gifts
-                slug: displaying-gifts
-                path: ./pages/dafpay/accept/displaying-gifts.mdx
-              - page: Processing Donations
-                slug: processing-donations
-                path: ./pages/dafpay/accept/processing-donations.mdx
-              - page: Webhooks
-                slug: webhooks
-                path: ./pages/dafpay/accept/webhooks.mdx
-              - page: Testing and QA
-                slug: sandbox
-                path: ./pages/dafpay/accept/sandbox.mdx
-              - page: Go Live
-                slug: go-live
-                path: ./pages/dafpay/accept/go-live.mdx
-          - page: Troubleshooting
-            slug: troubleshooting
-            path: ./pages/dafpay/troubleshooting.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/dafpay/faq.mdx
-          - section: Send Grant Requests
+              - section: Get Set Up
+                slug: setup
+                contents:
+                  - page: Build a Custom Integration
+                    slug: api
+                    path: ./pages/dafpay/accept/api.mdx
+                  - page: Authentication
+                    slug: authentication
+                    path: ./pages/dafpay/accept/authentication.mdx
+                  - page: Create Connects
+                    slug: connects
+                    path: ./pages/dafpay/accept/connects.mdx
+              - section: Add the Checkout
+                slug: checkout
+                contents:
+                  - page: Install DAFpay
+                    slug: install
+                    path: ./pages/dafpay/accept/install.mdx
+                  - page: Capture Donation Data
+                    slug: donation-data
+                    path: ./pages/dafpay/accept/donation-data.mdx
+                  - page: Handle the Result
+                    slug: result
+                    path: ./pages/dafpay/accept/result.mdx
+              - section: Create the Grant
+                slug: grant
+                contents:
+                  - page: Create the Grant
+                    slug: create-grant
+                    path: ./pages/dafpay/accept/create-grant.mdx
+                  - page: Unintegrated Providers
+                    slug: unintegrated
+                    path: ./pages/dafpay/accept/unintegrated.mdx
+                  - page: Recurring Grants
+                    slug: recurring-grants
+                    path: ./pages/dafpay/accept/recurring-grants.mdx
+              - section: Handle What Comes Back
+                slug: results
+                contents:
+                  - page: Flow of Funds
+                    slug: flow-of-funds
+                    path: ./pages/dafpay/accept/flow-of-funds.mdx
+                  - page: Displaying DAFpay Gifts
+                    slug: displaying-gifts
+                    path: ./pages/dafpay/accept/displaying-gifts.mdx
+                  - page: Processing Donations
+                    slug: processing-donations
+                    path: ./pages/dafpay/accept/processing-donations.mdx
+                  - page: Webhooks
+                    slug: webhooks
+                    path: ./pages/dafpay/accept/webhooks.mdx
+              - section: Launch
+                slug: launch
+                contents:
+                  - page: Integration Checklist
+                    slug: checklist
+                    path: ./pages/dafpay/accept/checklist.mdx
+                  - page: Testing and QA
+                    slug: sandbox
+                    path: ./pages/dafpay/accept/sandbox.mdx
+                  - page: Go Live
+                    slug: go-live
+                    path: ./pages/dafpay/accept/go-live.mdx
+          - section: Connect Your DAF
             slug: send
             contents:
               - section: Donor Accounts
@@ -131,6 +140,12 @@ navigation:
                   - page: Integration Checklist
                     slug: integration-checklist
                     path: ./pages/oauth/integration-checklist.mdx
+          - page: Troubleshooting
+            slug: troubleshooting
+            path: ./pages/dafpay/troubleshooting.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/dafpay/faq.mdx
       - section: Disbursements
         slug: disbursements
         contents:
