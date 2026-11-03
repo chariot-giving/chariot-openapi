@@ -19,6 +19,8 @@ A donation record is created after the Grant. Once the Donation exists, its ID i
 
 Store `donationId` on your record as soon as the Grant returns it. It is the link that is present for every provider, and reading it once is cheaper than looking the Grant up again later.
 
+Most donation IDs appear within a second or two. A small number take several seconds, and occasionally one takes considerably longer, so retrieve the Grant again with a short backoff rather than calling once and treating the donation as missing.
+
 ## Payment Status on the Donation
 
 The Grant tells you what the donor authorized. The Donation's `payment_status` tells you where the money is.
@@ -30,6 +32,8 @@ The Grant tells you what the donor authorized. The Donation's `payment_status` t
 | `RECEIVED_IN_CHARIOT` | The funds arrived in your Chariot account. |
 | `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
 | `CANCELED` | The gift will not be paid. |
+
+A gift paid directly to you stays `INCOMING_OUTSIDE_CHARIOT` until someone confirms it, and the Grant stays `Initiated` alongside it. That confirmation is a manual step, so both can sit there for a long time. Treat them as a resting state rather than a sign that something failed, and do not build a workflow that waits on them advancing by themselves.
 
 ## Settlement Timestamps
 
