@@ -21,6 +21,15 @@ Once `CHARIOT_SUCCESS` fires, call Create Grant from your server to submit the g
 
 Complete this sequence within 15 minutes of authorization.
 
+Show a loading state while your server calls Create Grant, and show final success only once the Grant exists. If the request is queued for retry, show a pending message until Grant creation is confirmed. Use one submit action rather than asking the donor to click Give again.
+
+<Frame caption="Loading screen example">
+    <img src='../../../images/dafpay_form_click.png' />
+    <img src='../../../images/dafpay_loading_screen.png' />
+</Frame>
+
+Tell the donor that the request was submitted to their DAF provider. Do not say that the nonprofit received the funds or that the donor will receive another charitable tax receipt. Say that the gift can take from a few days to several weeks to arrive.
+
 ## Retry Safely
 
 Create Grant and Create Recurring Grant are both idempotent for a workflow session. If the first request times out, call the same endpoint again with the same `workflowSessionId`.

@@ -48,20 +48,9 @@ A one-time success payload has this shape. `user` holds the donor's details when
 
 ## On `CHARIOT_SUCCESS`
 
-Associate `detail.workflowSessionId` with the current platform transaction, nonprofit, and Connect ID.
+Associate `detail.workflowSessionId` with the current platform transaction, nonprofit, and Connect ID, and read the donor's details from `detail.user`.
 
-Read the donor's details from `detail.user`. The payload also carries the amount the donor authorized, which can differ from the amount your form collected. [Amount Validation](/guides/dafpay/accept/create-grant#amount-validation) covers why, and which one to send.
-
-Your server then creates the Grant. [Create the Grant](/guides/dafpay/accept/create-grant) covers that sequence and the responses you can get back.
-
-While it runs, show a loading state, and show final success only once the Grant exists. If the request is queued for retry, show a pending message until Grant creation is confirmed. Use one submit action rather than asking the donor to click Give again.
-
-<Frame caption="Loading screen example">
-    <img src='../../../images/dafpay_form_click.png' />
-    <img src='../../../images/dafpay_loading_screen.png' />
-</Frame>
-
-Tell the donor that the request was submitted to their DAF provider. Do not say that the nonprofit received the funds or that the donor will receive another charitable tax receipt. Say that the gift can take from a few days to several weeks to arrive.
+Your server then creates the Grant. Follow the steps on [Create the Grant](/guides/dafpay/accept/create-grant).
 
 ## On `CHARIOT_EXIT`
 
