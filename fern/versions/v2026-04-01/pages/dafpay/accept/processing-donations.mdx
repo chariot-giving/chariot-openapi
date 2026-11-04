@@ -25,4 +25,6 @@ Donations received in your Chariot Deposit Account are automatically tied to the
 | Provider Grant ID | Grant `externalGrantId` | Match the provider's own grant record when the tracking ID is absent. |
 | Your transaction ID | `initiation.dafpay_metadata` | Find the original form submission. |
 
+Some DAF providers do not pass the Tracking ID through on their remittances, which is why the External Grant ID matters as a second route. When neither appears, match on the donor's fund name, amount, date, and designation, and review an uncertain match before marking the Donation received. Some providers batch several gifts into one payment, so one payment can match more than one Donation.
+
 Next: [Testing and QA](/guides/dafpay/accept/sandbox)
