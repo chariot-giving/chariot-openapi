@@ -5923,7 +5923,8 @@ components:
         check_number:
           type: string
           description: |-
-            The check number, when the funds arrived by check.
+            The check number, when the funds arrived by check, whether received in Chariot or
+            outside Chariot.
           example: "1001"
     DonationSettlementInput:
       type: object
