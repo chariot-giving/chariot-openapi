@@ -25,15 +25,9 @@ Send your sandbox key in the `Authorization` header. Use the resulting events to
 
 ## Test Tenant Routing
 
-Test at least two nonprofits at the same time.
+If you serve many nonprofits, open two of their forms at the same time and confirm each one loads its own Connect ID and produces a Grant for the intended nonprofit. Confirm DAFpay is absent or disabled for a nonprofit that has not enabled it.
 
-- Create a separate Connect for each nonprofit.
-- Open both donation forms concurrently.
-- Confirm each form loads the correct Connect ID.
-- Confirm each Grant belongs to the intended nonprofit.
-- Confirm DAFpay is absent or disabled when a nonprofit has not enabled it.
-
-These tests catch hardcoded, cached, fallback, or process-wide Connect IDs.
+This catches hardcoded, cached, fallback, and process-wide Connect IDs, which send a donor's gift to a different nonprofit.
 
 ## Test the Donor Flow
 
