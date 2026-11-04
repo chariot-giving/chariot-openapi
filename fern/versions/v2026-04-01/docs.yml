@@ -38,7 +38,7 @@ navigation:
           - section: Integrate DAFpay
             slug: accept
             contents:
-              - page: Build a Custom Integration
+              - page: Overview
                 slug: api
                 path: ./pages/dafpay/accept/api.mdx
               - section: Adding DAFpay
