@@ -10,9 +10,7 @@ Donations represent gifts in Chariot and are only available to Chariot Deposit A
 
 ## Find the Donation
 
-The donation record is created after the Grant. Once the Donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the Grant immediately.
-
-In practice the ID is there in under a second, but that is not guaranteed. A small share take several seconds, and a rare one takes minutes or longer. Retrieve the Grant again rather than treating the Donation as missing, and do not fail the gift because the ID has not arrived yet.
+The donation record is created after the Grant. Once the Donation exists, its ID is added to the corresponding grant. This happens asynchronously, so `donationId` may not be present if you retrieve the Grant immediately. The ID is usually there in under a second, but can take longer. Retrieve the Grant again rather than treating the Donation as missing.
 
 Once the Donation exists, it behaves like any other gift in Chariot. [Donation Status](/guides/processing/donation-status) covers `payment_status`, settlement timestamps, retrieving donations, and writing your own status back.
 
