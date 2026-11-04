@@ -119,6 +119,21 @@ DAFpay must open in direct response to the donor's click. Keep the time between 
 
 Chariot Connect gives you two callbacks for passing form data, and which one you use decides when your code runs relative to the launch.
 
+```mermaid
+flowchart TD
+    A([Donor clicks the DAFpay button]) --> B{Do you need to call your own server
+    to build the donation properties
+    or record the intent?}
+    B -->|No| C[onDonationRequest]
+    B -->|Yes| D[onAsyncDonationRequest]
+    C --> C1[Your callback runs, then the checkout launches.
+    Return the properties, or return false
+    to stop the launch when your form is invalid.]
+    D --> D1[The checkout launches, then your callback runs.
+    DAFpay shows a loader until it resolves.
+    It cannot stop the launch.]
+```
+
 | Callback | When it runs | Use it when |
 | --- | --- | --- |
 | `onDonationRequest` | Before the checkout launches | Every donation property is available the moment the donor clicks and you do not need to call your own server. Returning `false` stops the checkout from launching, so this is where form validation belongs. |
