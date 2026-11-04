@@ -23,13 +23,6 @@ POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/cancel
 
 Send your sandbox key in the `Authorization` header. Use the resulting events to confirm your integration retrieves the changed record and updates its own transaction.
 
-## What Sandbox Cannot Do
-
-A few things can only be checked in production, so plan for them rather than discovering them at launch.
-
-- Funds never arrive. Sandbox cannot settle a payment, so the path from a created Grant to a received Donation cannot be exercised end to end.
-- Every sandbox DAF account returns the same test donor details, so you cannot see how different providers populate donor data.
-- Production has no mock providers. A live test gift has to come from a real donor-advised fund.
 
 ## Test Tenant Routing
 

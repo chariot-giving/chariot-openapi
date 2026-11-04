@@ -59,9 +59,6 @@ navigation:
               - section: Creating Grants
                 slug: grant
                 contents:
-                  - page: Authentication
-                    slug: authentication
-                    path: ./pages/dafpay/accept/authentication.mdx
                   - page: Create the Grant
                     slug: create-grant
                     path: ./pages/dafpay/accept/create-grant.mdx
@@ -83,9 +80,6 @@ navigation:
                   - page: Processing Donations
                     slug: processing-donations
                     path: ./pages/dafpay/accept/processing-donations.mdx
-                  - page: Webhooks
-                    slug: webhooks
-                    path: ./pages/dafpay/accept/webhooks.mdx
               - section: Going Live
                 slug: launch
                 contents:
