@@ -36,17 +36,11 @@ Complete this sequence within 15 minutes of authorization.
 
 [Create Grant](/api/grants/create) and [Create Recurring Grant](/api/recurring-grants/create) are both idempotent for a workflow session. If the first request times out, call the same endpoint again with the same `workflowSessionId`.
 
-| Response | What to do |
-| --- | --- |
-| `201 Created` | The Grant was created. Store it and stop retrying. |
-| `200 OK` | A Grant already exists for this workflow session. Store it and stop retrying. |
-| `409 Conflict` | Submission for this session is already being processed. Wait, then retry with the same workflow session. |
-| `410 Gone` | No Grant was created and the authorization expired. Ask the donor to complete DAFpay again. |
-| `400 Bad Request` | A value cannot be submitted. Read the error and handle the invalid amount, provider requirement, or fee. |
-| `401` or `403` | Authentication or access failed. Check the API key, the environment, and account access. |
-| `404 Not Found` | The DAF provider does not recognize the nonprofit. Offer another payment method. |
-| `412 Precondition Failed` | The nonprofit is not eligible, for example not in good standing with the IRS. |
-| `502 Bad Gateway` | The provider is down or the submission failed. Retrying submits the gift to the provider again. |
+A `201` means the Grant was created and a `200` means one already existed for that session. Both are success, so store the Grant and stop retrying. Keep retrying only on a `409`, while submission is still in flight, and on a `502`, remembering that each `502` retry submits the gift to the provider again.
+
+Stop and change what the donor sees on the rest. A `410` means the authorization expired without a Grant, so the donor has to complete DAFpay again. A `404` means the provider does not recognize the nonprofit and a `412` means the nonprofit cannot receive DAF gifts, so offer another payment method. Keep the donor's transaction pending until you know which of these happened, and never mark it complete on an error.
+
+[Create Grant](/api/grants/create) lists every response it returns and what each one means.
 
 ### A Server-Side Example
 
