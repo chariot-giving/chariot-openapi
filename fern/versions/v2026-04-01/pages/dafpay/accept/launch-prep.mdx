@@ -38,7 +38,7 @@ This catches hardcoded, cached, fallback, and process-wide Connect IDs, which se
 - Test every exit reason your interface handles.
 - Test an unintegrated DAF provider, if supported.
 - Confirm DAFpay opens within one second of the donor's click.
-- Test duplicate clicks and Create Grant retries, and confirm only one Grant is created.
+- Test duplicate clicks and [Create Grant](/api/grants/create) retries, and confirm only one Grant is created.
 - Verify webhook signatures and repeated delivery.
 - Test with popup blocking enabled, and confirm your page explains what to do if DAFpay cannot open.
 
@@ -66,7 +66,7 @@ DAFpay must open within one second of the donor's click, with no call to your se
 </Accordion>
 
 <Accordion title="**DAFpay Completed, but No Grant Exists**">
-Confirm that your server received `CHARIOT_SUCCESS` and called Create Grant within 15 minutes. Preserve the workflow session, Connect ID, nonprofit, and platform transaction ID for investigation.
+Confirm that your server received `CHARIOT_SUCCESS` and called [Create Grant](/api/grants/create) within 15 minutes. Preserve the workflow session, Connect ID, nonprofit, and platform transaction ID for investigation.
 </Accordion>
 
 <Accordion title="**The Wrong Nonprofit Received the Grant**">
@@ -80,7 +80,7 @@ Look up the status code in the response table on [Create the Grant](/guides/dafp
 </Accordion>
 
 <Accordion title="**Webhook Events Are Missing**">
-Confirm the event type, environment, endpoint, and signature code. Use List Events to determine whether Chariot created the event or delivery failed. Keep a recovery process for state that must not be missed.
+Confirm the event type, environment, endpoint, and signature code. Use [List Events](/api/events/list) to determine whether Chariot created the event or delivery failed. Keep a recovery process for state that must not be missed.
 </Accordion>
 
 <Accordion title="**The Button Does Not Render or Open**">

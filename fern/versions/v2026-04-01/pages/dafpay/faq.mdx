@@ -45,7 +45,7 @@ Yes, for three reasons:
 2. Some DAF providers set a minimum grant amount.
 3. The amount cannot exceed the fund balance.
 
-Use the amount returned by `CHARIOT_SUCCESS` when you call Create Grant, not the amount your form collected.
+Use the amount returned by `CHARIOT_SUCCESS` when you call [Create Grant](/api/grants/create), not the amount your form collected.
 </Accordion>
 
 <Accordion title="**Can we force DAFpay to open as a modal or a popup?**">
@@ -148,7 +148,7 @@ DAF funds are controlled by the provider, not the donor. Whether a request can b
 
 
 <Accordion title="**How do we get from a Donation back to its Grant?**">
-A Donation does not carry a grant ID. Call List Grants with `donation_id`, or match the Donation's `initiation.dafpay_tracking_id` to the Grant's `trackingId`. In the other direction, the Grant's `donationId` is filled in shortly after creation, so if it is empty, read the Grant again later.
+A Donation does not carry a grant ID. Call [List Grants](/api/grants/list) with `donation_id`, or match the Donation's `initiation.dafpay_tracking_id` to the Grant's `trackingId`. In the other direction, the Grant's `donationId` is filled in shortly after creation, so if it is empty, read the Grant again later.
 </Accordion>
 
 <Accordion title="**Can our platform mark a Grant received?**">
