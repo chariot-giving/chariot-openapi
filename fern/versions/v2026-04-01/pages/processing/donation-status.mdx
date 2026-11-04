@@ -27,7 +27,7 @@ A Donation can read as received before the money is usable. Check the timestamps
 
 ## Retrieving Donations
 
-List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, `created_at.after`, `created_at.before`, and `dafpay_tracking_id`.
+[Getting Started](/guides/processing/getting-started#step-3-retrieve-donations) shows the List Donations and Get Donation calls. List Donations returns gifts across every connected payment source on the account, pages with `next_page_token`, which you pass back as `page_token` with the same filters, and caps the page size at 100. You can filter by `payment_source_id`, `deposit_id`, `created_at.after`, `created_at.before`, and `dafpay_tracking_id`.
 
 <Warning title="Filtered by Creation Date">
   List Donations filters on `created_at`, not `updated_at`, so it will not show changes to older gifts. Pair it with `donation.updated` events.
@@ -35,4 +35,4 @@ List Donations returns gifts across every connected payment source on the accoun
 
 ## Recording Your Own Status
 
-To write your own status back to Chariot, for example to record that a gift has been entered in your CRM, create a property in the Chariot dashboard and set it with [Assign a Property](/api/properties/assign). Properties are the writable part of a Donation, and you can retrieve them alongside the rest of the Donation data.
+Properties are the writable part of a Donation, and you retrieve them alongside the rest of the Donation data. To record your own status, for example that a gift has been entered in your CRM, create a property in the Chariot Dashboard and assign it to the Donation. The [FAQ](/guides/processing/faq#how-do-i-add-custom-fields-to-donations) shows the call.
