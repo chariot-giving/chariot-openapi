@@ -29,7 +29,7 @@ A Donation can read as received before the money is usable. Check the timestamps
 
 ## Retrieving Donations
 
-List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id` and `deposit_id`.
+List Donations returns gifts across every connected payment source on the account. It pages with `next_page_token`, which you pass back as `page_token` with the same filters, and the maximum page size is 100. You can filter by `payment_source_id`, `deposit_id`, `created_at.after`, `created_at.before`, and `dafpay_tracking_id`.
 
 <Warning title="Filtered by Creation Date">
   List Donations filters on `created_at`, not `updated_at`, so it will not show changes to older gifts. Pair it with `donation.updated` events.
