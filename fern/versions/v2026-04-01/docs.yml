@@ -41,57 +41,18 @@ navigation:
               - page: Overview
                 slug: api
                 path: ./pages/dafpay/accept/api.mdx
-              - section: Adding DAFpay
-                skip-slug: true
-                contents:
-                  - page: Create Connects
-                    slug: connects
-                    path: ./pages/dafpay/accept/connects.mdx
-                  - page: Install DAFpay
-                    slug: install
-                    path: ./pages/dafpay/accept/install.mdx
-                  - page: Capture Donation Data
-                    slug: donation-data
-                    path: ./pages/dafpay/accept/donation-data.mdx
-                  - page: Handle the Result
-                    slug: result
-                    path: ./pages/dafpay/accept/result.mdx
-              - section: Creating Grants
-                skip-slug: true
-                contents:
-                  - page: Create the Grant
-                    slug: create-grant
-                    path: ./pages/dafpay/accept/create-grant.mdx
-                  - page: Unintegrated Providers
-                    slug: unintegrated
-                    path: ./pages/dafpay/accept/unintegrated.mdx
-                  - page: Recurring Grants
-                    slug: recurring-grants
-                    path: ./pages/dafpay/accept/recurring-grants.mdx
-              - section: Managing Gifts
-                skip-slug: true
-                contents:
-                  - page: Flow of Funds
-                    slug: flow-of-funds
-                    path: ./pages/dafpay/accept/flow-of-funds.mdx
-                  - page: Displaying DAFpay Gifts
-                    slug: displaying-gifts
-                    path: ./pages/dafpay/accept/displaying-gifts.mdx
-                  - page: Processing Donations
-                    slug: processing-donations
-                    path: ./pages/dafpay/accept/processing-donations.mdx
-              - section: Launch Prep
-                skip-slug: true
-                contents:
-                  - page: Testing and QA
-                    slug: sandbox
-                    path: ./pages/dafpay/accept/sandbox.mdx
-                  - page: Troubleshooting
-                    slug: troubleshooting
-                    path: ./pages/dafpay/troubleshooting.mdx
-                  - page: Go Live
-                    slug: go-live
-                    path: ./pages/dafpay/accept/go-live.mdx
+              - page: Adding DAFpay
+                slug: adding-dafpay
+                path: ./pages/dafpay/accept/adding-dafpay.mdx
+              - page: Creating Grants
+                slug: creating-grants
+                path: ./pages/dafpay/accept/creating-grants.mdx
+              - page: Managing Gifts
+                slug: managing-gifts
+                path: ./pages/dafpay/accept/managing-gifts.mdx
+              - page: Launch Prep
+                slug: launch-prep
+                path: ./pages/dafpay/accept/launch-prep.mdx
           - section: Connect Your DAF
             slug: send
             contents:

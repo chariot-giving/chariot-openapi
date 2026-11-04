@@ -33,19 +33,19 @@ redirects:
     destination: "/guides/dafpay/accept/api#integration-checklist"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/set-up"
-    destination: "/guides/dafpay/accept/connects"
+    destination: "/guides/dafpay/accept/adding-dafpay#create-connects"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/installation"
-    destination: "/guides/dafpay/accept/install"
+    destination: "/guides/dafpay/accept/adding-dafpay#install-dafpay"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/integration"
-    destination: "/guides/dafpay/accept/donation-data"
+    destination: "/guides/dafpay/accept/adding-dafpay#capture-donation-data"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/transactions"
-    destination: "/guides/dafpay/accept/processing-donations"
+    destination: "/guides/dafpay/accept/managing-gifts#processing-donations"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/prod-keys"
-    destination: "/guides/dafpay/accept/go-live"
+    destination: "/guides/dafpay/accept/launch-prep#go-live"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/faq"
     destination: "/guides/dafpay/faq"
@@ -82,19 +82,19 @@ redirects:
     destination: "/v2026-04-01/guides/dafpay/accept/api#integration-checklist"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/set-up"
-    destination: "/v2026-04-01/guides/dafpay/accept/connects"
+    destination: "/v2026-04-01/guides/dafpay/accept/adding-dafpay#create-connects"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/installation"
-    destination: "/v2026-04-01/guides/dafpay/accept/install"
+    destination: "/v2026-04-01/guides/dafpay/accept/adding-dafpay#install-dafpay"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/integration"
-    destination: "/v2026-04-01/guides/dafpay/accept/donation-data"
+    destination: "/v2026-04-01/guides/dafpay/accept/adding-dafpay#capture-donation-data"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/transactions"
-    destination: "/v2026-04-01/guides/dafpay/accept/processing-donations"
+    destination: "/v2026-04-01/guides/dafpay/accept/managing-gifts#processing-donations"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/prod-keys"
-    destination: "/v2026-04-01/guides/dafpay/accept/go-live"
+    destination: "/v2026-04-01/guides/dafpay/accept/launch-prep#go-live"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/faq"
     destination: "/v2026-04-01/guides/dafpay/faq"

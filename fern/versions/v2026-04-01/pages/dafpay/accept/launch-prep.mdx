@@ -1,0 +1,136 @@
+---
+title: Launch Prep
+hidden: false
+---
+
+## Testing and QA
+
+Before you request production access, complete this test matrix in sandbox.
+
+### Sandbox Credentials
+
+Point your development and staging environments at `https://sandboxapi.givechariot.com` with your `sk_test_` key and your `test_` Connect ID. Every integrated provider in the sandbox list is a mock, and the same login works for all of them:
+
+```text
+username: good-user
+password: password123
+```
+
+No real money moves. Sandbox-only endpoints let you drive any Grant to a terminal state so you can test your received-funds handling end to end. There is no sandbox dashboard for platforms, so use these instead of marking gifts received by hand:
+
+```text
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/complete
+POST https://sandboxapi.givechariot.com/v1/simulations/grants/{id}/cancel
+```
+
+Send your sandbox key in the `Authorization` header. Use the resulting events to confirm your integration retrieves the changed record and updates its own transaction.
+
+### Test Tenant Routing
+
+If you serve many nonprofits, open two of their forms at the same time and confirm each one loads its own Connect ID and produces a Grant for the intended nonprofit. Confirm DAFpay is absent or disabled for a nonprofit that has not enabled it.
+
+This catches hardcoded, cached, fallback, and process-wide Connect IDs, which send a donor's gift to a different nonprofit.
+
+### Test the Donor Flow
+
+- Complete a one-time Grant.
+- Complete a recurring Grant, if enabled.
+- Test every exit reason your interface handles.
+- Test an unintegrated DAF provider, if supported.
+- Confirm DAFpay opens within one second of the donor's click.
+- Test duplicate clicks and Create Grant retries, and confirm only one Grant is created.
+- Verify webhook signatures and repeated delivery.
+- Test with popup blocking enabled, and confirm your page explains what to do if DAFpay cannot open.
+
+If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent Blocked Popups](/guides/dafpay/accept/adding-dafpay#prevent-blocked-popups).
+
+### Test Browsers and Devices
+
+DAFpay opens in a frame or popup depending on the browser and screen size. Test the full donor flow on:
+
+- Chrome, Safari, and Firefox on desktop.
+- Safari and Chrome on iPhone.
+- Chrome on Android.
+- Every in-app or embedded browser your platform supports.
+
+Sandbox does not validate real settlement or remittance reconciliation. Confirm those workflows after launch with Chariot and a participating nonprofit.
+
+## Troubleshooting
+
+What to check when a DAFpay integration misbehaves.
+
+<AccordionGroup>
+
+<Accordion title="**The Popup Is Blocked on Mobile**">
+DAFpay must open within one second of the donor's click, with no call to your server in between. See [Prevent Blocked Popups](/guides/dafpay/accept/adding-dafpay#prevent-blocked-popups).
+</Accordion>
+
+<Accordion title="**DAFpay Completed, but No Grant Exists**">
+Confirm that your server received `CHARIOT_SUCCESS` and called Create Grant within 15 minutes. Preserve the workflow session, Connect ID, nonprofit, and platform transaction ID for investigation.
+</Accordion>
+
+<Accordion title="**The Wrong Nonprofit Received the Grant**">
+Treat this as a tenant-routing incident. Stop the affected rollout, preserve all identifiers and timestamps, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) immediately.
+
+Check for a hardcoded, cached, fallback, last-seen, or process-wide Connect ID.
+</Accordion>
+
+<Accordion title="**Create Grant Returned an Error**">
+Look up the status code in the response table on [Create the Grant](/guides/dafpay/accept/creating-grants#retry-safely).
+</Accordion>
+
+<Accordion title="**Webhook Events Are Missing**">
+Confirm the event type, environment, endpoint, and signature code. Use List Events to determine whether Chariot created the event or delivery failed. Keep a recovery process for state that must not be missed.
+</Accordion>
+
+<Accordion title="**The Button Does Not Render or Open**">
+If the button does not render or clicking it does nothing:
+
+1. Check the browser console for a blocked script, frame, font, style, or image.
+2. Check the Network panel for requests blocked to `cdn.givechariot.com` or `secure.dafpay.com`.
+3. Test with the same response headers used in production.
+4. Check both enforced and report-only policies.
+
+When CSP is delivered through a `<meta http-equiv="Content-Security-Policy">` tag, `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are ignored. Use a response header when possible.
+
+The directives DAFpay needs are on [Install DAFpay](/guides/dafpay/accept/adding-dafpay#content-security-policy).
+</Accordion>
+
+</AccordionGroup>
+
+## Go Live
+
+Request production access once you have completed the [integration checklist](/guides/dafpay/accept/api#integration-checklist). Chariot issues production keys after reviewing your sandbox integration, so you do not need to deploy to production first.
+
+### Request Production Access
+
+Email your Chariot contact or [integrations@givechariot.com](mailto:integrations@givechariot.com) with:
+
+- Sandbox form URL and how to test it
+- Production domains
+- Webhook endpoint and the events you subscribe to
+- Which of recurring, unintegrated providers and platform fees you support
+- Whether the modal shows Address and Note, and whether each is hidden, optional, or required. Donor name and email are always required
+- Screenshots or a recording of your loading, success, exit and confirmation states
+- Screenshots or a recording of the nonprofit enable and disable setting, and the data you store on each gift
+
+If you serve many nonprofits, also send:
+
+- Nonprofit onboarding and enablement flow
+- Launch-backfill plan
+- Help article, launch announcement and co-branded Chariot onboarding link
+- Nonprofit and live form Chariot can use for the production test
+- Target launch date
+
+When your agreement includes revenue share, also send billing contacts, ACH information and tax documentation.
+
+### Validate the First Live Gift
+
+Production has no mock providers, so a live test gift has to come from a real donor-advised fund. Chariot can make the gift if nobody on your side holds a DAF.
+
+- [ ] The form used the intended production Connect ID.
+- [ ] Exactly one Grant was created.
+- [ ] Your record stores the workflow session and Grant ID.
+- [ ] Loading, confirmation and email copy read correctly.
+- [ ] The gift can be found and reconciled.
+- [ ] CRM sync and hard or soft credit match the agreed rules.
