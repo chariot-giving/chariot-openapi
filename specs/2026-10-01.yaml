@@ -5929,15 +5929,14 @@ components:
     DonationSettlementInput:
       type: object
       description: |-
-        How the funds arrived outside Chariot. Only valid with a `payment_status` of
-        `RECEIVED_OUTSIDE_CHARIOT`.
+        Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
       properties:
         received_at:
           type: string
           format: date-time
           description: |-
-            When you received the funds. Defaults to the time of the request. Expressed in
-            RFC 3339 format.
+            When the funds were received by the recipient. Defaults to now. Expressed in RFC
+            3339 format.
           example: "2026-10-20T15:00:00Z"
         check_number:
           type: string
@@ -9287,12 +9286,8 @@ components:
               payment_status:
                 type: string
                 description: |-
-                  Where the donation's funds stand. Set it when you know more than Chariot can
-                  see, such as funds you received outside Chariot. Name `payment_status` in
-                  `clear_fields` to let Chariot determine it again.
-
-                  You can't change it once the donation is in a Chariot deposit, because the
-                  deposit decides it. The request is rejected with a `400`.
+                  The payment status of the donation. Can't be changed once the donation is
+                  reconciled to a deposit.
                 enum:
                   - INCOMING_TO_CHARIOT
                   - INCOMING_OUTSIDE_CHARIOT
@@ -9301,8 +9296,7 @@ components:
                 example: "RECEIVED_OUTSIDE_CHARIOT"
               settlement:
                 description: |-
-                  How the funds arrived outside Chariot. Only valid with a `payment_status` of
-                  `RECEIVED_OUTSIDE_CHARIOT` in the same request.
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
                 allOf:
                   - $ref: "#/components/schemas/DonationSettlementInput"
             example:
@@ -9467,9 +9461,7 @@ components:
               payment_status:
                 type: string
                 description: |-
-                  Where the donation's funds stand. Set it when you know more than Chariot can
-                  see, such as funds you received outside Chariot. Leave it out to let Chariot
-                  determine it.
+                  The payment status of the donation.
                 enum:
                   - INCOMING_TO_CHARIOT
                   - INCOMING_OUTSIDE_CHARIOT
@@ -9478,8 +9470,7 @@ components:
                 example: "RECEIVED_OUTSIDE_CHARIOT"
               settlement:
                 description: |-
-                  How the funds arrived outside Chariot. Only valid with a `payment_status` of
-                  `RECEIVED_OUTSIDE_CHARIOT`.
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
                 allOf:
                   - $ref: "#/components/schemas/DonationSettlementInput"
             example:
