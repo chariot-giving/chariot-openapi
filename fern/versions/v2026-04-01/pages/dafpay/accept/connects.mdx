@@ -38,6 +38,8 @@ Store the returned Connect ID on the corresponding organization record:
 platform_organization_id → chariot_organization_id → chariot_connect_id
 ```
 
+Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
+
 Create the Connect when the organization enables DAFpay, not during donor checkout. The call is idempotent: it returns the existing Connect for that organization on your platform. Send the contact email on repeat calls too.
 
 ## Create Connects at Scale

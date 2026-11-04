@@ -5,6 +5,15 @@ hidden: false
 
 Follow this guide to build directly against the DAFpay APIs, whether you are adding DAFpay to one organization's donation form or offering it across forms for many organizations.
 
+## Key Terms
+
+| Term | Definition |
+| --- | --- |
+| Connect | The DAFpay setup for one organization. Its ID tells Chariot which organization receives the gift. Organizations can have multiple Connects if they receive DAFpay from multiple places online. |
+| Workflow session | A single DAFpay session. A new workflow session starts each time a donor clicks the DAFpay button, and you use its ID to create the Grant. |
+| Grant | A grant initiated to a DAF provider, created via the Create Grant endpoint. |
+| Donation | A gift recorded in Chariot, available to Chariot Deposit Account holders. Donations come from DAFpay Grants, Chariot disbursement partners, or connected payment sources. [Processing Donations](/guides/dafpay/accept/processing-donations) covers how a Grant becomes a Donation. |
+
 ## How the Integration Works
 
 1. Get the Connect for the organization receiving the gift. Chariot provides it if you are integrating one organization's form. If you serve many, you create one per nonprofit.
@@ -20,7 +29,7 @@ Use this list to track your progress. Each item links to the page that explains 
 
 ### Build
 
-- [ ] [Request sandbox access](/guides/dafpay/accept/create-grant#authentication)
+- [ ] [Request sandbox access](/api/authentication)
 - [ ] [Create Connects (platforms)](/guides/dafpay/accept/connects)
 - [ ] [Install DAFpay](/guides/dafpay/accept/install)
 - [ ] [Add Chariot to your Content Security Policy](/guides/dafpay/accept/install#content-security-policy)

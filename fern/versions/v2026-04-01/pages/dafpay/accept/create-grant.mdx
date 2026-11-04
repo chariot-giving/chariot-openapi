@@ -3,20 +3,7 @@ title: Create the Grant
 hidden: false
 ---
 
-## Authentication
-
-Start by setting up your API key. Sandbox and production use separate API keys, separate Connects, and separate data. Sandbox Connect IDs begin with `test_` and production Connect IDs begin with `live_`.
-
-```text
-Authorization: Bearer <API_KEY>
-```
-
-| Environment | Base URL |
-| --- | --- |
-| Sandbox | `https://sandboxapi.givechariot.com` |
-| Production | `https://api.givechariot.com` |
-
-Once `CHARIOT_SUCCESS` fires, call Create Grant from your server to submit the gift.
+Once `CHARIOT_SUCCESS` fires, call [Create Grant](/api/grants/create) from your server to submit the gift. The call is made with your server-side credentials, never from the browser; see [Authentication](/api/authentication) for keys and base URLs.
 
 <EndpointRequestSnippet endpoint="POST /v1/grants" />
 
