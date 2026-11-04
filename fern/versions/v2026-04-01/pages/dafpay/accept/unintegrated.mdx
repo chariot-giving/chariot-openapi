@@ -2,13 +2,10 @@
 title: Unintegrated Providers
 hidden: false
 ---
-
 Some DAF providers cannot accept a Grant directly through DAFpay. Chariot sets one of two behaviors for your platform:
 
 1. Return the donor to your form to choose another payment method.
 2. Record the donor's intent and help them complete the Grant in the provider's portal.
-
-The first sends `CHARIOT_EXIT` with `UNINTEGRATED_DAF`. Providers Chariot does not support at all always send `UNINTEGRATED_DAF_NOT_SUPPORTED`, whatever the setting.
 
 <Frame caption="Left: record the donor's intent. Right: return the donor to your form to pick another payment method.">
     <img src='../../../images/disconnected-submit.png' />
@@ -17,11 +14,7 @@ The first sends `CHARIOT_EXIT` with `UNINTEGRATED_DAF`. Providers Chariot does n
 
 ## How the Confirmation Arrives
 
-Confirming an unintegrated Grant is delivered as a `CHARIOT_EXIT` event with the reason `UNINTEGRATED_GRANT_CONFIRMED`, not as `CHARIOT_SUCCESS`. Handle it in your exit listener even though the donor completed the step.
-
-Chariot has already created the Unintegrated Grant record by the time this event fires. There is no endpoint for you to call, and none is needed. You read Unintegrated Grants and subscribe to their events; you never create one.
-
-## What the Event Carries
+If unintegrated Grants are enabled and a donor selects an unintegrated DAF and submits their intent, Chariot calls the Create Unintegrated Grant endpoint and `CHARIOT_EXIT` fires with the reason `UNINTEGRATED_GRANT_CONFIRMED`.
 
 The exit event's `detail` includes the nonprofit and the Unintegrated Grant Chariot created:
 
@@ -49,44 +42,28 @@ The exit event's `detail` includes the nonprofit and the Unintegrated Grant Char
 }
 ```
 
-Join it to your own record on its `workflowSessionId`, or on an identifier you passed in `metadata`. Store `unintegratedGrant.id` as well, because that is the key the `unintegrated_grant.updated` events arrive on and the ID you read the record back with.
-
-Use `fund.redirectUrl` for the provider link and `fund.name` for the provider's name rather than showing the raw `fundId`.
-
 ## Confirmation Experience
 
-When `CHARIOT_EXIT` has the reason `UNINTEGRATED_GRANT_CONFIRMED`, show:
+Listen for the `CHARIOT_EXIT` with the reason `UNINTEGRATED_GRANT_CONFIRMED` and show instructions to complete the Grant through their provider portal:
 
-- the nonprofit's name and EIN, from `detail.nonprofit`;
-- the intended amount and designation;
-- the DAF provider link; and
-- the tracking ID with the `Tracking ID:` prefix and a copy control.
-
-Tell the donor that they still need to submit the Grant through their provider and should include the complete tracking ID in the provider's note or purpose field.
+- the nonprofit's name and EIN, from `detail.nonprofit`
+- the intended amount
+- the DAF provider link
+- the tracking ID with the `Tracking ID:` prefix and a copy control
 
 <Frame caption="Unintegrated Grant confirmation page">
     <img src='../../../images/unintegrated-grant-intent.png' />
 </Frame>
 
-<Note title="Avoid Duplicate Confirmations">
-  DAFpay also emails the donor these instructions. Check whether Chariot's own confirmation screen is on for your Connect before you build this page: with both on the donor sees two confirmations, and with both off they leave without a tracking ID. Chariot can turn the donor email off for your platform, and it is not sent when there is no donor email.
-</Note>
+DAFpay also emails the donor these instructions.
 
 <Frame caption="Unintegrated Grant donor instructions email">
     <img src='../../../images/grant-intent-email.png' />
 </Frame>
 
-An Unintegrated Grant's `status` is `Unknown`, `Initiated`, `Completed` or `Canceled`. `Unknown` is expected for this flow: the donor left DAFpay to finish the gift, so Chariot cannot confirm what happened unless the funds later arrive.
+## Unintegrated Grant Statuses
 
-## The Unintegrated Grant Record
-
-Unintegrated Grants carry no Chariot fee, and the funds usually go straight from the provider to the nonprofit.
-
-No event fires when the donor clicks Continue to DAF provider. `UNINTEGRATED_GRANT_CONFIRMED` fires when the donor closes Chariot's confirmation screen, or right away if that screen is turned off for your platform.
-
-`unintegrated_grant.updated` fires on every status change.
-
-Use the unintegrated-grant resources and events in the API reference for this separate object type.
+Unintegrated Grants are created with `status: Unknown`, since DAFpay does not have visibility into whether the donor completed the Grant in their provider's portal. `unintegrated_grant.updated` fires on every status change.
 
 <EndpointRequestSnippet endpoint="GET /v1/unintegrated_grants" />
 
