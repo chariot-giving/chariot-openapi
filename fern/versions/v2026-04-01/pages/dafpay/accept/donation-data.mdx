@@ -3,7 +3,7 @@ title: Capture Donation Data
 hidden: false
 ---
 
-With the button installed, use `onDonationRequest` to pass information from your donation form to DAFpay. Register it on the element you installed, once the component has loaded:
+With the button installed, use `onDonationRequest` to pass information from your donation form to DAFpay. If you need to call your own server first, use `onAsyncDonationRequest` instead; [Install DAFpay](/guides/dafpay/accept/install#prevent-blocked-popups) compares the two. Register the callback on the element you installed, once the component has loaded:
 
 ```javascript
 const chariot = document.getElementById("chariot");

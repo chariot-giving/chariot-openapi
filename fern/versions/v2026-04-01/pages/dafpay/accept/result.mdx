@@ -8,7 +8,7 @@ When the donor finishes in DAFpay, Chariot Connect tells your page what happened
 | Event | When it fires | Detail |
 | --- | --- | --- |
 | `CHARIOT_INIT` | The component is initialized and ready | None |
-| `CHARIOT_SUCCESS` | The donor authorized the request. This does not create the Grant or mean the nonprofit received the funds. Next, call Create Grant, or Create Recurring Grant when the payload contains `recurringGrantIntent`. | `OnSuccessMetadata` |
+| `CHARIOT_SUCCESS` | The donor authorized the request. This does not create the Grant or mean the nonprofit received the funds. Next, call Create Grant when the payload contains `grantIntent`, or Create Recurring Grant when it contains `recurringGrantIntent`. | `OnSuccessMetadata` |
 | `CHARIOT_EXIT` | The donor exited, an error occurred, or an unintegrated Grant was confirmed | `OnExitMetadata` |
 
 ```javascript
