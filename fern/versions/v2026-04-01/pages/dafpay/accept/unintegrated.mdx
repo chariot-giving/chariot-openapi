@@ -63,6 +63,6 @@ DAFpay also emails the donor these instructions.
 
 ## Unintegrated Grant Statuses
 
-Unintegrated Grants are created with `status: Unknown`, since DAFpay does not have visibility into whether the donor completed the Grant in their provider's portal. `unintegrated_grant.updated` fires on every status change.
+Unintegrated Grants are created with `status: Initiated`, which means the donor received instructions, not that they submitted the recommendation in their provider's portal. The status reaches `Completed` when the funds arrive, either in the nonprofit's Chariot account or marked received outside it, and `Canceled` if the gift is ruled out. `unintegrated_grant.updated` fires on every status change, and many Grants stay at `Initiated`.
 
 <EndpointRequestSnippet endpoint="GET /v1/unintegrated_grants" />

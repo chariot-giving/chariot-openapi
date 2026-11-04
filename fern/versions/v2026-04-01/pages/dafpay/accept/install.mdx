@@ -29,8 +29,6 @@ DAFpay works on any domain and inside nested cross-origin iframes. You do not ne
 
 By default, DAFpay opens a popup on mobile devices and in desktop Safari. When the button sits inside an iframe, it also opens a popup if that frame is not fully visible or its window is smaller than 390 by 640 pixels. Webviews always get the modal, and the `context` attribute overrides all of this.
 
-Chariot Connect does not emit open or close events, and its internal markup can change without notice, so do not build on it.
-
 ## Content Security Policy
 
 Chariot Connect loads its script from Chariot's CDN. Depending on the browser and viewport, DAFpay opens in a cross-origin frame or popup at `https://secure.dafpay.com`.
