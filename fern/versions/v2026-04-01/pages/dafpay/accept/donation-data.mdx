@@ -69,9 +69,9 @@ If your form allows a donor to divide one gift among multiple designations, you 
 
 ## Fees the Donor Covers
 
-If your donation form allows a donor to cover fees, pass the increased amount including the fee to `onDonationRequest`. Since the processing fee is percent based, raising the amount will raise the fee. Grants must be in whole dollar increments, so round to the nearest whole dollar before passing.
+If your donation form allows a donor to cover fees, pass the increased amount including the fee to `onDonationRequest`. Since the processing fee is percent based, raising the amount will raise the fee. Grants must be in whole dollar increments, so round the total down to a whole dollar and compute the fee from that final amount.
 
-Tips are not permitted on DAF gifts, because DAF funds cannot go to a for-profit entity. Please suppress any tip option when the donor selects DAFpay.
+Tips are not permitted on DAF gifts, because DAF funds cannot go to a for-profit entity. Suppress any tip option when the donor selects DAFpay.
 
 ## Disable Until Validated
 

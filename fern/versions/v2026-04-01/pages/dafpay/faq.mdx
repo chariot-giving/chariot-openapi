@@ -59,9 +59,11 @@ Browsers may block a popup that opens too long after the donor's click. Prefetch
 </Accordion>
 
 <Accordion title="**What if Create Grant times out or returns `410`?**">
-Retry with the same workflow session; never start a new one. The authorization expires 15 minutes after the donor gives it. After that, a retry returns `200` with the Grant if one was created, and `410` if none was.
+If Create Grant times out, retry with the same `workflowSessionId`. Never start a new session for a retry.
 
-To check whether a Grant exists, call Create Grant again with the same `workflowSessionId`: it returns the existing Grant with `200`. Keep the donor on a pending state until you know, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if you cannot tell what happened.
+The donor's authorization expires 15 minutes after they give it. If a Grant was already created, the retry returns `200` with that Grant. If no Grant was created and the authorization has expired, the API returns `410`.
+
+Keep the donor's transaction pending until you know which happened, and contact [integrations@givechariot.com](mailto:integrations@givechariot.com) if the result is still unclear.
 </Accordion>
 
 <Accordion title="**Can we add or correct metadata after the donor authorizes?**">
@@ -76,8 +78,6 @@ No. Metadata can only be set in the browser through `onDonationRequest`, and Cre
 
 <Accordion title="**How can our platform collect its processing fee?**">
 Pass `applicationFeeAmount` on [Create Grant](/api/grants/create). Create Grant validates it against a ceiling set for your fundraising application and returns a `400` above it. How the fee is collected is set in your Chariot agreement.
-
-Create Grant validates the amount against a ceiling set for your fundraising application and returns a `400` above it.
 </Accordion>
 
 <Accordion title="**Can we add an optional tip?**">
@@ -87,7 +87,7 @@ If a donor has selected DAFpay, you must suppress the option to add a tip.
 </Accordion>
 
 <Accordion title="**How can donors cover fees?**">
-Add the fee to the amount before the donor opens DAFpay. Raising the amount also raises the fee, so solve for the final amount, and round down to a whole dollar to stay under the fee ceiling. If the donor changes the amount in DAFpay, drop the fee coverage or ask them to reconfirm, and send [Create Grant](/api/grants/create) the returned amount.
+Add the fee to the amount before the donor opens DAFpay. Raising the amount also raises the fee, so solve for the final amount, round it down to a whole dollar, and compute the fee from that amount so it stays under the ceiling. If the donor changes the amount in DAFpay, drop the fee coverage or ask them to reconfirm, and send [Create Grant](/api/grants/create) the returned amount.
 </Accordion>
 
 </AccordionGroup>
