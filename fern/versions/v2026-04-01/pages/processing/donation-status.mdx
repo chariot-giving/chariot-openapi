@@ -13,8 +13,6 @@ A Donation's `payment_status` tells you where the money is, regardless of how th
 | `RECEIVED_OUTSIDE_CHARIOT` | Receipt was confirmed outside Chariot, by you or by a connected source. |
 | `CANCELED` | The gift will not be paid. |
 
-A gift paid directly to you stays `INCOMING_OUTSIDE_CHARIOT` until someone confirms it. That confirmation is a manual step, so it can sit there for a long time. Treat it as a resting state rather than a sign that something failed, and do not build a workflow that waits on it advancing by itself.
-
 Payment status is derived by Chariot from the state of the funds, so it is read only over the API.
 
 ## Settlement Timestamps
