@@ -54,15 +54,7 @@ Your server then creates the Grant. Follow the steps on [Create the Grant](/guid
 
 ## On `CHARIOT_EXIT`
 
-In general:
-
-- return a normal donor exit to the form
-- restart an expired session
-- retry authentication or provider access when appropriate
-- offer another payment method when the Grant cannot be made
-- log configuration and internal errors with the workflow session ID
-
-All reasons:
+`CHARIOT_EXIT` fires whenever a donor leaves the modal without an authorized grant intent. This includes normal exits back to your form, [unintegrated grant intents](/guides/dafpay/accept/unintegrated), and error cases. See all exit reasons below:
 
 | Reason | Meaning |
 | --- | --- |
@@ -89,5 +81,3 @@ All reasons:
 | `BROWSER_NOT_SUPPORTED` | The donor's browser cannot run DAFpay. Offer another payment method. |
 | `CUSTOM_ERROR` | A custom integration error occurred. |
 | `INTERNAL_ERROR` | An internal error occurred. |
-
-Next: [Create the Grant](/guides/dafpay/accept/create-grant)
