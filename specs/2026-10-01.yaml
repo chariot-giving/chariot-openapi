@@ -5239,7 +5239,7 @@ components:
           metadata:
             campaign_id: "spring-appeal"
         settlement:
-          type: "chariot"
+          destination: "chariot"
           received_at: "2026-09-25T14:00:00Z"
           settled_at: "2026-09-25T18:00:00Z"
           deposit_id: "deposit_01j8rs605a4gctmbm58d87mvsj"
@@ -5884,19 +5884,19 @@ components:
       type: object
       description: How the funds moved from the donor to the recipient.
       required:
-        - type
+        - destination
         - received_at
       properties:
-        type:
+        destination:
           type: string
           description: |-
-            Where the funds settled.
+            Whether the funds were deposited into your Chariot Deposit Account or settled outside Chariot.
 
-            - `chariot` — the funds arrived through a Chariot deposit. `deposit_id` and `settled_at` apply.
-            - `external` — the funds arrived outside Chariot's rails, straight to the recipient.
+            - `chariot` — the funds were deposited into your Chariot Deposit Account. `deposit_id` and `settled_at` apply.
+            - `outside_chariot` — the funds were deposited into another account, rather than your Chariot Deposit Account.
           enum:
             - chariot
-            - external
+            - outside_chariot
           example: chariot
         received_at:
           type: string
@@ -5912,14 +5912,36 @@ components:
           format: date-time
           description: |-
             When the funds became available in the recipient's Chariot account.
-            Only set when `type` is `chariot`. Expressed in RFC 3339 format.
+            Only set when `destination` is `chariot`. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         deposit_id:
           type: string
           description: |-
             The identifier of the deposit that carried the funds. Only set when
-            `type` is `chariot`.
+            `destination` is `chariot`.
           example: deposit_01kewb5vgsryzaajza5ynr06kz
+        check_number:
+          type: string
+          description: |-
+            The check number, when the funds arrived by check, whether received in Chariot or
+            outside Chariot.
+          example: "1001"
+    DonationSettlementInput:
+      type: object
+      description: |-
+        Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+      properties:
+        received_at:
+          type: string
+          format: date-time
+          description: |-
+            When the funds were received by the recipient. Defaults to now. Expressed in RFC
+            3339 format.
+          example: "2026-10-20T15:00:00Z"
+        check_number:
+          type: string
+          description: "The check number, when the funds arrived by check. Maximum length: 255 characters."
+          example: "1001"
     DonationInitiation:
       type: object
       description: |-
@@ -9261,6 +9283,22 @@ components:
                   type: string
                 example:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
+              payment_status:
+                type: string
+                description: |-
+                  The payment status of the donation. Can't be changed once the donation is
+                  reconciled to a deposit.
+                enum:
+                  - INCOMING_TO_CHARIOT
+                  - INCOMING_OUTSIDE_CHARIOT
+                  - RECEIVED_OUTSIDE_CHARIOT
+                  - CANCELED
+                example: "RECEIVED_OUTSIDE_CHARIOT"
+              settlement:
+                description: |-
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+                allOf:
+                  - $ref: "#/components/schemas/DonationSettlementInput"
             example:
               purpose: "Capital Campaign"
               amount_fee: 250
@@ -9420,6 +9458,21 @@ components:
                   type: string
                 example:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
+              payment_status:
+                type: string
+                description: |-
+                  The payment status of the donation.
+                enum:
+                  - INCOMING_TO_CHARIOT
+                  - INCOMING_OUTSIDE_CHARIOT
+                  - RECEIVED_OUTSIDE_CHARIOT
+                  - CANCELED
+                example: "RECEIVED_OUTSIDE_CHARIOT"
+              settlement:
+                description: |-
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+                allOf:
+                  - $ref: "#/components/schemas/DonationSettlementInput"
             example:
               source_id: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date: "2026-01-15T00:00:00Z"
