@@ -48,7 +48,7 @@ redirects:
     destination: "/guides/dafpay/accept/go-live"
     permanent: true
   - source: "/guides/dafpay/integrating-dafpay/faq"
-    destination: "/guides/dafpay/accept/faq"
+    destination: "/guides/dafpay/faq"
     permanent: true
   - source: "/guides/dafpay/donor-accounts/:slug"
     destination: "/guides/dafpay/send/donor-accounts/:slug"
@@ -97,7 +97,7 @@ redirects:
     destination: "/v2026-04-01/guides/dafpay/accept/go-live"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay/faq"
-    destination: "/v2026-04-01/guides/dafpay/accept/faq"
+    destination: "/v2026-04-01/guides/dafpay/faq"
     permanent: true
   - source: "/v2026-04-01/guides/dafpay/integrating-dafpay"
     destination: "/v2026-04-01/guides/dafpay/accept/api"

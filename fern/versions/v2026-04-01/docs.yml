@@ -80,21 +80,18 @@ navigation:
                   - page: Processing Donations
                     slug: processing-donations
                     path: ./pages/dafpay/accept/processing-donations.mdx
-              - section: Going Live
+              - section: Launch Prep
                 skip-slug: true
                 contents:
                   - page: Testing and QA
                     slug: sandbox
                     path: ./pages/dafpay/accept/sandbox.mdx
+                  - page: Troubleshooting
+                    slug: troubleshooting
+                    path: ./pages/dafpay/troubleshooting.mdx
                   - page: Go Live
                     slug: go-live
                     path: ./pages/dafpay/accept/go-live.mdx
-              - page: Troubleshooting
-                slug: troubleshooting
-                path: ./pages/dafpay/troubleshooting.mdx
-              - page: FAQ
-                slug: faq
-                path: ./pages/dafpay/faq.mdx
           - section: Connect Your DAF
             slug: send
             contents:
@@ -131,6 +128,9 @@ navigation:
                   - page: Integration Checklist
                     slug: integration-checklist
                     path: ./pages/oauth/integration-checklist.mdx
+          - page: FAQ
+            slug: faq
+            path: ./pages/dafpay/faq.mdx
       - section: Disbursements
         slug: disbursements
         contents:
