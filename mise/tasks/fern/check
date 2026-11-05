@@ -1,0 +1,10 @@
+#!/bin/bash
+source "$MISE_CONFIG_ROOT/mise/tasks/_"
+set -euo pipefail
+#MISE description="Validate the OpenAPI specs, overrides and docs config."
+#MISE alias="check"
+
+cd "$MISE_CONFIG_ROOT"
+
+gum log --level info "Checking the Fern configuration..."
+fern check "$@"

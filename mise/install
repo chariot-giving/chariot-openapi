@@ -1,0 +1,24 @@
+#!/bin/bash
+set -uo pipefail
+
+if ! command -v mise &>/dev/null; then
+    echo "Installing Mise..."
+    brew install mise
+fi
+
+cd "$(dirname "$0")/.." || exit 1
+
+mise trust -q
+mise install
+
+# shellcheck disable=SC2016 # The mise activate line is written literally, not expanded.
+if [ -f ~/.zshrc ] && ! grep -Fxq 'eval "$(mise activate zsh)"' ~/.zshrc; then
+    echo $'\neval "$(mise activate zsh)"' >>~/.zshrc
+fi
+
+# shellcheck disable=SC2016 # The mise activate line is written literally, not expanded.
+if [ -f ~/.bashrc ] && ! grep -Fxq 'eval "$(mise activate bash)"' ~/.bashrc; then
+    echo $'\neval "$(mise activate bash)"' >>~/.bashrc
+fi
+
+echo "Install complete. Please re-source your shell file, then run 'mise tasks'."
