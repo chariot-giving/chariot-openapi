@@ -229,15 +229,13 @@ chariot.onDonationRequest(async () => ({
 | `designation` | string | Truncated at 255 characters when stored, and at 100 when sent to the DAF provider. If you send none, the provider applies its own default, usually `Where needed most`. |
 | `address` | object | Contains `line1`, `line2`, `city`, `state`, and `postalCode`. |
 | `metadata` | object | Name-value pairs associated with the workflow session. Metadata is visible in the Chariot dashboard but is not shared with DAF providers. |
-| `lockAmount` | boolean | Prevents the donor from changing the amount inside DAFpay. Defaults to `false`. |
-| `fundId` | string | Preselects a DAF provider and skips the provider picker. |
 | `frequency` | string | `ONE_TIME` or `MONTHLY`. Defaults to `ONE_TIME`. |
 
 <Note title="Whole-Dollar Amounts">
   DAF Grants use whole-dollar amounts. DAFpay drops any cents, so 2550 opens as $25, and [Create Grant](/api/grants/create) rejects an `amount` that is not divisible by 100. Validate before you open DAFpay.
 </Note>
 
-There is no maximum-amount field. To enforce a maximum, set `lockAmount` or check the returned amount before you call Create Grant.
+There is no maximum-amount field. To enforce a maximum, check the returned amount before you call Create Grant.
 
 ### What to Pass in Metadata
 
