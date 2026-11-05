@@ -1,6 +1,6 @@
 ---
 title: "OAuth"
-subtitle: "OAuth allows external applications to access the Chariot API on behalf of a nonprofit organization"
+subtitle: "Access the Chariot API with authorization from a nonprofit organization"
 hidden: false
 createdAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
 updatedAt: "Thu Mar 26 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
@@ -28,8 +28,8 @@ Chariot implements the **OAuth 2.0 Authorization Code** flow with **PKCE** (Proo
 
 When Chariot registers your application, you'll receive a `client_id` and `client_secret`. Your server sends these credentials only to the token endpoint, using HTTP Basic Auth, and calls the rest of the Chariot API with the access tokens it gets back. There are two kinds:
 
-- A **nonprofit access token**, from the [authorization code flow](#authorization-code-flow), acts on behalf of one nonprofit. Use it for almost every API call.
-- An **application access token**, from the `client_credentials` grant, acts on behalf of your application itself. Use it to set up [webhooks](#webhooks).
+- A **nonprofit access token**, obtained through the [authorization code flow](#authorization-code-flow), grants access to a specific nonprofit's resources. Use it for nonprofit-scoped API calls.
+- An **application access token**, from the `client_credentials` grant, acts on behalf of your application itself. It is not associated with a specific nonprofit. Use it to set up application-level [webhooks](#webhooks).
 
 Your client secret should be kept secure and should never be exposed to the public.
 
@@ -49,7 +49,7 @@ Additional OAuth 2.0 and OIDC metadata can be found at the environment's well-kn
 
 Scopes define what your application can access. Specify multiple as a URL encoded space-separated string when requesting authorization.
 
-Scopes typically take the form `resource:action`, where `action` is `read` or `write`. A `write` scope includes read access to the same resource.
+Scopes typically take the form `resource:action`, where `action` is `read` or `write`. A resource's `write` scope also grants its `read` permissions.
 
 | Resource                     | Read                         | Write                                 |
 | ---------------------------- | ---------------------------- | ------------------------------------- |
@@ -90,7 +90,7 @@ Scopes typically take the form `resource:action`, where `action` is `read` or `w
 These scopes are deprecated and will be removed in the future.
 
 <Note>
-  The user who approves your application must hold every scope you request.
+  The authorizing user must have the permissions corresponding to every requested scope.
   With delegated access, the token also loses any permission that user's role
   later loses.
 </Note>
@@ -100,14 +100,14 @@ These scopes are deprecated and will be removed in the future.
 Chariot supports two authorization models:
 
 - **Delegated access**: Your application acts on behalf of the user who authorized it. Its permissions are limited by that user's current role.
-- **App install**: Your application acts independently of any individual user, with permissions approved by a nonprofit Owner or Admin.
+- **App install**: Your application receives ongoing access to a nonprofit, independent of the user who authorized it. Requires approval from a nonprofit Owner or Admin.
 
 To request an app install, include the `app_install` scope. Otherwise, the authorization uses delegated access.
 
 |                                              | **Delegated Access**                                                                    | **App Install**              |
 | -------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
 | Acts as                                      | The authorizing user                                                                    | Your application             |
-| Approved by                                  | Any user who holds the requested scopes                                                 | A nonprofit Owner or Admin   |
+| Approved by                                  | Any user with permissions corresponding to the requested scopes                                                 | A nonprofit Owner or Admin   |
 | Permissions                                  | Limited by the authorizing user's current role                                          | Remain as approved           |
 | If the authorizing user's role changes       | Permissions change to match                                                             | Unaffected                   |
 | If the authorizing user leaves the nonprofit | Access is revoked, and your application must be authorized again                        | Unaffected                   |
@@ -116,7 +116,7 @@ To request an app install, include the `app_install` scope. Otherwise, the autho
 
 ### Which Should I Use?
 
-Use delegated access when your application should act on behalf of a specific user. Use an app install for integrations that should keep working after the person who authorized them leaves the nonprofit.
+Use delegated access when your application needs to act as a specific user, such as for SSO or user-initiated actions. Use an app install for integrations that operate on behalf of the nonprofit itself, independently of any individual user.
 
 Because an app install isn't associated with a user, `app_install` can't be combined with `openid`, `profile` or `email`. Requesting them together returns an `invalid_scope` error.
 
@@ -223,6 +223,7 @@ https://dashboard.givechariot.com/oauth/authorize
   &response_type=code
   &scope=openid%20donations:read
   &state=RANDOM_CSRF_TOKEN
+  &nonce=RANDOM_NONCE
   &code_challenge=YOUR_CODE_CHALLENGE
   &code_challenge_method=S256
 ```
@@ -265,12 +266,11 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
   "access_token": "ACCESS_TOKEN",
   "refresh_token": "REFRESH_TOKEN",
   "expires_in": 900,
-  "token_type": "Bearer",
-  "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct"
+  "token_type": "Bearer"
 }
 ```
 
-For an app install, `organization_id` identifies the nonprofit that installed your application. Use it with [Get Organization](/api/organizations/get).
+For app installs only, token responses also include `organization_id`, identifying the nonprofit that installed your application. This field is not returned for delegated access or the `client_credentials` grant. Use it with [Get Organization](/api/organizations/get).
 
 ## Using Access Tokens
 
@@ -308,16 +308,17 @@ curl -X POST https://api.givechariot.com/auth/oauth/token \
   "access_token": "NEW_ACCESS_TOKEN",
   "refresh_token": "NEW_REFRESH_TOKEN",
   "expires_in": 900,
-  "token_type": "Bearer",
-  "organization_id": "org_01jpjenf5q6cawy43yxfcrxhct"
+  "token_type": "Bearer"
 }
 ```
 
+For app installs, refresh responses also include `organization_id`. This field is not returned when refreshing delegated access tokens.
+
 Refresh tokens use a **sliding window** expiration:
 
-- Each use extends the refresh token's lifetime by **31 days**
-- The absolute maximum lifetime is **365 days**, and refreshing does not extend it
-- After 365 days, the user must re-authorize your application
+- Each successful refresh issues a new refresh token that expires in **31 days**, subject to the **365-day** maximum lifetime
+- The absolute maximum lifetime is **365 days** from the original authorization, and refreshing does not extend it
+- After 365 days, the application must be authorized again
 
 ## Token Lifetimes
 
