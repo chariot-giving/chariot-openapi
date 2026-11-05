@@ -121,11 +121,13 @@ Chariot Connect gives you two callbacks for passing form data, and which one you
 
 ```mermaid
 flowchart TD
-    A(["Donor clicks the DAFpay button"]) --> B{"Do you need to call your own server<br/>to build the donation properties<br/>or record the intent?"}
-    B -->|No| C["onDonationRequest"]
-    B -->|Yes| D["onAsyncDonationRequest"]
-    C --> C1["Your callback runs, then the checkout launches.<br/>Return the properties, or return false to stop<br/>the launch when your form is invalid."]
-    D --> D1["The checkout launches, then your callback runs.<br/>DAFpay shows a loader until it resolves.<br/>It cannot stop the launch."]
+    A(["Donor clicks your donate button"]) --> B{"Does any work on your own server<br/>run before Chariot Connect<br/>sees the click?"}
+    B -->|Yes| X["The browser blocks the popup.<br/>Neither callback prevents this. Finish that work<br/>before the click, then let the click open<br/>DAFpay immediately."]
+    B -->|No| C{"Are all donation properties available<br/>the moment the donor clicks, with no<br/>call to your own server?"}
+    C -->|Yes| D["onDonationRequest"]
+    C -->|No| E["onAsyncDonationRequest"]
+    D --> D1["Your callback runs, then the checkout launches.<br/>Return the properties, or return false to stop<br/>the launch when your form is invalid."]
+    E --> E1["The checkout launches, then your callback runs.<br/>DAFpay shows a loader until it resolves.<br/>It cannot stop the launch."]
 ```
 
 | Callback | When it runs | Use it when |
