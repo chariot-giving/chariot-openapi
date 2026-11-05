@@ -130,11 +130,6 @@ flowchart TD
     E --> E1["The checkout launches, then your callback runs.<br/>DAFpay shows a loader until it resolves.<br/>It cannot stop the launch."]
 ```
 
-| Callback | When it runs | Use it when |
-| --- | --- | --- |
-| `onDonationRequest` | Before the checkout launches | Every donation property is available the moment the donor clicks and you do not need to call your own server. Returning `false` stops the checkout from launching, so this is where form validation belongs. |
-| `onAsyncDonationRequest` | After the checkout has launched | You need to call your own server to build the donation properties or to record the intent. It cannot cancel the launch, and DAFpay shows a loader until it resolves. |
-
 Returning a promise from `onDonationRequest` behaves like `onAsyncDonationRequest`: DAFpay launches first and resolves your promise into the open checkout, so the popup is not blocked. Reach for `onAsyncDonationRequest` when awaiting is what you mean.
 
 If your platform uses a custom button or Shadow DOM, do not call your server between the donor's click and triggering DAFpay. That work runs before Chariot Connect sees the click, so neither callback can protect the popup. Complete the request first, then let the click open DAFpay immediately.
