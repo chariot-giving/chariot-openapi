@@ -53,6 +53,9 @@ navigation:
               - page: Launch Prep
                 slug: launch-prep
                 path: ./pages/dafpay/accept/launch-prep.mdx
+              - page: FAQ
+                slug: faq
+                path: ./pages/dafpay/faq.mdx
           - section: Connect Your DAF
             slug: connect-your-daf
             contents:
@@ -89,9 +92,6 @@ navigation:
                   - page: Integration Checklist
                     slug: integration-checklist
                     path: ./pages/oauth/integration-checklist.mdx
-          - page: FAQ
-            slug: faq
-            path: ./pages/dafpay/faq.mdx
       - section: Disbursements
         slug: disbursements
         contents:
