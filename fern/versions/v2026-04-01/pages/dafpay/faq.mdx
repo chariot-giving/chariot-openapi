@@ -121,7 +121,7 @@ No. A recurring DAFpay gift records that the donor set the gift up monthly; Char
 <Accordion title="**What is an unintegrated DAF provider?**">
 A provider DAFpay cannot submit the request to directly. If the feature is enabled, the modal collects the amount and donor details so the nonprofit is notified in real time, and gives the donor a Tracking ID to include in the note when they complete the gift in their provider's portal.
 
-The Grant is created as `Initiated`, which means the donor was given instructions, not that they submitted the recommendation. Listen for `unintegrated_grant.updated` and treat the gift as complete when the status reaches `Completed`. Many stay at `Initiated`.
+The Grant is created as `Unknown`, which means the donor was given instructions, not that they submitted the recommendation. Listen for `unintegrated_grant.updated` and treat the gift as complete when the status reaches `Completed`. Most stay at `Unknown`.
 </Accordion>
 
 </AccordionGroup>
