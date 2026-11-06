@@ -28,7 +28,7 @@ On a gift the provider pays you outside of Chariot, their own remittance carries
 ## Displaying DAFpay Gifts
 
 <Note title="For Fundraising Platforms">
-  This section is for platforms offering DAFpay across many nonprofits' forms. If you are a nonprofit integrating your own donation form, read [Processing Donations](/guides/dafpay/accept/managing-gifts#processing-donations) below instead.
+  This section is for platforms offering DAFpay across many nonprofits' forms. If you are a nonprofit integrating your own donation form, read [Processing Donations](/guides/dafpay/integrate-dafpay/managing-gifts#processing-donations) below instead.
 </Note>
 
 The `trackingId` and `externalGrantId` allow a nonprofit to reconcile the funds to the initiated DAFpay grant when the funds arrive. Display both IDs prominently and searchable in your dashboard.
@@ -64,12 +64,12 @@ Expect nonprofits to ask whether DAFpay gifts sync automatically, and to want to
 
 ### Cancellations and Refunds
 
-A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Chariot does not have visibility if a donor cancels with their provider, but if the donor or nonprofit reaches out to Chariot, we can mark the gift as canceled. Your platform cannot cancel a Grant through the API.
+A donor may be able to cancel a pending grant through their DAF provider before disbursement, subject to that provider's rules. Some providers report the cancellation or refund back to Chariot, and the Grant moves to `Canceled` on its own, so handle that status change the same way you handle any other. Chariot requires this reporting of new DAFpay integrations, so the set of providers that do it keeps growing. Where a provider does not report it, the Grant stays where it is until the donor or the nonprofit tells Chariot and Chariot marks it canceled. Your platform cannot cancel a Grant through the API.
 
 ## Processing Donations
 
 <Note title="For Organizations">
-  Donations represent gifts in Chariot and are only available to Chariot Deposit Account holders. If you are a platform offering DAFpay across many nonprofits' forms, read [Displaying DAFpay Gifts](/guides/dafpay/accept/managing-gifts#displaying-dafpay-gifts) above instead.
+  Donations represent gifts in Chariot and are only available to Chariot Deposit Account holders. If you are a platform offering DAFpay across many nonprofits' forms, read [Displaying DAFpay Gifts](/guides/dafpay/integrate-dafpay/managing-gifts#displaying-dafpay-gifts) above instead.
 </Note>
 
 Donations can be created from DAFpay gifts created via [Create Grant](/api/grants/create), or other gifts that land in an organization's account from a Chariot disbursement partner or a connected payment source. Building your gift processing around Donations allows you to use the same workflow for DAFpay gifts and gifts from your other connected payment sources.

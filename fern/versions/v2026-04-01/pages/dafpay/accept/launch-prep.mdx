@@ -42,7 +42,7 @@ This catches hardcoded, cached, fallback, and process-wide Connect IDs, which se
 - Verify webhook signatures and repeated delivery.
 - Test with popup blocking enabled, and confirm your page explains what to do if DAFpay cannot open.
 
-If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent Blocked Popups](/guides/dafpay/accept/adding-dafpay#prevent-blocked-popups).
+If DAFpay fails to open, the cause is almost always work happening between the click and the window: see [Prevent Blocked Popups](/guides/dafpay/integrate-dafpay/adding-dafpay#prevent-blocked-popups).
 
 ### Test Browsers and Devices
 
@@ -62,7 +62,7 @@ What to check when a DAFpay integration misbehaves.
 <AccordionGroup>
 
 <Accordion title="**The Popup Is Blocked on Mobile**">
-DAFpay must open within one second of the donor's click, with no call to your server in between. See [Prevent Blocked Popups](/guides/dafpay/accept/adding-dafpay#prevent-blocked-popups).
+DAFpay must open within one second of the donor's click, with no call to your server in between. See [Prevent Blocked Popups](/guides/dafpay/integrate-dafpay/adding-dafpay#prevent-blocked-popups).
 </Accordion>
 
 <Accordion title="**DAFpay Completed, but No Grant Exists**">
@@ -76,7 +76,7 @@ Check for a hardcoded, cached, fallback, last-seen, or process-wide Connect ID.
 </Accordion>
 
 <Accordion title="**Create Grant Returned an Error**">
-Look up the status code in the response table on [Create the Grant](/guides/dafpay/accept/creating-grants#retry-safely).
+Look up the status code in the response table on [Create the Grant](/guides/dafpay/integrate-dafpay/creating-grants#retry-safely).
 </Accordion>
 
 <Accordion title="**Webhook Events Are Missing**">
@@ -93,14 +93,14 @@ If the button does not render or clicking it does nothing:
 
 When CSP is delivered through a `<meta http-equiv="Content-Security-Policy">` tag, `frame-ancestors`, `report-uri`, `report-to`, and `sandbox` are ignored. Use a response header when possible.
 
-The directives DAFpay needs are on [Install DAFpay](/guides/dafpay/accept/adding-dafpay#content-security-policy).
+The directives DAFpay needs are on [Install DAFpay](/guides/dafpay/integrate-dafpay/adding-dafpay#content-security-policy).
 </Accordion>
 
 </AccordionGroup>
 
 ## Go Live
 
-Request production access once you have completed the [integration checklist](/guides/dafpay/accept/api#integration-checklist). Chariot issues production keys after reviewing your sandbox integration, so you do not need to deploy to production first.
+Request production access once you have completed the [integration checklist](/guides/dafpay/integrate-dafpay/api#integration-checklist). Chariot issues production keys after reviewing your sandbox integration, so you do not need to deploy to production first.
 
 ### Request Production Access
 

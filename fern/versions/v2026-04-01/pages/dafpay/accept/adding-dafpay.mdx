@@ -111,7 +111,7 @@ If your security policy cannot allow inline styles, confirm the supported nonce 
 
 If your page sends a Permissions-Policy header, allow `publickey-credentials-get` and `publickey-credentials-create` for `https://secure.dafpay.com`, or passkey sign-in inside the checkout will fail.
 
-If the button does not render or the modal does not open, see [Troubleshooting](/guides/dafpay/accept/troubleshooting).
+If the button does not render or the modal does not open, see [Troubleshooting](/guides/dafpay/integrate-dafpay/troubleshooting).
 
 ### Prevent Blocked Popups
 
@@ -122,13 +122,18 @@ Chariot Connect gives you two callbacks for passing form data, and which one you
 ```mermaid
 flowchart TD
     A(["Donor clicks your donate button"]) --> B{"Does any work on your own server<br/>run before Chariot Connect<br/>sees the click?"}
-    B -->|Yes| X["The browser blocks the popup.<br/>Neither callback prevents this. Finish that work<br/>before the click, then let the click open<br/>DAFpay immediately."]
+    B -->|Yes| X["The browser blocks the popup.<br/>Move that work into the callback so the click<br/>opens DAFpay immediately."]
+    X --> E
     B -->|No| C{"Are all donation properties available<br/>the moment the donor clicks, with no<br/>call to your own server?"}
     C -->|Yes| D["onDonationRequest"]
     C -->|No| E["onAsyncDonationRequest"]
     D --> D1["Your callback runs, then the checkout launches.<br/>Return the properties, or return false to stop<br/>the launch when your form is invalid."]
     E --> E1["The checkout launches, then your callback runs.<br/>DAFpay shows a loader until it resolves.<br/>It cannot stop the launch."]
 ```
+
+<Warning title="This Runs on the Checkout Critical Path">
+  Whatever `onAsyncDonationRequest` awaits, the donor waits on a loader inside the open checkout. Keep it to the work the Grant actually needs, and move anything you could do before the click, such as eligibility lookups or analytics, out of it.
+</Warning>
 
 Returning a promise from `onDonationRequest` behaves like `onAsyncDonationRequest`: DAFpay launches first and resolves your promise into the open checkout, so the popup is not blocked. Reach for `onAsyncDonationRequest` when awaiting is what you mean.
 
@@ -197,7 +202,7 @@ chariot.registerTheme("myTheme", {
 
 ## Capture Donation Data
 
-With the button installed, use `onDonationRequest` to pass information from your donation form to DAFpay. If you need to call your own server first, use `onAsyncDonationRequest` instead; [Install DAFpay](/guides/dafpay/accept/adding-dafpay#prevent-blocked-popups) compares the two. Register the callback on the element you installed, once the component has loaded:
+With the button installed, use `onDonationRequest` to pass information from your donation form to DAFpay. If you need to call your own server first, use `onAsyncDonationRequest` instead; [Install DAFpay](/guides/dafpay/integrate-dafpay/adding-dafpay#prevent-blocked-popups) compares the two. Register the callback on the element you installed, once the component has loaded:
 
 ```javascript
 const chariot = document.getElementById("chariot");
@@ -341,17 +346,17 @@ A one-time success payload has this shape. `user` holds the donor's details when
 
 Associate `detail.workflowSessionId` with the current platform transaction, nonprofit, and Connect ID, and read the donor's details from `detail.user`.
 
-Follow the steps on [Create the Grant](/guides/dafpay/accept/creating-grants#create-the-grant) to initiate the Grant.
+Follow the steps on [Create the Grant](/guides/dafpay/integrate-dafpay/creating-grants#create-the-grant) to initiate the Grant.
 
 ### On `CHARIOT_EXIT`
 
-`CHARIOT_EXIT` fires whenever a donor leaves the modal without an authorized grant intent. This includes normal exits back to your form, [unintegrated grant intents](/guides/dafpay/accept/creating-grants#unintegrated-providers), and error cases. See all exit reasons below:
+`CHARIOT_EXIT` fires whenever a donor leaves the modal without an authorized grant intent. This includes normal exits back to your form, [unintegrated grant intents](/guides/dafpay/integrate-dafpay/creating-grants#unintegrated-providers), and error cases. See all exit reasons below:
 
 | Reason | Meaning |
 | --- | --- |
 | `USER_EXIT` | The donor left the flow. If the donor closes the popup window, `detail` may carry only the reason, with no `workflowSessionId`. |
 | `UNINTEGRATED_DAF` | The selected provider is not integrated with DAFpay. |
-| `UNINTEGRATED_GRANT_CONFIRMED` | The donor confirmed an unintegrated Grant. Follow [Unintegrated DAF Providers](/guides/dafpay/accept/creating-grants#unintegrated-providers). |
+| `UNINTEGRATED_GRANT_CONFIRMED` | The donor confirmed an unintegrated Grant. Follow [Unintegrated DAF Providers](/guides/dafpay/integrate-dafpay/creating-grants#unintegrated-providers). |
 | `UNINTEGRATED_DAF_NOT_SUPPORTED` | The selected provider does not support the unintegrated Grant flow. |
 | `CID_NOT_FOUND` | The Connect ID was not found. |
 | `SERVICE_DEACTIVATED` | The nonprofit's Connect is inactive. |

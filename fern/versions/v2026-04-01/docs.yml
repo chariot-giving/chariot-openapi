@@ -36,7 +36,7 @@ navigation:
             slug: overview
             path: ./pages/dafpay/overview.mdx
           - section: Integrate DAFpay
-            slug: accept
+            slug: integrate-dafpay
             contents:
               - page: Overview
                 slug: api
@@ -54,7 +54,7 @@ navigation:
                 slug: launch-prep
                 path: ./pages/dafpay/accept/launch-prep.mdx
           - section: Connect Your DAF
-            slug: send
+            slug: connect-your-daf
             contents:
               - section: Donor Accounts
                 slug: donor-accounts

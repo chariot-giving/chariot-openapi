@@ -12,7 +12,7 @@ Follow this guide to build directly against the DAFpay APIs, whether you are add
 | Connect | The DAFpay setup for one organization. Its ID tells Chariot which organization receives the gift. Organizations can have multiple Connects if they receive DAFpay from multiple places online. |
 | Workflow session | A single DAFpay session. A new workflow session starts each time a donor clicks the DAFpay button, and you use its ID to create the Grant. |
 | Grant | A grant initiated to a DAF provider, created via the [Create Grant](/api/grants/create) endpoint. |
-| Donation | A gift recorded in Chariot, available to Chariot Deposit Account holders. Donations come from DAFpay Grants, Chariot disbursement partners, or connected payment sources. [Processing Donations](/guides/dafpay/accept/managing-gifts#processing-donations) covers how a Grant becomes a Donation. |
+| Donation | A gift recorded in Chariot, available to Chariot Deposit Account holders. Donations come from DAFpay Grants, Chariot disbursement partners, or connected payment sources. [Processing Donations](/guides/dafpay/integrate-dafpay/managing-gifts#processing-donations) covers how a Grant becomes a Donation. |
 
 ## How the Integration Works
 
@@ -30,20 +30,20 @@ Use this list to track your progress. Each item links to the page that explains 
 ### Build
 
 - [ ] [Request sandbox access](/api/authentication)
-- [ ] [Create Connects (platforms)](/guides/dafpay/accept/adding-dafpay#create-connects)
-- [ ] [Install DAFpay](/guides/dafpay/accept/adding-dafpay#install-dafpay)
-- [ ] [Add Chariot to your Content Security Policy](/guides/dafpay/accept/adding-dafpay#content-security-policy)
-- [ ] [Capture donation data](/guides/dafpay/accept/adding-dafpay#capture-donation-data)
-- [ ] [Handle the result](/guides/dafpay/accept/adding-dafpay#handle-the-result)
-- [ ] [Create the Grant](/guides/dafpay/accept/creating-grants#create-the-grant)
-- [ ] [Display DAFpay gifts (platforms)](/guides/dafpay/accept/managing-gifts#displaying-dafpay-gifts)
-- [ ] [Process Donations (nonprofits)](/guides/dafpay/accept/managing-gifts#processing-donations)
+- [ ] [Create Connects (platforms)](/guides/dafpay/integrate-dafpay/adding-dafpay#create-connects)
+- [ ] [Install DAFpay](/guides/dafpay/integrate-dafpay/adding-dafpay#install-dafpay)
+- [ ] [Add Chariot to your Content Security Policy](/guides/dafpay/integrate-dafpay/adding-dafpay#content-security-policy)
+- [ ] [Capture donation data](/guides/dafpay/integrate-dafpay/adding-dafpay#capture-donation-data)
+- [ ] [Handle the result](/guides/dafpay/integrate-dafpay/adding-dafpay#handle-the-result)
+- [ ] [Create the Grant](/guides/dafpay/integrate-dafpay/creating-grants#create-the-grant)
+- [ ] [Display DAFpay gifts (platforms)](/guides/dafpay/integrate-dafpay/managing-gifts#displaying-dafpay-gifts)
+- [ ] [Process Donations (nonprofits)](/guides/dafpay/integrate-dafpay/managing-gifts#processing-donations)
 
 ### Launch
 
-- [ ] [Test in sandbox](/guides/dafpay/accept/launch-prep#testing-and-qa)
-- [ ] [Request production access](/guides/dafpay/accept/launch-prep#request-production-access)
+- [ ] [Test in sandbox](/guides/dafpay/integrate-dafpay/launch-prep#testing-and-qa)
+- [ ] [Request production access](/guides/dafpay/integrate-dafpay/launch-prep#request-production-access)
 - [ ] [Create production event subscriptions](/api/webhooks)
-- [ ] [Test in production](/guides/dafpay/accept/launch-prep#validate-the-first-live-gift)
-- [ ] [Establish a launch plan](/guides/dafpay/accept/launch-prep#request-production-access)
-- [ ] [Publish a help article and launch announcement (platforms)](/guides/dafpay/accept/launch-prep#request-production-access)
+- [ ] [Test in production](/guides/dafpay/integrate-dafpay/launch-prep#validate-the-first-live-gift)
+- [ ] [Establish a launch plan](/guides/dafpay/integrate-dafpay/launch-prep#request-production-access)
+- [ ] [Publish a help article and launch announcement (platforms)](/guides/dafpay/integrate-dafpay/launch-prep#request-production-access)
