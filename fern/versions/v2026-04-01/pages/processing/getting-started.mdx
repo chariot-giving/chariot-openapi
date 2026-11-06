@@ -144,8 +144,8 @@ Subscribe to donation events to receive webhooks:
 Important events for gift processing:
 - `donation.created` - New donation received
 - `donation.updated` - Donation details updated
-- `deposit.completed` - Deposit settled to your account
-- `deposit.returned` - Deposit was returned/rejected
+- `deposit.created` - A payment arrived at a Payment Source
+- `deposit.updated` - The deposit's status changed, to `complete` when it settles or `failed` when it is returned
 
 ### Process Webhooks
 
