@@ -7508,7 +7508,23 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
+    JointDonor:
+      type: object
+      description: The name of a second donor jointly credited with a gift.
+      properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
+        first_name:
+          type: string
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
+        last_name:
+          type: string
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
