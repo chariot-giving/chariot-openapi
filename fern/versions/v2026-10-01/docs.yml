@@ -289,6 +289,7 @@ navigation:
                   - endpoint: GET /v1/donations/{id}
                   - endpoint: PATCH /v1/donations/{id}
                   - endpoint: DELETE /v1/donations/{id}
+                  - endpoint: POST /v1/donations/merge
               - section: Deposits
                 contents:
                   - page: Overview
@@ -300,6 +301,7 @@ navigation:
                   - endpoint: GET /v1/deposits
                   - endpoint: GET /v1/deposits/{id}
                   - endpoint: POST /v1/deposits/{id}/reconcile
+                  - endpoint: POST /v1/deposits/{id}/unreconcile
               - section: Lockboxes
                 contents:
                   - page: Overview

@@ -66,6 +66,32 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/organizations/current:
+    get:
+      summary: Get current organization
+      description: |-
+        Retrieves the organization associated with your API key or access token. Returns a 403 if the API key or access token is not scoped to an organization.
+      operationId: getCurrentOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/{id}:
     get:
       summary: Get organization
@@ -4502,8 +4528,7 @@ components:
           type: string
           readOnly: true
           description: |-
-            A short human-readable identifier for the donation, useful for reconciling against your own systems.
-            This is the same identifier shown on the donation in the Chariot dashboard.
+            Identifier provided by the source or granting organization, when present.
           example: "29247869"
         payment_source_id:
           type: string
@@ -5164,15 +5189,23 @@ components:
           description: The date and time the account transfer was created
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    StandardEntryClassCode:
+      type: string
+      description: The Standard Entry Class (SEC) code for the ACH transfer.
+      example: "corporate_credit_or_debit"
+      enum:
+        - corporate_credit_or_debit
+        - prearranged_payments_and_deposit
+        - international_ach_transaction
+        - internet_initiated
+        - corporate_trade_exchange
     InboundAchTransfer:
       type: object
       description: |-
         An ACH transfer initiated outside of Chariot to your financial account.
       properties:
         standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: The company entry description for the ACH transfer.
@@ -6892,16 +6925,7 @@ components:
             - credit
             - debit
         standard_entry_class_code:
-          type: string
-          description: |-
-            The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "corporate_credit_or_debit"
-          enum:
-            - corporate_credit_or_debit
-            - prearranged_payments_and_deposit
-            - international_ach_transaction
-            - internet_initiated
-            - corporate_trade_exchange
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: |-
@@ -7482,7 +7506,23 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
+    JointDonor:
+      type: object
+      description: The name of a second donor jointly credited with a gift.
+      properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
+        first_name:
+          type: string
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
+        last_name:
+          type: string
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
@@ -7510,7 +7550,7 @@ components:
       description: |
         The category of the event. This is useful for filtering events.
 
-        Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
+        Event names follow the pattern `{resource}.{event_type}` where `event_type` is usually `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
       enum:
         - "grant.created"
         - "grant.updated"
@@ -7532,6 +7572,7 @@ components:
         - "deposit.updated"
         - "verification_request.created"
         - "verification_request.updated"
+        - "connection.revoked"
     Event:
       type: object
       description: |
@@ -7559,6 +7600,11 @@ components:
           type: string
           description: The type of the associated object
           example: "grant"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization the event belongs to
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
           readOnly: true
     EventSubscriptionStatus:
       type: string
