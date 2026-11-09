@@ -8737,7 +8737,7 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
