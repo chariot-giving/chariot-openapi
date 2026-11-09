@@ -7273,6 +7273,7 @@ components:
             The status of the unintegrated grant.
           enum:
             - Unknown
+            - Initiated
             - Completed
             - Canceled
           example: Unknown
