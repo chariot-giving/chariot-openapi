@@ -3052,6 +3052,7 @@ paths:
                     name: "Local Community Foundation"
                     scope: "custom"
                     logo: "https://localcommunityfoundation.org/logo.png"
+                    payment_type: "unknown"
                     created_at: "2026-09-28T12:34:56Z"
                     updated_at: "2026-09-28T12:34:56Z"
         "400":
@@ -5093,12 +5094,14 @@ components:
         name: "Fidelity Charitable"
         scope: "canonical"
         logo: "https://cdn.givechariot.com/payers/fidelity_charitable.png"
+        payment_type: "electronic"
         created_at: "2026-09-28T12:34:56Z"
         updated_at: "2026-09-28T12:34:56Z"
       required:
         - id
         - name
         - scope
+        - payment_type
         - created_at
         - updated_at
       properties:
@@ -5129,6 +5132,22 @@ components:
           nullable: true
           description: URL of the source's logo, if one is available.
           example: "https://cdn.givechariot.com/payers/fidelity_charitable.png"
+        payment_type:
+          type: string
+          readOnly: true
+          description: |-
+            How this source sends money to your organization.
+
+            - `electronic` — by ACH, real-time payment or wire to your bank details.
+            - `check` — by mailed check.
+            - `in_network` — through the Chariot network, from a Chariot grantmaker to your Chariot account.
+            - `unknown` — not yet known.
+          enum:
+            - electronic
+            - check
+            - in_network
+            - unknown
+          example: electronic
         created_at:
           type: string
           format: date-time
