@@ -5354,12 +5354,16 @@ components:
             - `individual`: a gift from an individual donor.
             - `match`: a company's match of an employee's gift.
             - `daf`: a grant from a donor-advised fund.
+            - `scholarship`: a scholarship awarded to a recipient.
             - `other`: any other kind of gift.
             - `unknown`: the source did not report the kind of gift.
+
+            This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
           enum:
             - individual
             - match
             - daf
+            - scholarship
             - other
             - unknown
           example: "daf"
@@ -9200,12 +9204,16 @@ components:
                   - `individual`: a gift from an individual donor.
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
+                  - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
                   - daf
+                  - scholarship
                   - other
                   - unknown
                 example: "daf"
@@ -9375,12 +9383,16 @@ components:
                   - `individual`: a gift from an individual donor.
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
+                  - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
                   - daf
+                  - scholarship
                   - other
                   - unknown
                 example: "daf"
