@@ -5357,6 +5357,8 @@ components:
             - `scholarship`: a scholarship awarded to a recipient.
             - `other`: any other kind of gift.
             - `unknown`: the source did not report the kind of gift.
+
+            This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
           enum:
             - individual
             - match
@@ -9205,6 +9207,8 @@ components:
                   - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
@@ -9382,6 +9386,8 @@ components:
                   - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
