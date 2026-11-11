@@ -8545,6 +8545,8 @@ components:
                 $ref: "#/components/schemas/TransactionDafGrant"
               corporate_match:
                 $ref: "#/components/schemas/TransactionCorporateMatch"
+              scholarship:
+                $ref: "#/components/schemas/TransactionScholarship"
               metadata:
                 type: object
                 description: Additional metadata for the transaction
@@ -8679,6 +8681,8 @@ components:
           $ref: "#/components/schemas/TransactionDafGrant"
         corporate_match:
           $ref: "#/components/schemas/TransactionCorporateMatch"
+        scholarship:
+          $ref: "#/components/schemas/TransactionScholarship"
         created_at:
           type: string
           format: date-time
@@ -8712,7 +8716,7 @@ components:
         - donor_advised_fund_grant
         - corporate_match
         - scholarship
-        - individual
+        - individual_gift
         - other
     Donor:
       type: object
@@ -8776,7 +8780,7 @@ components:
           maxLength: 255
           nullable: true
           example: "Payroll"
-        TransactionScholarship:
+    TransactionScholarship:
       type: object
       description: A scholarship gift. Required when the transaction type is scholarship.
       nullable: true
