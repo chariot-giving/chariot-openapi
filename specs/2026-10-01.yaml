@@ -8785,15 +8785,15 @@ components:
       description: A scholarship gift. Required when the transaction type is scholarship.
       nullable: true
       required:
-        - scholarship_recipient_name
-        - scholarship_recipient_id
+        - recipient_name
+        - recipient_id
       properties:
-        scholarship_recipient_name:
+        recipient_name:
           type: string
           description: "The name of the individual receiving the scholarship, typically the student's first and last name."
           maxLength: 100
           example: "Alice Smith"
-        scholarship_recipient_id:
+        recipient_id:
           type: string
           description: "The scholarship recipient's unique identifier within the recipient organization's internal system."
           maxLength: 100
