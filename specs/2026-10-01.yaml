@@ -8698,10 +8698,22 @@ components:
             type: string
     DonationType:
       type: string
-      description: The type of donation
+      description: |
+        The type of donation.
+
+        - `donor_advised_fund_grant`: A grant from a donor-advised fund. Include `daf_grant`.
+        - `corporate_match`: A corporate matching gift. Requires `corporate_match`.
+        - `scholarship`: A scholarship gift. Requires `scholarship`.
+        - `individual_gift`: A gift from an individual donor.
+        - `other`: A gift that doesn't fit another type.
+
+        This is an open enum: new values may be added over time, so don't treat the list above as exhaustive. Your integration should handle unrecognized values gracefully.
       enum:
         - donor_advised_fund_grant
         - corporate_match
+        - scholarship
+        - individual
+        - other
     Donor:
       type: object
       description: The donor information for the transaction
@@ -8758,6 +8770,30 @@ components:
           description: "The name of the company making the matching gift. Maximum length: 255 characters."
           maxLength: 255
           example: "Acme Corporation"
+        source:
+          type: string
+          description: "The source of the corporate match (for example, payroll). Maximum length: 255 characters."
+          maxLength: 255
+          nullable: true
+          example: "Payroll"
+        TransactionScholarship:
+      type: object
+      description: A scholarship gift. Required when the transaction type is scholarship.
+      nullable: true
+      required:
+        - scholarship_recipient_name
+        - scholarship_recipient_id
+      properties:
+        scholarship_recipient_name:
+          type: string
+          description: "The name of the individual receiving the scholarship, typically the student's first and last name."
+          maxLength: 100
+          example: "Alice Smith"
+        scholarship_recipient_id:
+          type: string
+          description: "The scholarship recipient's unique identifier within the recipient organization's internal system."
+          maxLength: 100
+          example: "STUDENT-12345"
     EventCategory:
       type: string
       description: |
