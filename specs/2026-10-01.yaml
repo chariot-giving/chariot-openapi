@@ -2220,7 +2220,7 @@ paths:
         - name: Idempotency-Key
           in: header
           description: |-
-            A client-generated identifier for the request. Replays with the same key return `409 Conflict`. The successfully created disbursement can later be located via `GET /v1/disbursements?idempotency_key=...`.
+            A client-generated identifier that makes the create safe to retry. Retrying with the same key and the same request body returns `201` with the disbursement the first request created, in its current state, and an `Idempotent-Replayed: true` header; no second disbursement is created. Reusing a key for a different request, including one sent to `POST /v1/disbursements/bulk`, returns `409 Conflict` with `type` `idempotency_key_already_used`. A request that fails doesn't use up its key, so you can fix the problem and retry with the same key. Keys can be at most 255 characters. The disbursement created with a key can also be located via `GET /v1/disbursements?idempotency_key=...`.
 
             We recommend supplying your own unique identifier for the disbursement in your system, so you can later look it up by an ID you already track.
           required: false
@@ -2234,6 +2234,8 @@ paths:
           headers:
             Location:
               $ref: "#/components/headers/Location"
+            Idempotent-Replayed:
+              $ref: "#/components/headers/Idempotent-Replayed"
           content:
             application/json:
               schema:
@@ -2327,11 +2329,22 @@ paths:
         - disbursements
       security:
         - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: |-
+            A client-generated identifier that makes the create safe to retry. Retrying with the same key and the same request body returns `201` with the disbursements the first request created, in request order and in their current state, and an `Idempotent-Replayed: true` header; no disbursement is created twice. Reusing a key for a different request, including one sent to `POST /v1/disbursements`, returns `409 Conflict` with `type` `idempotency_key_already_used`. A request that fails doesn't use up its key, so you can fix the problem and retry with the same key. Keys can be at most 255 characters.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/BulkCreateDisbursementsRequest"
       responses:
         "201":
           description: The disbursements were created
+          headers:
+            Idempotent-Replayed:
+              $ref: "#/components/headers/Idempotent-Replayed"
           content:
             application/json:
               schema:
@@ -8971,6 +8984,12 @@ components:
       description: Idempotency key for the request
       schema:
         type: string
+    Idempotent-Replayed:
+      description: "`true` when the response is the result of an earlier request with the same `Idempotency-Key`. Absent otherwise."
+      schema:
+        type: string
+        enum:
+          - "true"
   requestBodies:
     CreateDepositAddressRequest:
       description: |-
