@@ -3060,6 +3060,8 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/sources/{id}:
@@ -3121,6 +3123,12 @@ paths:
           schema:
             type: string
           example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/UpdateSourceRequest"
       responses:
@@ -3161,6 +3169,12 @@ paths:
           schema:
             type: string
           example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       responses:
         "204":
           description: Returns 204 No Content on success.
@@ -3687,6 +3701,12 @@ paths:
           schema:
             type: string
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/UpdateDonationRequest"
       responses:
@@ -3728,6 +3748,12 @@ paths:
           schema:
             type: string
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       responses:
         "204":
           description: The donation was deleted.
@@ -4190,6 +4216,12 @@ paths:
           schema:
             type: string
           example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/ReconcileDepositRequest"
       responses:
@@ -4226,6 +4258,12 @@ paths:
           schema:
             type: string
           example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       responses:
         "204":
           description: The deposit was unreconciled.
@@ -4237,6 +4275,8 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/properties:
@@ -4412,6 +4452,13 @@ paths:
         - mailbox
       security:
         - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -4443,6 +4490,8 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/lockboxes/fulfill_request:
@@ -10888,6 +10937,24 @@ components:
                 title: "API Error"
                 status: 409
                 detail: "The request conflicts with the current state of the resource."
+    IdempotencyConflict:
+      description: |-
+        A request with the same `Idempotency-Key` is still in progress, or the key was
+        already used with different request parameters.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            IdempotencyConflict:
+              value:
+                type: idempotency_key_already_used
+                title: API Error
+                status: 409
+                detail: The idempotency key was already used with different request parameters.
     DonationLifecycleConflict:
       description: |-
         The donation is deleted or merged. The write conflicts with its state.
