@@ -36,24 +36,24 @@ https://dashboard.givechariot.com/oauth/authorize
   &code_challenge_method=S256
 ```
 
-The `nonce` is a cryptographically random string that your application generates. It is included in the ID token so you can verify the token was issued in response to your specific authorization request, preventing [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
+The `nonce` is optional but recommended. It is a cryptographically random string that your application generates. It is included in the ID token so you can verify the token was issued in response to your specific authorization request, preventing [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
 
 <CodeBlocks>
 ```javascript NodeJS
 const crypto = require("crypto");
 
 function generateNonce() {
-return crypto.randomBytes(32).toString("base64url");
+  return crypto.randomBytes(32).toString("base64url");
 }
+```
 
-````
 ```python Python
 import os
 import base64
 
 def generate_nonce():
     return base64.urlsafe_b64encode(os.urandom(32)).rstrip(b"=").decode()
-````
+```
 
 ```go Go
 import (
@@ -94,22 +94,24 @@ The token response will then include an `id_token` alongside the access and refr
 }
 ```
 
+The `id_token` expires after 24 hours. Refreshing the access token also returns a new `id_token`.
+
 ## ID Token Claims
 
 The `id_token` is a signed JWT containing standard OIDC claims:
 
-| Claim         | Description                            |
-| ------------- | -------------------------------------- |
-| `iss`         | Issuer (Chariot's auth server URL)     |
-| `sub`         | Subject identifier for the user        |
-| `aud`         | Your `client_id`                       |
-| `iat`         | Time the token was issued              |
-| `exp`         | Expiration time                        |
-| `nonce`       | Echoed from your authorization request |
-| `name`        | Full name                              |
-| `given_name`  | First name                             |
-| `family_name` | Last name                              |
-| `email`       | Email address                          |
+| Claim         | Description                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `iss`         | `https://api.givechariot.com` in production, `https://sandboxapi.givechariot.com` in sandbox |
+| `sub`         | The user's ID. Use this rather than `email` to identify the user                             |
+| `aud`         | Your `client_id`                                                                             |
+| `iat`         | Time the token was issued                                                                    |
+| `exp`         | Expiration time                                                                              |
+| `nonce`       | Echoed from your authorization request                                                       |
+| `name`        | Full name                                                                                    |
+| `given_name`  | First name                                                                                   |
+| `family_name` | Last name                                                                                    |
+| `email`       | Email address                                                                                |
 
 ## Verifying ID Tokens
 
@@ -122,8 +124,8 @@ GET https://api.givechariot.com/.well-known/jwks.json
 Your JWT library should handle signature verification automatically given the JWKS URI. In addition, your application **must** validate:
 
 - **`aud`** — Confirm the audience matches your `client_id`. This ensures the token was issued for your application and not another client.
-- **`iss`** — Confirm the issuer matches Chariot's auth server URL from the discovery endpoint.
-- **`nonce`** — Confirm the nonce matches the value you sent in the authorization request. This prevents [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
+- **`iss`** — Confirm the issuer matches the `issuer` in the environment's discovery document.
+- **`nonce`** — If you sent a nonce, confirm it matches the value in the ID token. This prevents [replay attacks](https://en.wikipedia.org/wiki/Replay_attack).
 
 ## UserInfo Endpoint
 
@@ -154,4 +156,4 @@ Chariot publishes its OIDC configuration at the standard discovery endpoint:
 GET https://api.givechariot.com/.well-known/openid-configuration
 ```
 
-This returns the issuer, supported scopes, endpoint URLs, and signing key references needed to configure your OIDC client library.
+This returns the issuer, supported scopes, endpoint URLs, and signing key references needed to configure your OIDC client library. For sandbox URLs, see [Environments](/guides/oauth#environments).
