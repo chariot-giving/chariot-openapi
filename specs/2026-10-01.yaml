@@ -3064,6 +3064,60 @@ paths:
           $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/sources/search:
+    get:
+      summary: Search Sources
+      description: |-
+        Searches the sources visible to your organization by name: the
+        canonical sources Chariot maintains, plus any custom sources your
+        organization has added. Results are ranked by match, best first.
+        This endpoint exists to support a typeahead or a quick lookup when you
+        know a source's name. Use List Sources to page the full catalog.
+      operationId: searchSources
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: The text to search source names for. This is a fuzzy search on the source name.
+          schema:
+            type: string
+        - name: scope
+          in: query
+          description: Filter by source scope. Omit to return both canonical and custom sources.
+          required: false
+          schema:
+            type: string
+            enum:
+              - canonical
+              - custom
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSourcesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/sources/{id}:
     get:
       summary: Get a Source
@@ -10733,6 +10787,27 @@ components:
             properties:
               results:
                 type: array
+                items:
+                  $ref: "#/components/schemas/Source"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
+    SearchSourcesResponse:
+      description: The response for Sources.search
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                description: The matching sources, ranked best first.
                 items:
                   $ref: "#/components/schemas/Source"
               next_page_token:
