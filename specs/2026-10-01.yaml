@@ -5464,7 +5464,8 @@ components:
           description: |-
             Arbitrary key-value pairs recorded against the donation. Use this for
             reconciliation data, campaign identifiers, or other integration data.
-          additionalProperties: true
+          additionalProperties:
+            type: string
         corporate_match:
           description: |-
             Details specific to matched donations. Empty when no corporate sponsor matched the donation.
@@ -9283,9 +9284,11 @@ components:
               metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value pairs recorded against the donation. Setting this field replaces the
-                  stored map. Naming `metadata` in `clear_fields` removes it.
-                additionalProperties: true
+                  Arbitrary key-value pairs recorded against the donation. The keys you send are added to
+                  the stored map. A key that already exists gets the new value. Stored keys you don't send
+                  don't change. To remove all metadata, name `metadata` in `clear_fields`.
+                additionalProperties:
+                  type: string
               artifact_file_ids:
                 type: array
                 description: |-
@@ -9461,7 +9464,8 @@ components:
                 description: |-
                   Arbitrary key-value pairs recorded against the donation. Use this for
                   reconciliation data, campaign identifiers, or other integration data.
-                additionalProperties: true
+                additionalProperties:
+                  type: string
               artifact_file_ids:
                 type: array
                 description: |-
