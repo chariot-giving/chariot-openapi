@@ -6169,6 +6169,7 @@ components:
           financial_account_id: "fa_01j8rs605a4gctmbm58d87mvsj"
           description: "FIDELITY CHARITABLE GRANT"
           bank_created_at: "2026-09-25T14:00:00Z"
+          type: "inbound_ach_transfer"
           inbound_ach_transfer:
             standard_entry_class_code: "corporate_credit_or_debit"
             company_entry_description: "GRANTPMT"
@@ -6301,6 +6302,17 @@ components:
           readOnly: true
           description: The date and time the bank recorded the transfer.
           example: "2020-01-31T23:59:59Z"
+        type:
+          type: string
+          description: The kind of transfer. It names the one transfer object that is set on this transfer.
+          example: "inbound_ach_transfer"
+          enum:
+            - inbound_account_transfer
+            - inbound_ach_transfer
+            - ach_transfer
+            - check_deposit
+            - inbound_real_time_payments_transfer
+            - inbound_wire_transfer
         inbound_account_transfer:
           description: An instant transfer from another Chariot account.
           allOf:
@@ -6372,6 +6384,12 @@ components:
           type: string
           description: The trace number for the ACH transfer.
           example: "1234567890"
+        receiver_id:
+          type: string
+          description: |-
+            The identification number the originator assigned to you as the receiver of the ACH transfer.
+            Omitted when the originator didn't send one.
+          example: "NP-00042"
         effective_date:
           type: string
           format: date-time
@@ -6388,7 +6406,9 @@ components:
             - returned
         company_discretionary_data:
           type: string
-          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          description: |-
+            Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+            Omitted when the originator didn't send any.
           example: "GRANT-2024-001"
         payment_related_info:
           type: string
