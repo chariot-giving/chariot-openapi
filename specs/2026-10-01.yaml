@@ -3787,8 +3787,10 @@ paths:
       description: |-
         Delete a donation by its unique identifier.
 
-        A delete on a donation that is already deleted or merged returns `409`.
-        The problem `type` is `donation_deleted` or `donation_merged`.
+        A delete returns `409` when the donation is already deleted, is merged into
+        another donation, or is reconciled to a deposit. The problem `type` is
+        `donation_deleted`, `donation_merged` or `donation_reconciled`. Unreconcile
+        the deposit before you delete a reconciled donation.
       operationId: deleteDonation
       tags:
         - donations
@@ -3820,7 +3822,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
         "409":
-          $ref: "#/components/responses/DonationLifecycleConflict"
+          $ref: "#/components/responses/DonationDeleteConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/donations/merge:
@@ -11070,6 +11072,50 @@ components:
                       The donation this one was merged into. Present when the
                       problem type is `donation_merged`.
           examples:
+            donation_merged:
+              summary: The donation is merged into another donation
+              value:
+                type: donation_merged
+                title: API Error
+                status: 409
+                detail: Donation is merged into another donation
+                resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+            donation_deleted:
+              summary: The donation is deleted
+              value:
+                type: donation_deleted
+                title: API Error
+                status: 409
+                detail: Donation is deleted
+    DonationDeleteConflict:
+      description: |-
+        The donation is deleted, merged or reconciled to a deposit, so it can't be
+        deleted. The problem `type` says which.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ProblemDetails"
+              - type: object
+                properties:
+                  resource_id:
+                    type: string
+                    description: |-
+                      The donation this one was merged into when the problem type is
+                      `donation_merged`, or the deposit it is reconciled to when the
+                      problem type is `donation_reconciled`.
+          examples:
+            donation_reconciled:
+              summary: The donation is reconciled to a deposit
+              value:
+                type: donation_reconciled
+                title: API Error
+                status: 409
+                detail: Donation is reconciled and cannot be deleted
+                resource_id: deposit_01j8rs605a4gctmbm58d87mvsj
             donation_merged:
               summary: The donation is merged into another donation
               value:
