@@ -3101,12 +3101,6 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: page_token
-          in: query
-          description: The cursor to use for pagination. If not set, the first page of results will be returned.
-          required: false
-          schema:
-            type: string
       responses:
         "200":
           $ref: "#/components/responses/SearchSourcesResponse"
@@ -10810,12 +10804,6 @@ components:
                 description: The matching sources, ranked best first.
                 items:
                   $ref: "#/components/schemas/Source"
-              next_page_token:
-                type: string
-                description: |-
-                  A cursor token to retrieve the next page of results. If
-                  specified, more results exist on the server; otherwise the
-                  list has been exhausted.
     ListDepositAddressesResponse:
       description: The response for DepositAddresses.list
       headers:
