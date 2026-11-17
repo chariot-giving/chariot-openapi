@@ -6176,7 +6176,6 @@ components:
             originator_routing_number: "021000021"
             originator_company_name: "Fidelity Charitable"
             trace_number: "021000021234567"
-            receiver_id: ""
             effective_date: "2026-09-25T00:00:00Z"
             status: "accepted"
             company_discretionary_data: "GRANT-2026-001"
@@ -6389,7 +6388,7 @@ components:
           type: string
           description: |-
             The identification number the originator assigned to you as the receiver of the ACH transfer.
-            Empty when the originator didn't send one.
+            Omitted when the originator didn't send one.
           example: "NP-00042"
         effective_date:
           type: string
@@ -6407,7 +6406,9 @@ components:
             - returned
         company_discretionary_data:
           type: string
-          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          description: |-
+            Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+            Omitted when the originator didn't send any.
           example: "GRANT-2024-001"
         payment_related_info:
           type: string
