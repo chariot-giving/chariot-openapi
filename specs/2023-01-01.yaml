@@ -1368,8 +1368,8 @@ components:
           description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
-          type: number
-          format: integer
+          type: integer
+          format: int64
           description: The grant amount expressed in units of whole cents
           example: 15000
         status:
@@ -1382,8 +1382,8 @@ components:
           description: The fee detail of the grant
           properties:
             total:
-              type: number
-              format: integer
+              type: integer
+              format: int64
               description: The total fee amount expressed in units of cents
               example: 1500
             contributions:
@@ -1495,8 +1495,8 @@ components:
           description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
-          type: number
-          format: integer
+          type: integer
+          format: int64
           description: The grant amount expressed in units of whole cents
           example: 15000
         firstName:
@@ -1534,8 +1534,8 @@ components:
             If you need to differentiate between fees charged by different parties, you should use the `feeType` field.
           example: "Chariot"
         amount:
-          type: number
-          format: integer
+          type: integer
+          format: int64
           description: The fee contribution amount expressed in units of cents
           example: 1500
         feeType:
@@ -1636,8 +1636,8 @@ components:
           description: Time when this object was last updated; expressed in RFC 3339 format
           example: "2020-01-31T23:59:59Z"
         amount:
-          type: number
-          format: integer
+          type: integer
+          format: int64
           description: The grant amount expressed in units of whole cents
           example: 15000
         status:
