@@ -5680,13 +5680,14 @@ components:
           type: string
           description: |-
             The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) of the currency the rate
-            converts into, usually USD.
+            converts into, usually USD. Must differ from the donation's `currency`.
           example: USD
         value:
           type: string
           description: |-
             The number of units of `target_currency` equal to one unit of the donation's
-            `currency`, as a decimal string.
+            `currency`, as a decimal string. Must be greater than zero, with no sign, exponent, or
+            spaces. The value is stored in its shortest form, so `1.08340` is returned as `1.0834`.
           example: "1.0834"
     DonationRecipient:
       type: object
@@ -9317,7 +9318,8 @@ components:
               exchange_rate:
                 description: |-
                   The exchange rate used to convert the donation into `target_currency`, when the
-                  source reported one.
+                  source reported one. Send both `target_currency` and `value`: the rate replaces the
+                  stored one as a whole. To remove it, name `exchange_rate` in `clear_fields`.
                 allOf:
                   - $ref: "#/components/schemas/ExchangeRate"
               donation_type:
