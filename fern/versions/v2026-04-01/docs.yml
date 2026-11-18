@@ -171,7 +171,7 @@ navigation:
             icon: book-open-cover
             contents:
               - page: Overview
-                slug: /
+                slug: overview
                 path: ./pages/api/overview.mdx
               - page: Authentication
                 slug: authentication
@@ -282,7 +282,7 @@ navigation:
             icon: book-open-cover
             contents:
               - page: Introduction
-                slug: /
+                slug: introduction
                 path: ./pages/fdx/introduction.mdx
           - section: Accounts
             skip-slug: true

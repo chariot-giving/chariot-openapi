@@ -66,6 +66,32 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/organizations/current:
+    get:
+      summary: Get current organization
+      description: |-
+        Retrieves the organization associated with your API key or access token. Returns a 403 if the API key or access token is not scoped to an organization.
+      operationId: getCurrentOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/{id}:
     get:
       summary: Get organization
@@ -372,6 +398,24 @@ paths:
             type: string
           required: false
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: tracking_id
+          in: query
+          description: |-
+            Filter grants by their DAFpay tracking ID. Use this to find the grant behind a tracking ID you already have.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "L9E182VBGP"
+        - name: external_grant_id
+          in: query
+          description: |-
+            Filter grants by the ID the donor advised fund gave the grant. Use this to find the grant behind a DAF's grant ID.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "897823sdjf8sfjs"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -684,6 +728,15 @@ paths:
             type: string
           required: false
           example: "live_2d821da0ed8bc7256e260f4eb5244f2d8f06c576342f922ba2f0a416d8c98002"
+        - name: tracking_id
+          in: query
+          description: |-
+            Filter unintegrated grants by their DAFpay tracking ID. Use this to find the unintegrated grant behind a tracking ID you already have.
+          schema:
+            type: string
+            minLength: 1
+          required: false
+          example: "L9E182VBGP"
         - name: pageLimit
           in: query
           description: the number of results to return; defaults to 10, max is 100
@@ -3377,6 +3430,17 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: has_donations
+          in: query
+          description: |-
+            When `true`, returns only deposits with at least one donation reconciled
+            to them. When `false`, returns only deposits with no donations. A deposit
+            counts as having donations even when the donation amounts don't add up to
+            the deposit amount.
+          required: false
+          schema:
+            type: boolean
+          example: false
       responses:
         "200":
           $ref: "#/components/responses/ListDepositsResponse"
@@ -4502,8 +4566,7 @@ components:
           type: string
           readOnly: true
           description: |-
-            A short human-readable identifier for the donation, useful for reconciling against your own systems.
-            This is the same identifier shown on the donation in the Chariot dashboard.
+            Identifier provided by the source or granting organization, when present.
           example: "29247869"
         payment_source_id:
           type: string
@@ -5037,6 +5100,7 @@ components:
         - payment_source_id
         - status
         - transfer
+        - donation_count
         - created_at
         - updated_at
       properties:
@@ -5071,6 +5135,14 @@ components:
           description: A subhash containing information about the transfer associated with the deposit.
           allOf:
             - $ref: "#/components/schemas/Transfer"
+        donation_count:
+          type: integer
+          format: int32
+          readOnly: true
+          description: |-
+            The number of donations reconciled to this deposit. `0` when no
+            donations are reconciled to it.
+          example: 1
         properties:
           type: array
           description: |-
@@ -5155,15 +5227,23 @@ components:
           description: The date and time the account transfer was created
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    StandardEntryClassCode:
+      type: string
+      description: The Standard Entry Class (SEC) code for the ACH transfer.
+      example: "corporate_credit_or_debit"
+      enum:
+        - corporate_credit_or_debit
+        - prearranged_payments_and_deposit
+        - international_ach_transaction
+        - internet_initiated
+        - corporate_trade_exchange
     InboundAchTransfer:
       type: object
       description: |-
         An ACH transfer initiated outside of Chariot to your financial account.
       properties:
         standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: The company entry description for the ACH transfer.
@@ -5198,6 +5278,12 @@ components:
           type: string
           description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
           example: "GRANT-2024-001"
+        payment_related_info:
+          type: string
+          description: |-
+            Payment details the originator attached to the ACH transfer, taken from the Payment Related Information field of the ACH addenda record.
+            Up to 80 characters. Omitted when the originator didn't send any.
+          example: "Grant 12345 for the Annual Fund"
     CheckDeposit:
       type: object
       description: |-
@@ -6100,10 +6186,10 @@ components:
             - Completed
             - Canceled
           description: |
-            The status the grant reached at this point in its history.
-              * Initiated: The request was submitted to and received by the DAF provider.
-              * Completed: Receipt of the payment was confirmed, by Chariot recording the settlement or by the nonprofit confirming it.
-              * Canceled: The donor canceled the grant, or the DAF provider did not approve it.
+            The status of the grant.
+              * Initiated: The grant was submitted to the DAF provider and the provider is still processing it.
+              * Completed: The nonprofit has the funds. This is the success status.
+              * Canceled: The grant was canceled by the donor, or the DAF provider did not approve it.
           example: Initiated
     UnintegratedGrant:
       type: object
@@ -6865,16 +6951,7 @@ components:
             - credit
             - debit
         standard_entry_class_code:
-          type: string
-          description: |-
-            The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "corporate_credit_or_debit"
-          enum:
-            - corporate_credit_or_debit
-            - prearranged_payments_and_deposit
-            - international_ach_transaction
-            - internet_initiated
-            - corporate_trade_exchange
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: |-
@@ -7186,6 +7263,15 @@ components:
             Enable just-in-time (JIT) funding for this disbursement. When true, Chariot will automatically create an inbound transfer for the disbursement amount when it is approved, eliminating the need to pre-fund your account. This feature must be enabled on your account. Contact Chariot to enable JIT disbursements.
           example: false
           default: false
+        earmark_funding:
+          type: boolean
+          description: |-
+            Reserve this disbursement's auto-funded inbound transfer for this disbursement. When true, the funds from the ACH debit Chariot creates for the disbursement are held in your account once the debit settles, so other disbursements and withdrawals can't spend them.
+            The hold is released when the disbursement's first transfer is created, or when the disbursement is canceled or rejected. If the ACH debit fails or is returned, there is nothing to hold and the disbursement draws from your available balance like any other.
+            An earmark never delays the disbursement. If your available balance covers the disbursement before the ACH debit settles, the disbursement is sent from that balance and the hold is released, so the debit's funds go to your available balance when it settles.
+            Requires `auto_fund` to be `true`. See [Funding earmarks](/guides/disbursements/disbursement-lifecycle#funding-earmarks).
+          example: false
+          default: false
         bypass_chariot_organization_verification:
           type: boolean
           description: |-
@@ -7446,7 +7532,23 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
+    JointDonor:
+      type: object
+      description: The name of a second donor jointly credited with a gift.
+      properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
+        first_name:
+          type: string
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
+        last_name:
+          type: string
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
@@ -7474,7 +7576,7 @@ components:
       description: |
         The category of the event. This is useful for filtering events.
 
-        Event names follow the pattern `{resource}.{event_type}` where `event_type` is either `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
+        Event names follow the pattern `{resource}.{event_type}` where `event_type` is usually `created` or `updated`. Status transitions (for example, a Donor Account moving to `approved` or `rejected`) are emitted as `{resource}.updated` events — fetch the object to read its current status.
       enum:
         - "grant.created"
         - "grant.updated"
@@ -7496,6 +7598,7 @@ components:
         - "deposit.updated"
         - "verification_request.created"
         - "verification_request.updated"
+        - "connection.revoked"
     Event:
       type: object
       description: |
@@ -7523,6 +7626,11 @@ components:
           type: string
           description: The type of the associated object
           example: "grant"
+          readOnly: true
+        organization_id:
+          type: string
+          description: The unique identifier for the organization the event belongs to
+          example: "org_01jpjenf5q6cawy43yxfcrxhct"
           readOnly: true
     EventSubscriptionStatus:
       type: string
@@ -8117,6 +8225,28 @@ components:
                             { first_name: "Alice", last_name: "Williams" },
                         },
                       corporate_match: { company_name: "Acme Corporation" },
+                    },
+                  ]
+            EarmarkedAutoFundDisbursement:
+              summary: Auto-funded disbursement with its funding earmarked
+              value:
+                organization_id: "org_01jpjenf5q6cawy43yxfcrxhct"
+                amount: 5000000
+                auto_fund: true
+                earmark_funding: true
+                transactions:
+                  [
+                    {
+                      amount: 5000000,
+                      internal_transaction_id: "GRANT-003",
+                      type: "donor_advised_fund_grant",
+                      purpose: "Capital campaign",
+                      donors:
+                        {
+                          primary_donor:
+                            { first_name: "Jane", last_name: "Doe" },
+                        },
+                      daf_grant: { fund_name: "Doe Family Charitable Fund" },
                     },
                   ]
     BulkCreateDisbursementsRequest:

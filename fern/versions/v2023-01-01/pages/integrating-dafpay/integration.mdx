@@ -117,6 +117,31 @@ To prevent request failures, any inputs exceeding the maximum allowed length wil
 - Anonymous: Indicate if a donor has chosen to give anonymously on your donation form so the donation can be properly anonymized by the DAF provider.
 </Note>
 
+### Checkout Mode
+
+By default, Chariot chooses whether the checkout opens as a modal on your page or in a popup window, based on the donor's browser and where the button is placed. To always use one mode, set the `context` attribute.
+
+<CodeBlocks>
+```html HTML
+<chariot-connect id="chariot" cid="GENERATED_CONNECT_IDENTIFIER" context="popup"></chariot-connect>
+```
+```javascript React
+<ChariotConnect
+    cid="GENERATED_CONNECT_IDENTIFIER"
+    context="popup"
+/>
+```
+</CodeBlocks>
+
+| Value    | Behavior                                         |
+|----------|--------------------------------------------------|
+| `iframe` | Opens the checkout as a modal over your page.    |
+| `popup`  | Opens the checkout in a separate browser window. |
+
+<Warning>
+We recommend leaving `context` unset. Forcing `iframe` can break the checkout in Safari, on mobile, or when your donation form is itself embedded in an iframe. If you set `iframe`, test the checkout across browsers and devices.
+</Warning>
+
 ### Disabling Connect
 
 To prevent the DAFpay button from launching until form validation is performed, pass `false` to the onDonationRequest.

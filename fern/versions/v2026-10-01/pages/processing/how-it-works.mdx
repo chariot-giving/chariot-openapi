@@ -12,13 +12,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Card>
 
     <Card
-        title='2. Set up Payment Sources'
-        icon='building-columns'
-    >
-    Configure Payment Sources (DAFs, platforms, lockbox)
-    </Card>
-        <Card
-        title='3. Start receiving gifts'
+        title='2. Start receiving gifts'
         icon='money-bill-transfer'
     >
     Automatically process and reconcile donations from all sources in one unified system
@@ -27,7 +21,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
 To get started with <Tooltip tip={<span>Chariot is a financial technology company, not a bank. Banking services provided by Column N.A., Member FDIC. <a href="https://help.givechariot.com/onboarding/compliance-verification/chariot-deposit-accounts" target="_blank" rel="noreferrer">Full disclosure</a></span>}>Chariot</Tooltip> you'll need to register for an account.
 
-After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys`, set up Payment Sources, and process all incoming donations.
+After you are approved and verified, you'll be given access to a dashboard where you will be able to manage and create `API Keys` and process all incoming donations.
 
 ## Understanding the Flow
 
@@ -35,19 +29,9 @@ Chariot enables nonprofits to unify and streamline the processing of offline gif
 
 <Steps>
 
-### Payment Sources are Created
-
-Payment Sources represent segregated addresses for incoming deposits. These can be:
-- **Electronic bank addresses** (unique account + routing numbers) for ACH transfers
-- **Physical mailing addresses** (lockboxes) for processing checks and physical mail
-
-Each Payment Source acts as a gateway for money to flow into your Chariot Account while maintaining the source information needed for reconciliation.
-
-<EndpointRequestSnippet endpoint="GET /v1/payment_sources" />
-
 ### Deposits are Received
 
-When a payment arrives at a Payment Source, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more donations.
+When a payment arrives, Chariot creates a `Deposit` record. A Deposit represents a transfer of money that may contain one or more donations.
 
 Deposits can come through different payment rails:
 - **Account transfers** - Instant transfers from other Chariot accounts
