@@ -3742,6 +3742,9 @@ paths:
         An update to a deleted or merged donation returns `409`. The problem
         `type` is `donation_deleted` or `donation_merged`. A merged donation
         carries the ID of the donation it was merged into.
+
+        Changing or clearing the `source_id` of a donation that is reconciled to a deposit returns `400`.
+        To move the donation, unreconcile it from the deposit first.
       operationId: updateDonation
       tags:
         - donations
@@ -9283,7 +9286,8 @@ components:
                 type: string
                 description: |-
                   The identifier of the [Source](/api-reference/sources) that sent this donation.
-                  The source must already exist.
+                  The source must already exist. It can't be changed or cleared while the donation is
+                  reconciled to a deposit.
                 example: "source_01m12tn300eh20gdqscje7s5jw"
               external_id:
                 type: string
