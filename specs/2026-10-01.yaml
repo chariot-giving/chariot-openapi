@@ -66,6 +66,32 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/organizations/current:
+    get:
+      summary: Get current organization
+      description: |-
+        Retrieves the organization associated with your API key or access token. Returns a 403 if the API key or access token is not scoped to an organization.
+      operationId: getCurrentOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/{id}:
     get:
       summary: Get organization
@@ -3034,6 +3060,62 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/sources/search:
+    get:
+      summary: Search Sources
+      description: |-
+        Searches the sources visible to your organization by name: the
+        canonical sources Chariot maintains, plus any custom sources your
+        organization has added. Results are ranked by match, best first.
+        This endpoint exists to support a typeahead or a quick lookup when you
+        know a source's name. Use List Sources to page the full catalog.
+      operationId: searchSources
+      tags:
+        - sources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: The text to search source names for. This is a fuzzy search on the source name.
+          schema:
+            type: string
+        - name: scope
+          in: query
+          description: Filter by source scope. Omit to return both canonical and custom sources.
+          required: false
+          schema:
+            type: string
+            enum:
+              - canonical
+              - custom
+        - name: limit
+          in: query
+          description: Limit the size of the list that is returned. The default (and maximum) is 100 objects.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: page_token
+          in: query
+          description: The cursor to use for pagination. If not set, the first page of results will be returned.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSourcesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/sources/{id}:
@@ -3095,6 +3177,12 @@ paths:
           schema:
             type: string
           example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/UpdateSourceRequest"
       responses:
@@ -3135,6 +3223,12 @@ paths:
           schema:
             type: string
           example: "source_01m12tn300eh20gdqscje7s5jw"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       responses:
         "204":
           description: Returns 204 No Content on success.
@@ -3480,7 +3574,8 @@ paths:
     get:
       summary: List Donations
       description: |-
-        List donations for your account.
+        List donations for your account. The list excludes deleted and merged
+        donations. Fetch one by its ID with `GET /v1/donations/{id}`.
       operationId: listDonations
       tags:
         - donations
@@ -3590,6 +3685,8 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "409":
           $ref: "#/components/responses/ConflictError"
         "500":
@@ -3599,6 +3696,11 @@ paths:
       summary: Get a Donation
       description: |-
         Get a donation by its unique identifier.
+
+        ### Retrieving a deleted or merged donation
+
+        This endpoint still returns a deleted or merged donation. The response
+        sets `deleted_at`, and `merged_into_donation_id` for a merge.
       operationId: getDonation
       tags:
         - donations
@@ -3636,6 +3738,10 @@ paths:
         strings and zeros). Fields listed in `clear_fields` are nulled — only nullable columns are clearable.
         Fields that are neither set nor listed are left unchanged. A field path may not be cleared and carry
         a value in the same request.
+
+        An update to a deleted or merged donation returns `409`. The problem
+        `type` is `donation_deleted` or `donation_merged`. A merged donation
+        carries the ID of the donation it was merged into.
       operationId: updateDonation
       tags:
         - donations
@@ -3649,6 +3755,12 @@ paths:
           schema:
             type: string
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/UpdateDonationRequest"
       responses:
@@ -3666,11 +3778,19 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/DonationLifecycleConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Delete a Donation
-      description: Delete a donation by its unique identifier.
+      description: |-
+        Delete a donation by its unique identifier.
+
+        A delete returns `409` when the donation is already deleted, is merged into
+        another donation, or is reconciled to a deposit. The problem `type` is
+        `donation_deleted`, `donation_merged` or `donation_reconciled`. Unreconcile
+        the deposit before you delete a reconciled donation.
       operationId: deleteDonation
       tags:
         - donations
@@ -3684,6 +3804,12 @@ paths:
           schema:
             type: string
           example: "donation_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       responses:
         "204":
           description: The donation was deleted.
@@ -3695,6 +3821,127 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/DonationDeleteConflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/donations/merge:
+    post:
+      summary: Merge Donations
+      description: |-
+        Merge one donation into another. The donation named by `into` is kept
+        and keeps its ID. The donation named by `from` is soft-deleted and points
+        at the `into` donation.
+
+        The response is the `into` donation after the merge. A value already set
+        on it is kept. A value it is missing can be filled with the value from
+        the `from` donation.
+
+        A merge cannot be undone. Repeating a completed merge is safe: it returns
+        the `into` donation again. The merge emits a `donation.updated` event for
+        the `into` donation and a `donation.deleted` event for the `from` one.
+
+        ## Errors
+
+        - `400` when the same donation is on both sides.
+        - `404` when a donation does not exist.
+        - `409` when an input is deleted or merged. The problem `type` is
+          `donation_deleted` or `donation_merged`, and a merged input carries the
+          ID of the donation it was merged into. A deleted or merged donation
+          still exists, so a write conflicts with its state.
+        - `409` when both donations are reconciled to a deposit. The problem
+          `type` is `donation_merge_conflict`.
+      operationId: mergeDonations
+      tags:
+        - donations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - from
+                - into
+              properties:
+                from:
+                  type: string
+                  description: |-
+                    The donation to merge. It is soft-deleted and points at the
+                    into donation.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+                into:
+                  type: string
+                  description: The donation that is kept. It keeps its ID.
+                  example: "donation_01j8rs605a4gctmbm58d87mvsj"
+      responses:
+        "200":
+          description: |-
+            The merge is done. The body is the into donation, with values from
+            the from donation filled in where it had none.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Donation"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          description: |-
+            The merge conflicts with the state of a donation. The problem `type`
+            identifies the case.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/problem+json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ProblemDetails"
+                  - type: object
+                    properties:
+                      resource_id:
+                        type: string
+                        description: |-
+                          The donation the merged input points at. Present when
+                          the problem type is `donation_merged`.
+              examples:
+                donation_merge_conflict:
+                  summary: Both donations are reconciled to a deposit
+                  value:
+                    type: donation_merge_conflict
+                    title: API Error
+                    status: 409
+                    detail: Both donations are reconciled to a deposit and cannot be merged
+                donation_merged:
+                  summary: An input is already merged into another donation
+                  value:
+                    type: donation_merged
+                    title: API Error
+                    status: 409
+                    detail: Donation is merged into another donation
+                    resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+                donation_deleted:
+                  summary: An input is already deleted
+                  value:
+                    type: donation_deleted
+                    title: API Error
+                    status: 409
+                    detail: Donation is deleted
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/deposits:
@@ -4025,6 +4272,12 @@ paths:
           schema:
             type: string
           example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         $ref: "#/components/requestBodies/ReconcileDepositRequest"
       responses:
@@ -4038,6 +4291,48 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/DonationsNotReconcilable"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/deposits/{id}/unreconcile:
+    post:
+      summary: Unreconcile a Deposit
+      description: |-
+        Unlink every donation from a deposit. The donations themselves aren't deleted, and their
+        payment status updates to reflect that they're no longer part of the deposit.
+      operationId: unreconcileDeposit
+      tags:
+        - deposits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier for the deposit to unreconcile
+          required: true
+          schema:
+            type: string
+          example: "deposit_01j8rs605a4gctmbm58d87mvsj"
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
+      responses:
+        "204":
+          description: The deposit was unreconciled.
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/properties:
@@ -4213,6 +4508,13 @@ paths:
         - mailbox
       security:
         - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: The idempotency key for the request.
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -4244,6 +4546,8 @@ paths:
           $ref: "#/components/responses/AuthenticationError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
   /v1/lockboxes/fulfill_request:
@@ -5056,7 +5360,7 @@ components:
           metadata:
             campaign_id: "spring-appeal"
         settlement:
-          type: "chariot"
+          destination: "chariot"
           received_at: "2026-09-25T14:00:00Z"
           settled_at: "2026-09-25T18:00:00Z"
           deposit_id: "deposit_01j8rs605a4gctmbm58d87mvsj"
@@ -5078,6 +5382,8 @@ components:
         created_at: "2026-09-25T14:00:00Z"
         updated_at: "2026-09-25T18:00:00Z"
         canceled_at: null
+        deleted_at: null
+        merged_into_donation_id: null
         payment_status: "RECEIVED_IN_CHARIOT"
       required:
         - id
@@ -5265,7 +5571,8 @@ components:
           description: |-
             Arbitrary key-value pairs recorded against the donation. Use this for
             reconciliation data, campaign identifiers, or other integration data.
-          additionalProperties: true
+          additionalProperties:
+            type: string
         corporate_match:
           description: |-
             Details specific to matched donations. Empty when no corporate sponsor matched the donation.
@@ -5306,6 +5613,26 @@ components:
             complete and the recipient did not receive the gift. Expressed in
             RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
+        deleted_at:
+          type: string
+          readOnly: true
+          format: date-time
+          nullable: true
+          description: |-
+            When the donation was deleted or merged. Null for a live donation.
+            `GET /v1/donations/{id}` still returns a deleted or merged donation,
+            but `GET /v1/donations` (list) excludes it. Expressed in RFC 3339
+            format.
+          example: null
+        merged_into_donation_id:
+          type: string
+          readOnly: true
+          nullable: true
+          description: |-
+            The donation this one was merged into. Set only for a merged
+            donation, as a donation ID. Null for a live or plain-deleted
+            donation. Follow it to the donation that now holds the gift.
+          example: null
         payment_status:
           type: string
           readOnly: true
@@ -5353,13 +5680,14 @@ components:
           type: string
           description: |-
             The [ISO 4217 code](https://en.wikipedia.org/wiki/ISO_4217) of the currency the rate
-            converts into, usually USD.
+            converts into, usually USD. Must differ from the donation's `currency`.
           example: USD
         value:
           type: string
           description: |-
             The number of units of `target_currency` equal to one unit of the donation's
-            `currency`, as a decimal string.
+            `currency`, as a decimal string. Must be greater than zero, with no sign, exponent, or
+            spaces. The value is stored in its shortest form, so `1.08340` is returned as `1.0834`.
           example: "1.0834"
     DonationRecipient:
       type: object
@@ -5679,19 +6007,19 @@ components:
       type: object
       description: How the funds moved from the donor to the recipient.
       required:
-        - type
+        - destination
         - received_at
       properties:
-        type:
+        destination:
           type: string
           description: |-
-            Where the funds settled.
+            Whether the funds were deposited into your Chariot Deposit Account or settled outside Chariot.
 
-            - `chariot` — the funds arrived through a Chariot deposit. `deposit_id` and `settled_at` apply.
-            - `external` — the funds arrived outside Chariot's rails, straight to the recipient.
+            - `chariot` — the funds were deposited into your Chariot Deposit Account. `deposit_id` and `settled_at` apply.
+            - `outside_chariot` — the funds were deposited into another account, rather than your Chariot Deposit Account.
           enum:
             - chariot
-            - external
+            - outside_chariot
           example: chariot
         received_at:
           type: string
@@ -5707,14 +6035,36 @@ components:
           format: date-time
           description: |-
             When the funds became available in the recipient's Chariot account.
-            Only set when `type` is `chariot`. Expressed in RFC 3339 format.
+            Only set when `destination` is `chariot`. Expressed in RFC 3339 format.
           example: "2020-01-31T23:59:59Z"
         deposit_id:
           type: string
           description: |-
             The identifier of the deposit that carried the funds. Only set when
-            `type` is `chariot`.
+            `destination` is `chariot`.
           example: deposit_01kewb5vgsryzaajza5ynr06kz
+        check_number:
+          type: string
+          description: |-
+            The check number, when the funds arrived by check, whether received in Chariot or
+            outside Chariot.
+          example: "1001"
+    DonationSettlementInput:
+      type: object
+      description: |-
+        Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+      properties:
+        received_at:
+          type: string
+          format: date-time
+          description: |-
+            When the funds were received by the recipient. Defaults to now. Expressed in RFC
+            3339 format.
+          example: "2026-10-20T15:00:00Z"
+        check_number:
+          type: string
+          description: "The check number, when the funds arrived by check. Maximum length: 255 characters."
+          example: "1001"
     DonationInitiation:
       type: object
       description: |-
@@ -5822,8 +6172,9 @@ components:
           financial_account_id: "fa_01j8rs605a4gctmbm58d87mvsj"
           description: "FIDELITY CHARITABLE GRANT"
           bank_created_at: "2026-09-25T14:00:00Z"
+          type: "inbound_ach_transfer"
           inbound_ach_transfer:
-            standard_entry_class_code: "CCD"
+            standard_entry_class_code: "corporate_credit_or_debit"
             company_entry_description: "GRANTPMT"
             originator_routing_number: "021000021"
             originator_company_name: "Fidelity Charitable"
@@ -5954,6 +6305,17 @@ components:
           readOnly: true
           description: The date and time the bank recorded the transfer.
           example: "2020-01-31T23:59:59Z"
+        type:
+          type: string
+          description: The kind of transfer. It names the one transfer object that is set on this transfer.
+          example: "inbound_ach_transfer"
+          enum:
+            - inbound_account_transfer
+            - inbound_ach_transfer
+            - ach_transfer
+            - check_deposit
+            - inbound_real_time_payments_transfer
+            - inbound_wire_transfer
         inbound_account_transfer:
           description: An instant transfer from another Chariot account.
           allOf:
@@ -5992,15 +6354,23 @@ components:
           description: The date and time the account transfer was created
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    StandardEntryClassCode:
+      type: string
+      description: The Standard Entry Class (SEC) code for the ACH transfer.
+      example: "corporate_credit_or_debit"
+      enum:
+        - corporate_credit_or_debit
+        - prearranged_payments_and_deposit
+        - international_ach_transaction
+        - internet_initiated
+        - corporate_trade_exchange
     InboundAchTransfer:
       type: object
       description: |-
         An ACH transfer initiated outside of Chariot to your financial account.
       properties:
         standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: The company entry description for the ACH transfer.
@@ -6017,6 +6387,12 @@ components:
           type: string
           description: The trace number for the ACH transfer.
           example: "1234567890"
+        receiver_id:
+          type: string
+          description: |-
+            The identification number the originator assigned to you as the receiver of the ACH transfer.
+            Omitted when the originator didn't send one.
+          example: "NP-00042"
         effective_date:
           type: string
           format: date-time
@@ -6033,7 +6409,9 @@ components:
             - returned
         company_discretionary_data:
           type: string
-          description: Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+          description: |-
+            Optional data set by the originator for their own internal use, taken from the Company Discretionary Data field of the ACH batch header record.
+            Omitted when the originator didn't send any.
           example: "GRANT-2024-001"
         payment_related_info:
           type: string
@@ -6947,17 +7325,15 @@ components:
         status:
           type: string
           enum:
-            - awaiting_account_approval
-            - awaiting_daf_submission
-            - initiated
-            - canceled
+            - Initiated
+            - Completed
+            - Canceled
           description: |
             The status of the grant.
-              * awaiting_account_approval: The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved.
-              * awaiting_daf_submission: The Account is approved and the grant is ready for the DAF to submit in their system.
-              * initiated: The DAF has submitted the grant. Terminal.
-              * canceled: The DAF has canceled the grant. Terminal.
-          example: awaiting_daf_submission
+              * Initiated: The grant was submitted to the DAF provider and the provider is still processing it.
+              * Completed: The nonprofit has the funds. This is the success status.
+              * Canceled: The grant was canceled by the donor, or the DAF provider did not approve it.
+          example: Initiated
         comment:
           type: string
           description: The user comment for the update
@@ -7907,16 +8283,7 @@ components:
             - credit
             - debit
         standard_entry_class_code:
-          type: string
-          description: |-
-            The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "corporate_credit_or_debit"
-          enum:
-            - corporate_credit_or_debit
-            - prearranged_payments_and_deposit
-            - international_ach_transaction
-            - internet_initiated
-            - corporate_trade_exchange
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: |-
@@ -8497,7 +8864,7 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
@@ -8543,6 +8910,7 @@ components:
         - "inbound_transfer.updated"
         - "donation.created"
         - "donation.updated"
+        - "donation.deleted"
         - "deposit.created"
         - "deposit.updated"
         - "verification_request.created"
@@ -8950,7 +9318,8 @@ components:
               exchange_rate:
                 description: |-
                   The exchange rate used to convert the donation into `target_currency`, when the
-                  source reported one.
+                  source reported one. Send both `target_currency` and `value`: the rate replaces the
+                  stored one as a whole. To remove it, name `exchange_rate` in `clear_fields`.
                 allOf:
                   - $ref: "#/components/schemas/ExchangeRate"
               donation_type:
@@ -9044,9 +9413,11 @@ components:
               metadata:
                 type: object
                 description: |-
-                  Arbitrary key-value pairs recorded against the donation. Setting this field replaces the
-                  stored map. Naming `metadata` in `clear_fields` removes it.
-                additionalProperties: true
+                  Arbitrary key-value pairs recorded against the donation. The keys you send are added to
+                  the stored map. A key that already exists gets the new value. Stored keys you don't send
+                  don't change. To remove all metadata, name `metadata` in `clear_fields`.
+                additionalProperties:
+                  type: string
               artifact_file_ids:
                 type: array
                 description: |-
@@ -9056,6 +9427,22 @@ components:
                   type: string
                 example:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
+              payment_status:
+                type: string
+                description: |-
+                  The payment status of the donation. Can't be changed once the donation is
+                  reconciled to a deposit.
+                enum:
+                  - INCOMING_TO_CHARIOT
+                  - INCOMING_OUTSIDE_CHARIOT
+                  - RECEIVED_OUTSIDE_CHARIOT
+                  - CANCELED
+                example: "RECEIVED_OUTSIDE_CHARIOT"
+              settlement:
+                description: |-
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+                allOf:
+                  - $ref: "#/components/schemas/DonationSettlementInput"
             example:
               purpose: "Capital Campaign"
               amount_fee: 250
@@ -9206,7 +9593,8 @@ components:
                 description: |-
                   Arbitrary key-value pairs recorded against the donation. Use this for
                   reconciliation data, campaign identifiers, or other integration data.
-                additionalProperties: true
+                additionalProperties:
+                  type: string
               artifact_file_ids:
                 type: array
                 description: |-
@@ -9215,6 +9603,21 @@ components:
                   type: string
                 example:
                   - "file_01j8rs605a4gctmbm58d87mvsj"
+              payment_status:
+                type: string
+                description: |-
+                  The payment status of the donation.
+                enum:
+                  - INCOMING_TO_CHARIOT
+                  - INCOMING_OUTSIDE_CHARIOT
+                  - RECEIVED_OUTSIDE_CHARIOT
+                  - CANCELED
+                example: "RECEIVED_OUTSIDE_CHARIOT"
+              settlement:
+                description: |-
+                  Only valid with a `payment_status` of `RECEIVED_OUTSIDE_CHARIOT`.
+                allOf:
+                  - $ref: "#/components/schemas/DonationSettlementInput"
             example:
               source_id: "source_01m12tn300eh20gdqscje7s5jw"
               effective_date: "2026-01-15T00:00:00Z"
@@ -10416,6 +10819,27 @@ components:
                   A cursor token to retrieve the next page of results. If
                   specified, more results exist on the server; otherwise the
                   list has been exhausted.
+    SearchSourcesResponse:
+      description: The response for Sources.search
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                description: The matching sources, ranked best first.
+                items:
+                  $ref: "#/components/schemas/Source"
+              next_page_token:
+                type: string
+                description: |-
+                  A cursor token to retrieve the next page of results. If
+                  specified, more results exist on the server; otherwise the
+                  list has been exhausted.
     ListDepositAddressesResponse:
       description: The response for DepositAddresses.list
       headers:
@@ -10612,6 +11036,133 @@ components:
                 title: "API Error"
                 status: 409
                 detail: "The request conflicts with the current state of the resource."
+    IdempotencyConflict:
+      description: |-
+        A request with the same `Idempotency-Key` is still in progress, or the key was
+        already used with different request parameters.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+          examples:
+            IdempotencyConflict:
+              value:
+                type: idempotency_key_already_used
+                title: API Error
+                status: 409
+                detail: The idempotency key was already used with different request parameters.
+    DonationLifecycleConflict:
+      description: |-
+        The donation is deleted or merged. The write conflicts with its state.
+        The problem `type` says which.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ProblemDetails"
+              - type: object
+                properties:
+                  resource_id:
+                    type: string
+                    description: |-
+                      The donation this one was merged into. Present when the
+                      problem type is `donation_merged`.
+          examples:
+            donation_merged:
+              summary: The donation is merged into another donation
+              value:
+                type: donation_merged
+                title: API Error
+                status: 409
+                detail: Donation is merged into another donation
+                resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+            donation_deleted:
+              summary: The donation is deleted
+              value:
+                type: donation_deleted
+                title: API Error
+                status: 409
+                detail: Donation is deleted
+    DonationDeleteConflict:
+      description: |-
+        The donation is deleted, merged or reconciled to a deposit, so it can't be
+        deleted. The problem `type` says which.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ProblemDetails"
+              - type: object
+                properties:
+                  resource_id:
+                    type: string
+                    description: |-
+                      The donation this one was merged into when the problem type is
+                      `donation_merged`, or the deposit it is reconciled to when the
+                      problem type is `donation_reconciled`.
+          examples:
+            donation_reconciled:
+              summary: The donation is reconciled to a deposit
+              value:
+                type: donation_reconciled
+                title: API Error
+                status: 409
+                detail: Donation is reconciled and cannot be deleted
+                resource_id: deposit_01j8rs605a4gctmbm58d87mvsj
+            donation_merged:
+              summary: The donation is merged into another donation
+              value:
+                type: donation_merged
+                title: API Error
+                status: 409
+                detail: Donation is merged into another donation
+                resource_id: donation_01j8rs605a4gctmbm58d87mvsj
+            donation_deleted:
+              summary: The donation is deleted
+              value:
+                type: donation_deleted
+                title: API Error
+                status: 409
+                detail: Donation is deleted
+    DonationsNotReconcilable:
+      description: |-
+        One or more of the provided donations cannot be reconciled. A donation is
+        unreconcilable when it is deleted, merged, or not found. The `donation_ids`
+        list names them.
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/X-Request-Id"
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ProblemDetails"
+              - type: object
+                properties:
+                  donation_ids:
+                    type: array
+                    items:
+                      type: string
+                    description: The donations that are not in a reconcilable state.
+          examples:
+            donations_not_reconcilable:
+              summary: Some donations cannot be reconciled
+              value:
+                type: donations_not_reconcilable
+                title: API Error
+                status: 409
+                detail: One or more of the provided donations are not in a state that can be reconciled.
+                donation_ids:
+                  - donation_01j8rs605a4gctmbm58d87mvsj
     GoneError:
       description: Resource Gone or Expired
       headers:

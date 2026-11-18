@@ -66,6 +66,32 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /v1/organizations/current:
+    get:
+      summary: Get current organization
+      description: |-
+        Retrieves the organization associated with your API key or access token. Returns a 403 if the API key or access token is not scoped to an organization.
+      operationId: getCurrentOrganization
+      tags:
+        - Organizations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/X-Request-Id"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/AuthenticationError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /v1/organizations/{id}:
     get:
       summary: Get organization
@@ -5163,15 +5189,23 @@ components:
           description: The date and time the account transfer was created
           example: "2020-01-31T23:00:00Z"
           readOnly: true
+    StandardEntryClassCode:
+      type: string
+      description: The Standard Entry Class (SEC) code for the ACH transfer.
+      example: "corporate_credit_or_debit"
+      enum:
+        - corporate_credit_or_debit
+        - prearranged_payments_and_deposit
+        - international_ach_transaction
+        - internet_initiated
+        - corporate_trade_exchange
     InboundAchTransfer:
       type: object
       description: |-
         An ACH transfer initiated outside of Chariot to your financial account.
       properties:
         standard_entry_class_code:
-          type: string
-          description: The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "WEB"
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: The company entry description for the ACH transfer.
@@ -6118,17 +6152,15 @@ components:
         status:
           type: string
           enum:
-            - awaiting_account_approval
-            - awaiting_daf_submission
-            - initiated
-            - canceled
+            - Initiated
+            - Completed
+            - Canceled
           description: |
             The status of the grant.
-              * awaiting_account_approval: The linked Donor Account is not yet `approved`. The grant advances automatically when the Account is approved.
-              * awaiting_daf_submission: The Account is approved and the grant is ready for the DAF to submit in their system.
-              * initiated: The DAF has submitted the grant. Terminal.
-              * canceled: The DAF has canceled the grant. Terminal.
-          example: awaiting_daf_submission
+              * Initiated: The grant was submitted to the DAF provider and the provider is still processing it.
+              * Completed: The nonprofit has the funds. This is the success status.
+              * Canceled: The grant was canceled by the donor, or the DAF provider did not approve it.
+          example: Initiated
         comment:
           type: string
           description: The user comment for the update
@@ -6893,16 +6925,7 @@ components:
             - credit
             - debit
         standard_entry_class_code:
-          type: string
-          description: |-
-            The Standard Entry Class (SEC) code for the ACH transfer.
-          example: "corporate_credit_or_debit"
-          enum:
-            - corporate_credit_or_debit
-            - prearranged_payments_and_deposit
-            - international_ach_transaction
-            - internet_initiated
-            - corporate_trade_exchange
+          $ref: "#/components/schemas/StandardEntryClassCode"
         company_entry_description:
           type: string
           description: |-
@@ -7483,7 +7506,23 @@ components:
         primary_donor:
           $ref: "#/components/schemas/Donor"
         joint_donor:
-          $ref: "#/components/schemas/Donor"
+          $ref: "#/components/schemas/JointDonor"
+    JointDonor:
+      type: object
+      description: The name of a second donor jointly credited with a gift.
+      properties:
+        full_name:
+          type: string
+          description: "The full name of the donor. Maximum length: 255 characters."
+          example: "Alex Rivera"
+        first_name:
+          type: string
+          description: "The first name of the donor. Maximum length: 255 characters."
+          example: "Alex"
+        last_name:
+          type: string
+          description: "The last name of the donor. Maximum length: 255 characters."
+          example: "Rivera"
     TransactionDafGrant:
       type: object
       description: A simplified DAF grant object containing the fund name.
