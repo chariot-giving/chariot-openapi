@@ -12,8 +12,8 @@ Register Chariot as a **confidential client** (server-side code exchange) in you
 
 | Environment | Callback URL |
 |---|---|
-| Production | `https://api.givechariot.com/oauth/callback` |
-| Staging | `https://devapi.givechariot.com/oauth/callback` |
+| Production | `https://api.givechariot.com/oauth/v1/callback` |
+| Staging | `https://devapi.givechariot.com/oauth/v1/callback` |
 
 You'll provide Chariot with the resulting `client_id` and `client_secret` through a secure channel (we'll share a secure link during onboarding — never email secrets).
 
@@ -25,7 +25,7 @@ Chariot launches your authorization endpoint in a popup window:
 GET https://auth.{your-domain}.com/authorize
   ?response_type=code
   &client_id={CHARIOT_CLIENT_ID}
-  &redirect_uri=https://api.givechariot.com/oauth/callback
+  &redirect_uri=https://api.givechariot.com/oauth/v1/callback
   &scope=openid profile email offline_access
   &state={opaque-csrf-token}
   &code_challenge={S256-challenge}
@@ -55,7 +55,7 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code
 &code={code}
-&redirect_uri=https://api.givechariot.com/oauth/callback
+&redirect_uri=https://api.givechariot.com/oauth/v1/callback
 &client_id={CHARIOT_CLIENT_ID}
 &client_secret={CHARIOT_CLIENT_SECRET}
 &code_verifier={pkce-verifier}
