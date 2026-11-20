@@ -103,7 +103,7 @@ The `id_token` is a signed JWT containing standard OIDC claims:
 | Claim         | Description                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------- |
 | `iss`         | `https://api.givechariot.com` in production, `https://sandboxapi.givechariot.com` in sandbox |
-| `sub`         | The user's ID. Use this rather than `email` to identify the user                             |
+| `sub`         | Stable user ID. Key user records on this claim because `email` can change.                   |
 | `aud`         | Your `client_id`                                                                             |
 | `iat`         | Time the token was issued                                                                    |
 | `exp`         | Expiration time                                                                              |
