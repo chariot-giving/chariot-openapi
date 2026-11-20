@@ -6465,6 +6465,12 @@ components:
           type: string
           description: The unique identifier for the program that the disbursement belongs to
           example: "program_01jpjenf5q6cawy43yxfcrxhct"
+        grant_letter_id:
+          type: string
+          description: |-
+            The unique identifier for the grant letter attached to the disbursement. This is one of the grant letters configured for the disbursement's program.
+          example: "grant_letter_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
         amount:
           type: integer
           format: int64
@@ -7251,6 +7257,14 @@ components:
             If not provided, your grant_disbursement_status enabled program will be used.
             If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement.
           example: "program_01jpjenf5q6cawy43yxfcrxhct"
+          nullable: true
+        grant_letter_id:
+          type: string
+          description: |-
+            The identifier for the grant letter to attach to the disbursement. Must be one of the grant letters configured for the disbursement's program in the Chariot dashboard.
+            If the program has a single grant letter, you can omit this field and that grant letter is used.
+            If the program has more than one grant letter, you must specify the grant_letter_id to use for the disbursement.
+          example: "grant_letter_01jpjenf5q6cawy43yxfcrxhct"
           nullable: true
         amount:
           type: integer
