@@ -130,9 +130,9 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
     </Accordion>
 
     <Accordion title="How do I add custom fields to donations?">
-        Use the Properties API to assign custom properties to donations:
+        Create the property in the Chariot Dashboard, then assign it to one or more donations. A property can be assigned to up to 100 donations in a single call.
 
-        <EndpointRequestSnippet endpoint="POST /v1/properties/donation/{donation_id}/assign" />
+        <EndpointRequestSnippet endpoint="POST /v1/properties/{id}/assign" />
 
         This enables you to:
         - Map to your CRM's custom fields
@@ -204,7 +204,7 @@ updatedAt: "Wed Jan 14 2026 21:30:05 GMT+0000 (Coordinated Universal Time)"
 
         1. The Deposit status changes to `failed`
         2. The associated Donations remain in your system
-        3. A `deposit.returned` webhook is sent
+        3. A `deposit.updated` event is sent
         4. Funds are debited from your account if they had settled
 
         You should:
