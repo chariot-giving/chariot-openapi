@@ -294,6 +294,21 @@ const App = () => {
       "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f", //Id of the donor advised fund
       "amount": 2000, //The grant amount expressed in units of cents; USD only
       "metadata": {} // The same metadata object that was passed in the onDonationRequest callback referenced above
+    },
+    "user": { // The donor's details
+      "firstName": "Michael",
+      "lastName": "Scott",
+      "email": "michael@example.org",
+      "phone": "15555550123",
+      "note": "Happy to support your work!",
+      "address": {
+        "line1": "123 Main St",
+        "line2": "Suite 4",
+        "city": "New York",
+        "state": "NY",
+        "country": "US",
+        "postalCode": "12345"
+      }
     }
   }
 ```
