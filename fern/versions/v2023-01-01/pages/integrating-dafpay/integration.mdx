@@ -306,6 +306,50 @@ Unintegrated grants will be marked with an `unknown` status.
 
 If unintegrated grants are enabled, the modal automatically closes after the user enters their donation information allowing you to record the gift intent in your system. When the modal closes, the `CHARIOT_EXIT` event will fire with the exit reason `UNINTEGRATED_GRANT_CONFIRMED`.
 
+The exit event includes the nonprofit and the unintegrated grant that Chariot created:
+
+- `unintegratedGrant.metadata` is the `metadata` object you returned from `onDonationRequest`. Use it to match the unintegrated grant to the donation in your system.
+- `unintegratedGrant.fund` is the DAF provider the donor selected. `fund.redirectUrl` links to the provider's website, where the donor submits the grant.
+- `firstName`, `lastName`, `email`, `phone`, and `note` appear only when the donor or your `onDonationRequest` provided them.
+
+```json onExitMetadata
+{
+  "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+  "nodeId": "submit-unintegrated-daf-node-id",
+  "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+  "reason": "UNINTEGRATED_GRANT_CONFIRMED",
+  "description": "An Unintegrated Grant was confirmed with Chariot",
+  "nonprofit": { "name": "Example Nonprofit", "ein": "12-3456789" },
+  "unintegratedGrant": {
+    "id": "67d66b89-51a0-4f17-a7b3-18c5dbac5361",
+    "workflowSessionId": "79e772be-547d-4c9c-8b76-4ac4ed4c441a",
+    "fundId": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+    "trackingId": "7HX2KNQ4R8",
+    "createdAt": "2026-04-01T15:30:00Z",
+    "updatedAt": "2026-04-01T15:30:00Z",
+    "amount": 25000,
+    "metadata": { "platformTransactionId": "txn_123" },
+    "firstName": "Michael",
+    "lastName": "Scott",
+    "email": "michael@example.org",
+    "phone": "15555550123",
+    "note": "Happy to support your work!",
+    "address": {
+      "line1": "123 Main St",
+      "line2": "Suite 4",
+      "city": "New York",
+      "state": "NY",
+      "postalCode": "12345"
+    },
+    "fund": {
+      "id": "bbf485dd-a056-4a9d-89a8-06e201cdbf7f",
+      "name": "Example Charitable",
+      "redirectUrl": "https://provider.example.com/grants/new"
+    }
+  }
+}
+```
+
 <Note title="Unintegrated Grants Confirmation Page">
   In the thank you page for unintegrated grants you should render the data provided from `CHARIOT_EXIT` (tracking ID, nonprofit EIN, nonprofit name, and link to the DAF provider) so the donor is aware of the remaining steps to complete their donation. Make sure to offer the ability for a donor to copy the tracking ID (including the "Tracking ID" prefix) directly on your confirmation page.
 </Note>
