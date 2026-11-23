@@ -5464,12 +5464,16 @@ components:
             - `individual`: a gift from an individual donor.
             - `match`: a company's match of an employee's gift.
             - `daf`: a grant from a donor-advised fund.
+            - `scholarship`: a scholarship awarded to a recipient.
             - `other`: any other kind of gift.
             - `unknown`: the source did not report the kind of gift.
+
+            This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
           enum:
             - individual
             - match
             - daf
+            - scholarship
             - other
             - unknown
           example: "daf"
@@ -7800,6 +7804,12 @@ components:
           type: string
           description: The unique identifier for the program that the disbursement belongs to
           example: "program_01jpjenf5q6cawy43yxfcrxhct"
+        grant_letter_id:
+          type: string
+          description: |-
+            The unique identifier for the grant letter attached to the disbursement. This is one of the grant letters configured for the disbursement's program.
+          example: "grant_letter_01jpjenf5q6cawy43yxfcrxhct"
+          readOnly: true
         amount:
           type: integer
           format: int64
@@ -8587,6 +8597,14 @@ components:
             If your Chariot account has multiple grant_disbursement_status enabled programs, you must specify the program_id to use for the disbursement.
           example: "program_01jpjenf5q6cawy43yxfcrxhct"
           nullable: true
+        grant_letter_id:
+          type: string
+          description: |-
+            The identifier for the grant letter to attach to the disbursement. Must be one of the grant letters configured for the disbursement's program in the Chariot dashboard.
+            If the program has a single grant letter, you can omit this field and that grant letter is used.
+            If the program has more than one grant letter, you must specify the grant_letter_id to use for the disbursement.
+          example: "grant_letter_01jpjenf5q6cawy43yxfcrxhct"
+          nullable: true
         amount:
           type: integer
           format: int64
@@ -8677,6 +8695,8 @@ components:
                 $ref: "#/components/schemas/TransactionDafGrant"
               corporate_match:
                 $ref: "#/components/schemas/TransactionCorporateMatch"
+              scholarship:
+                $ref: "#/components/schemas/TransactionScholarship"
               metadata:
                 type: object
                 description: Additional metadata for the transaction
@@ -8811,6 +8831,8 @@ components:
           $ref: "#/components/schemas/TransactionDafGrant"
         corporate_match:
           $ref: "#/components/schemas/TransactionCorporateMatch"
+        scholarship:
+          $ref: "#/components/schemas/TransactionScholarship"
         created_at:
           type: string
           format: date-time
@@ -8830,10 +8852,22 @@ components:
             type: string
     DonationType:
       type: string
-      description: The type of donation
+      description: |
+        The type of donation.
+
+        - `donor_advised_fund_grant`: A grant from a donor-advised fund. Include `daf_grant`.
+        - `corporate_match`: A corporate matching gift. Requires `corporate_match`.
+        - `scholarship`: A scholarship gift. Requires `scholarship`.
+        - `individual_gift`: A gift from an individual donor.
+        - `other`: A gift that doesn't fit another type.
+
+        This is an open enum: new values may be added over time, so don't treat the list above as exhaustive. Your integration should handle unrecognized values gracefully.
       enum:
         - donor_advised_fund_grant
         - corporate_match
+        - scholarship
+        - individual_gift
+        - other
     Donor:
       type: object
       description: The donor information for the transaction
@@ -8890,6 +8924,29 @@ components:
           description: "The name of the company making the matching gift. Maximum length: 255 characters."
           maxLength: 255
           example: "Acme Corporation"
+        source:
+          type: string
+          description: "The source of the corporate match (for example, payroll). Maximum length: 255 characters."
+          maxLength: 255
+          nullable: true
+          example: "Payroll"
+    TransactionScholarship:
+      type: object
+      description: A scholarship gift. Required when the transaction type is scholarship.
+      nullable: true
+      required:
+        - recipient_name
+      properties:
+        recipient_name:
+          type: string
+          description: "The name of the individual receiving the scholarship, typically the student's first and last name."
+          maxLength: 100
+          example: "Alice Smith"
+        recipient_id:
+          type: string
+          description: "The scholarship recipient's unique identifier within the recipient organization's internal system."
+          maxLength: 100
+          example: "STUDENT-12345"
     EventCategory:
       type: string
       description: |
@@ -9334,12 +9391,16 @@ components:
                   - `individual`: a gift from an individual donor.
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
+                  - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
                   - daf
+                  - scholarship
                   - other
                   - unknown
                 example: "daf"
@@ -9511,12 +9572,16 @@ components:
                   - `individual`: a gift from an individual donor.
                   - `match`: a company's match of an employee's gift.
                   - `daf`: a grant from a donor-advised fund.
+                  - `scholarship`: a scholarship awarded to a recipient.
                   - `other`: any other kind of gift.
                   - `unknown`: the kind of gift wasn't specified.
+
+                  This is an open enum: more values may be added over time, so don't assume this list is exhaustive.
                 enum:
                   - individual
                   - match
                   - daf
+                  - scholarship
                   - other
                   - unknown
                 example: "daf"
