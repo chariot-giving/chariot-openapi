@@ -4761,9 +4761,14 @@ components:
       type: string
       description: |-
         The file's purpose. Note that entries may be added to this list without notice.
+
+        A `received_grant_letter` file is the grant letter for a disbursement that a grantmaker
+        sent to your organization. Chariot creates these files. You cannot upload a file with
+        this purpose.
       enum:
         - manual_upload
         - grant_letter
+        - received_grant_letter
         - integration_download
         - inbound_mail_item
         - inbound_mail_item_thumbnail
