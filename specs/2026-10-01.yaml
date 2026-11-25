@@ -3631,6 +3631,23 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: updated_at.after
+          in: query
+          description: |-
+            Return donations updated after the given date and time. Assigning or removing a property on a donation counts as an update.
+
+            To sync changes, start each request a few minutes before the end of your previous window, and skip donations you have already processed.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: updated_at.before
+          in: query
+          description: Return donations updated before the given date and time.
+          required: false
+          schema:
+            type: string
+            format: date-time
         - name: dafpay_tracking_id
           in: query
           description: The DAFpay tracking identifier to filter donations by. Use this to reconcile a donation against the DAFpay grant that started it.
