@@ -7613,6 +7613,8 @@ components:
         - "donation.updated"
         - "deposit.created"
         - "deposit.updated"
+        - "mail_item.created"
+        - "mail_item.updated"
         - "verification_request.created"
         - "verification_request.updated"
         - "connection.revoked"
